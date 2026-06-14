@@ -1210,8 +1210,9 @@ if __name__ == "__main__":
     print(f"   Subreddit pool:  {sum(len(v) for v in NICHE_SUBREDDIT_POOL.values())} subreddits across {len(NICHE_SUBREDDIT_POOL)} niches")
     print(f"   Opening styles:  {len(OPENING_STYLES)} rotating")
     print(f"   Tone variants:   {len(TONE_DESCRIPTORS)} rotating")
-    print(f"\n   Docs:        http://localhost:8000/docs")
-    print(f"   Zero-bias:   http://localhost:8000/discover\n")
-    print(f"   Health: http://localhost:8000/health\n")
+    port = int(env("PORT", "8000"))
+    print(f"\n   Docs:        http://localhost:{port}/docs")
+    print(f"   Zero-bias:   http://localhost:{port}/discover\n")
+    print(f"   Health: http://localhost:{port}/health\n")
 
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=False)
+    uvicorn.run(app, host="0.0.0.0", port=port, reload=False)
