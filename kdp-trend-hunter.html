@@ -1,0 +1,1952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KDP Studio — Trend to Book</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#0a0a0a;
+  --s1:#111;
+  --s2:#181818;
+  --border:#242424;
+  --border2:#333;
+  --accent:#ff4500;
+  --accent2:#ff8c42;
+  --green:#22c55e;
+  --blue:#3b82f6;
+  --text:#f0ede8;
+  --muted:#666;
+  --muted2:#444;
+  --radius:10px;
+}
+
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh}
+
+/* HEADER */
+header{
+  border-bottom:1px solid var(--border);
+  padding:14px 28px;
+  display:flex;align-items:center;gap:12px;
+  position:sticky;top:0;background:rgba(10,10,10,0.95);
+  backdrop-filter:blur(8px);z-index:100;
+}
+.logo{width:30px;height:30px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:#fff;flex-shrink:0}
+.app-name{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;letter-spacing:-0.02em}
+.app-tag{color:var(--muted);font-size:11px;margin-left:auto}
+
+/* STEPS NAV */
+.steps-nav{
+  display:flex;gap:0;border-bottom:1px solid var(--border);
+  overflow-x:auto;
+}
+.step-tab{
+  padding:12px 20px;font-size:12px;font-weight:500;
+  color:var(--muted);cursor:pointer;border:none;background:none;
+  display:flex;align-items:center;gap:8px;white-space:nowrap;
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+  transition:all 0.15s;
+}
+.step-tab:hover{color:var(--text)}
+.step-tab.active{color:var(--text);border-bottom-color:var(--accent)}
+.step-tab.done{color:var(--green)}
+.step-num{
+  width:20px;height:20px;border-radius:50%;border:1px solid currentColor;
+  display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;
+}
+.step-tab.done .step-num{background:var(--green);border-color:var(--green);color:#000}
+
+/* PANELS */
+.panel{display:none;padding:32px 28px 60px;max-width:900px;margin:0 auto}
+.panel.active{display:block}
+
+/* SECTION LABEL */
+.sect-label{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+
+/* PILL SELECTORS */
+.pill-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:0}
+.pill{
+  padding:7px 14px;border-radius:6px;border:1px solid var(--border2);
+  background:var(--s1);color:var(--muted);font-size:12px;cursor:pointer;
+  transition:all 0.12s;font-family:'Inter',sans-serif;
+}
+.pill:hover{color:var(--text);border-color:#555}
+.pill.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500}
+.pill.sm{padding:5px 12px;border-radius:20px;font-size:11px}
+.pill.sm.active{background:transparent;color:var(--accent2);border-color:var(--accent2)}
+
+/* INPUT */
+.field{margin-bottom:20px}
+.field label{display:block;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+input[type=text],textarea,select{
+  width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--border2);
+  border-radius:8px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;
+  outline:none;transition:border-color 0.15s;resize:vertical;
+}
+input[type=text]:focus,textarea:focus,select:focus{border-color:var(--accent)}
+input[type=text]::placeholder,textarea::placeholder{color:var(--muted2)}
+select option{background:var(--s2)}
+
+/* BUTTONS */
+.btn{
+  padding:11px 22px;border-radius:8px;border:none;font-family:'Syne',sans-serif;
+  font-weight:600;font-size:13px;cursor:pointer;transition:all 0.15s;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-accent{background:var(--accent);color:#fff}
+.btn-accent:hover{opacity:0.85}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border2)}
+.btn-ghost:hover{color:var(--text);border-color:#555}
+.btn-green{background:var(--green);color:#000}
+.btn-green:hover{opacity:0.85}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-blue:hover{opacity:0.85}
+.btn:disabled{opacity:0.35;cursor:not-allowed}
+.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:rot 0.7s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+/* TREND CARDS */
+.trend-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+@media(max-width:640px){.trend-grid{grid-template-columns:1fr}}
+.trend-card{
+  background:var(--s1);border:2px solid var(--border);border-radius:12px;
+  padding:18px;cursor:pointer;transition:all 0.15s;position:relative;
+}
+.trend-card:hover{border-color:var(--border2);background:var(--s2)}
+.trend-card.selected{border-color:var(--accent);background:rgba(255,69,0,0.04)}
+.t-platform{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.t-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;letter-spacing:-0.02em;margin-bottom:6px;line-height:1.3}
+.t-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.heat-row{display:flex;gap:4px;margin-top:10px}
+.hdot{width:7px;height:7px;border-radius:50%;background:var(--border2)}
+.hdot.on{background:var(--accent2)}
+.sel-badge{position:absolute;top:12px;right:12px;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;display:none}
+.trend-card.selected .sel-badge{display:block}
+
+/* BOOK IDEA CARDS */
+.book-ideas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:14px}
+.book-idea{
+  background:var(--s2);border:2px solid var(--border);border-radius:10px;
+  padding:14px;cursor:pointer;transition:all 0.15s;
+}
+.book-idea:hover{border-color:var(--border2)}
+.book-idea.selected{border-color:var(--blue)}
+.bi-type{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent2);margin-bottom:7px}
+.bi-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;line-height:1.3;margin-bottom:5px}
+.bi-sub{font-size:11px;color:var(--muted);line-height:1.4}
+.bi-sel{color:var(--blue);font-size:10px;font-weight:600;margin-top:8px;display:none}
+.book-idea.selected .bi-sel{display:block}
+
+/* CONTENT OUTPUT */
+.content-block{
+  background:var(--s1);border:1px solid var(--border);border-radius:12px;
+  margin-bottom:16px;overflow:hidden;
+}
+.cb-header{
+  padding:14px 18px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.cb-title{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+.cb-badge{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700}
+.cb-body{padding:18px;font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap}
+.cb-body.mono{font-family:monospace;font-size:12px}
+.copy-btn{font-size:11px;padding:5px 10px;border-radius:5px;background:var(--s2);border:1px solid var(--border2);color:var(--muted);cursor:pointer;transition:all 0.12s;font-family:'Inter',sans-serif}
+.copy-btn:hover{color:var(--text)}
+.copy-btn.copied{color:var(--green);border-color:var(--green)}
+
+/* OUTLINE TREE */
+.outline-tree{padding:18px}
+.ol-ch{margin-bottom:14px}
+.ol-ch-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:-0.01em;margin-bottom:6px;color:var(--accent2)}
+.ol-ch-num{font-size:10px;color:var(--muted);font-weight:500;margin-right:6px}
+.ol-secs{padding-left:16px;border-left:1px solid var(--border)}
+.ol-sec{font-size:12px;color:var(--muted);padding:3px 0;line-height:1.4}
+.ol-sec::before{content:"–  ";color:var(--border2)}
+
+/* KEYWORD PILLS */
+.kw-cloud{display:flex;flex-wrap:wrap;gap:7px;padding:18px}
+.kw{
+  padding:6px 13px;border-radius:20px;background:rgba(59,130,246,0.1);
+  border:1px solid rgba(59,130,246,0.25);color:#93c5fd;font-size:12px;
+}
+
+/* META ROW */
+.meta-row{display:flex;gap:12px;flex-wrap:wrap;padding:14px 18px}
+.meta-item{flex:1;min-width:180px}
+.meta-item label{display:block;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.meta-item .val{font-size:13px;color:var(--text);line-height:1.5}
+
+/* LOADING */
+.loader{text-align:center;padding:50px 20px}
+.loader .spin-lg{width:32px;height:32px;border:3px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:rot 0.7s linear infinite;margin:0 auto 16px}
+.loader p{font-size:13px;color:var(--muted)}
+.loader .step-msg{font-size:11px;color:var(--muted2);margin-top:6px}
+
+/* ERROR */
+.err{background:rgba(255,69,0,0.08);border:1px solid rgba(255,69,0,0.25);border-radius:8px;padding:14px 18px;font-size:13px;color:#ff8a65}
+
+/* DIVIDER */
+.divider{border:none;border-top:1px solid var(--border);margin:24px 0}
+
+/* ACTION ROW */
+.action-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+
+/* HERO */
+.panel-hero{margin-bottom:28px}
+.panel-hero h2{font-family:'Syne',sans-serif;font-size:clamp(22px,4vw,32px);font-weight:800;letter-spacing:-0.03em;line-height:1.1;margin-bottom:8px}
+.panel-hero h2 span{color:var(--accent)}
+.panel-hero p{font-size:13px;color:var(--muted);line-height:1.6;max-width:520px}
+
+/* FILTER ROW */
+.filter-row{display:flex;flex-direction:column;gap:16px;background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px}
+
+/* STEP 3 tabs */
+.gen-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.gen-tab{padding:8px 16px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;transition:all 0.12s;font-family:'Inter',sans-serif}
+.gen-tab.active{background:var(--s2);color:var(--text);border-color:#555}
+
+/* PROGRESS */
+.prog-bar{height:3px;background:var(--border);border-radius:2px;margin-top:6px;overflow:hidden}
+.prog-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 0.3s}
+
+/* EMPTY */
+.empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px}
+.empty .ico{font-size:28px;margin-bottom:10px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">K</div>
+  <span class="app-name">KDP Studio</span>
+  <div style="display:flex;align-items:center;gap:10px;margin-left:16px">
+    <div id="backendDot" style="width:8px;height:8px;border-radius:50%;background:#444;flex-shrink:0" title="Backend status"></div>
+    <span id="backendLabel" style="font-size:11px;color:var(--muted)">Checking backend…</span>
+  </div>
+  <span class="app-tag">Trend → Book → Publish</span>
+</header>
+
+<nav class="steps-nav" id="stepsNav">
+  <button class="step-tab active" data-panel="p1" onclick="goPanel('p1')">
+    <span class="step-num">1</span> Trend Discovery
+  </button>
+  <button class="step-tab" data-panel="p2" onclick="goPanel('p2')">
+    <span class="step-num">2</span> Scegli Libro
+  </button>
+  <button class="step-tab" data-panel="p3" onclick="goPanel('p3')">
+    <span class="step-num">3</span> Genera Contenuto
+  </button>
+  <button class="step-tab" data-panel="p4" onclick="goPanel('p4')">
+    <span class="step-num">4</span> KDP Package
+  </button>
+</nav>
+
+<!-- ============ PANEL 1: TREND DISCOVERY ============ -->
+<div class="panel active" id="p1">
+  <div class="panel-hero">
+    <h2>Trova trend <span>prima</span> degli altri</h2>
+    <p>Seleziona piattaforme e nicchia — Claude analizza cosa sta esplodendo e genera idee di libri pronte.</p>
+  </div>
+
+  <div class="filter-row">
+    <div>
+      <div class="sect-label">Piattaforme</div>
+      <div class="pill-row" id="platPills">
+        <button class="pill active" data-v="TikTok">🎵 TikTok</button>
+        <button class="pill active" data-v="Reddit">👾 Reddit</button>
+        <button class="pill active" data-v="Instagram">📸 Instagram</button>
+        <button class="pill" data-v="Twitter/X">🐦 Twitter/X</button>
+        <button class="pill" data-v="YouTube">▶️ YouTube</button>
+        <button class="pill" data-v="Pinterest">📌 Pinterest</button>
+      </div>
+    </div>
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="sect-label" style="margin:0">Nicchia KDP</div>
+        <button class="btn btn-ghost" id="discoverNicheBtn" onclick="discoverNiches()" style="padding:5px 12px;font-size:11px;display:flex;align-items:center;gap:6px">
+          <span id="dnBtnTxt">🔥 Scopri Nicchie Trending</span>
+          <div class="spin" id="dnSpin" style="display:none;width:12px;height:12px"></div>
+        </button>
+      </div>
+      <div class="pill-row" id="nichePills" style="margin-bottom:10px">
+        <button class="pill sm active" data-v="Self-help & Personal growth">Self-help</button>
+        <button class="pill sm" data-v="Health & Wellness">Health</button>
+        <button class="pill sm" data-v="Finance & Money">Finance</button>
+        <button class="pill sm" data-v="Relationships & Dating">Relationships</button>
+        <button class="pill sm" data-v="Productivity & Habits">Productivity</button>
+        <button class="pill sm" data-v="Spirituality & Mindset">Mindset</button>
+        <button class="pill sm" data-v="Fitness & Sports">Fitness</button>
+        <button class="pill sm" data-v="Parenting & Family">Parenting</button>
+        <button class="pill sm" data-v="Business & Entrepreneurship">Business</button>
+        <button class="pill sm" data-v="Neuroscience & Psychology">Psychology</button>
+        <button class="pill sm" data-v="Any niche">🎲 Qualsiasi</button>
+      </div>
+      <div id="nicheManualRow" style="display:flex;gap:8px;align-items:center">
+        <input type="text" id="nicheCustomInput" placeholder="✏️ Scrivi nicchia personalizzata… es: Stoicism for Men, Cottage Core, ADHD Adults" style="font-size:12px;padding:8px 12px" />
+        <button class="btn btn-ghost" onclick="applyCustomNiche()" style="padding:8px 14px;font-size:12px;white-space:nowrap;flex-shrink:0">Applica</button>
+      </div>
+      <div id="customNicheBadge" style="display:none;margin-top:8px">
+        <span id="customNicheTag" style="display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:20px;background:rgba(255,140,66,0.15);border:1px solid rgba(255,140,66,0.4);color:var(--accent2);font-size:12px;font-weight:500"></span>
+        <button onclick="clearCustomNiche()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;margin-left:6px">✕ rimuovi</button>
+      </div>
+    </div>
+    <div class="field" style="margin:0">
+      <label>Keyword / tema opzionale</label>
+      <input type="text" id="kwInput" placeholder="es: dopamine detox, lonely girl era, cortisol face, trauma healing…" />
+    </div>
+  </div>
+
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <div class="sect-label" style="margin:0">Finestra temporale</div>
+        <div id="tfStrategyTip" style="font-size:10px;color:var(--accent2);font-style:italic"></div>
+      </div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap" id="timeframePills">
+        <button class="pill sm" data-tf="day" data-strategy="Pubblica entro 1-2 settimane o il momento passa">&#x1F534; Oggi</button>
+        <button class="pill sm active" data-tf="week" data-strategy="Finestra ottimale KDP — caldo ma non ancora saturo">&#x1F7E0; Settimana</button>
+        <button class="pill sm" data-tf="month" data-strategy="Nicchia in crescita — meno urgenza, audience pi&#xF9; definita">&#x1F7E1; Mese</button>
+        <button class="pill sm" data-tf="3months" data-strategy="Trend in consolidamento — cerca angoli non ancora coperti">&#x1F7E2; 3 Mesi</button>
+        <button class="pill sm" data-tf="year" data-strategy="Nicchia matura — migliora libri esistenti o trova sub-nicchie">&#x1F535; Anno</button>
+      </div>
+    </div>
+
+  <div id="restoreBanner" style="display:none;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.25);border-radius:8px;padding:12px 16px;margin-bottom:16px;display:none;align-items:center;justify-content:space-between;gap:12px">
+    <div style="font-size:12px;color:#93c5fd" id="restoreMsg"></div>
+    <div style="display:flex;gap:8px;flex-shrink:0">
+      <button onclick="restoreSession()" class="btn btn-blue" style="padding:6px 14px;font-size:12px">↩ Ripristina</button>
+      <button onclick="discardSession()" class="btn btn-ghost" style="padding:6px 12px;font-size:12px">✕</button>
+    </div>
+  </div>
+
+  <!-- ZERO BIAS MODE -->
+  <div style="background:rgba(34,197,94,0.04);border:1px solid rgba(34,197,94,0.2);border-radius:12px;padding:16px 18px;margin-bottom:14px">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;margin-bottom:3px">🌍 Scoperta Zero-Bias</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.5;max-width:420px">Nessuna nicchia pre-selezionata — Claude legge i dati grezzi da Reddit globale e Google Trends e scopre opportunità che non avresti cercato.</div>
+      </div>
+      <button class="btn" id="discoverGlobalBtn" onclick="discoverGlobal()" style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.4);color:#22c55e;font-size:13px;white-space:nowrap;flex-shrink:0">
+        <span id="dgBtnTxt">🌍 Scopri senza filtri</span>
+        <div class="spin" id="dgSpin" style="display:none;border-top-color:#22c55e"></div>
+      </button>
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    <div style="flex:1;height:1px;background:var(--border)"></div>
+    <span style="font-size:10px;color:var(--muted2);font-weight:600;letter-spacing:0.06em;text-transform:uppercase">oppure cerca per nicchia</span>
+    <div style="flex:1;height:1px;background:var(--border)"></div>
+  </div>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <button class="btn btn-accent" id="discoverBtn" onclick="discoverTrends()">
+      <span id="discBtnTxt">🔍 Scopri Trend</span>
+      <div class="spin" id="discSpin" style="display:none"></div>
+    </button>
+    <button class="btn btn-ghost" id="clearStateBtn" style="display:none;font-size:12px;padding:10px 14px" onclick="discardSession()" title="Cancella sessione salvata">🗑 Reset</button>
+  </div>
+
+  <div id="trendsOut"></div>
+
+
+
+  <div class="action-row" id="p1actions" style="display:none">
+    <button class="btn btn-accent" onclick="goPanel('p2')">Continua →</button>
+  </div>
+</div>
+
+<!-- ============ PANEL 2: CHOOSE BOOK ============ -->
+<div class="panel" id="p2">
+  <div class="panel-hero">
+    <h2>Scegli il <span>libro</span> da creare</h2>
+    <p>Seleziona il trend e l'idea libro che vuoi sviluppare. Puoi anche personalizzare titolo e tipo.</p>
+  </div>
+
+  <div id="trendSelectArea">
+    <div class="sect-label">Trend selezionato</div>
+    <div id="selectedTrendCard" class="trend-card" style="cursor:default;margin-bottom:20px">
+      <div class="t-platform" id="stPlatform"></div>
+      <div class="t-name" id="stName"></div>
+      <div class="t-desc" id="stDesc"></div>
+    </div>
+
+    <div class="sect-label">Idee libro disponibili</div>
+    <div class="book-ideas-grid" id="bookIdeasGrid"></div>
+  </div>
+
+  <hr class="divider">
+
+  <div>
+    <div class="sect-label">Personalizza (opzionale)</div>
+    <div class="field">
+      <label>Titolo personalizzato</label>
+      <input type="text" id="customTitle" placeholder="Lascia vuoto per usare quello suggerito…" />
+    </div>
+    <div class="field">
+      <label>Tipo libro</label>
+      <select id="bookTypeSelect">
+        <option value="">Usa tipo suggerito</option>
+        <option>Guided Journal</option>
+        <option>Workbook</option>
+        <option>Planner</option>
+        <option>Prompt Book</option>
+        <option>Activity Book</option>
+        <option>Low-content Journal</option>
+        <option>Self-help Guide</option>
+        <option>30-Day Challenge Book</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Target audience</label>
+      <input type="text" id="audience" placeholder="es: women 25-40, Gen Z, burned-out professionals…" />
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- VOICE & STYLE PANEL -->
+  <div style="background:rgba(232,121,249,0.04);border:1px solid rgba(232,121,249,0.15);border-radius:12px;padding:20px;margin-bottom:20px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700">🎨 Voce & Stile</div>
+      <span style="font-size:10px;color:var(--muted);font-weight:500;letter-spacing:0.06em;text-transform:uppercase">Personalizza ogni generazione</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="field" style="margin:0">
+        <label>Tono di voce</label>
+        <select id="voiceTone" style="font-size:12px">
+          <option value="">🎲 Random ogni volta</option>
+          <option value="warm and conversational, like a trusted friend who happens to be an expert">💬 Caldo e conversazionale</option>
+          <option value="precise and direct, no fluff — every sentence earns its place">🎯 Preciso e diretto</option>
+          <option value="lyrical and reflective, with space for the reader to breathe">🌊 Lirico e riflessivo</option>
+          <option value="bold and challenging, pushing the reader past their comfort zone with compassion">🔥 Audace e provocatorio</option>
+          <option value="gentle and trauma-informed, never rushing, always meeting the reader where they are">🌿 Gentile e trauma-informed</option>
+          <option value="academically grounded but emotionally accessible">🎓 Accademico ma accessibile</option>
+          <option value="pragmatic and systems-oriented, always asking: what does the reader do next?">⚙️ Pragmatico e sistemico</option>
+        </select>
+      </div>
+      <div class="field" style="margin:0">
+        <label>Lunghezza capitoli</label>
+        <select id="chapterLength" style="font-size:12px">
+          <option value="medium">📄 Media (1200-1600 parole)</option>
+          <option value="short">📝 Breve (800-1000 parole)</option>
+          <option value="long">📚 Lungo (2000-2500 parole)</option>
+        </select>
+      </div>
+      <div class="field" style="margin:0">
+        <label>Lingua output</label>
+        <select id="outputLanguage" style="font-size:12px">
+          <option value="English">🇬🇧 English</option>
+          <option value="Italian">🇮🇹 Italiano</option>
+          <option value="Dutch">🇳🇱 Nederlands</option>
+          <option value="German">🇩🇪 Deutsch</option>
+          <option value="French">🇫🇷 Français</option>
+          <option value="Spanish">🇪🇸 Español</option>
+          <option value="English with Italian expressions woven in">🇮🇹🇬🇧 English + Italian blend</option>
+        </select>
+      </div>
+      <div class="field" style="margin:0">
+        <label>Ispirazione culturale</label>
+        <select id="culturalInspiration" style="font-size:12px">
+          <option value="">Nessuna preferenza</option>
+          <option value="German philosophy and culture">🇩🇪 Tedesca / Europea</option>
+          <option value="Japanese philosophy (wabi-sabi, ikigai, kaizen)">🇯🇵 Giapponese</option>
+          <option value="Scandinavian philosophy (hygge, lagom, friluftsliv)">🇸🇪 Scandinava</option>
+          <option value="Mediterranean and Italian culture">🇮🇹 Mediterranea / Italiana</option>
+          <option value="African ubuntu philosophy">🌍 Africana (Ubuntu)</option>
+          <option value="Stoic and ancient Greek philosophy">🏛️ Stoica / Greca</option>
+          <option value="Buddhist and Eastern philosophy">☯️ Buddista / Orientale</option>
+        </select>
+      </div>
+    </div>
+    <div class="field" style="margin:12px 0 0 0">
+      <label>Persona lettore ideale (opzionale)</label>
+      <input type="text" id="readerPersona" placeholder="es: donna italiana di 35 anni, expat in Germania, coach di professione, legge libri di filosofia..." style="font-size:12px" />
+    </div>
+    <div style="margin-top:12px;padding:10px 14px;background:rgba(232,121,249,0.06);border-radius:8px;font-size:11px;color:#a78bfa;line-height:1.5">
+      💡 Stile apertura capitoli e seed di unicità vengono scelti <strong>casualmente ad ogni generazione</strong> — stesso libro, risultati sempre diversi.
+    </div>
+  </div>
+
+  <div class="action-row">
+    <button class="btn btn-ghost" onclick="goPanel('p1')">← Indietro</button>
+    <button class="btn btn-accent" id="p2NextBtn" onclick="goPanel('p3')" disabled>Genera Contenuto →</button>
+  </div>
+</div>
+
+<!-- ============ PANEL 3: CONTENT GENERATOR ============ -->
+<div class="panel" id="p3">
+  <div class="panel-hero">
+    <h2>Genera il <span>contenuto</span></h2>
+    <p>Genera ogni elemento del libro uno alla volta — outline, capitoli completi, o tutto insieme.</p>
+  </div>
+  <div id="voiceSummaryBar" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;padding:12px 16px;background:var(--s1);border:1px solid var(--border);border-radius:10px;font-size:11px;color:var(--muted);align-items:center">
+    <span style="color:var(--text);font-weight:600">🎨 Stile attivo:</span>
+    <span id="vsLang" style="padding:2px 8px;border-radius:4px;background:rgba(232,121,249,0.1);color:#e879f9"></span>
+    <span id="vsTone" style="padding:2px 8px;border-radius:4px;background:rgba(255,140,66,0.1);color:#ff8c42"></span>
+    <span id="vsLen" style="padding:2px 8px;border-radius:4px;background:rgba(59,130,246,0.1);color:#3b82f6"></span>
+    <span id="vsCult" style="display:none;padding:2px 8px;border-radius:4px;background:rgba(34,197,94,0.1);color:#22c55e"></span>
+    <button onclick="goPanel('p2')" style="margin-left:auto;font-size:10px;background:none;border:1px solid var(--border2);border-radius:4px;color:var(--muted);cursor:pointer;padding:2px 8px">✏️ Modifica</button>
+  </div>
+
+  <!-- Auto-generate all chapters button — prominent, separate from tabs -->
+  <div id="autoGenBanner" style="display:none;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:none;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+    <div>
+      <div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;margin-bottom:4px">📚 Genera tutti i capitoli in automatico</div>
+      <div style="font-size:12px;color:var(--muted)" id="autoGenChapCount">Claude scrive ogni capitolo in sequenza — uno alla volta, progress live</div>
+    </div>
+    <button class="btn btn-green" id="autoGenBtn" onclick="generateAllAuto()" style="white-space:nowrap;flex-shrink:0">
+      <span id="autoGenBtnTxt">⚡ Avvia Generazione Automatica</span>
+      <div class="spin" id="autoGenSpin" style="display:none;border-top-color:#000"></div>
+    </button>
+  </div>
+
+  <div class="gen-tabs">
+    <button class="gen-tab active" data-t="outline" onclick="setGenTab('outline')">📋 Outline</button>
+    <button class="gen-tab" data-t="full" onclick="setGenTab('full')">📖 Draft Completo</button>
+    <button class="gen-tab" data-t="chapter" onclick="setGenTab('chapter')">✍️ Capitolo Singolo</button>
+    <button class="gen-tab" data-t="intro" onclick="setGenTab('intro')">🎯 Intro + Conclusione</button>
+  </div>
+
+  <div id="chapterSelector" style="display:none;margin-bottom:16px">
+    <div class="field">
+      <label>Numero capitolo da scrivere</label>
+      <input type="text" id="chapterNum" placeholder="es: 1, 3, 5…" />
+    </div>
+  </div>
+
+  <div class="action-row" style="margin-top:0;margin-bottom:24px">
+    <button class="btn btn-accent" id="genBtn" onclick="generateContent()">
+      <span id="genBtnTxt">⚡ Genera</span>
+      <div class="spin" id="genSpin" style="display:none"></div>
+    </button>
+    <button class="btn btn-ghost" onclick="goPanel('p2')">← Indietro</button>
+  </div>
+
+  <div id="contentOut"></div>
+
+  <div class="action-row" id="p3actions" style="display:none">
+    <button class="btn btn-green" onclick="goPanel('p4')">→ KDP Package</button>
+  </div>
+</div>
+
+<!-- ============ PANEL 4: KDP PACKAGE ============ -->
+<div class="panel" id="p4">
+  <div class="panel-hero">
+    <h2><span>KDP Package</span> completo</h2>
+    <p>Tutto quello che ti serve per pubblicare su Amazon KDP — copia e incolla direttamente.</p>
+  </div>
+
+  <div class="action-row" style="margin-bottom:24px">
+    <button class="btn btn-accent" id="pkgBtn" onclick="generatePackage()">
+      <span id="pkgBtnTxt">📦 Genera KDP Package</span>
+      <div class="spin" id="pkgSpin" style="display:none"></div>
+    </button>
+    <button class="btn btn-green" id="exportAllBtn" style="display:none" onclick="exportFullPackage()">⬇️ Esporta tutto (.txt)</button>
+    <button class="btn btn-ghost" onclick="goPanel('p3')">← Indietro</button>
+  </div>
+
+  <div id="packageOut"></div>
+</div>
+
+<script>
+// ─── CONFIG ──────────────────────────────────────────────
+// Auto-detect backend URL:
+// - If served from Railway (same origin): use window.location.origin
+// - If opened as local file: use localhost
+// - Override: set <meta name="kdp-backend" content="https://..."> in <head>
+const BACKEND_URL = (() => {
+  const meta = document.querySelector('meta[name="kdp-backend"]')?.content;
+  if (meta) return meta.replace(/\/$/, '');
+  const origin = window.location.origin;
+  // If running from file:// or localhost dev server, use local backend
+  if (origin.startsWith('file://') || origin.includes('localhost') || origin.includes('127.0.0.1')) {
+    return 'http://localhost:8000';
+  }
+  // Otherwise assume same-origin Railway deployment
+  return origin;
+})();
+let BACKEND_LIVE = false;  // set to true after health check passes
+
+// ─── STATE ───────────────────────────────────────────────
+// FIX 4: localStorage persistence
+const STORAGE_KEY = 'kdp_studio_state_v2';
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch(e) { console.warn('State load failed', e); }
+  return null;
+}
+
+function saveState() {
+  try {
+    // Don't save full content text (too large) — save refs only
+    const toSave = {
+      trends: state.trends,
+      selectedTrend: state.selectedTrend,
+      selectedBook: state.selectedBook,
+      customTitle: state.customTitle,
+      bookType: state.bookType,
+      audience: state.audience,
+      outline: state.outline ? state.outline.substring(0, 3000) : '',
+      genTab: state.genTab,
+      customNiche: state.customNiche,
+      savedAt: Date.now()
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+  } catch(e) { console.warn('State save failed', e); }
+}
+
+function clearState() {
+  try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+}
+
+const _saved = loadState();
+const state = {
+  trends: _saved?.trends || [],
+  selectedTrend: _saved?.selectedTrend || null,
+  selectedBook: _saved?.selectedBook || null,
+  customTitle: _saved?.customTitle || '',
+  bookType: _saved?.bookType || '',
+  audience: _saved?.audience || '',
+  outline: _saved?.outline || '',
+  genTab: _saved?.genTab || 'outline',
+  packageGenerated: false,
+  customNiche: _saved?.customNiche || '',
+  allChaptersText: '',
+  dataBadge: '',
+  discoveryMode: 'niche'  // 'niche' | 'global'
+};
+
+// ─── PANEL NAV ───────────────────────────────────────────
+function goPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.step-tab').forEach(t => {
+    t.classList.remove('active');
+    if (t.dataset.panel === id) t.classList.add('active');
+  });
+  window.scrollTo(0, 0);
+  // Update voice summary bar when entering step 3
+  if (id === 'p3') updateVoiceSummary();
+}
+
+function updateVoiceSummary() {
+  const lang = document.getElementById('outputLanguage')?.value || 'English';
+  const tone = document.getElementById('voiceTone')?.value;
+  const len = document.getElementById('chapterLength')?.value || 'medium';
+  const cult = document.getElementById('culturalInspiration')?.value;
+  const lenMap = {short:'Breve', medium:'Media', long:'Lunga'};
+  const el = (id, text, show=true) => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = text; el.style.display = show ? 'inline' : 'none'; }
+  };
+  el('vsLang', lang);
+  el('vsTone', tone ? tone.split(',')[0] : '🎲 Tono random');
+  el('vsLen', lenMap[len] || 'Media');
+  if (cult) el('vsCult', cult.split('(')[0].trim(), true);
+  else el('vsCult', '', false);
+}
+
+// ─── PILL TOGGLES ────────────────────────────────────────
+document.querySelectorAll('#platPills .pill').forEach(p => {
+  p.addEventListener('click', () => p.classList.toggle('active'));
+});
+
+// Timeframe pills — single select + show strategy tip
+document.querySelectorAll('#timeframePills .pill').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('#timeframePills .pill').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+    const tip = document.getElementById('tfStrategyTip');
+    if (tip) tip.textContent = p.dataset.strategy || '';
+  });
+});
+
+// Show default strategy tip on load
+setTimeout(() => {
+  const active = document.querySelector('#timeframePills .pill.active');
+  if (active) {
+    const tip = document.getElementById('tfStrategyTip');
+    if (tip) tip.textContent = active.dataset.strategy || '';
+  }
+}, 100);
+
+function getTimeframe() {
+  const active = document.querySelector('#timeframePills .pill.active');
+  return active ? active.dataset.tf : 'week';
+}
+document.querySelectorAll('#nichePills .pill').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('#nichePills .pill').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+    state.customNiche = '';
+    document.getElementById('customNicheBadge').style.display = 'none';
+    document.getElementById('nicheCustomInput').value = '';
+  });
+});
+
+function getPills(containerId) {
+  return [...document.querySelectorAll('#' + containerId + ' .pill.active')].map(p => p.dataset.v);
+}
+
+function applyCustomNiche() {
+  const val = document.getElementById('nicheCustomInput').value.trim();
+  if (!val) return;
+  state.customNiche = val;
+  document.querySelectorAll('#nichePills .pill').forEach(x => x.classList.remove('active'));
+  document.getElementById('customNicheTag').textContent = '\u270f\ufe0f ' + val;
+  document.getElementById('customNicheBadge').style.display = 'block';
+}
+
+function clearCustomNiche() {
+  state.customNiche = '';
+  document.getElementById('customNicheBadge').style.display = 'none';
+  document.getElementById('nicheCustomInput').value = '';
+  const first = document.querySelector('#nichePills .pill');
+  if (first) first.classList.add('active');
+}
+
+// ─── DISCOVER NICHES ─────────────────────────────────────
+async function discoverNiches() {
+  const platforms = getPills('platPills');
+  const btn = document.getElementById('discoverNicheBtn');
+  btn.disabled = true;
+  document.getElementById('dnBtnTxt').textContent = 'Analizzando...';
+  document.getElementById('dnSpin').style.display = 'block';
+
+  const year = new Date().getFullYear();
+  const prompt = `You are a KDP niche research expert for ${year}.
+
+Identify 8 emerging high-opportunity KDP niches trending right now on social media${platforms.length ? ' especially on ' + platforms.join(', ') : ''}.
+
+Focus on niches that are: underserved on Amazon, rising search volume, connected to viral social movements, passionate communities.
+
+Return ONLY raw JSON. No markdown. No backticks. ASCII-safe text only.
+
+{"niches":[
+{"name":"Niche name 2-5 words","reason":"Why hot right now 1 sentence","heat":4,"example_book":"Example KDP title"},
+{"name":"Niche name","reason":"1 sentence","heat":5,"example_book":"Example title"},
+{"name":"Niche name","reason":"1 sentence","heat":3,"example_book":"Example title"},
+{"name":"Niche name","reason":"1 sentence","heat":5,"example_book":"Example title"},
+{"name":"Niche name","reason":"1 sentence","heat":4,"example_book":"Example title"},
+{"name":"Niche name","reason":"1 sentence","heat":3,"example_book":"Example title"},
+{"name":"Niche name","reason":"1 sentence","heat":4,"example_book":"Example title"},
+{"name":"Niche name","reason":"1 sentence","heat":5,"example_book":"Example title"}
+]}
+
+Replace all placeholders with real specific niches for ${year}. Heat integer 1-5.`;
+
+  try {
+    let parsed;
+    if (BACKEND_LIVE) {
+      parsed = await callBackend('/niches', { platforms, timeframe: getTimeframe() });
+    } else {
+      const text = await callClaude(prompt, 2000);
+      parsed = parseJson(text);
+    }
+    renderNicheDiscovery(parsed.niches || []);
+  } catch(e) {
+    alert('Errore nella ricerca nicchie: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    document.getElementById('dnBtnTxt').textContent = '\ud83d\udd25 Scopri Nicchie Trending';
+    document.getElementById('dnSpin').style.display = 'none';
+  }
+}
+
+function renderNicheDiscovery(niches) {
+  if (!niches.length) return;
+  const old = document.getElementById('nicheModal');
+  if (old) old.remove();
+
+  const items = niches.map(n => {
+    const dots = Array.from({length:5},(_,j)=>`<span style="display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:3px;background:${j<n.heat?'#ff8c42':'#333'}"></span>`).join('');
+    const nm = escHtml(n.name);
+    return `<div onclick="selectDiscoveredNiche('${nm.replace(/'/g,"\\'")}'" style="padding:14px 16px;border:1px solid #242424;border-radius:10px;cursor:pointer;background:#181818;transition:border-color 0.12s" onmouseover="this.style.borderColor='#ff8c42'" onmouseout="this.style.borderColor='#242424'">
+      <div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;margin-bottom:4px">${nm}</div>
+      <div style="font-size:11px;color:#666;line-height:1.4;margin-bottom:8px">${escHtml(n.reason)}</div>
+      <div style="font-size:10px;color:#ff8c42;font-style:italic;margin-bottom:8px">es: "${escHtml(n.example_book)}"</div>
+      <div>${dots}</div>
+    </div>`;
+  }).join('');
+
+  const modal = document.createElement('div');
+  modal.id = 'nicheModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)';
+  modal.innerHTML = `
+    <div style="background:#111;border:1px solid #333;border-radius:16px;width:100%;max-width:660px;max-height:85vh;overflow:hidden;display:flex;flex-direction:column">
+      <div style="padding:18px 20px;border-bottom:1px solid #242424;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+        <div>
+          <div style="font-family:Syne,sans-serif;font-size:16px;font-weight:800">\ud83d\udd25 Nicchie KDP Trending</div>
+          <div style="font-size:11px;color:#666;margin-top:3px">Clicca per selezionarla e tornare ai filtri</div>
+        </div>
+        <button onclick="document.getElementById('nicheModal').remove()" style="background:#181818;border:1px solid #333;border-radius:6px;color:#666;cursor:pointer;padding:6px 12px;font-size:13px;font-family:Inter,sans-serif">\u2715</button>
+      </div>
+      <div style="overflow-y:auto;padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        ${items}
+      </div>
+    </div>`;
+  modal.addEventListener('click', e => { if(e.target===modal) modal.remove(); });
+  document.body.appendChild(modal);
+}
+
+function selectDiscoveredNiche(name) {
+  document.querySelectorAll('#nichePills .pill').forEach(x => x.classList.remove('active'));
+  state.customNiche = name;
+  document.getElementById('nicheCustomInput').value = name;
+  document.getElementById('customNicheTag').textContent = '\ud83d\udd25 ' + name;
+  document.getElementById('customNicheBadge').style.display = 'block';
+  const modal = document.getElementById('nicheModal');
+  if (modal) modal.remove();
+}
+
+// ─── GEN TABS ────────────────────────────────────────────
+function setGenTab(t) {
+  state.genTab = t;
+  document.querySelectorAll('.gen-tab').forEach(b => {
+    b.classList.toggle('active', b.dataset.t === t);
+  });
+  document.getElementById('chapterSelector').style.display = t === 'chapter' ? 'block' : 'none';
+  // show chapter count selector for all-chapters
+  const allChNote = document.getElementById('allChapNote');
+  if (allChNote) allChNote.style.display = t === 'allchapters' ? 'block' : 'none';
+}
+
+// ─── API CALL ─────────────────────────────────────────────
+// Routes to backend (live data) or direct Claude API (fallback)
+async function callClaude(prompt, maxTokens = 4000) {
+  // Direct Claude call — used as fallback when backend is offline
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: maxTokens,
+      messages: [{ role: "user", content: prompt }]
+    })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  if (data.stop_reason === 'max_tokens') {
+    throw new Error('Risposta troncata. Usa "Capitolo Singolo" per generare un capitolo alla volta.');
+  }
+  let text = '';
+  for (const b of (data.content || [])) {
+    if (b.type === 'text') text += b.text;
+  }
+  return text;
+}
+
+async function callBackend(endpoint, body) {
+  const res = await fetch(BACKEND_URL + endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || `Backend error ${res.status}`);
+  }
+  return res.json();
+}
+
+// ─── BACKEND HEALTH CHECK ─────────────────────────────────
+async function checkBackend() {
+  // Fast check: just ping /health with short timeout
+  // Reddit ping happens server-side async and doesn't block us
+  try {
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), 2500);
+    const r = await fetch(BACKEND_URL + '/health', { signal: ctrl.signal });
+    clearTimeout(tid);
+    if (r.ok) {
+      const data = await r.json();
+      BACKEND_LIVE = true;
+      const dot = document.getElementById('backendDot');
+      const lbl = document.getElementById('backendLabel');
+      // Show live immediately — Reddit status updates in background
+      if (dot) dot.style.background = '#22c55e';
+      if (lbl) {
+        lbl.style.color = '#22c55e';
+        lbl.textContent = '🟢 Live';
+        lbl.title = 'Backend attivo';
+      }
+      // Update Reddit status after a moment without blocking
+      setTimeout(async () => {
+        try {
+          const r2 = await fetch(BACKEND_URL + '/health', { signal: AbortSignal.timeout(6000) });
+          const d2 = await r2.json();
+          if (dot) dot.style.background = d2.reddit ? '#22c55e' : '#f59e0b';
+          if (lbl) {
+            lbl.style.color = d2.reddit ? '#22c55e' : '#f59e0b';
+            lbl.textContent = d2.reddit ? '🟢 Live (Reddit + Trends)' : '🟡 Live (solo Claude)';
+          }
+        } catch(_) {}
+      }, 3000);
+      return true;
+    }
+  } catch(e) { /* backend offline */ }
+  BACKEND_LIVE = false;
+  const dot = document.getElementById('backendDot');
+  const lbl = document.getElementById('backendLabel');
+  if (dot) dot.style.background = '#555';
+  if (lbl) {
+    lbl.style.color = '#555';
+    lbl.textContent = '⚫ Standalone';
+    lbl.title = 'Backend offline — avvia kdp_server.py per trend live';
+  }
+  return false;
+}
+
+function sanitizeJson(raw) {
+  return raw
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/\u2014|\u2013/g, '-')
+    .replace(/\u2026/g, '...');
+}
+
+function parseJson(text) {
+  let s = sanitizeJson(text);
+  const m = s.match(/\{[\s\S]*\}/);
+  if (!m) throw new Error('Nessun JSON trovato nella risposta');
+  let j = m[0];
+  try { return JSON.parse(j); }
+  catch {
+    j = j.replace(/,\s*([\]}])/g, '$1').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+    return JSON.parse(j);
+  }
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── STEP 1: DISCOVER TRENDS ─────────────────────────────
+async function discoverTrends() {
+  const platforms = getPills('platPills');
+  const niches = getPills('nichePills');
+  const kw = document.getElementById('kwInput').value.trim();
+
+  if (!platforms.length) { alert('Seleziona almeno una piattaforma!'); return; }
+
+  const btn = document.getElementById('discoverBtn');
+  btn.disabled = true;
+  document.getElementById('discBtnTxt').textContent = 'Analizzando…';
+  document.getElementById('discSpin').style.display = 'block';
+  document.getElementById('trendsOut').innerHTML = `<div class="loader"><div class="spin-lg"></div><p>Claude analizza trend su ${platforms.join(', ')}…</p><p class="step-msg">Identificando opportunità KDP emergenti</p></div>`;
+  document.getElementById('p1actions').style.display = 'none';
+
+  const niche = state.customNiche || niches[0] || 'Any niche';
+  const year = new Date().getFullYear();
+
+  const prompt = `You are a KDP publishing expert and social media trend analyst for ${year}.
+
+TASK: Identify 4 real emerging trends on ${platforms.join(', ')} in the category "${niche}".
+${kw ? `Keyword/theme focus: "${kw}"` : ''}
+
+OUTPUT: Raw JSON only. No markdown. No backticks. No text before or after.
+Use only ASCII-safe characters in all string values. No apostrophes inside strings.
+Use short, concrete trend names. Heat is integer 1-5.
+
+{"trends":[
+{"name":"TREND NAME","platform":"PLATFORM","description":"2 sentences why this is hot right now","heat":4,"books":[
+{"type":"Journal","title":"BOOK TITLE","subtitle":"SEO subtitle with keywords"},
+{"type":"Workbook","title":"BOOK TITLE 2","subtitle":"SEO subtitle 2"}
+]},
+{"name":"TREND NAME","platform":"PLATFORM","description":"2 sentences","heat":5,"books":[
+{"type":"Guided Journal","title":"BOOK TITLE","subtitle":"SEO subtitle"},
+{"type":"Planner","title":"BOOK TITLE 2","subtitle":"SEO subtitle 2"}
+]},
+{"name":"TREND NAME","platform":"PLATFORM","description":"2 sentences","heat":3,"books":[
+{"type":"Prompt Book","title":"BOOK TITLE","subtitle":"SEO subtitle"},
+{"type":"Workbook","title":"BOOK TITLE 2","subtitle":"SEO subtitle 2"}
+]},
+{"name":"TREND NAME","platform":"PLATFORM","description":"2 sentences","heat":4,"books":[
+{"type":"Journal","title":"BOOK TITLE","subtitle":"SEO subtitle"},
+{"type":"Activity Book","title":"BOOK TITLE 2","subtitle":"SEO subtitle 2"}
+]}
+]}
+
+Replace all PLACEHOLDER values with real, specific, marketable content for ${year}.`;
+
+  try {
+    let parsed;
+    if (BACKEND_LIVE) {
+      // 🟢 LIVE MODE: real Reddit + Google Trends data
+      document.getElementById('trendsOut').innerHTML = `<div class="loader"><div class="spin-lg"></div><p>Fetching dati reali da Reddit e Google Trends…</p><p class="step-msg">Poi Claude analizza e genera idee KDP</p></div>`;
+      parsed = await callBackend('/trends', { platforms, niche, keyword: kw, timeframe: getTimeframe() });
+      // Show data sources badge
+      if (parsed.meta) {
+        const m = parsed.meta;
+        const tfColor = {day:'#ef4444',week:'#ff8c42',month:'#eab308','3months':'#22c55e',year:'#3b82f6'}[m.timeframe] || '#ff8c42';
+        const badge = `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;margin-top:4px">
+          <span style="font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2)">📡 ${m.reddit_posts_found} post Reddit</span>
+          ${m.gtrends_avg && Object.keys(m.gtrends_avg).length ? '<span style="font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(59,130,246,0.1);color:#3b82f6;border:1px solid rgba(59,130,246,0.2)">📈 Google Trends</span>' : ''}
+          <span style="font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(255,140,66,0.1);color:#ff8c42;border:1px solid rgba(255,140,66,0.2)">🤖 Claude</span>
+          ${m.timeframe_label ? `<span style="font-size:10px;padding:3px 10px;border-radius:4px;background:${tfColor}18;color:${tfColor};border:1px solid ${tfColor}40">🕐 ${m.timeframe_label}</span>` : ''}
+        </div>
+        ${m.timeframe_strategy ? `<div style="font-size:11px;color:var(--accent2);font-style:italic;margin-bottom:12px">💡 ${m.timeframe_strategy}</div>` : ''}`;
+        state.dataBadge = badge;
+      }
+    } else {
+      // ⚫ STANDALONE MODE: Claude-only (no live data)
+      // inject timeframe into standalone prompt
+      const tf = getTimeframe();
+      const tfLbls = {day:'oggi',week:'questa settimana',month:'questo mese','3months':'ultimi 3 mesi',year:'ultimo anno'};
+      const tfStrats = {day:'Pubblica entro 1-2 settimane',week:'Finestra ottimale KDP',month:'Nicchia in crescita','3months':'Trend in consolidamento',year:'Nicchia matura'};
+      const tfNote = 'Timeframe: ' + (tfLbls[tf]||'questa settimana') + ' | Strategy: ' + (tfStrats[tf]||'') + '. ';
+      const promptWithTf = tfNote + prompt;
+      const text = await callClaude(promptWithTf, 2500);
+      parsed = parseJson(text);
+    }
+    state.trends = parsed.trends || [];
+    renderTrends();
+  } catch(e) {
+    document.getElementById('trendsOut').innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}. Riprova.</div>`;
+  } finally {
+    btn.disabled = false;
+    document.getElementById('discBtnTxt').textContent = '🔍 Scopri Trend';
+    document.getElementById('discSpin').style.display = 'none';
+  }
+}
+
+function renderTrends() {
+  if (!state.trends.length) {
+    document.getElementById('trendsOut').innerHTML = `<div class="empty"><div class="ico">🤷</div>Nessun trend trovato. Modifica i filtri.</div>`;
+    return;
+  }
+  const badge = state.dataBadge || '';
+  const html = `<div>${badge}</div><div class="trend-grid" style="margin-top:8px">${state.trends.map((t,i) => `
+    <div class="trend-card" onclick="selectTrend(${i})">
+      <div class="sel-badge">✓ Selezionato</div>
+      <div class="t-platform">${escHtml(t.platform)}</div>
+      <div class="t-name">${escHtml(t.name)}</div>
+      <div class="t-desc">${escHtml(t.description)}</div>
+      ${t.data_signal ? `<div style="margin-top:8px;padding:7px 10px;background:rgba(59,130,246,0.07);border-left:2px solid rgba(59,130,246,0.4);border-radius:4px;font-size:11px;color:#93c5fd;line-height:1.4">📡 ${escHtml(t.data_signal)}</div>` : ''}
+      <div class="heat-row">${Array.from({length:5},(_,j)=>`<div class="hdot${j<t.heat?' on':''}"></div>`).join('')}</div>
+    </div>`).join('')}</div>`;
+  document.getElementById('trendsOut').innerHTML = html;
+  document.getElementById('p1actions').style.display = 'none';
+}
+
+// ── ZERO-BIAS DISCOVERY ───────────────────────────────────────
+async function discoverGlobal() {
+  if (!BACKEND_LIVE) {
+    alert('Il backend deve essere attivo per la scoperta zero-bias.\n\nAvvia kdp_server.py e riprova.');
+    return;
+  }
+  const btn = document.getElementById('discoverGlobalBtn');
+  btn.disabled = true;
+  document.getElementById('dgBtnTxt').textContent = 'Analizzando dati grezzi…';
+  document.getElementById('dgSpin').style.display = 'block';
+  document.getElementById('p1actions').style.display = 'none';
+  state.dataBadge = '';
+  state.discoveryMode = 'global';
+
+  document.getElementById('trendsOut').innerHTML = `
+    <div class="loader">
+      <div class="spin-lg"></div>
+      <p>Lettura dati grezzi da Reddit globale e Google Trends…</p>
+      <p class="step-msg">Nessuna nicchia pre-selezionata — Claude scopre pattern puri</p>
+    </div>`;
+
+  try {
+    const res = await fetch(BACKEND_URL + '/discover', { method: 'GET' });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Backend error ' + res.status);
+    }
+    const data = await res.json();
+    renderOpportunities(data);
+  } catch(e) {
+    document.getElementById('trendsOut').innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}</div>`;
+  } finally {
+    btn.disabled = false;
+    document.getElementById('dgBtnTxt').textContent = '🌍 Scopri senza filtri';
+    document.getElementById('dgSpin').style.display = 'none';
+  }
+}
+
+function renderOpportunities(data) {
+  const opps = data.opportunities || [];
+  const meta = data.meta || {};
+
+  if (!opps.length) {
+    document.getElementById('trendsOut').innerHTML = `<div class="empty"><div class="ico">🌐</div>Nessuna opportunità trovata. Riprova.</div>`;
+    return;
+  }
+
+  // Meta badge
+  const badgeParts = [];
+  if (meta.reddit_posts_analyzed) badgeParts.push(`<span style="font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2)">📡 ${meta.reddit_posts_analyzed} post Reddit analizzati</span>`);
+  if (meta.google_daily_trending?.length) badgeParts.push(`<span style="font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(59,130,246,0.1);color:#3b82f6;border:1px solid rgba(59,130,246,0.2)">📈 Google Trends live</span>`);
+  badgeParts.push(`<span style="font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2)">🌍 Zero-bias — nessun filtro</span>`);
+  const badge = `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">${badgeParts.join('')}</div>`;
+
+  // Convert opportunities to trend format for reuse of selectTrend
+  state.trends = opps.map(o => ({
+    name: o.niche,
+    platform: 'Global Discovery',
+    description: o.pattern,
+    heat: o.heat,
+    data_signal: (o.data_signals || []).join(' · '),
+    why_now: o.why_now,
+    books: o.books || [],
+    _discovery: true
+  }));
+  state.dataBadge = badge;
+
+  const cards = opps.map((o, i) => {
+    const dots = Array.from({length:5},(_,j)=>`<div class="hdot${j<o.heat?' on':''}"></div>`).join('');
+    const signals = (o.data_signals || []).slice(0,3).map(s => `<div style="font-size:10px;color:#93c5fd;padding:2px 0">• ${escHtml(s)}</div>`).join('');
+    return `
+      <div class="trend-card" onclick="selectTrend(${i})" style="border-color:rgba(34,197,94,0.2)">
+        <div class="sel-badge">✓ Selezionato</div>
+        <div class="t-platform" style="color:#22c55e">🌍 GLOBAL DISCOVERY</div>
+        <div class="t-name">${escHtml(o.niche)}</div>
+        <div class="t-desc">${escHtml(o.pattern)}</div>
+        ${signals ? `<div style="margin-top:8px;padding:8px 10px;background:rgba(59,130,246,0.06);border-left:2px solid rgba(59,130,246,0.3);border-radius:4px">${signals}</div>` : ''}
+        ${o.why_now ? `<div style="margin-top:8px;font-size:11px;color:#22c55e;font-style:italic">⏱ ${escHtml(o.why_now)}</div>` : ''}
+        <div class="heat-row" style="margin-top:10px">${dots}</div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('trendsOut').innerHTML = badge + `<div class="trend-grid" style="margin-top:8px">${cards}</div>`;
+  document.getElementById('p1actions').style.display = 'none';
+}
+
+function selectTrend(i) {
+  state.selectedTrend = state.trends[i];
+  document.querySelectorAll('.trend-card').forEach((c,j) => c.classList.toggle('selected', j === i));
+  document.getElementById('p1actions').style.display = 'flex';
+  saveState(); // FIX 4
+  populateStep2();
+}
+
+// ─── STEP 2: CHOOSE BOOK ─────────────────────────────────
+function populateStep2() {
+  const t = state.selectedTrend;
+  if (!t) return;
+  document.getElementById('stPlatform').textContent = t.platform;
+  document.getElementById('stName').textContent = t.name;
+  document.getElementById('stDesc').textContent = t.description;
+
+  const grid = document.getElementById('bookIdeasGrid');
+  grid.innerHTML = (t.books || []).map((b,i) => `
+    <div class="book-idea" onclick="selectBook(${i})">
+      <div class="bi-type">${escHtml(b.type)}</div>
+      <div class="bi-title">${escHtml(b.title)}</div>
+      <div class="bi-sub">${escHtml(b.subtitle)}</div>
+      <div class="bi-sel">✓ Selezionato</div>
+    </div>`).join('');
+
+  state.selectedBook = null;
+  document.getElementById('p2NextBtn').disabled = true;
+}
+
+function selectBook(i) {
+  state.selectedBook = state.selectedTrend.books[i];
+  document.querySelectorAll('.book-idea').forEach((c,j) => c.classList.toggle('selected', j === i));
+  document.getElementById('p2NextBtn').disabled = false;
+  saveState(); // FIX 4
+}
+
+// ─── STEP 3: GENERATE CONTENT ────────────────────────────
+async function generateContent() {
+  if (!state.selectedBook || !state.selectedTrend) {
+    alert('Torna al passo 2 e seleziona un libro!');
+    return;
+  }
+
+  const customTitle = document.getElementById('customTitle').value.trim();
+  const bookType = document.getElementById('bookTypeSelect').value || state.selectedBook.type;
+  const audience = document.getElementById('audience').value.trim() || 'general adult audience';
+  const tab = state.genTab;
+  const chNum = document.getElementById('chapterNum').value.trim();
+
+  const title = customTitle || state.selectedBook.title;
+  const subtitle = state.selectedBook.subtitle;
+  const trend = state.selectedTrend.name;
+
+  state.customTitle = customTitle;
+  state.bookType = bookType;
+  state.audience = audience;
+
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true;
+  document.getElementById('genBtnTxt').textContent = 'Generando…';
+  document.getElementById('genSpin').style.display = 'block';
+
+  const labels = {
+    outline: 'Outline Completo',
+    full: 'Draft Completo',
+    allchapters: 'Tutti i Capitoli',
+    chapter: `Capitolo ${chNum}`,
+    intro: 'Intro + Conclusione'
+  };
+
+  document.getElementById('contentOut').innerHTML = `<div class="loader"><div class="spin-lg"></div><p>Generando ${labels[tab]}…</p><p class="step-msg">Questo potrebbe richiedere qualche secondo</p></div>`;
+  document.getElementById('p3actions').style.display = 'none';
+
+  let prompt = '';
+  let maxTok = 4000;
+
+  const bookCtx = `Book: "${title}" — ${subtitle}\nType: ${bookType}\nTrend: "${trend}"\nAudience: ${audience}`;
+
+  if (tab === 'outline') {
+    prompt = `You are a bestselling KDP author. Create a detailed book outline.
+
+${bookCtx}
+
+Write a professional, detailed outline with:
+- 8-12 chapters
+- 3-5 subsections per chapter
+- Brief description of each section content
+
+Format as plain text (no JSON). Use clear chapter numbering. Make it practical, engaging, and trend-relevant.`;
+    maxTok = 2000;
+
+  } else if (tab === 'full') {
+    prompt = `You are a bestselling KDP author. Write a complete ${bookType} book.
+
+${bookCtx}
+
+Write the FULL book content including:
+- Introduction (engaging hook, 400-500 words)
+- 6 complete chapters (800-1000 words each) with all content, prompts, exercises, or journal pages appropriate for the book type
+- Conclusion (300-400 words)
+- Target total: 6,000-8,000 words
+
+Write naturally, in second person (you/your). Make it immediately useful and practical.`;
+    maxTok = 8000;  // FIX 2: raised from 4000
+
+  } else if (tab === 'chapter') {
+    const n = chNum || '1';
+    prompt = `You are a bestselling KDP author. Write Chapter ${n} of this book.
+
+${bookCtx}
+${state.outline ? `Outline context:\n${state.outline.substring(0, 500)}` : ''}
+
+Write a COMPLETE, FULL chapter including:
+- Chapter title and intro paragraph
+- All sections with full content
+- Exercises, prompts, or activities if relevant
+- Chapter summary or key takeaways
+- Length: 1,500-2,500 words
+
+Write in second person, engaging and practical.`;
+    maxTok = 4000;  // FIX 2: raised from 3000
+
+  } else if (tab === 'intro') {
+    prompt = `You are a bestselling KDP author. Write the Introduction AND Conclusion for this book.
+
+${bookCtx}
+
+INTRODUCTION (600-900 words):
+- Hook: start with a powerful, relatable statement about the trend/problem
+- Why this book exists
+- Who this book is for
+- What they will get from reading it
+- How to use the book
+
+CONCLUSION (400-600 words):
+- Recap the transformation journey
+- Motivational closing
+- Call to action / next steps
+
+Write in warm, second-person voice.`;
+    maxTok = 3000;  // FIX 2: raised from 2500
+  }
+
+  // FIX 3: sequential all-chapters generation
+  if (tab === 'allchapters') {
+    await generateAllChapters(bookCtx, title, bookType, trend, audience);
+    btn.disabled = false;
+    document.getElementById('genBtnTxt').textContent = '⚡ Genera';
+    document.getElementById('genSpin').style.display = 'none';
+    return;
+  }
+
+  try {
+    let text;
+    if (BACKEND_LIVE) {
+      const voiceParams = {
+        tone: document.getElementById('voiceTone')?.value || '',
+        language: document.getElementById('outputLanguage')?.value || 'English',
+        cultural_inspiration: document.getElementById('culturalInspiration')?.value || '',
+        chapter_length: document.getElementById('chapterLength')?.value || 'medium',
+        reader_persona: document.getElementById('readerPersona')?.value || ''
+      };
+      const res = await callBackend('/generate', {
+        trend_name: trend,
+        book_title: title,
+        book_subtitle: subtitle,
+        book_type: bookType,
+        audience,
+        tab,
+        chapter_num: parseInt(chNum) || 1,
+        outline: state.outline ? state.outline.substring(0, 600) : '',
+        ...voiceParams
+      });
+      text = res.content;
+    } else {
+      text = await callClaude(prompt, maxTok);
+    }
+    if (tab === 'outline') {
+      state.outline = text;
+      // Show auto-gen banner after outline is ready
+      const banner = document.getElementById('autoGenBanner');
+      if (banner) {
+        // Count chapters from outline
+        const chMatches = text.match(/^Chapter\s+\d+[:.]/gim) || [];
+        const chCount = chMatches.length || '?';
+        document.getElementById('autoGenChapCount').textContent =
+          `Outline pronto — ${chCount} capitoli rilevati. Claude li scrive tutti in sequenza.`;
+        banner.style.display = 'flex';
+      }
+    }
+    saveState(); // FIX 4
+    renderContent(text, labels[tab], tab);
+    document.getElementById('p3actions').style.display = 'flex';
+  } catch(e) {
+    document.getElementById('contentOut').innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}. Riprova.</div>`;
+  } finally {
+    btn.disabled = false;
+    document.getElementById('genBtnTxt').textContent = '⚡ Genera';
+    document.getElementById('genSpin').style.display = 'none';
+  }
+}
+
+// FIX 3: sequential chapter generator
+async function generateAllChapters(bookCtx, title, bookType, trend, audience) {
+  const totalChapters = 6;
+  const outlineSnippet = state.outline ? state.outline.substring(0, 600) : '';
+  let allText = '';
+  const container = document.getElementById('contentOut');
+  document.getElementById('p3actions').style.display = 'none';
+
+  container.innerHTML = `<div class="content-block" style="padding:20px">
+    <div class="sect-label" style="margin-bottom:12px">📚 Generazione Tutti i Capitoli</div>
+    <div id="chapProgress" style="font-size:13px;color:var(--muted);margin-bottom:12px">Inizio generazione...</div>
+    <div style="display:flex;gap:6px;margin-bottom:16px" id="chapDots">
+      ${Array.from({length:totalChapters},(_,i)=>`<div id="cdot_${i}" style="width:28px;height:28px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--muted)">${i+1}</div>`).join('')}
+    </div>
+    <div id="chapResults"></div>
+  </div>`;
+
+  for (let n = 1; n <= totalChapters; n++) {
+    document.getElementById('chapProgress').textContent = `Generando Capitolo ${n} di ${totalChapters}...`;
+    const dot = document.getElementById('cdot_' + (n-1));
+    if (dot) { dot.style.background = 'rgba(255,140,66,0.2)'; dot.style.borderColor = 'var(--accent2)'; dot.style.color = 'var(--accent2)'; }
+
+    const chPrompt = `You are a bestselling KDP author. Write Chapter ${n} of ${totalChapters} for this book.
+
+${bookCtx}
+${outlineSnippet ? 'Outline reference:\n' + outlineSnippet : ''}
+
+Write CHAPTER ${n} completely:
+- Compelling chapter title
+- Opening hook paragraph
+- 3-4 full sections with content, exercises, or prompts as appropriate for ${bookType}
+- Chapter summary or key takeaways
+- Length: 1,200-1,800 words
+
+Write in warm second-person voice. Make it practical and immediately useful.`;
+
+    try {
+      const text = await callClaude(chPrompt, 4000);
+      allText += '\n\n' + text;
+      const rid = 'chap_' + n + '_' + Date.now();
+      const chapDiv = document.createElement('div');
+      chapDiv.className = 'content-block';
+      chapDiv.style.marginTop = '12px';
+      chapDiv.innerHTML = `
+        <div class="cb-header">
+          <div class="cb-title"><span class="cb-badge" style="background:#ff8c4222;color:#ff8c42">Capitolo ${n}</span></div>
+          <button class="copy-btn" onclick="copyContent('${rid}')">Copia</button>
+        </div>
+        <div class="cb-body" id="${rid}">${escHtml(text)}</div>`;
+      document.getElementById('chapResults').appendChild(chapDiv);
+      if (dot) { dot.style.background = 'rgba(34,197,94,0.2)'; dot.style.borderColor = 'var(--green)'; dot.style.color = 'var(--green)'; }
+    } catch(e) {
+      const chapDiv = document.createElement('div');
+      chapDiv.className = 'err';
+      chapDiv.style.margin = '8px 0';
+      chapDiv.textContent = `⚠️ Capitolo ${n} fallito: ${e.message}`;
+      document.getElementById('chapResults').appendChild(chapDiv);
+      if (dot) { dot.style.borderColor = 'var(--accent)'; dot.style.color = 'var(--accent)'; }
+    }
+  }
+
+  // store full text and add export button
+  state.allChaptersText = allText;
+  document.getElementById('chapProgress').textContent = `✅ Tutti i ${totalChapters} capitoli generati!`;
+  const exportId = 'allchaps_' + Date.now();
+  // hidden full-text div for copy
+  const hidDiv = document.createElement('div');
+  hidDiv.id = exportId;
+  hidDiv.style.display = 'none';
+  hidDiv.textContent = allText;
+  container.appendChild(hidDiv);
+  const exportBtn = document.createElement('button');
+  exportBtn.className = 'btn btn-green';
+  exportBtn.style.marginTop = '16px';
+  exportBtn.textContent = '📋 Copia Tutti i Capitoli';
+  exportBtn.onclick = () => copyContent(exportId);
+  container.appendChild(exportBtn);
+  document.getElementById('p3actions').style.display = 'flex';
+}
+
+function renderContent(text, label, tab) {
+  const colors = { outline:'#3b82f6', full:'#22c55e', chapter:'#ff8c42', intro:'#a78bfa' };
+  const color = colors[tab] || '#666';
+  const id = 'cb_' + Date.now();
+
+  const html = `
+    <div class="content-block" style="animation: fadeIn 0.3s ease">
+      <div class="cb-header">
+        <div class="cb-title">
+          <span class="cb-badge" style="background:${color}22;color:${color}">${escHtml(label)}</span>
+        </div>
+        <button class="copy-btn" onclick="copyContent('${id}')">Copia</button>
+      </div>
+      <div class="cb-body" id="${id}">${escHtml(text)}</div>
+    </div>`;
+
+  document.getElementById('contentOut').innerHTML = html;
+}
+
+function copyContent(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  navigator.clipboard.writeText(el.textContent).then(() => {
+    const btn = el.closest('.content-block').querySelector('.copy-btn');
+    btn.textContent = '✓ Copiato!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copia'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ─── STEP 4: KDP PACKAGE ─────────────────────────────────
+async function generatePackage() {
+  const t = state.selectedTrend;
+  const b = state.selectedBook;
+  if (!t || !b) { alert('Completa prima i passi precedenti!'); return; }
+
+  const title = state.customTitle || b.title;
+  const bookType = state.bookType || b.type;
+  const audience = state.audience || 'general adult audience';
+  const trend = t.name;
+
+  const btn = document.getElementById('pkgBtn');
+  btn.disabled = true;
+  document.getElementById('pkgBtnTxt').textContent = 'Generando package…';
+  document.getElementById('pkgSpin').style.display = 'block';
+  document.getElementById('packageOut').innerHTML = `<div class="loader"><div class="spin-lg"></div><p>Generando KDP Package completo…</p><p class="step-msg">Titolo SEO, descrizione, pen name, keywords, categorie</p></div>`;
+
+  const prompt = `You are an Amazon KDP publishing expert. Generate a complete KDP listing package.
+
+Book details:
+- Working title: "${title}"
+- Subtitle: "${b.subtitle}"
+- Type: ${bookType}
+- Trend: "${trend}"
+- Target audience: ${audience}
+- Platform trend originated: ${t.platform}
+
+Return ONLY raw JSON. No markdown. No backticks. ASCII-safe strings only.
+
+{"kdp":{"title":"optimized Amazon title (max 200 chars, keyword-rich)","subtitle":"SEO subtitle (max 200 chars)","pen_name":"believable English pen name fitting the book niche","pen_name_rationale":"1 sentence why this name works for this niche","description":"Full Amazon book description 400-600 words. HTML allowed: use <b> for bold headers, <br> for line breaks. Start with a hook. Include who this is for, what they get, social proof angle.","short_description":"80-word version for mobile preview","keywords":["keyword1","keyword2","keyword3","keyword4","keyword5","keyword6","keyword7"],"categories":["Primary Amazon category path","Secondary Amazon category path"],"bisac":["BISAC code 1","BISAC code 2"],"price_ebook":4.99,"price_paperback":12.99,"page_count_estimate":120,"trim_size":"6x9","tagline":"One punchy tagline under 15 words","canva_cover":{"main_prompt":"Detailed Canva AI image generation prompt for book cover background. 60-80 words. Describe mood, colors, visual elements, lighting, artistic style. No text or typography in the scene.","style":"One-word visual style eg minimalist bold ethereal dark vibrant pastel","color_palette":["#hex1","#hex2","#hex3"],"color_palette_names":["Color name 1","Color name 2","Color name 3"],"font_title":"Canva font name best for the title","font_subtitle":"Canva font name for subtitle and author name","layout_tip":"One sentence: where to place title, subtitle, author name on cover","variation_1":"Alternative cover prompt - different mood or style, 40 words","variation_2":"Alternative cover prompt - different mood or style, 40 words","canva_steps":"1. Open Canva and create new design at 1800x2700px (6x9 at 300dpi). 2. Click Apps then AI Image Generator. 3. Paste the main prompt above and select Photo or Art style. 4. Generate and place image as background. 5. Add title text using the suggested font at top third, subtitle below, author name at bottom. Export as PDF Print for KDP upload."}}}`;
+
+  try {
+    let parsed;
+    if (BACKEND_LIVE) {
+      parsed = await callBackend('/package', {
+        trend_name: trend,
+        trend_platform: t.platform,
+        book_title: title,
+        book_subtitle: b.subtitle,
+        book_type: bookType,
+        audience,
+        tone: document.getElementById('voiceTone')?.value || '',
+        reader_persona: document.getElementById('readerPersona')?.value || ''
+      });
+    } else {
+      const text = await callClaude(prompt, 4000);
+      parsed = parseJson(text);
+    }
+    renderPackage(parsed.kdp);
+  } catch(e) {
+    document.getElementById('packageOut').innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}. Riprova.</div>`;
+  } finally {
+    btn.disabled = false;
+    document.getElementById('pkgBtnTxt').textContent = '📦 Genera KDP Package';
+    document.getElementById('pkgSpin').style.display = 'none';
+  }
+}
+
+function renderPackage(k) {
+  if (!k) return;
+
+  function cb(label, content, mono=false, color='#3b82f6') {
+    const id = 'pkg_' + Math.random().toString(36).slice(2);
+    return `<div class="content-block">
+      <div class="cb-header">
+        <div class="cb-title"><span class="cb-badge" style="background:${color}22;color:${color}">${label}</span></div>
+        <button class="copy-btn" onclick="copyContent('${id}')">Copia</button>
+      </div>
+      <div class="cb-body${mono?' mono':''}" id="${id}">${escHtml(content)}</div>
+    </div>`;
+  }
+
+  function kwCloud(kws) {
+    const id = 'pkg_kw_' + Math.random().toString(36).slice(2);
+    return `<div class="content-block">
+      <div class="cb-header">
+        <div class="cb-title"><span class="cb-badge" style="background:#3b82f622;color:#3b82f6">🔑 Keywords SEO (7)</span></div>
+        <button class="copy-btn" onclick="copyContent('${id}')">Copia</button>
+      </div>
+      <div class="kw-cloud" id="${id}">${(kws||[]).map(k=>`<span class="kw">${escHtml(k)}</span>`).join('')}</div>
+    </div>`;
+  }
+
+  // Build description with basic HTML rendering
+  const descId = 'pkg_desc_' + Math.random().toString(36).slice(2);
+  const descCopyId = 'pkg_desccopy_' + Math.random().toString(36).slice(2);
+  const descHtml = `<div class="content-block">
+    <div class="cb-header">
+      <div class="cb-title"><span class="cb-badge" style="background:#22c55e22;color:#22c55e">📝 Descrizione Amazon</span></div>
+      <button class="copy-btn" onclick="copyContent('${descCopyId}')">Copia HTML</button>
+    </div>
+    <div class="cb-body" id="${descId}" style="border-bottom:1px solid var(--border)">${k.description || ''}</div>
+    <div class="cb-body mono" id="${descCopyId}" style="font-size:11px;color:var(--muted);max-height:100px;overflow:hidden">${escHtml(k.description || '')}</div>
+  </div>`;
+
+  const penSection = `<div class="content-block">
+    <div class="cb-header">
+      <div class="cb-title"><span class="cb-badge" style="background:#a78bfa22;color:#a78bfa">✍️ Pen Name</span></div>
+    </div>
+    <div class="meta-row">
+      <div class="meta-item"><label>Nome</label><div class="val" style="font-family:Syne,sans-serif;font-size:18px;font-weight:700">${escHtml(k.pen_name)}</div></div>
+      <div class="meta-item"><label>Perché funziona</label><div class="val">${escHtml(k.pen_name_rationale)}</div></div>
+    </div>
+  </div>`;
+
+  const metaSection = `<div class="content-block">
+    <div class="cb-header">
+      <div class="cb-title"><span class="cb-badge" style="background:#ff8c4222;color:#ff8c42">📊 Dati Pubblicazione</span></div>
+    </div>
+    <div class="meta-row">
+      <div class="meta-item"><label>Prezzo eBook</label><div class="val">$${k.price_ebook || '4.99'}</div></div>
+      <div class="meta-item"><label>Prezzo Paperback</label><div class="val">$${k.price_paperback || '12.99'}</div></div>
+      <div class="meta-item"><label>Pagine stimate</label><div class="val">${k.page_count_estimate || '120'}</div></div>
+      <div class="meta-item"><label>Trim Size</label><div class="val">${k.trim_size || '6x9'}</div></div>
+    </div>
+    <div class="meta-row" style="border-top:1px solid var(--border)">
+      <div class="meta-item"><label>Categorie Amazon</label><div class="val">${(k.categories||[]).map(c=>`• ${escHtml(c)}`).join('<br>')}</div></div>
+      <div class="meta-item"><label>Codici BISAC</label><div class="val">${(k.bisac||[]).map(c=>`• ${escHtml(c)}`).join('<br>')}</div></div>
+    </div>
+  </div>`;
+
+  // ── CANVA COVER SECTION ──────────────────────────────────
+  const cc = k.canva_cover || {};
+  const canvaId = 'pkg_canva_' + Math.random().toString(36).slice(2);
+  const canvaV1Id = 'pkg_cv1_' + Math.random().toString(36).slice(2);
+  const canvaV2Id = 'pkg_cv2_' + Math.random().toString(36).slice(2);
+  const canvaStepsId = 'pkg_cs_' + Math.random().toString(36).slice(2);
+
+  const paletteHtml = (cc.color_palette || []).map((hex, i) => {
+    const name = (cc.color_palette_names || [])[i] || hex;
+    return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <div style="width:32px;height:32px;border-radius:6px;background:${escHtml(hex)};border:1px solid rgba(255,255,255,0.1);flex-shrink:0"></div>
+      <div><div style="font-size:12px;font-weight:500">${escHtml(name)}</div><div style="font-size:11px;color:var(--muted)">${escHtml(hex)}</div></div>
+    </div>`;
+  }).join('');
+
+  const canvaSection = cc.main_prompt ? `<div class="content-block" style="border-color:#e879f922">
+    <div class="cb-header" style="background:rgba(232,121,249,0.04)">
+      <div class="cb-title"><span class="cb-badge" style="background:#e879f922;color:#e879f9">🎨 Canva AI — Cover Generator</span></div>
+    </div>
+
+    <div style="padding:16px 18px;border-bottom:1px solid var(--border)">
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Prompt principale</div>
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <div id="${canvaId}" style="flex:1;font-size:13px;line-height:1.7;color:var(--text)">${escHtml(cc.main_prompt)}</div>
+        <button class="copy-btn" style="flex-shrink:0" onclick="copyContent('${canvaId}')">Copia</button>
+      </div>
+    </div>
+
+    <div style="padding:16px 18px;border-bottom:1px solid var(--border);display:flex;gap:24px;flex-wrap:wrap">
+      <div style="flex:1;min-width:160px">
+        <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Stile visivo</div>
+        <span style="padding:5px 14px;border-radius:20px;background:rgba(232,121,249,0.1);border:1px solid rgba(232,121,249,0.25);color:#e879f9;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em">${escHtml(cc.style || '')}</span>
+      </div>
+      <div style="flex:1;min-width:160px">
+        <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Font consigliati</div>
+        <div style="font-size:12px;margin-bottom:5px">Titolo: <span style="color:var(--accent2);font-weight:500">${escHtml(cc.font_title || '')}</span></div>
+        <div style="font-size:12px">Subtitle/Autore: <span style="color:var(--accent2);font-weight:500">${escHtml(cc.font_subtitle || '')}</span></div>
+      </div>
+      <div style="flex:1;min-width:160px">
+        <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Palette colori</div>
+        ${paletteHtml}
+      </div>
+    </div>
+
+    <div style="padding:14px 18px;border-bottom:1px solid var(--border)">
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Layout tip</div>
+      <div style="font-size:12px;color:var(--text);line-height:1.6;font-style:italic">${escHtml(cc.layout_tip || '')}</div>
+    </div>
+
+    <div style="padding:16px 18px;border-bottom:1px solid var(--border)">
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Varianti prompt</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="background:var(--s2);border-radius:8px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start">
+          <span style="font-size:10px;font-weight:700;color:#e879f9;flex-shrink:0;padding-top:2px">VAR 1</span>
+          <div id="${canvaV1Id}" style="flex:1;font-size:12px;line-height:1.6;color:var(--muted)">${escHtml(cc.variation_1 || '')}</div>
+          <button class="copy-btn" style="flex-shrink:0" onclick="copyContent('${canvaV1Id}')">Copia</button>
+        </div>
+        <div style="background:var(--s2);border-radius:8px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start">
+          <span style="font-size:10px;font-weight:700;color:#e879f9;flex-shrink:0;padding-top:2px">VAR 2</span>
+          <div id="${canvaV2Id}" style="flex:1;font-size:12px;line-height:1.6;color:var(--muted)">${escHtml(cc.variation_2 || '')}</div>
+          <button class="copy-btn" style="flex-shrink:0" onclick="copyContent('${canvaV2Id}')">Copia</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:16px 18px">
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Come usarlo in Canva — Step by Step</div>
+      <div id="${canvaStepsId}" style="font-size:12px;line-height:1.8;color:var(--text);white-space:pre-wrap">${escHtml(cc.canva_steps || '')}</div>
+    </div>
+  </div>` : '';
+
+  document.getElementById('packageOut').innerHTML = [
+    cb('🎯 Tagline', k.tagline || '', false, '#ff4500'),
+    cb('📖 Titolo KDP', k.title || '', false, '#ff8c42'),
+    cb('📌 Sottotitolo KDP', k.subtitle || '', false, '#ff8c42'),
+    cb('📱 Descrizione Breve (mobile)', k.short_description || '', false, '#22c55e'),
+    descHtml,
+    kwCloud(k.keywords),
+    penSection,
+    metaSection,
+    canvaSection
+  ].join('');
+}
+
+// Mark steps done when navigating forward
+document.querySelectorAll('.step-tab').forEach(t => {
+  t.addEventListener('click', () => {
+    const panels = ['p1','p2','p3','p4'];
+    const idx = panels.indexOf(t.dataset.panel);
+    document.querySelectorAll('.step-tab').forEach((st, si) => {
+      if (si < idx) st.classList.add('done');
+    });
+  });
+});
+
+// FIX 4: restore/discard session
+function restoreSession() {
+  const banner = document.getElementById('restoreBanner');
+  if (banner) banner.style.display = 'none';
+  if (state.trends.length) {
+    renderTrends();
+    // re-select saved trend
+    if (state.selectedTrend) {
+      const idx = state.trends.findIndex(t => t.name === state.selectedTrend.name);
+      if (idx >= 0) {
+        setTimeout(() => {
+          const cards = document.querySelectorAll('.trend-card');
+          if (cards[idx]) cards[idx].classList.add('selected');
+          document.getElementById('p1actions').style.display = 'flex';
+        }, 100);
+      }
+    }
+  }
+  if (state.customNiche) {
+    document.getElementById('nicheCustomInput').value = state.customNiche;
+    document.getElementById('customNicheTag').textContent = '\uD83D\uDD25 ' + state.customNiche;
+    document.getElementById('customNicheBadge').style.display = 'block';
+    document.querySelectorAll('#nichePills .pill').forEach(x => x.classList.remove('active'));
+  }
+}
+
+function discardSession() {
+  clearState();
+  const banner = document.getElementById('restoreBanner');
+  if (banner) banner.style.display = 'none';
+  const clearBtn = document.getElementById('clearStateBtn');
+  if (clearBtn) clearBtn.style.display = 'none';
+}
+
+// ── AUTO GENERATE ALL CHAPTERS ────────────────────────────────
+async function generateAllAuto() {
+  if (!state.outline) {
+    alert('Genera prima l\u2019Outline (Step 3 → Outline) per poter generare tutti i capitoli.');
+    return;
+  }
+  if (!state.selectedBook || !state.selectedTrend) {
+    alert('Torna al passo 2 e seleziona un libro.');
+    return;
+  }
+
+  const btn = document.getElementById('autoGenBtn');
+  const spin = document.getElementById('autoGenSpin');
+  const txt = document.getElementById('autoGenBtnTxt');
+  btn.disabled = true;
+  spin.style.display = 'block';
+  txt.textContent = 'Generando…';
+
+  const title = state.customTitle || state.selectedBook.title;
+  const bookType = state.bookType || state.selectedBook.type;
+  const audience = state.audience || 'globally minded adults';
+
+  // Build progress UI
+  const container = document.getElementById('contentOut');
+  container.innerHTML = `
+    <div class="content-block" style="border-color:rgba(34,197,94,0.3)">
+      <div style="padding:20px">
+        <div style="font-family:Syne,sans-serif;font-size:15px;font-weight:700;margin-bottom:6px">📚 Generazione Automatica in corso…</div>
+        <div id="agStatus" style="font-size:12px;color:var(--muted);margin-bottom:16px">Connessione al server…</div>
+        <div id="agDots" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px"></div>
+        <div id="agResults"></div>
+      </div>
+    </div>`;
+
+  document.getElementById('p3actions').style.display = 'none';
+  state.allChaptersText = '';
+
+  try {
+    if (BACKEND_LIVE) {
+      // ── Streaming mode via backend ──────────────────────────
+      const autoVoiceParams = {
+        tone: document.getElementById('voiceTone')?.value || '',
+        language: document.getElementById('outputLanguage')?.value || 'English',
+        cultural_inspiration: document.getElementById('culturalInspiration')?.value || '',
+        chapter_length: document.getElementById('chapterLength')?.value || 'medium',
+        reader_persona: document.getElementById('readerPersona')?.value || ''
+      };
+      const res = await fetch(BACKEND_URL + '/generate-all', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trend_name: state.selectedTrend.name,
+          book_title: title,
+          book_subtitle: state.selectedBook.subtitle,
+          book_type: bookType,
+          audience,
+          outline: state.outline,
+          ...autoVoiceParams
+        })
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || 'Backend error ' + res.status);
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let total = 0;
+      let dotsBuilt = false;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop(); // keep incomplete line
+
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          let obj;
+          try { obj = JSON.parse(line); } catch { continue; }
+
+          if (obj.done) {
+            document.getElementById('agStatus').textContent = `✅ Tutti i ${obj.total} capitoli generati!`;
+            document.getElementById('p3actions').style.display = 'flex';
+            // Add copy-all button
+            const copyId = 'allchaps_' + Date.now();
+            const hidDiv = document.createElement('div');
+            hidDiv.id = copyId; hidDiv.style.display = 'none';
+            hidDiv.textContent = state.allChaptersText;
+            container.appendChild(hidDiv);
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'btn btn-green';
+            copyBtn.style.margin = '16px 20px';
+            copyBtn.textContent = '📋 Copia Tutti i Capitoli';
+            copyBtn.onclick = () => copyContent(copyId);
+            container.appendChild(copyBtn);
+            break;
+          }
+
+          total = obj.total;
+
+          // Build dots on first chapter
+          if (!dotsBuilt && total > 0) {
+            const dotsEl = document.getElementById('agDots');
+            dotsEl.innerHTML = Array.from({length: total}, (_, i) =>
+              `<div id="agdot_${i+1}" style="width:30px;height:30px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--muted)">${i+1}</div>`
+            ).join('');
+            dotsBuilt = true;
+          }
+
+          const n = obj.chapter;
+          const dot = document.getElementById('agdot_' + n);
+
+          if (obj.error) {
+            document.getElementById('agStatus').textContent = `⚠️ Capitolo ${n} fallito — continuo…`;
+            if (dot) { dot.style.borderColor = 'var(--accent)'; dot.style.color = 'var(--accent)'; }
+            continue;
+          }
+
+          // Dot: in-progress → done
+          if (dot) {
+            dot.style.background = 'rgba(34,197,94,0.15)';
+            dot.style.borderColor = 'var(--green)';
+            dot.style.color = 'var(--green)';
+          }
+          document.getElementById('agStatus').textContent = `Capitolo ${n} di ${total} completato…`;
+
+          // Append chapter block
+          state.allChaptersText += '\n\n' + obj.content;
+          const rid = 'agch_' + n + '_' + Date.now();
+          const chDiv = document.createElement('div');
+          chDiv.className = 'content-block';
+          chDiv.style.margin = '12px 0';
+          chDiv.innerHTML = `
+            <div class="cb-header">
+              <div class="cb-title">
+                <span class="cb-badge" style="background:#ff8c4222;color:#ff8c42">Cap. ${n} — ${escHtml(obj.title)}</span>
+              </div>
+              <button class="copy-btn" onclick="copyContent('${rid}')">Copia</button>
+            </div>
+            <div class="cb-body" id="${rid}">${escHtml(obj.content)}</div>`;
+          document.getElementById('agResults').appendChild(chDiv);
+          // Scroll to latest
+          chDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+
+    } else {
+      // ── Fallback: sequential calls via direct Claude API ────
+      // Extract chapter count from outline
+      const chMatches = state.outline.match(/^Chapter\s+(\d+)[:.]/gim) || [];
+      const total = chMatches.length || 6;
+
+      const dotsEl = document.getElementById('agDots');
+      dotsEl.innerHTML = Array.from({length: total}, (_, i) =>
+        `<div id="agdot_${i+1}" style="width:30px;height:30px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--muted)">${i+1}</div>`
+      ).join('');
+
+      for (let n = 1; n <= total; n++) {
+        document.getElementById('agStatus').textContent = `Generando capitolo ${n} di ${total}…`;
+        const dot = document.getElementById('agdot_' + n);
+        if (dot) { dot.style.borderColor = 'var(--accent2)'; dot.style.color = 'var(--accent2)'; }
+
+        const res = await callClaude(`You are a bestselling KDP author. Write Chapter ${n} of ${total}.
+Book: "${title}", Type: ${bookType}, Audience: ${audience}
+Outline: ${state.outline.substring(0, 600)}
+Write chapter ${n} completely with title, 3-4 sections, exercises, 1000-1500 words, second-person voice.`, 4000);
+
+        state.allChaptersText += '\n\n' + res;
+        if (dot) { dot.style.background = 'rgba(34,197,94,0.15)'; dot.style.borderColor = 'var(--green)'; dot.style.color = 'var(--green)'; }
+
+        const rid = 'agch_' + n + '_' + Date.now();
+        const chDiv = document.createElement('div');
+        chDiv.className = 'content-block';
+        chDiv.style.margin = '12px 0';
+        chDiv.innerHTML = `<div class="cb-header"><div class="cb-title"><span class="cb-badge" style="background:#ff8c4222;color:#ff8c42">Capitolo ${n}</span></div><button class="copy-btn" onclick="copyContent('${rid}')">Copia</button></div><div class="cb-body" id="${rid}">${escHtml(res)}</div>`;
+        document.getElementById('agResults').appendChild(chDiv);
+        chDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        await new Promise(r => setTimeout(r, 500));
+      }
+
+      document.getElementById('agStatus').textContent = `✅ Tutti i ${total} capitoli generati!`;
+      document.getElementById('p3actions').style.display = 'flex';
+    }
+
+  } catch(e) {
+    document.getElementById('agStatus').textContent = '⚠️ Errore: ' + e.message;
+    document.getElementById('p3actions').style.display = 'flex';
+  } finally {
+    btn.disabled = false;
+    spin.style.display = 'none';
+    txt.textContent = '⚡ Avvia Generazione Automatica';
+    saveState();
+  }
+}
+
+// FIX 5: export full package as text file
+function exportFullPackage() {
+  const blocks = document.querySelectorAll('#packageOut .cb-body');
+  const headers = document.querySelectorAll('#packageOut .cb-badge');
+  let text = '═══════════════════════════════════\nKDP STUDIO — PACKAGE COMPLETO\n═══════════════════════════════════\n\n';
+  headers.forEach((h, i) => {
+    const body = blocks[i];
+    if (body) {
+      text += '── ' + h.textContent.trim() + ' ──\n';
+      text += body.textContent.trim() + '\n\n';
+    }
+  });
+  if (state.allChaptersText) {
+    text += '═══════════════════════════════════\nCONTENUTO CAPITOLI\n═══════════════════════════════════\n';
+    text += state.allChaptersText;
+  }
+  const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const title = (state.selectedBook?.title || 'kdp-package').replace(/[^a-z0-9]/gi,'_').toLowerCase();
+  a.download = 'kdp_' + title + '_' + Date.now() + '.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// FIX 5: show export button after package is rendered
+const _origRenderPackage = renderPackage;
+// patch: show export btn after render
+const _pkgBtn = document.getElementById('pkgBtn');
+
+// FIX 4: show restore banner on load if saved state exists
+window.addEventListener('DOMContentLoaded', () => {
+  // Check if live backend is running
+  checkBackend().then(live => {
+    console.log('[KDP Studio] Backend live:', live);
+  });
+
+  const saved = loadState();
+  if (saved && saved.trends && saved.trends.length) {
+    const ago = saved.savedAt ? Math.round((Date.now() - saved.savedAt) / 60000) : null;
+    const banner = document.getElementById('restoreBanner');
+    const msg = document.getElementById('restoreMsg');
+    if (banner && msg) {
+      const bookName = saved.selectedBook?.title || saved.selectedTrend?.name || 'sessione precedente';
+      msg.textContent = `Sessione salvata${ago !== null ? ' ' + ago + ' min fa' : ''}: "${bookName}" — vuoi ripristinarla?`;
+      banner.style.display = 'flex';
+    }
+    const clearBtn = document.getElementById('clearStateBtn');
+    if (clearBtn) clearBtn.style.display = 'flex';
+  }
+});
+
+// show export button when package is generated
+const _origGenPkg = generatePackage;
+generatePackage = async function() {
+  await _origGenPkg();
+  const exportBtn = document.getElementById('exportAllBtn');
+  if (exportBtn && document.getElementById('packageOut').children.length > 0) {
+    exportBtn.style.display = 'flex';
+  }
+  saveState(); // FIX 4: save after package
+};
+</script>
+</body>
+</html>
