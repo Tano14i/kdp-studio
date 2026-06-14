@@ -16,7 +16,7 @@ from datetime import datetime
 from typing import Optional, List
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, FileResponse
 from pydantic import BaseModel
 import httpx
 import anthropic
@@ -31,6 +31,12 @@ REDDIT_USER_AGENT = env("REDDIT_USER_AGENT", "KDPStudio/1.0 (personal use, no au
 app = FastAPI(title="KDP Studio API", version="2.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 claude = anthropic.Anthropic(api_key=ANTHROPIC_KEY)
+
+FRONTEND_FILE = os.path.join(os.path.dirname(__file__), "kdp-trend-hunter.html")
+
+@app.get("/")
+async def serve_frontend():
+    return FileResponse(FRONTEND_FILE)
 
 # ══════════════════════════════════════════════════════════════
 # UNIQUENESS ENGINE
