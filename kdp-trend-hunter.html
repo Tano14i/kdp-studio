@@ -1268,11 +1268,16 @@ function renderOpportunities(data) {
     const sourceBadges = (o.sources || []).map(s => `<span style="font-size:10px;padding:3px 8px;border-radius:4px;background:rgba(255,255,255,0.04);color:var(--muted);border:1px solid var(--border)">${SOURCE_ICON[s] || s}</span>`).join('');
     const gap = o.gap_analysis;
     const gapStyle = gap ? (GAP_STYLE[gap.saturation] || GAP_STYLE.unknown) : null;
-    const gapBadge = gap ? `<span title="${escHtml(gap.note || '')}" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;background:${gapStyle.bg};color:${gapStyle.color};border:1px solid ${gapStyle.border}">${gapStyle.icon} ${gap.amazon_results != null ? gap.amazon_results.toLocaleString() + ' libri Amazon' : 'Amazon: N/D'}</span>` : '';
+    const gapLabel = gap && gap.amazon_results != null ? gap.amazon_results.toLocaleString() + ' libri Amazon' : 'Amazon: verifica manualmente';
+    const gapBadge = gap ? (gap.amazon_results != null
+      ? `<span title="${escHtml(gap.note || '')}" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;background:${gapStyle.bg};color:${gapStyle.color};border:1px solid ${gapStyle.border}">${gapStyle.icon} ${gapLabel}</span>`
+      : `<a href="${escHtml(gap.search_url || '#')}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="${escHtml(gap.note || '')}" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;background:${gapStyle.bg};color:${gapStyle.color};border:1px solid ${gapStyle.border};text-decoration:none">${gapStyle.icon} ${gapLabel} ↗</a>`) : '';
     const fit = FIT_STYLE[o.kdp_fit] || null;
     const fitBadge = fit ? `<span title="${escHtml(o.kdp_fit_reason || '')}" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;background:${fit.bg};color:${fit.color};border:1px solid ${fit.border}">${fit.icon} ${fit.label}</span>` : '';
     const demand = o.amazon_demand;
-    const demandBadge = demand ? `<span title="${escHtml(demand.note || '')}" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;background:${demand.has_signal ? 'rgba(34,197,94,0.12)' : 'rgba(148,163,184,0.1)'};color:${demand.has_signal ? '#22c55e' : '#94a3b8'};border:1px solid ${demand.has_signal ? 'rgba(34,197,94,0.3)' : 'rgba(148,163,184,0.2)'}">${demand.has_signal ? '🔍 Domanda reale Amazon' : '🔍 Nessuna ricerca Amazon'}</span>` : '';
+    const demandBadge = demand ? (demand.has_signal
+      ? `<span title="${escHtml(demand.note || '')}" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.3)">🔍 Domanda reale Amazon</span>`
+      : `<a href="${escHtml(demand.search_url || '#')}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="${escHtml(demand.note || '')}" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);text-decoration:none">🔍 Verifica domanda su Amazon ↗</a>`) : '';
     const demandList = (demand && demand.suggestions && demand.suggestions.length) ? `<div style="margin-top:6px;font-size:10px;color:var(--muted)">🔍 Cosa cercano su Amazon: ${demand.suggestions.slice(0,5).map(s => `<span style="color:#93c5fd">"${escHtml(s)}"</span>`).join(', ')}</div>` : '';
     return `
       <div class="trend-card" onclick="selectTrend(${i})" style="border-color:rgba(34,197,94,0.2)">
@@ -2579,7 +2584,7 @@ function checkCompetitors() {
   if (!out || !linksEl) return;
 
   linksEl.innerHTML = links.map(l => `
-    <a href="${l.url}" target="_blank" rel="noopener"
+    <a href="${l.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()"
        style="display:flex;gap:12px;align-items:flex-start;padding:10px 14px;margin-bottom:8px;
               background:var(--s2);border:1px solid var(--border2);border-radius:8px;
               text-decoration:none;color:var(--text);transition:border-color 0.12s"

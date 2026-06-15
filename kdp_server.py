@@ -1171,13 +1171,20 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
         result = parse_json_safe(text)
 
         # Gap analysis — cross-check each discovered niche against Amazon book count
-        # and Amazon search autocomplete (real reader demand signal)
+        # and Amazon search autocomplete (real reader demand signal).
+        # Run sequentially with a small delay: 10 concurrent requests to Amazon
+        # from the same datacenter IP gets rate-limited/blocked almost every time.
+        import urllib.parse
         opportunities = result.get("opportunities", [])
-        gap_results, autocomplete_results = await asyncio.gather(
-            asyncio.gather(*[fetch_amazon_book_count(o.get("niche", "")) for o in opportunities]),
-            asyncio.gather(*[fetch_amazon_autocomplete(o.get("niche", "")) for o in opportunities]),
-        )
-        for o, gr, suggestions in zip(opportunities, gap_results, autocomplete_results):
+        for idx, o in enumerate(opportunities):
+            niche = o.get("niche", "")
+            if idx > 0:
+                await asyncio.sleep(0.8)
+            gr, suggestions = await asyncio.gather(
+                fetch_amazon_book_count(niche),
+                fetch_amazon_autocomplete(niche),
+            )
+            search_url = "https://www.amazon.com/s?" + urllib.parse.urlencode({"k": niche, "i": "stripbooks"})
             count = gr.get("count")
             level, note = classify_amazon_saturation(count)
             o["gap_analysis"] = {
@@ -1185,12 +1192,14 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
                 "saturation": level,
                 "note": note,
                 "query": gr.get("query"),
+                "search_url": search_url,
             }
             has_demand, demand_note = classify_amazon_demand(suggestions)
             o["amazon_demand"] = {
                 "suggestions": suggestions,
                 "has_signal": has_demand,
                 "note": demand_note,
+                "search_url": search_url,
             }
 
         result["meta"] = {
