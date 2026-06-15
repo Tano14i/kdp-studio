@@ -278,6 +278,9 @@ select option{background:var(--s2)}
   <button class="step-tab" data-panel="p5" onclick="goPanel('p5')" style="margin-left:auto">
     <span class="step-num">📚</span> I Miei Libri
   </button>
+  <button class="step-tab" data-panel="p6" onclick="goPanel('p6')">
+    <span class="step-num">📊</span> Tracking
+  </button>
 </nav>
 
 <!-- ============ PANEL 1: TREND DISCOVERY ============ -->
@@ -630,6 +633,15 @@ select option{background:var(--s2)}
   </div>
 </div>
 
+<!-- ============ PANEL 6: TREND TRACKING ============ -->
+<div class="panel" id="p6">
+  <div class="panel-hero">
+    <h2>📊 Tracking <span>longitudinale</span></h2>
+    <p>Ogni "Scoperta Zero-Bias" viene registrata qui. Le nicchie che ricompaiono in run successivi mostrano se stanno accelerando o sgonfiandosi — utile per capire la finestra di pubblicazione ottimale.</p>
+  </div>
+  <div id="trackerOut"></div>
+</div>
+
 <script>
 // ─── CONFIG ──────────────────────────────────────────────
 // Auto-detect backend URL:
@@ -712,6 +724,7 @@ function goPanel(id) {
   window.scrollTo(0, 0);
   // Update voice summary bar when entering step 3
   if (id === 'p3') updateVoiceSummary();
+  if (id === 'p6') renderTracker();
 }
 
 function updateVoiceSummary() {
@@ -1174,6 +1187,7 @@ async function discoverGlobal() {
     }
     const data = await res.json();
     renderOpportunities(data);
+    saveTrackerSnapshot(data.opportunities || []);
   } catch(e) {
     document.getElementById('trendsOut').innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}</div>`;
   } finally {
@@ -1266,6 +1280,107 @@ function renderOpportunities(data) {
 
   document.getElementById('trendsOut').innerHTML = badge + `<div class="trend-grid" style="margin-top:8px">${cards}</div>`;
   document.getElementById('p1actions').style.display = 'none';
+}
+
+// ── LONGITUDINAL TRACKING ──────────────────────────────────────
+const TRACKER_KEY = 'kdp_studio_tracker_v1';
+const STAGE_RANK = { 'Pre-virale': 1, 'Crescita': 2, 'Forte': 3, 'Esplode': 4 };
+const STAGE_ICON = { 'Esplode': '🔥', 'Forte': '⚡', 'Crescita': '📈', 'Pre-virale': '🌱' };
+
+function loadTracker() {
+  try { return JSON.parse(localStorage.getItem(TRACKER_KEY) || '[]'); }
+  catch(e) { return []; }
+}
+
+function saveTrackerSnapshot(opps) {
+  if (!opps.length) return;
+  try {
+    const tracker = loadTracker();
+    tracker.push({
+      date: new Date().toISOString(),
+      opportunities: opps.map(o => ({
+        niche: o.niche,
+        stage: o.stage || '',
+        heat: o.heat || 0,
+        sources: o.sources || [],
+        amazon_results: o.gap_analysis?.amazon_results ?? null,
+        saturation: o.gap_analysis?.saturation || ''
+      }))
+    });
+    localStorage.setItem(TRACKER_KEY, JSON.stringify(tracker.slice(-30)));
+  } catch(e) { console.warn('Tracker save failed', e); }
+}
+
+function clearTracker() {
+  if (!confirm('Cancellare tutto lo storico di tracking?')) return;
+  localStorage.removeItem(TRACKER_KEY);
+  renderTracker();
+}
+
+function renderTracker() {
+  const tracker = loadTracker();
+  const out = document.getElementById('trackerOut');
+  if (!tracker.length) {
+    out.innerHTML = `<div class="empty"><div class="ico">📊</div>Nessuno storico ancora.<br>Esegui "🌍 Scopri senza filtri" nel Trend Discovery per iniziare a tracciare le nicchie nel tempo.</div>`;
+    return;
+  }
+
+  // Group by normalized niche name across all runs
+  const nicheMap = {};
+  tracker.forEach(run => {
+    (run.opportunities || []).forEach(o => {
+      const key = (o.niche || '').trim().toLowerCase();
+      if (!key) return;
+      if (!nicheMap[key]) nicheMap[key] = { name: o.niche, entries: [] };
+      nicheMap[key].entries.push({
+        date: run.date, stage: o.stage, heat: o.heat,
+        amazon_results: o.amazon_results, saturation: o.saturation
+      });
+    });
+  });
+
+  const niches = Object.values(nicheMap).sort((a, b) =>
+    b.entries.length - a.entries.length ||
+    new Date(b.entries[b.entries.length - 1].date) - new Date(a.entries[a.entries.length - 1].date)
+  );
+
+  const rows = niches.slice(0, 60).map(n => {
+    const sorted = n.entries.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+    const first = sorted[0], last = sorted[sorted.length - 1];
+    let trend = '🆕 Nuovo';
+    if (sorted.length > 1) {
+      const r1 = STAGE_RANK[first.stage] || 0, r2 = STAGE_RANK[last.stage] || 0;
+      trend = r2 > r1 ? '📈 In accelerazione' : r2 < r1 ? '📉 In calo' : '➡️ Stabile';
+    }
+    const timeline = sorted.map(e =>
+      `${STAGE_ICON[e.stage] || '·'} ${new Date(e.date).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' })}`
+    ).join(' → ');
+    const amazonCell = last.amazon_results != null ? `${last.amazon_results.toLocaleString()} libri` : '—';
+    return `<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:8px 10px;font-size:12px">${escHtml(n.name)}</td>
+      <td style="padding:8px 10px;font-size:11px;color:var(--muted)">${sorted.length}x — ${timeline}</td>
+      <td style="padding:8px 10px;font-size:11px">${trend}</td>
+      <td style="padding:8px 10px;font-size:11px;color:var(--muted)">${amazonCell}</td>
+    </tr>`;
+  }).join('');
+
+  out.innerHTML = `
+    <div style="margin-bottom:12px;font-size:11px;color:var(--muted)">
+      📅 ${tracker.length} run registrati — dal ${new Date(tracker[0].date).toLocaleDateString('it-IT')} al ${new Date(tracker[tracker.length - 1].date).toLocaleDateString('it-IT')}
+    </div>
+    <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr style="border-bottom:1px solid var(--border)">
+        <th style="text-align:left;padding:8px 10px;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em">Nicchia</th>
+        <th style="text-align:left;padding:8px 10px;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em">Cronologia stage</th>
+        <th style="text-align:left;padding:8px 10px;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em">Trend</th>
+        <th style="text-align:left;padding:8px 10px;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em">Amazon (ultimo)</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    </div>
+    <button class="btn btn-ghost" style="margin-top:14px;font-size:12px" onclick="clearTracker()">🗑 Pulisci storico</button>
+  `;
 }
 
 function selectTrend(i) {
