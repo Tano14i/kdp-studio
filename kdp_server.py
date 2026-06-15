@@ -156,7 +156,48 @@ NICHE_SEEDS = {
         "cycle syncing hormones", "hybrid athlete", "gentle parenting",
         "solopreneur systems", "ikigai purpose", "cortisol dysregulation",
     ],
+    # ── Italian / European market seeds ──────────────────────
+    "Italian": [
+        "benessere mentale italiano", "stile di vita sano", "mindfulness italia",
+        "finanza personale giovani", "investire stipendio", "risparmio intelligente",
+        "side hustle italiano", "lavoro da remoto", "freelance italia",
+        "relazioni tossiche", "crescita personale", "autostima bassa",
+        "come fare soldi online", "creator economy italia", "tiktok monetizzare",
+        "alimentazione sana ricette", "dieta mediterranea salute",
+        "sport a casa", "yoga principianti", "meditazione guidata",
+        "genitoriale consapevole", "figli adolescenti", "coppia crisi",
+    ],
+    "Dutch": [
+        "persoonlijke ontwikkeling", "mentale gezondheid", "burn-out herstel",
+        "financieel vrij worden", "sparen jongeren", "beleggen beginners",
+        "zelfstandige ondernemer", "thuiswerken productiviteit",
+        "relaties verbeteren", "grenzen stellen", "angst overwinnen",
+        "gezond eten simpel", "sporten thuis", "mindfulness dagelijks",
+    ],
+    "German": [
+        "persoenliche entwicklung", "mentale gesundheit", "burnout erholung",
+        "finanziell frei werden", "geld sparen tipps", "investieren anfaenger",
+        "selbststaendig arbeiten", "produktivitaet steigern",
+        "beziehungen verbessern", "grenzen setzen", "angst bewaeltigen",
+        "gesund ernaehren einfach", "sport zuhause", "achtsamkeit alltag",
+    ],
 }
+
+def get_language_seeds(keyword: str) -> list:
+    """Detect if keyword is non-English and return appropriate seeds."""
+    # Simple heuristic: check for common Italian/Dutch/German words
+    kw_lower = keyword.lower()
+    italian_markers = ['come', 'fare', 'soldi', 'vita', 'salute', 'lavoro', 'amore']
+    dutch_markers = ['hoe', 'geld', 'leven', 'werk', 'gezond', 'relatie']
+    german_markers = ['wie', 'geld', 'leben', 'arbeit', 'gesund', 'beziehung']
+    
+    if any(w in kw_lower for w in italian_markers):
+        return NICHE_SEEDS.get("Italian", [])
+    if any(w in kw_lower for w in dutch_markers):
+        return NICHE_SEEDS.get("Dutch", [])
+    if any(w in kw_lower for w in german_markers):
+        return NICHE_SEEDS.get("German", [])
+    return []
 
 # ── 30+ subreddit pool per nicchia ───────────────────────────
 NICHE_SUBREDDIT_POOL = {
@@ -339,10 +380,17 @@ def get_timeframe(tf: str) -> dict:
 
 def pick_seeds(niche: str, keyword: str = "", n: int = 4) -> list[str]:
     pool = []
-    for k, v in NICHE_SEEDS.items():
-        if k.lower() in niche.lower() or niche.lower() in k.lower():
-            pool = v
-            break
+    # First check if keyword suggests a non-English language
+    if keyword:
+        lang_seeds = get_language_seeds(keyword)
+        if lang_seeds:
+            pool = lang_seeds
+    # Then try niche-based pool
+    if not pool:
+        for k, v in NICHE_SEEDS.items():
+            if k.lower() in niche.lower() or niche.lower() in k.lower():
+                pool = v
+                break
     if not pool:
         pool = NICHE_SEEDS["Any niche"]
     seeds = random.sample(pool, min(n, len(pool)))
