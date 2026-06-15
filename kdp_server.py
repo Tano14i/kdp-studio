@@ -929,11 +929,10 @@ async def fetch_amazon_autocomplete(query: str) -> list[str]:
                 return []
             data = r.json()
             suggestions = []
-            for group in data.get("suggestions", []):
-                for item in group.get("suggestions", []):
-                    val = item.get("value")
-                    if val and val.lower() != query.lower():
-                        suggestions.append(val)
+            for item in data.get("suggestions", []):
+                val = item.get("value")
+                if val and val.lower() != query.lower():
+                    suggestions.append(val)
             return suggestions[:8]
     except Exception as e:
         print(f"[Amazon Autocomplete] {query}: {e}")
