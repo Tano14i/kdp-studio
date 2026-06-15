@@ -1271,17 +1271,21 @@ function renderOpportunities(data) {
     const gapBadge = gap ? `<span title="${escHtml(gap.note || '')}" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;background:${gapStyle.bg};color:${gapStyle.color};border:1px solid ${gapStyle.border}">${gapStyle.icon} ${gap.amazon_results != null ? gap.amazon_results.toLocaleString() + ' libri Amazon' : 'Amazon: N/D'}</span>` : '';
     const fit = FIT_STYLE[o.kdp_fit] || null;
     const fitBadge = fit ? `<span title="${escHtml(o.kdp_fit_reason || '')}" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;background:${fit.bg};color:${fit.color};border:1px solid ${fit.border}">${fit.icon} ${fit.label}</span>` : '';
+    const demand = o.amazon_demand;
+    const demandBadge = demand ? `<span title="${escHtml(demand.note || '')}" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;background:${demand.has_signal ? 'rgba(34,197,94,0.12)' : 'rgba(148,163,184,0.1)'};color:${demand.has_signal ? '#22c55e' : '#94a3b8'};border:1px solid ${demand.has_signal ? 'rgba(34,197,94,0.3)' : 'rgba(148,163,184,0.2)'}">${demand.has_signal ? '🔍 Domanda reale Amazon' : '🔍 Nessuna ricerca Amazon'}</span>` : '';
+    const demandList = (demand && demand.suggestions && demand.suggestions.length) ? `<div style="margin-top:6px;font-size:10px;color:var(--muted)">🔍 Cosa cercano su Amazon: ${demand.suggestions.slice(0,5).map(s => `<span style="color:#93c5fd">"${escHtml(s)}"</span>`).join(', ')}</div>` : '';
     return `
       <div class="trend-card" onclick="selectTrend(${i})" style="border-color:rgba(34,197,94,0.2)">
         <div class="sel-badge">✓ Selezionato</div>
         <div class="t-platform" style="color:#22c55e">🌍 GLOBAL DISCOVERY</div>
-        ${(stageBadge || sourceBadges || gapBadge || fitBadge) ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0">${stageBadge}${sourceBadges}${gapBadge}${fitBadge}</div>` : ''}
+        ${(stageBadge || sourceBadges || gapBadge || fitBadge || demandBadge) ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0">${stageBadge}${sourceBadges}${gapBadge}${fitBadge}${demandBadge}</div>` : ''}
         <div class="t-name">${escHtml(o.niche)}</div>
         <div class="t-desc">${escHtml(o.pattern)}</div>
         ${signals ? `<div style="margin-top:8px;padding:8px 10px;background:rgba(59,130,246,0.06);border-left:2px solid rgba(59,130,246,0.3);border-radius:4px">
           ${signals}
           ${(o.data_signals||[]).map(s => interpretSignal(s)).filter(Boolean).slice(0,1).map(i => `<div style="margin-top:4px;font-size:10px;color:var(--accent2);font-weight:500">${escHtml(i)}</div>`).join('')}
         </div>` : ''}
+        ${demandList}
         ${o.why_now ? `<div style="margin-top:8px;font-size:11px;color:#22c55e;font-style:italic">⏱ ${escHtml(o.why_now)}</div>` : ''}
         ${(fit && o.kdp_fit_reason) ? `<div style="margin-top:6px;font-size:11px;color:${fit.color};font-style:italic">${fit.icon} ${escHtml(o.kdp_fit_reason)}</div>` : ''}
         <div class="heat-row" style="margin-top:10px">${dots}</div>

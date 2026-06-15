@@ -670,6 +670,16 @@ async def health_full():
             tiktok_ok = r.status_code == 200
     except Exception:
         pass
+    amazon_autocomplete_ok = False
+    try:
+        async with httpx.AsyncClient(timeout=5, headers={**AMAZON_HEADERS, "Accept": "application/json"}) as c:
+            r = await c.get("https://completion.amazon.com/api/2017/suggestions", params={
+                "limit": 1, "prefix": "journal", "suggestion-type": "KEYWORD",
+                "page-type": "Search", "alias": "stripbooks", "mid": "ATVPDKIKX0DER",
+            })
+            amazon_autocomplete_ok = r.status_code == 200
+    except Exception:
+        pass
     return {
         "status": "ok",
         "reddit": reddit_ok,
@@ -677,6 +687,7 @@ async def health_full():
         "claude": bool(ANTHROPIC_KEY),
         "youtube": bool(YOUTUBE_API_KEY),
         "tiktok": tiktok_ok,
+        "amazon_autocomplete": amazon_autocomplete_ok,
         "timestamp": datetime.utcnow().isoformat()
     }
 
@@ -890,6 +901,49 @@ def classify_amazon_saturation(count: Optional[int]) -> tuple[str, str]:
         return "moderate", f"{count} libri su Amazon — concorrenza moderata, serve un angolo specifico"
     else:
         return "saturated", f"{count}+ libri su Amazon — nicchia satura, cerca una sotto-nicchia o angolo molto diverso"
+
+
+async def fetch_amazon_autocomplete(query: str) -> list[str]:
+    """
+    Real demand signal: what Amazon's search-bar autocomplete suggests for this
+    niche query — reflects actual searches typed by shoppers/readers in the
+    Books store. Undocumented endpoint, degrades to [] on any failure.
+    """
+    try:
+        headers = {**AMAZON_HEADERS, "Accept": "application/json"}
+        async with httpx.AsyncClient(timeout=8, headers=headers) as client:
+            r = await client.get("https://completion.amazon.com/api/2017/suggestions", params={
+                "limit": 10,
+                "prefix": query,
+                "suggestion-type": "KEYWORD",
+                "page-type": "Search",
+                "alias": "stripbooks",
+                "site-variant": "desktop",
+                "version": "3",
+                "event": "onKeyPress",
+                "wc": "",
+                "lop": "en_US",
+                "mid": "ATVPDKIKX0DER",
+            })
+            if r.status_code != 200:
+                return []
+            data = r.json()
+            suggestions = []
+            for group in data.get("suggestions", []):
+                for item in group.get("suggestions", []):
+                    val = item.get("value")
+                    if val and val.lower() != query.lower():
+                        suggestions.append(val)
+            return suggestions[:8]
+    except Exception as e:
+        print(f"[Amazon Autocomplete] {query}: {e}")
+        return []
+
+
+def classify_amazon_demand(suggestions: list[str]) -> tuple[bool, str]:
+    if suggestions:
+        return True, f"Amazon suggerisce {len(suggestions)} ricerche correlate — i lettori cercano attivamente in questa nicchia"
+    return False, "Nessun suggerimento Amazon per questa query — la nicchia potrebbe essere troppo nuova o servire un angolo diverso"
 
 
 async def fetch_tiktok_trending(limit: int = 20) -> list[dict]:
@@ -1118,11 +1172,13 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
         result = parse_json_safe(text)
 
         # Gap analysis — cross-check each discovered niche against Amazon book count
+        # and Amazon search autocomplete (real reader demand signal)
         opportunities = result.get("opportunities", [])
-        gap_results = await asyncio.gather(
-            *[fetch_amazon_book_count(o.get("niche", "")) for o in opportunities]
+        gap_results, autocomplete_results = await asyncio.gather(
+            asyncio.gather(*[fetch_amazon_book_count(o.get("niche", "")) for o in opportunities]),
+            asyncio.gather(*[fetch_amazon_autocomplete(o.get("niche", "")) for o in opportunities]),
         )
-        for o, gr in zip(opportunities, gap_results):
+        for o, gr, suggestions in zip(opportunities, gap_results, autocomplete_results):
             count = gr.get("count")
             level, note = classify_amazon_saturation(count)
             o["gap_analysis"] = {
@@ -1130,6 +1186,12 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
                 "saturation": level,
                 "note": note,
                 "query": gr.get("query"),
+            }
+            has_demand, demand_note = classify_amazon_demand(suggestions)
+            o["amazon_demand"] = {
+                "suggestions": suggestions,
+                "has_signal": has_demand,
+                "note": demand_note,
             }
 
         result["meta"] = {
