@@ -352,6 +352,9 @@ select option{background:var(--s2)}
       <div class="spin" id="discSpin" style="display:none"></div>
     </button>
     <button class="btn btn-ghost" id="clearStateBtn" style="display:none;font-size:12px;padding:10px 14px" onclick="discardSession()" title="Cancella sessione salvata">🗑 Reset</button>
+    <button class="btn btn-ghost" style="font-size:12px;padding:10px 14px" onclick="exportProject()" title="Scarica un backup .json di sessione e libreria">💾 Esporta progetto</button>
+    <button class="btn btn-ghost" style="font-size:12px;padding:10px 14px" onclick="document.getElementById('importProjectInput').click()" title="Ripristina da un backup .json">📂 Importa progetto</button>
+    <input type="file" id="importProjectInput" accept="application/json" style="display:none" onchange="importProjectFile(this)" />
   </div>
 
   <div id="trendsOut"></div>
@@ -651,6 +654,51 @@ function saveState() {
 
 function clearState() {
   try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+}
+
+// ── PROJECT BACKUP (full export/import as .json) ─────────────
+function exportProject() {
+  const fullState = {
+    trends: state.trends,
+    selectedTrend: state.selectedTrend,
+    selectedBook: state.selectedBook,
+    customTitle: state.customTitle,
+    bookType: state.bookType,
+    audience: state.audience,
+    outline: state.outline,
+    genTab: state.genTab,
+    customNiche: state.customNiche,
+    allChaptersText: state.allChaptersText,
+    savedAt: Date.now()
+  };
+  const data = {
+    app: 'KDP Studio',
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    state: fullState,
+    library: loadLibrary()
+  };
+  downloadBlob(JSON.stringify(data, null, 2), 'application/json', 'kdp_studio_backup', '.json');
+}
+
+function importProjectFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.app !== 'KDP Studio' || !data.state) throw new Error('File non riconosciuto come backup KDP Studio');
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...data.state, savedAt: Date.now() }));
+      if (Array.isArray(data.library)) localStorage.setItem(LIBRARY_KEY, JSON.stringify(data.library));
+      alert('✅ Progetto importato! La pagina verrà ricaricata.');
+      location.reload();
+    } catch(err) {
+      alert('⚠️ File non valido: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  input.value = '';
 }
 
 const _saved = loadState();
