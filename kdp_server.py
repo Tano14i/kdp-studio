@@ -29,6 +29,7 @@ def env(key, default=""):
 
 ANTHROPIC_KEY     = env("ANTHROPIC_API_KEY")
 REDDIT_USER_AGENT = env("REDDIT_USER_AGENT", "KDPStudio/1.0 (personal use, no auth)")
+YOUTUBE_API_KEY   = env("YOUTUBE_API_KEY")  # optional — enables YouTube Trending as a 3rd discovery source
 
 app = FastAPI(title="KDP Studio API", version="2.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
@@ -665,6 +666,7 @@ async def health_full():
         "reddit": reddit_ok,
         "reddit_mode": "public_json",
         "claude": bool(ANTHROPIC_KEY),
+        "youtube": bool(YOUTUBE_API_KEY),
         "timestamp": datetime.utcnow().isoformat()
     }
 
@@ -802,6 +804,43 @@ async def fetch_google_trending_now() -> dict:
         return {"daily_trending": [], "realtime": [], "error": str(e)}
 
 
+async def fetch_youtube_trending(limit: int = 25) -> list[dict]:
+    """
+    Fetch YouTube's official Trending feed (chart=mostPopular) — no search
+    query, no niche bias. Requires YOUTUBE_API_KEY (free quota via
+    Google Cloud Console). Returns [] if not configured or on error.
+    """
+    if not YOUTUBE_API_KEY:
+        return []
+    try:
+        country = random.choice(["US", "GB", "AU", "CA"])
+        async with httpx.AsyncClient(timeout=10) as client:
+            r = await client.get("https://www.googleapis.com/youtube/v3/videos", params={
+                "part": "snippet,statistics",
+                "chart": "mostPopular",
+                "maxResults": limit,
+                "regionCode": country,
+                "key": YOUTUBE_API_KEY,
+            })
+            if r.status_code != 200:
+                print(f"[YouTube] {r.status_code}: {r.text[:200]}")
+                return []
+            items = []
+            for v in r.json().get("items", []):
+                sn, st = v.get("snippet", {}), v.get("statistics", {})
+                items.append({
+                    "title": sn.get("title", ""),
+                    "category_id": sn.get("categoryId", ""),
+                    "channel": sn.get("channelTitle", ""),
+                    "views": int(st.get("viewCount", 0)),
+                    "region": country,
+                })
+            return items
+    except Exception as e:
+        print(f"[YouTube] {e}")
+        return []
+
+
 @app.get("/discover")
 async def discover_unbiased():
     """
@@ -811,9 +850,10 @@ async def discover_unbiased():
     stamp = now_stamp()
 
     # Run all fetches in parallel
-    reddit_posts, gtrends = await asyncio.gather(
+    reddit_posts, gtrends, youtube_videos = await asyncio.gather(
         fetch_reddit_global(),
-        fetch_google_trending_now()
+        fetch_google_trending_now(),
+        fetch_youtube_trending()
     )
 
     # Format Reddit data
@@ -840,6 +880,15 @@ async def discover_unbiased():
     else:
         gtrends_block = "Google Trends data unavailable this run.\n"
 
+    # Format YouTube Trending data
+    youtube_block = ""
+    if youtube_videos:
+        youtube_block = f"YOUTUBE — Trending NOW ({youtube_videos[0]['region']}, no search query, no niche filter):\n"
+        for i, v in enumerate(youtube_videos[:20], 1):
+            youtube_block += f'{i}. "{v["title"]}" — {v["channel"]} ({v["views"]:,} views)\n'
+    else:
+        youtube_block = "YouTube Trending data unavailable (YOUTUBE_API_KEY not set or request failed).\n"
+
     prompt = f"""You are a KDP publishing expert with zero preconceptions about what niche to target.
 
 CURRENT MOMENT: {stamp}
@@ -850,6 +899,7 @@ Your job: find what is organically emerging and identify KDP book opportunities 
 RAW DATA:
 {reddit_block}
 {gtrends_block}
+{youtube_block}
 
 TASK: Identify 5 KDP book opportunities hidden inside this raw data.
 
@@ -863,12 +913,24 @@ RULES — THIS IS CRITICAL:
 - Be specific and surprising — avoid obvious conclusions
 - Each of the 5 must be in a DIFFERENT niche/category
 
+CROSS-SOURCE SCORING — for each opportunity:
+- "sources": list which raw data blocks above (reddit, google, youtube) contain
+  a signal supporting this opportunity. Only include a source if you can quote
+  a real signal from it in "data_signals".
+- "stage": classify based on signal strength and cross-source presence:
+  - "Esplode" = appears in 3 sources OR extremely strong signal in 2 (breaking out NOW)
+  - "Forte" = appears in 2 sources with strong signal (high demand, validate competition)
+  - "Crescita" = appears in 1-2 sources, growing but not yet saturated (optimal KDP window)
+  - "Pre-virale" = weak/early signal in 1 source — gap opportunity but unproven demand
+
 Return ONLY raw JSON, no markdown, ASCII-safe strings only:
 {{"opportunities":[
 {{
   "niche": "The organic niche you discovered (do not use predefined categories)",
   "pattern": "The specific pattern you noticed across multiple data points",
-  "data_signals": ["exact Reddit post title or Google query 1", "signal 2", "signal 3"],
+  "data_signals": ["exact Reddit post title or Google query or YouTube title 1", "signal 2", "signal 3"],
+  "sources": ["reddit","google"],
+  "stage": "Crescita",
   "heat": 4,
   "why_now": "1 sentence: why this moment is the right time for this book",
   "books": [
@@ -880,6 +942,8 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
   "niche": "Discovered niche 2",
   "pattern": "Pattern observed",
   "data_signals": ["signal 1","signal 2"],
+  "sources": ["reddit"],
+  "stage": "Pre-virale",
   "heat": 5,
   "why_now": "1 sentence",
   "books": [
@@ -891,6 +955,8 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
   "niche": "Discovered niche 3",
   "pattern": "Pattern",
   "data_signals": ["signal 1","signal 2"],
+  "sources": ["google","youtube"],
+  "stage": "Forte",
   "heat": 3,
   "why_now": "1 sentence",
   "books": [
@@ -902,6 +968,8 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
   "niche": "Discovered niche 4",
   "pattern": "Pattern",
   "data_signals": ["signal 1","signal 2"],
+  "sources": ["reddit","google","youtube"],
+  "stage": "Esplode",
   "heat": 4,
   "why_now": "1 sentence",
   "books": [
@@ -913,6 +981,8 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
   "niche": "Discovered niche 5",
   "pattern": "Pattern",
   "data_signals": ["signal 1","signal 2"],
+  "sources": ["reddit"],
+  "stage": "Crescita",
   "heat": 5,
   "why_now": "1 sentence",
   "books": [
@@ -931,6 +1001,8 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
             "reddit_subreddits": list(set(p["subreddit"] for p in reddit_posts))[:10],
             "google_daily_trending": gtrends.get("daily_trending", [])[:10],
             "google_realtime": gtrends.get("realtime", [])[:5],
+            "youtube_videos_analyzed": len(youtube_videos),
+            "youtube_configured": bool(YOUTUBE_API_KEY),
             "fetched_at": stamp,
             "note": "No niche was specified — opportunities discovered purely from raw data"
         }

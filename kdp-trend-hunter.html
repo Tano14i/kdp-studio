@@ -1196,8 +1196,22 @@ function renderOpportunities(data) {
   const badgeParts = [];
   if (meta.reddit_posts_analyzed) badgeParts.push(`<span style="font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2)">📡 ${meta.reddit_posts_analyzed} post Reddit analizzati</span>`);
   if (meta.google_daily_trending?.length) badgeParts.push(`<span style="font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(59,130,246,0.1);color:#3b82f6;border:1px solid rgba(59,130,246,0.2)">📈 Google Trends live</span>`);
+  if (meta.youtube_videos_analyzed) {
+    badgeParts.push(`<span style="font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.2)">▶️ ${meta.youtube_videos_analyzed} video YouTube Trending</span>`);
+  } else if (!meta.youtube_configured) {
+    badgeParts.push(`<span style="font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2)" title="Imposta YOUTUBE_API_KEY su Railway per attivare questa fonte">▶️ YouTube non configurato</span>`);
+  }
   badgeParts.push(`<span style="font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2)">🌍 Zero-bias — nessun filtro</span>`);
   const badge = `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">${badgeParts.join('')}</div>`;
+
+  // Stage → color/label map for cross-source classification
+  const STAGE_STYLE = {
+    'Esplode':   { color: '#ef4444', bg: 'rgba(239,68,68,0.12)',  border: 'rgba(239,68,68,0.3)',  icon: '🔥' },
+    'Forte':     { color: '#ff8c42', bg: 'rgba(255,140,66,0.12)', border: 'rgba(255,140,66,0.3)', icon: '⚡' },
+    'Crescita':  { color: '#22c55e', bg: 'rgba(34,197,94,0.12)',  border: 'rgba(34,197,94,0.3)',  icon: '📈' },
+    'Pre-virale':{ color: '#3b82f6', bg: 'rgba(59,130,246,0.12)', border: 'rgba(59,130,246,0.3)', icon: '🌱' },
+  };
+  const SOURCE_ICON = { reddit: '📡 Reddit', google: '📈 Google', youtube: '▶️ YouTube' };
 
   // Convert opportunities to trend format for reuse of selectTrend
   state.trends = opps.map(o => ({
@@ -1215,10 +1229,14 @@ function renderOpportunities(data) {
   const cards = opps.map((o, i) => {
     const dots = Array.from({length:5},(_,j)=>`<div class="hdot${j<o.heat?' on':''}"></div>`).join('');
     const signals = (o.data_signals || []).slice(0,3).map(s => `<div style="font-size:10px;color:#93c5fd;padding:2px 0">• ${escHtml(s)}</div>`).join('');
+    const stage = STAGE_STYLE[o.stage] || null;
+    const stageBadge = stage ? `<span style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;background:${stage.bg};color:${stage.color};border:1px solid ${stage.border}">${stage.icon} ${escHtml(o.stage)}</span>` : '';
+    const sourceBadges = (o.sources || []).map(s => `<span style="font-size:10px;padding:3px 8px;border-radius:4px;background:rgba(255,255,255,0.04);color:var(--muted);border:1px solid var(--border)">${SOURCE_ICON[s] || s}</span>`).join('');
     return `
       <div class="trend-card" onclick="selectTrend(${i})" style="border-color:rgba(34,197,94,0.2)">
         <div class="sel-badge">✓ Selezionato</div>
         <div class="t-platform" style="color:#22c55e">🌍 GLOBAL DISCOVERY</div>
+        ${(stageBadge || sourceBadges) ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0">${stageBadge}${sourceBadges}</div>` : ''}
         <div class="t-name">${escHtml(o.niche)}</div>
         <div class="t-desc">${escHtml(o.pattern)}</div>
         ${signals ? `<div style="margin-top:8px;padding:8px 10px;background:rgba(59,130,246,0.06);border-left:2px solid rgba(59,130,246,0.3);border-radius:4px">

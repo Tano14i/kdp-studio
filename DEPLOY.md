@@ -37,6 +37,11 @@ Nel tuo progetto Railway → **Variables** → aggiungi:
 ```
 ANTHROPIC_API_KEY = sk-ant-la-tua-chiave
 REDDIT_USER_AGENT = KDPStudio/1.0 (personal use)
+YOUTUBE_API_KEY = (opzionale) chiave YouTube Data API v3 — attiva YouTube Trending
+                  come 3a fonte nella Scoperta Zero-Bias. Senza questa variabile
+                  il tool funziona comunque con Reddit + Google Trends.
+                  Ottienila gratis su console.cloud.google.com → abilita
+                  "YouTube Data API v3" → crea credenziale "API key".
 ```
 
 ### 4. Copia il tuo URL Railway
