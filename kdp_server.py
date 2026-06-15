@@ -1068,6 +1068,13 @@ RULES — THIS IS CRITICAL:
 - Be specific and surprising — avoid obvious conclusions
 - Each of the 5 must be in a DIFFERENT niche/category
 
+TITLE RULES — Amazon KDP rejects listings with "title": "subtitle"-style titles
+or keyword-stuffed titles (combined title+subtitle over ~200 characters):
+- "title": SHORT and punchy, under 60 characters, NO colon followed by a long
+  second subtitle baked into it
+- "subtitle": separate field for SEO/keywords, under 140 characters
+- title + subtitle combined MUST be under 200 characters total
+
 KDP FIT — for each opportunity, honestly assess:
 - "kdp_fit": "high" | "medium" | "low" — how well this niche translates into a
   book/journal/workbook/planner people would actually PAY for, vs. a topic
@@ -1273,6 +1280,13 @@ UNIQUENESS RULES:
 - Each trend must be backed by a SPECIFIC signal from the data above
 - Find angles that feel fresh and slightly unexpected
 - Think: what is JUST starting to emerge, not what has already peaked?
+
+TITLE RULES — Amazon KDP rejects listings with "title": "subtitle"-style titles
+or keyword-stuffed titles (combined title+subtitle over ~200 characters):
+- "title": SHORT and punchy, under 60 characters, NO colon followed by a long
+  second subtitle baked into it
+- "subtitle": separate field for SEO/keywords, under 140 characters
+- title + subtitle combined MUST be under 200 characters total
 
 Return ONLY raw JSON, no markdown, ASCII-safe strings only:
 {{"trends":[
@@ -1702,13 +1716,48 @@ Generated: {stamp}
 IMPORTANT: Write title, subtitle, description, tagline, and keywords in {lang}.
 Keywords must be search terms that {lang}-speaking readers actually use on {marketplace}.
 
+TITLE RULES — THIS IS CRITICAL, Amazon KDP REJECTS listings that violate this:
+- "title": SHORT and punchy, under 60 characters. Must NOT contain a colon
+  followed by a second long subtitle baked into it (e.g. do not write
+  "Main Title: Long Secondary Subtitle Full Of Keywords" as the title)
+- "subtitle": separate field for SEO/keywords, under 140 characters
+- title + subtitle combined MUST be under 200 characters total — this is a
+  hard Amazon limit and listings over it get rejected as "disappointing
+  customer experience"
+
 Return ONLY raw JSON. No markdown. ASCII-safe strings only.
 
-{{"kdp":{{"title":"optimized Amazon title max 200 chars","subtitle":"SEO subtitle max 200 chars","pen_name":"believable author name fitting this niche and tone","pen_name_rationale":"1 sentence why this name works","description":"Full Amazon description 400-600 words. Use <b> for headers, <br> for breaks. Hook, benefits, who it is for.","short_description":"80-word mobile preview","keywords":["kw1","kw2","kw3","kw4","kw5","kw6","kw7"],"categories":["Primary Amazon category","Secondary Amazon category"],"bisac":["BISAC 1","BISAC 2"],"price_ebook":4.99,"price_paperback":12.99,"page_count_estimate":120,"trim_size":"6x9","tagline":"Punchy tagline under 15 words","canva_cover":{{"main_prompt":"60-80 word Canva AI image prompt for cover background. Mood colors lighting style. No text in scene.","style":"one-word style","color_palette":["#hex1","#hex2","#hex3"],"color_palette_names":["name1","name2","name3"],"font_title":"Canva font for title","font_subtitle":"Canva font for subtitle and author","layout_tip":"One sentence on placement","variation_1":"Alternative 40-word prompt","variation_2":"Alternative 40-word prompt","canva_steps":"4-5 step instructions for KDP-ready cover in Canva"}}}}}}"""
+{{"kdp":{{"title":"short punchy title, under 60 chars, no embedded subtitle","subtitle":"SEO subtitle, under 140 chars, title+subtitle combined under 200 chars total","pen_name":"believable author name fitting this niche and tone","pen_name_rationale":"1 sentence why this name works","description":"Full Amazon description 400-600 words. Use <b> for headers, <br> for breaks. Hook, benefits, who it is for.","short_description":"80-word mobile preview","keywords":["kw1","kw2","kw3","kw4","kw5","kw6","kw7"],"categories":["Primary Amazon category","Secondary Amazon category"],"bisac":["BISAC 1","BISAC 2"],"price_ebook":4.99,"price_paperback":12.99,"page_count_estimate":120,"trim_size":"6x9","tagline":"Punchy tagline under 15 words","canva_cover":{{"main_prompt":"60-80 word Canva AI image prompt for cover background. Mood colors lighting style. No text in scene.","style":"one-word style","color_palette":["#hex1","#hex2","#hex3"],"color_palette_names":["name1","name2","name3"],"font_title":"Canva font for title","font_subtitle":"Canva font for subtitle and author","layout_tip":"One sentence on placement","variation_1":"Alternative 40-word prompt","variation_2":"Alternative 40-word prompt","canva_steps":"4-5 step instructions for KDP-ready cover in Canva"}}}}}}"""
 
     try:
         text = call_claude(prompt, 4000)
-        return parse_json_safe(text)
+        result = parse_json_safe(text)
+        kdp = result.get("kdp", {})
+        title = kdp.get("title", "") or ""
+        subtitle = kdp.get("subtitle", "") or ""
+        warnings = []
+        # Amazon KDP hard limit: title + subtitle combined <= 200 chars.
+        # If Claude still baked a second subtitle into the title (the
+        # "Title: Long Keyword-Stuffed Subtitle" pattern that gets listings
+        # rejected as "disappointing customer experience"), split it off.
+        if ":" in title and len(title) > 60:
+            head, _, tail = title.partition(":")
+            head, tail = head.strip(), tail.strip()
+            if head and len(head) < 60:
+                title = head
+                subtitle = (tail + (" — " + subtitle if subtitle else "")).strip(" —")
+                warnings.append("Titolo conteneva un sottotitolo incorporato — separato automaticamente")
+        if len(title) + len(subtitle) > 200:
+            max_subtitle = max(0, 200 - len(title))
+            if len(subtitle) > max_subtitle:
+                subtitle = subtitle[:max_subtitle].rsplit(" ", 1)[0]
+                warnings.append("Sottotitolo troncato per rispettare il limite Amazon di 200 caratteri (titolo+sottotitolo)")
+        kdp["title"] = title
+        kdp["subtitle"] = subtitle
+        if warnings:
+            kdp["title_warnings"] = warnings
+        result["kdp"] = kdp
+        return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

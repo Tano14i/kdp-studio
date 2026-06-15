@@ -1910,10 +1910,17 @@ function renderPackage(k) {
     </div>
   </div>` : '';
 
+  // Title+subtitle length check — Amazon hard-rejects listings over 200 chars combined
+  const combinedLen = (k.title || '').length + (k.subtitle || '').length;
+  const lenOk = combinedLen <= 200;
+  const titleWarningsHtml = (k.title_warnings && k.title_warnings.length) ? `<div style="margin:8px 18px;padding:8px 12px;border-radius:6px;background:rgba(255,140,66,0.1);border:1px solid rgba(255,140,66,0.3);font-size:11px;color:#ff8c42">⚠️ ${k.title_warnings.map(escHtml).join(' · ')}</div>` : '';
+  const lenBadgeHtml = `<div style="margin:8px 18px;font-size:11px;color:${lenOk ? '#22c55e' : '#ef4444'}">${lenOk ? '✓' : '⚠️'} Titolo + sottotitolo: ${combinedLen}/200 caratteri${lenOk ? '' : ' — supera il limite Amazon, modifica prima di pubblicare'}</div>`;
+
   document.getElementById('packageOut').innerHTML = [
     cb('🎯 Tagline', k.tagline || '', false, '#ff4500'),
     cb('📖 Titolo KDP', k.title || '', false, '#ff8c42'),
     cb('📌 Sottotitolo KDP', k.subtitle || '', false, '#ff8c42'),
+    titleWarningsHtml + lenBadgeHtml,
     cb('📱 Descrizione Breve (mobile)', k.short_description || '', false, '#22c55e'),
     descHtml,
     kwCloud(k.keywords),
