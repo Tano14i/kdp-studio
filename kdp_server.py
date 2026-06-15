@@ -580,11 +580,13 @@ def build_voice_ctx(tone="", language="English", cultural_inspiration="",
 async def serve_frontend():
     from fastapi.responses import FileResponse
     import os
-    # Look for index.html in same dir as server
-    html_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "index.html")
-    if os.path.exists(html_path):
-        return FileResponse(html_path, media_type="text/html")
-    return {"message": "KDP Studio API running. Frontend not found — place index.html in same folder."}
+    # Look for the frontend HTML in same dir as server
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    for name in ("kdp-trend-hunter.html", "index.html"):
+        html_path = os.path.join(base_dir, name)
+        if os.path.exists(html_path):
+            return FileResponse(html_path, media_type="text/html")
+    return {"message": "KDP Studio API running. Frontend not found — place kdp-trend-hunter.html in same folder."}
 
 
 @app.get("/health")
