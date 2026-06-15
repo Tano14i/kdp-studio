@@ -841,6 +841,47 @@ async def fetch_youtube_trending(limit: int = 25) -> list[dict]:
         return []
 
 
+AMAZON_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+}
+
+async def fetch_amazon_book_count(query: str) -> dict:
+    """
+    Gap analysis: how many books on Amazon already match this niche.
+    Scrapes the Amazon Books search results count. Returns count=None
+    if blocked or unparseable — caller must handle gracefully.
+    """
+    import re
+    try:
+        async with httpx.AsyncClient(timeout=10, headers=AMAZON_HEADERS, follow_redirects=True) as client:
+            r = await client.get("https://www.amazon.com/s", params={"k": query, "i": "stripbooks"})
+            if r.status_code != 200:
+                return {"query": query, "count": None}
+            html = r.text
+            m = re.search(r'of\s+(?:over\s+)?([\d,]+)\s+results', html, re.IGNORECASE)
+            if not m:
+                m = re.search(r'([\d,]+)\s+results?\s+for', html, re.IGNORECASE)
+            if m:
+                return {"query": query, "count": int(m.group(1).replace(",", ""))}
+            return {"query": query, "count": None}
+    except Exception as e:
+        print(f"[Amazon Gap] {query}: {e}")
+        return {"query": query, "count": None}
+
+
+def classify_amazon_saturation(count: Optional[int]) -> tuple[str, str]:
+    if count is None:
+        return "unknown", "Dati Amazon non disponibili — verifica manualmente su Amazon"
+    if count < 200:
+        return "opportunity", f"Solo {count} libri su Amazon in questa nicchia — bassa concorrenza, buona opportunita"
+    elif count < 1500:
+        return "moderate", f"{count} libri su Amazon — concorrenza moderata, serve un angolo specifico"
+    else:
+        return "saturated", f"{count}+ libri su Amazon — nicchia satura, cerca una sotto-nicchia o angolo molto diverso"
+
+
 @app.get("/discover")
 async def discover_unbiased():
     """
@@ -995,6 +1036,22 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
     try:
         text = call_claude(prompt, 3500)
         result = parse_json_safe(text)
+
+        # Gap analysis — cross-check each discovered niche against Amazon book count
+        opportunities = result.get("opportunities", [])
+        gap_results = await asyncio.gather(
+            *[fetch_amazon_book_count(o.get("niche", "")) for o in opportunities]
+        )
+        for o, gr in zip(opportunities, gap_results):
+            count = gr.get("count")
+            level, note = classify_amazon_saturation(count)
+            o["gap_analysis"] = {
+                "amazon_results": count,
+                "saturation": level,
+                "note": note,
+                "query": gr.get("query"),
+            }
+
         result["meta"] = {
             "mode": "zero_bias_discovery",
             "reddit_posts_analyzed": len(reddit_posts),

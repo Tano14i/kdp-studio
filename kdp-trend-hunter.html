@@ -1213,6 +1213,14 @@ function renderOpportunities(data) {
   };
   const SOURCE_ICON = { reddit: '📡 Reddit', google: '📈 Google', youtube: '▶️ YouTube' };
 
+  // Gap analysis → Amazon saturation color map
+  const GAP_STYLE = {
+    opportunity: { color: '#22c55e', bg: 'rgba(34,197,94,0.12)',  border: 'rgba(34,197,94,0.3)',  icon: '🟢' },
+    moderate:    { color: '#ff8c42', bg: 'rgba(255,140,66,0.12)', border: 'rgba(255,140,66,0.3)', icon: '🟡' },
+    saturated:   { color: '#ef4444', bg: 'rgba(239,68,68,0.12)',  border: 'rgba(239,68,68,0.3)',  icon: '🔴' },
+    unknown:     { color: '#94a3b8', bg: 'rgba(148,163,184,0.1)', border: 'rgba(148,163,184,0.2)', icon: '⚪' },
+  };
+
   // Convert opportunities to trend format for reuse of selectTrend
   state.trends = opps.map(o => ({
     name: o.niche,
@@ -1232,11 +1240,14 @@ function renderOpportunities(data) {
     const stage = STAGE_STYLE[o.stage] || null;
     const stageBadge = stage ? `<span style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;background:${stage.bg};color:${stage.color};border:1px solid ${stage.border}">${stage.icon} ${escHtml(o.stage)}</span>` : '';
     const sourceBadges = (o.sources || []).map(s => `<span style="font-size:10px;padding:3px 8px;border-radius:4px;background:rgba(255,255,255,0.04);color:var(--muted);border:1px solid var(--border)">${SOURCE_ICON[s] || s}</span>`).join('');
+    const gap = o.gap_analysis;
+    const gapStyle = gap ? (GAP_STYLE[gap.saturation] || GAP_STYLE.unknown) : null;
+    const gapBadge = gap ? `<span title="${escHtml(gap.note || '')}" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;background:${gapStyle.bg};color:${gapStyle.color};border:1px solid ${gapStyle.border}">${gapStyle.icon} ${gap.amazon_results != null ? gap.amazon_results.toLocaleString() + ' libri Amazon' : 'Amazon: N/D'}</span>` : '';
     return `
       <div class="trend-card" onclick="selectTrend(${i})" style="border-color:rgba(34,197,94,0.2)">
         <div class="sel-badge">✓ Selezionato</div>
         <div class="t-platform" style="color:#22c55e">🌍 GLOBAL DISCOVERY</div>
-        ${(stageBadge || sourceBadges) ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0">${stageBadge}${sourceBadges}</div>` : ''}
+        ${(stageBadge || sourceBadges || gapBadge) ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0">${stageBadge}${sourceBadges}${gapBadge}</div>` : ''}
         <div class="t-name">${escHtml(o.niche)}</div>
         <div class="t-desc">${escHtml(o.pattern)}</div>
         ${signals ? `<div style="margin-top:8px;padding:8px 10px;background:rgba(59,130,246,0.06);border-left:2px solid rgba(59,130,246,0.3);border-radius:4px">
