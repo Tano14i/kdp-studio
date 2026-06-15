@@ -2028,6 +2028,89 @@ function exportFullPackage() {
   downloadBlob(text, 'text/plain', 'kdp_package', '.txt');
 }
 
+// Convert generated chapter text (markdown-ish + book-type placeholders) into
+// Word-friendly HTML: headers, bold, bullet/checkbox lists, day headers,
+// horizontal rules, and writing-space placeholders → blank lines.
+function formatChapterContent(text, bookType) {
+  const inline = s => escHtml(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  const writeLines = (n) => `<div class="write-lines">${'<div class="wl"></div>'.repeat(n)}</div>`;
+  const lines = text.split('\n');
+  let html = '';
+  let listMode = null; // 'chk' | 'bul' | 'num'
+
+  const closeList = () => {
+    if (listMode) { html += `</${listMode === 'num' ? 'ol' : 'ul'}>`; listMode = null; }
+  };
+
+  for (let raw of lines) {
+    const line = raw.trim();
+
+    if (!line) { closeList(); continue; }
+
+    // Day X header (30-Day Challenge)
+    let m = line.match(/^(?:#+\s*)?Day\s+(\d+)\b(.*)$/i);
+    if (m) {
+      closeList();
+      html += `<div class="page-break"></div><div class="day-header">Day ${m[1]}${inline(m[2])}</div>`;
+      continue;
+    }
+
+    // Markdown headers
+    m = line.match(/^(#{1,4})\s+(.*)$/);
+    if (m) {
+      closeList();
+      const lvl = Math.min(m[1].length + 1, 4); // map #->h2, ##->h3, ###->h4
+      html += `<h${lvl}>${inline(m[2])}</h${lvl}>`;
+      continue;
+    }
+
+    // Horizontal rule
+    if (/^-{3,}$/.test(line)) { closeList(); html += '<hr>'; continue; }
+
+    // Checkbox list item
+    m = line.match(/^[-*]\s*\[( |x|X)\]\s*(.*)$/);
+    if (m) {
+      if (listMode !== 'chk') { closeList(); html += '<ul class="chk">'; listMode = 'chk'; }
+      html += `<li>${inline(m[2])}</li>`;
+      continue;
+    }
+
+    // Bullet list item
+    m = line.match(/^[-*•]\s+(.*)$/);
+    if (m) {
+      if (listMode !== 'bul') { closeList(); html += '<ul class="bul">'; listMode = 'bul'; }
+      html += `<li>${inline(m[1])}</li>`;
+      continue;
+    }
+
+    // Numbered list item
+    m = line.match(/^\d+[.)]\s+(.*)$/);
+    if (m) {
+      if (listMode !== 'num') { closeList(); html += '<ol class="num">'; listMode = 'num'; }
+      html += `<li>${inline(m[1])}</li>`;
+      continue;
+    }
+
+    closeList();
+
+    // Writing-space placeholders → blank ruled lines
+    if (/\[Write here[^\]]*\]|\[Your (?:answer|notes?|response)[^\]]*\]|\.{6,}/i.test(line)) {
+      const prompt = line.replace(/\[Write here[^\]]*\]|\[Your (?:answer|notes?|response)[^\]]*\]|\.{6,}/gi, '').trim();
+      if (prompt) html += `<p>${inline(prompt)}</p>`;
+      html += writeLines(3);
+      continue;
+    }
+
+    // Affirmation / italic emphasis line
+    m = line.match(/^_(.+)_$/);
+    if (m) { html += `<p><em>${inline(m[1])}</em></p>`; continue; }
+
+    html += `<p>${inline(line)}</p>`;
+  }
+  closeList();
+  return html;
+}
+
 function exportAsDoc(bookData, chaptersText) {
   // Export as Word-compatible HTML (.doc) — opens natively in Word/LibreOffice
   const b = bookData || {};
@@ -2054,6 +2137,14 @@ function exportAsDoc(bookData, chaptersText) {
   .keyword { background: #e8f0fe; padding: 2pt 8pt; border-radius: 3pt; font-size: 10pt; }
   hr { border: none; border-top: 1px solid #eee; margin: 16pt 0; }
   .page-break { page-break-before: always; }
+  .day-header { background: #fff4ed; border-left: 4pt solid #ff4500; padding: 6pt 10pt; font-size: 14pt; font-weight: bold; margin-top: 16pt; }
+  .write-lines { margin: 8pt 0 14pt 0; }
+  .write-lines .wl { border-bottom: 1px solid #bbb; height: 22pt; }
+  ul.chk { list-style: none; padding-left: 4pt; }
+  ul.chk li { margin-bottom: 4pt; }
+  ul.chk li::before { content: "☐ "; font-size: 12pt; }
+  ul.bul, ol.num { margin: 6pt 0 10pt 18pt; }
+  ul.bul li, ol.num li { margin-bottom: 4pt; }
 </style>
 </head>
 <body>
@@ -2088,7 +2179,7 @@ ${b.pen_name ? `<p style="font-size:11pt;color:#888">by ${escHtml(b.pen_name)}</
 ${chaptersText ? `
 <div class="page-break"></div>
 <h2>📖 Contenuto del Libro</h2>
-${chaptersText.split(/\n\n+/).map(p => p.startsWith('#') ? '<h3>' + p.replace(/^#+\s*/, '') + '</h3>' : '<p>' + p + '</p>').join('')}
+${formatChapterContent(chaptersText, state.bookType || '')}
 ` : ''}
 
 </body></html>`;
