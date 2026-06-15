@@ -374,6 +374,45 @@ select option{background:var(--s2)}
     </div>
   </div>
 
+  <!-- POSITIONING MODE -->
+  <div style="background:rgba(167,139,250,0.04);border:1px solid rgba(167,139,250,0.2);border-radius:12px;padding:16px 18px;margin-bottom:14px">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:12px">
+      <div>
+        <div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;margin-bottom:3px">🎯 Posizionamento</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.5;max-width:460px">Hai già fatto l'analisi e deciso il posizionamento? Parti da chi sei e da cosa prometti — Claude deriva nicchia, angolo e libri che lo esprimono. Flusso inverso rispetto alla trend discovery.</div>
+      </div>
+      <button class="btn" id="positioningToggleBtn" onclick="togglePositioningForm()" style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.4);color:#a78bfa;font-size:13px;white-space:nowrap;flex-shrink:0">
+        🎯 Apri Posizionamento
+      </button>
+    </div>
+    <div id="positioningForm" style="display:none">
+      <div class="field" style="margin-bottom:10px">
+        <label>1. Chi sei come autore/publisher e come vuoi essere percepito?</label>
+        <textarea id="posIdentity" rows="2" placeholder="es: Voce pratica e diretta per chi è stanco delle solite teorie sul tema..." style="font-size:12px"></textarea>
+      </div>
+      <div class="field" style="margin-bottom:10px">
+        <label>2. Chi è il tuo lettore ideale — psicografia, non demografica?</label>
+        <textarea id="posReader" rows="2" placeholder="es: Persone che hanno già provato di tutto e sono scettiche verso le soluzioni facili..." style="font-size:12px"></textarea>
+      </div>
+      <div class="field" style="margin-bottom:10px">
+        <label>3. Qual è la trasformazione specifica che prometti?</label>
+        <textarea id="posTransformation" rows="2" placeholder="es: Da sopravvivere alla giornata a riprendere il controllo in 30 giorni..." style="font-size:12px"></textarea>
+      </div>
+      <div class="field" style="margin-bottom:10px">
+        <label>4. Chi sono i tuoi competitor diretti e come ti differenzi? (opzionale)</label>
+        <textarea id="posCompetitors" rows="2" placeholder="es: I libri X fanno Y, io invece..." style="font-size:12px"></textarea>
+      </div>
+      <div class="field" style="margin-bottom:10px">
+        <label>5. Qual è il tuo "unfair advantage"? (opzionale)</label>
+        <textarea id="posAdvantage" rows="2" placeholder="es: Ho vissuto questa situazione per 10 anni / ho una formazione specifica in..." style="font-size:12px"></textarea>
+      </div>
+      <button class="btn btn-accent" id="positioningBtn" onclick="generateFromPositioning()">
+        <span id="posBtnTxt">🎯 Genera dal Posizionamento</span>
+        <div class="spin" id="posSpin" style="display:none"></div>
+      </button>
+    </div>
+  </div>
+
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
     <div style="flex:1;height:1px;background:var(--border)"></div>
     <span style="font-size:10px;color:var(--muted2);font-weight:600;letter-spacing:0.06em;text-transform:uppercase">oppure cerca per nicchia</span>
@@ -1195,6 +1234,97 @@ async function discoverGlobal() {
     document.getElementById('dgBtnTxt').textContent = '🌍 Scopri senza filtri';
     document.getElementById('dgSpin').style.display = 'none';
   }
+}
+
+// ─── POSITIONING MODE ─────────────────────────────────────
+function togglePositioningForm() {
+  const form = document.getElementById('positioningForm');
+  const open = form.style.display === 'none';
+  form.style.display = open ? 'block' : 'none';
+  document.getElementById('positioningToggleBtn').textContent = open ? '🎯 Chiudi' : '🎯 Apri Posizionamento';
+}
+
+async function generateFromPositioning() {
+  if (!BACKEND_LIVE) {
+    alert('Il backend deve essere attivo per il Positioning Mode.\n\nAvvia kdp_server.py e riprova.');
+    return;
+  }
+  const identity = document.getElementById('posIdentity').value.trim();
+  const reader = document.getElementById('posReader').value.trim();
+  const transformation = document.getElementById('posTransformation').value.trim();
+  const competitors = document.getElementById('posCompetitors').value.trim();
+  const advantage = document.getElementById('posAdvantage').value.trim();
+
+  if (!identity || !reader || !transformation) {
+    alert('Compila almeno i campi 1, 2 e 3 — sono la base del posizionamento.');
+    return;
+  }
+
+  const btn = document.getElementById('positioningBtn');
+  btn.disabled = true;
+  document.getElementById('posBtnTxt').textContent = 'Derivando posizionamento…';
+  document.getElementById('posSpin').style.display = 'block';
+  document.getElementById('p1actions').style.display = 'none';
+  state.dataBadge = '';
+  state.discoveryMode = 'positioning';
+
+  document.getElementById('trendsOut').innerHTML = `
+    <div class="loader">
+      <div class="spin-lg"></div>
+      <p>Traduco il posizionamento in nicchia, angolo e libri…</p>
+    </div>`;
+
+  try {
+    const res = await fetch(BACKEND_URL + '/positioning', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        author_identity: identity,
+        ideal_reader: reader,
+        transformation: transformation,
+        competitors: competitors,
+        unfair_advantage: advantage
+      })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Backend error ' + res.status);
+    }
+    const data = await res.json();
+    renderPositioningResult(data);
+  } catch(e) {
+    document.getElementById('trendsOut').innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}</div>`;
+  } finally {
+    btn.disabled = false;
+    document.getElementById('posBtnTxt').textContent = '🎯 Genera dal Posizionamento';
+    document.getElementById('posSpin').style.display = 'none';
+  }
+}
+
+function renderPositioningResult(result) {
+  state.trends = [{
+    name: result.niche || '',
+    platform: 'Posizionamento',
+    description: result.positioning_summary || '',
+    heat: 5,
+    data_signal: result.why_this_works || '',
+    why_now: result.why_this_works || '',
+    books: result.books || [],
+    _positioning: true
+  }];
+  state.dataBadge = '';
+
+  const card = `
+    <div class="trend-card" onclick="selectTrend(0)" style="border-color:rgba(167,139,250,0.3)">
+      <div class="sel-badge">✓ Selezionato</div>
+      <div class="t-platform" style="color:#a78bfa">🎯 POSIZIONAMENTO</div>
+      <div class="t-name">${escHtml(result.niche || '')}</div>
+      <div class="t-desc">${escHtml(result.positioning_summary || '')}</div>
+      ${result.why_this_works ? `<div style="margin-top:8px;font-size:11px;color:#a78bfa;font-style:italic">💡 ${escHtml(result.why_this_works)}</div>` : ''}
+    </div>`;
+
+  document.getElementById('trendsOut').innerHTML = `<div class="trend-grid" style="margin-top:8px">${card}</div>`;
+  document.getElementById('p1actions').style.display = 'none';
 }
 
 function renderOpportunities(data) {

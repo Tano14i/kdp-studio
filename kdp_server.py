@@ -429,6 +429,13 @@ class NicheRequest(BaseModel):
     keyword: Optional[str] = ""
     timeframe: Optional[str] = "week"
 
+class PositioningRequest(BaseModel):
+    author_identity: str       # chi sei come autore/publisher, come vuoi essere percepito
+    ideal_reader: str           # psicografia del lettore ideale (non demografica)
+    transformation: str         # trasformazione specifica che prometti
+    competitors: Optional[str] = ""      # competitor diretti e differenziazione
+    unfair_advantage: Optional[str] = "" # cosa sai/hai vissuto che altri non hanno
+
 class GenerateRequest(BaseModel):
     trend_name: str
     book_title: str
@@ -1220,6 +1227,67 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
             "tiktok_hashtags_analyzed": len(tiktok_hashtags),
             "fetched_at": stamp,
             "note": "No niche was specified — opportunities discovered purely from raw data"
+        }
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/positioning")
+async def positioning_to_books(req: PositioningRequest):
+    """
+    Inverse flow from /discover: instead of starting from 'what's trending'
+    and writing a book toward it, start from the author's deliberate
+    editorial positioning (identity, ideal reader psychographics, promised
+    transformation, competitive differentiation, unfair advantage) and derive
+    the niche, angle, and book concepts that express it.
+    """
+    stamp = now_stamp()
+
+    prompt = f"""You are a KDP positioning strategist helping a publisher who has
+ALREADY done market analysis and decided their editorial positioning — they are
+NOT chasing trends. Your job is to translate their positioning into a clear
+niche/angle and concrete book concepts that express it.
+
+CURRENT MOMENT: {stamp}
+
+AUTHOR/PUBLISHER POSITIONING BRIEF:
+- Identity & desired perception: {req.author_identity}
+- Ideal reader (psychographic, not demographic): {req.ideal_reader}
+- Promised transformation: {req.transformation}
+- Competitors & differentiation: {req.competitors or "not specified"}
+- Unfair advantage (unique knowledge/experience): {req.unfair_advantage or "not specified"}
+
+TASK:
+1. Derive ONE clear editorial positioning statement that ties identity, reader,
+   transformation and differentiation together into a coherent angle.
+2. Derive the niche this positioning lives in (specific, not generic).
+3. Propose 3 book concepts that EXPRESS this positioning — each a different
+   format/angle on the same positioning, not random unrelated ideas.
+
+TITLE RULES — Amazon KDP rejects listings with "title": "subtitle"-style titles
+or keyword-stuffed titles (combined title+subtitle over ~200 characters):
+- "title": SHORT and punchy, under 60 characters, NO colon followed by a long
+  second subtitle baked into it
+- "subtitle": separate field for SEO/keywords, under 140 characters
+- title + subtitle combined MUST be under 200 characters total
+
+Return ONLY raw JSON, no markdown, ASCII-safe strings only:
+{{"positioning_summary":"2-3 sentences tying identity, reader, transformation and differentiation into one coherent editorial angle",
+"niche":"the specific niche this positioning lives in",
+"why_this_works":"1-2 sentences on why this positioning is differentiated and defensible vs competitors",
+"books":[
+  {{"type":"Book type","title":"Short punchy title","subtitle":"SEO subtitle expressing the positioning"}},
+  {{"type":"Book type 2","title":"Title 2","subtitle":"Subtitle 2"}},
+  {{"type":"Book type 3","title":"Title 3","subtitle":"Subtitle 3"}}
+]}}"""
+
+    try:
+        text = call_claude(prompt, 2000)
+        result = parse_json_safe(text)
+        result["meta"] = {
+            "mode": "positioning",
+            "fetched_at": stamp,
         }
         return result
     except Exception as e:
