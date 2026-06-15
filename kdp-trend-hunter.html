@@ -859,7 +859,7 @@ function renderNicheDiscovery(niches) {
   const items = niches.map(n => {
     const dots = Array.from({length:5},(_,j)=>`<span style="display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:3px;background:${j<n.heat?'#ff8c42':'#333'}"></span>`).join('');
     const nm = escHtml(n.name);
-    return `<div onclick="selectDiscoveredNiche('${nm.replace(/'/g,"\\'")}'" style="padding:14px 16px;border:1px solid #242424;border-radius:10px;cursor:pointer;background:#181818;transition:border-color 0.12s" onmouseover="this.style.borderColor='#ff8c42'" onmouseout="this.style.borderColor='#242424'">
+    return `<div onclick="selectDiscoveredNiche('${nm.replace(/'/g,"\\'")}')" style="padding:14px 16px;border:1px solid #242424;border-radius:10px;cursor:pointer;background:#181818;transition:border-color 0.12s" onmouseover="this.style.borderColor='#ff8c42'" onmouseout="this.style.borderColor='#242424'">
       <div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;margin-bottom:4px">${nm}</div>
       <div style="font-size:11px;color:#666;line-height:1.4;margin-bottom:8px">${escHtml(n.reason)}</div>
       <div style="font-size:10px;color:#ff8c42;font-style:italic;margin-bottom:8px">es: "${escHtml(n.example_book)}"</div>
