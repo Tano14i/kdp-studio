@@ -661,12 +661,22 @@ async def health_full():
             reddit_ok = r.status_code == 200
     except Exception:
         pass
+    tiktok_ok = False
+    try:
+        async with httpx.AsyncClient(timeout=5) as c:
+            r = await c.get("https://ads.tiktok.com/creative_radar_api/v1/popular_trend/hashtag/list", params={
+                "page": 1, "limit": 1, "period": 7, "country_code": "US", "sort_by": "popular",
+            }, headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"})
+            tiktok_ok = r.status_code == 200
+    except Exception:
+        pass
     return {
         "status": "ok",
         "reddit": reddit_ok,
         "reddit_mode": "public_json",
         "claude": bool(ANTHROPIC_KEY),
         "youtube": bool(YOUTUBE_API_KEY),
+        "tiktok": tiktok_ok,
         "timestamp": datetime.utcnow().isoformat()
     }
 
@@ -882,6 +892,45 @@ def classify_amazon_saturation(count: Optional[int]) -> tuple[str, str]:
         return "saturated", f"{count}+ libri su Amazon — nicchia satura, cerca una sotto-nicchia o angolo molto diverso"
 
 
+async def fetch_tiktok_trending(limit: int = 20) -> list[dict]:
+    """
+    Fetch trending hashtags from TikTok Creative Center's public trend API
+    (no auth/cookie required for the anonymous "popular" view). TikTok
+    frequently changes or rate-limits this endpoint, so this source degrades
+    gracefully to [] on any failure, like YouTube.
+    """
+    try:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            "Accept": "application/json, text/plain, */*",
+            "Referer": "https://ads.tiktok.com/business/creativecenter/inspiration/popular/hashtag/pc/en",
+        }
+        async with httpx.AsyncClient(timeout=10, headers=headers) as client:
+            r = await client.get("https://ads.tiktok.com/creative_radar_api/v1/popular_trend/hashtag/list", params={
+                "page": 1,
+                "limit": limit,
+                "period": 7,
+                "country_code": "US",
+                "sort_by": "popular",
+            })
+            if r.status_code != 200:
+                print(f"[TikTok] {r.status_code}: {r.text[:200]}")
+                return []
+            data = r.json()
+            items = []
+            for h in data.get("data", {}).get("list", [])[:limit]:
+                items.append({
+                    "hashtag": h.get("hashtag_name", ""),
+                    "rank": h.get("rank"),
+                    "publish_cnt": h.get("publish_cnt", 0),
+                    "video_views": h.get("video_views", 0),
+                })
+            return items
+    except Exception as e:
+        print(f"[TikTok] {e}")
+        return []
+
+
 @app.get("/discover")
 async def discover_unbiased():
     """
@@ -891,10 +940,11 @@ async def discover_unbiased():
     stamp = now_stamp()
 
     # Run all fetches in parallel
-    reddit_posts, gtrends, youtube_videos = await asyncio.gather(
+    reddit_posts, gtrends, youtube_videos, tiktok_hashtags = await asyncio.gather(
         fetch_reddit_global(),
         fetch_google_trending_now(),
-        fetch_youtube_trending()
+        fetch_youtube_trending(),
+        fetch_tiktok_trending()
     )
 
     # Format Reddit data
@@ -930,6 +980,16 @@ async def discover_unbiased():
     else:
         youtube_block = "YouTube Trending data unavailable (YOUTUBE_API_KEY not set or request failed).\n"
 
+    # Format TikTok Trending data
+    tiktok_block = ""
+    if tiktok_hashtags:
+        tiktok_block = "TIKTOK — Trending hashtags THIS WEEK (no search query, no niche filter):\n"
+        for i, h in enumerate(tiktok_hashtags[:20], 1):
+            views = f" — {h['video_views']:,} views" if h.get("video_views") else ""
+            tiktok_block += f'{i}. #{h["hashtag"]}{views}\n'
+    else:
+        tiktok_block = "TikTok Trending data unavailable this run.\n"
+
     prompt = f"""You are a KDP publishing expert with zero preconceptions about what niche to target.
 
 CURRENT MOMENT: {stamp}
@@ -941,6 +1001,7 @@ RAW DATA:
 {reddit_block}
 {gtrends_block}
 {youtube_block}
+{tiktok_block}
 
 TASK: Identify 5 KDP book opportunities hidden inside this raw data.
 
@@ -955,11 +1016,11 @@ RULES — THIS IS CRITICAL:
 - Each of the 5 must be in a DIFFERENT niche/category
 
 CROSS-SOURCE SCORING — for each opportunity:
-- "sources": list which raw data blocks above (reddit, google, youtube) contain
+- "sources": list which raw data blocks above (reddit, google, youtube, tiktok) contain
   a signal supporting this opportunity. Only include a source if you can quote
   a real signal from it in "data_signals".
 - "stage": classify based on signal strength and cross-source presence:
-  - "Esplode" = appears in 3 sources OR extremely strong signal in 2 (breaking out NOW)
+  - "Esplode" = appears in 3-4 sources OR extremely strong signal in 2 (breaking out NOW)
   - "Forte" = appears in 2 sources with strong signal (high demand, validate competition)
   - "Crescita" = appears in 1-2 sources, growing but not yet saturated (optimal KDP window)
   - "Pre-virale" = weak/early signal in 1 source — gap opportunity but unproven demand
@@ -1060,6 +1121,7 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
             "google_realtime": gtrends.get("realtime", [])[:5],
             "youtube_videos_analyzed": len(youtube_videos),
             "youtube_configured": bool(YOUTUBE_API_KEY),
+            "tiktok_hashtags_analyzed": len(tiktok_hashtags),
             "fetched_at": stamp,
             "note": "No niche was specified — opportunities discovered purely from raw data"
         }
