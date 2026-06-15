@@ -243,6 +243,9 @@ select option{background:var(--s2)}
   <button class="step-tab" data-panel="p4" onclick="goPanel('p4')">
     <span class="step-num">4</span> KDP Package
   </button>
+  <button class="step-tab" data-panel="p5" onclick="goPanel('p5')" style="margin-left:auto">
+    <span class="step-num">📚</span> I Miei Libri
+  </button>
 </nav>
 
 <!-- ============ PANEL 1: TREND DISCOVERY ============ -->
@@ -473,7 +476,37 @@ select option{background:var(--s2)}
 
   <div class="action-row">
     <button class="btn btn-ghost" onclick="goPanel('p1')">← Indietro</button>
+    <button class="btn btn-ghost" id="competitorBtn" style="display:none" onclick="checkCompetitors()">🔍 Check Amazon</button>
+    <button class="btn btn-ghost" id="titleVariantsBtn" style="display:none" onclick="generateTitleVariants()">✏️ Varianti Titolo</button>
     <button class="btn btn-accent" id="p2NextBtn" onclick="goPanel('p3')" disabled>Genera Contenuto →</button>
+  </div>
+
+  <!-- Competitor panel -->
+  <div id="competitorOut" style="display:none;margin-top:16px;background:var(--s1);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+    <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted)">🔍 Competitor Check</div>
+    </div>
+    <div id="competitorLinks" style="padding:14px 18px"></div>
+    
+    <!-- Market analysis: paste competitor titles -->
+    <div style="padding:14px 18px;border-top:1px solid var(--border);background:var(--s2)">
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">📊 Analisi Mercato — incolla titoli da Amazon</div>
+      <textarea id="competitorTitles" rows="4" placeholder="Incolla qui i titoli dei competitor trovati su Amazon, uno per riga:&#10;The Daily Stoic Journal&#10;Atomic Habits Workbook&#10;The 5 AM Club Journal..." style="font-size:12px;margin-bottom:8px"></textarea>
+      <button class="btn btn-ghost" onclick="analyzeMarket()" style="font-size:12px;padding:8px 16px">
+        <span id="mktBtnTxt">🤖 Analizza con Claude</span>
+        <div class="spin" id="mktSpin" style="display:none;width:12px;height:12px"></div>
+      </button>
+      <div id="marketAnalysisOut" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <!-- Title variants panel -->
+  <div id="titleVariantsOut" style="display:none;margin-top:16px;background:var(--s1);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+    <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted)">✏️ Varianti Titolo — 5 angoli psicologici</div>
+      <div class="spin" id="tvSpin" style="display:none;width:14px;height:14px"></div>
+    </div>
+    <div id="titleVariantsList" style="padding:14px 18px"></div>
   </div>
 </div>
 
@@ -545,11 +578,24 @@ select option{background:var(--s2)}
       <span id="pkgBtnTxt">📦 Genera KDP Package</span>
       <div class="spin" id="pkgSpin" style="display:none"></div>
     </button>
-    <button class="btn btn-green" id="exportAllBtn" style="display:none" onclick="exportFullPackage()">⬇️ Esporta tutto (.txt)</button>
+    <button class="btn btn-green" id="exportAllBtn" style="display:none" onclick="exportCurrentDoc()">📄 Esporta .doc</button>
+    <button class="btn btn-ghost" id="exportTxtBtn" style="display:none" onclick="exportFullPackage()">⬇️ .txt</button>
     <button class="btn btn-ghost" onclick="goPanel('p3')">← Indietro</button>
   </div>
 
   <div id="packageOut"></div>
+</div>
+
+<!-- ============ PANEL 5: MY BOOKS LIBRARY ============ -->
+<div class="panel" id="p5">
+  <div class="panel-hero">
+    <h2>📚 I Miei <span>Libri</span></h2>
+    <p>Tutti i libri che hai generato — clicca su uno per riaprire il KDP Package completo.</p>
+  </div>
+
+  <div id="libraryOut">
+    <div class="empty"><div class="ico">📭</div>Nessun libro salvato ancora.<br>Genera il KDP Package di un libro per vederlo qui.</div>
+  </div>
 </div>
 
 <script>
@@ -1477,7 +1523,8 @@ Return ONLY raw JSON. No markdown. No backticks. ASCII-safe strings only.
         book_type: bookType,
         audience,
         tone: document.getElementById('voiceTone')?.value || '',
-        reader_persona: document.getElementById('readerPersona')?.value || ''
+        reader_persona: document.getElementById('readerPersona')?.value || '',
+        language: document.getElementById('outputLanguage')?.value || 'English'
       });
     } else {
       const text = await callClaude(prompt, 4000);
@@ -1638,9 +1685,85 @@ function renderPackage(k) {
     metaSection,
     canvaSection
   ].join('');
+
+  // Auto-save to library
+  saveToLibrary({
+    title: k.title || state.selectedBook?.title || 'Untitled',
+    subtitle: k.subtitle || state.selectedBook?.subtitle || '',
+    niche: state.selectedTrend?.name || '',
+    pen_name: k.pen_name || '',
+    price_ebook: k.price_ebook,
+    keywords: k.keywords || [],
+    savedAt: Date.now(),
+    kdpData: k  // full package for restore
+  });
 }
 
-// Mark steps done when navigating forward
+// ── BOOK LIBRARY ─────────────────────────────────────────────
+const LIBRARY_KEY = 'kdp_studio_library_v1';
+
+function loadLibrary() {
+  try { return JSON.parse(localStorage.getItem(LIBRARY_KEY) || '[]'); }
+  catch(e) { return []; }
+}
+
+function saveToLibrary(bookData) {
+  const lib = loadLibrary();
+  // Avoid exact duplicates by title
+  const exists = lib.findIndex(b => b.title === bookData.title);
+  if (exists >= 0) lib.splice(exists, 1); // remove old, will re-add as newest
+  lib.unshift(bookData); // add to front
+  if (lib.length > 50) lib.pop(); // cap at 50
+  localStorage.setItem(LIBRARY_KEY, JSON.stringify(lib));
+  renderLibrary();
+}
+
+function deleteFromLibrary(idx) {
+  const lib = loadLibrary();
+  lib.splice(idx, 1);
+  localStorage.setItem(LIBRARY_KEY, JSON.stringify(lib));
+  renderLibrary();
+}
+
+function renderLibrary() {
+  const lib = loadLibrary();
+  const el = document.getElementById('libraryOut');
+  if (!el) return;
+  if (!lib.length) {
+    el.innerHTML = '<div class="empty"><div class="ico">📭</div>Nessun libro salvato ancora.<br>Genera il KDP Package di un libro per vederlo qui.</div>';
+    return;
+  }
+  el.innerHTML = lib.map((b, i) => `
+    <div style="background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:12px;display:flex;gap:16px;align-items:flex-start">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:4px">${escHtml(b.niche || 'KDP Book')}</div>
+        <div style="font-family:Syne,sans-serif;font-size:15px;font-weight:700;letter-spacing:-0.02em;margin-bottom:4px;line-height:1.3">${escHtml(b.title)}</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">${escHtml(b.subtitle || '')}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${b.pen_name ? `<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(168,139,250,0.1);color:#a78bfa">✍️ ${escHtml(b.pen_name)}</span>` : ''}
+          ${b.price_ebook ? `<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(34,197,94,0.1);color:#22c55e">💰 $${b.price_ebook} eBook</span>` : ''}
+          ${b.keywords?.length ? `<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(59,130,246,0.1);color:#3b82f6">🔑 ${b.keywords.length} keywords</span>` : ''}
+          <span style="font-size:10px;color:var(--muted2)">${new Date(b.savedAt).toLocaleDateString('it-IT', {day:'2-digit',month:'short',year:'numeric'})}</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0">
+        <button onclick="restoreBook(${i})" class="btn btn-accent" style="padding:7px 14px;font-size:12px">↗ Apri</button>
+        <button onclick="exportBookDocx(${i})" class="btn btn-ghost" style="padding:7px 14px;font-size:12px">📄 .docx</button>
+        <button onclick="deleteFromLibrary(${i})" style="background:none;border:none;color:var(--muted2);cursor:pointer;font-size:11px;text-align:center">🗑 elimina</button>
+      </div>
+    </div>`).join('');
+}
+
+function restoreBook(idx) {
+  const lib = loadLibrary();
+  const b = lib[idx];
+  if (!b || !b.kdpData) return;
+  goPanel('p4');
+  renderPackage(b.kdpData);
+  document.getElementById('exportAllBtn').style.display = 'flex';
+}
+
+// ── Mark steps done when navigating forward
 document.querySelectorAll('.step-tab').forEach(t => {
   t.addEventListener('click', () => {
     const panels = ['p1','p2','p3','p4'];
@@ -1884,30 +2007,110 @@ Write chapter ${n} completely with title, 3-4 sections, exercises, 1000-1500 wor
   }
 }
 
-// FIX 5: export full package as text file
+// ── EXPORT FUNCTIONS ─────────────────────────────────────────
+
 function exportFullPackage() {
+  // Export as .txt (quick reference)
   const blocks = document.querySelectorAll('#packageOut .cb-body');
   const headers = document.querySelectorAll('#packageOut .cb-badge');
-  let text = '═══════════════════════════════════\nKDP STUDIO — PACKAGE COMPLETO\n═══════════════════════════════════\n\n';
+  let text = 'KDP STUDIO — PACKAGE COMPLETO\n' + '='.repeat(40) + '\n\n';
   headers.forEach((h, i) => {
     const body = blocks[i];
     if (body) {
-      text += '── ' + h.textContent.trim() + ' ──\n';
+      text += '[ ' + h.textContent.trim() + ' ]\n';
       text += body.textContent.trim() + '\n\n';
     }
   });
   if (state.allChaptersText) {
-    text += '═══════════════════════════════════\nCONTENUTO CAPITOLI\n═══════════════════════════════════\n';
+    text += '='.repeat(40) + '\nCONTENUTO CAPITOLI\n' + '='.repeat(40) + '\n';
     text += state.allChaptersText;
   }
-  const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+  downloadBlob(text, 'text/plain', 'kdp_package', '.txt');
+}
+
+function exportAsDoc(bookData, chaptersText) {
+  // Export as Word-compatible HTML (.doc) — opens natively in Word/LibreOffice
+  const b = bookData || {};
+  const title = b.title || state.selectedBook?.title || 'Book';
+  const now = new Date().toLocaleDateString('it-IT');
+
+  let html = `
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="UTF-8">
+<title>${escHtml(title)}</title>
+<style>
+  body { font-family: Calibri, sans-serif; font-size: 11pt; line-height: 1.6; margin: 2cm; color: #1a1a1a; }
+  h1 { font-size: 22pt; font-weight: bold; margin-bottom: 6pt; color: #1a1a1a; }
+  h2 { font-size: 16pt; font-weight: bold; margin-top: 18pt; margin-bottom: 6pt; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 4pt; }
+  h3 { font-size: 13pt; font-weight: bold; margin-top: 12pt; color: #555; }
+  p { margin-bottom: 8pt; }
+  .meta { color: #666; font-size: 10pt; margin-bottom: 24pt; }
+  .kdp-field { background: #f8f8f8; border-left: 3px solid #ff4500; padding: 8pt 12pt; margin: 8pt 0; }
+  .kdp-label { font-size: 9pt; font-weight: bold; text-transform: uppercase; color: #888; margin-bottom: 4pt; }
+  .keyword-list { display: flex; flex-wrap: wrap; gap: 6pt; }
+  .keyword { background: #e8f0fe; padding: 2pt 8pt; border-radius: 3pt; font-size: 10pt; }
+  hr { border: none; border-top: 1px solid #eee; margin: 16pt 0; }
+  .page-break { page-break-before: always; }
+</style>
+</head>
+<body>
+
+<h1>${escHtml(title)}</h1>
+${b.subtitle ? `<p style="font-size:13pt;color:#555;margin-bottom:4pt">${escHtml(b.subtitle)}</p>` : ''}
+${b.pen_name ? `<p style="font-size:11pt;color:#888">by ${escHtml(b.pen_name)}</p>` : ''}
+<p class="meta">Generato con KDP Studio — ${now}</p>
+
+<hr>
+
+<h2>📦 KDP Package</h2>
+
+<div class="kdp-field"><div class="kdp-label">Tagline</div>${escHtml(b.tagline || '')}</div>
+<div class="kdp-field"><div class="kdp-label">Titolo Amazon</div><strong>${escHtml(b.title || '')}</strong></div>
+<div class="kdp-field"><div class="kdp-label">Sottotitolo</div>${escHtml(b.subtitle || '')}</div>
+<div class="kdp-field"><div class="kdp-label">Pen Name</div>${escHtml(b.pen_name || '')} — ${escHtml(b.pen_name_rationale || '')}</div>
+<div class="kdp-field"><div class="kdp-label">Prezzo</div>eBook: $${b.price_ebook || '4.99'} | Paperback: $${b.price_paperback || '12.99'} | Pagine: ~${b.page_count_estimate || '120'} | Trim: ${b.trim_size || '6x9'}</div>
+
+<h3>Descrizione Amazon</h3>
+<div class="kdp-field">${b.description || ''}</div>
+
+<h3>Descrizione Breve (mobile)</h3>
+<div class="kdp-field">${escHtml(b.short_description || '')}</div>
+
+<h3>Keywords SEO</h3>
+<div class="kdp-field">${(b.keywords || []).map(k => escHtml(k)).join(' | ')}</div>
+
+<h3>Categorie Amazon</h3>
+<div class="kdp-field">${(b.categories || []).map(c => '• ' + escHtml(c)).join('<br>')}</div>
+
+${chaptersText ? `
+<div class="page-break"></div>
+<h2>📖 Contenuto del Libro</h2>
+${chaptersText.split(/\n\n+/).map(p => p.startsWith('#') ? '<h3>' + p.replace(/^#+\s*/, '') + '</h3>' : '<p>' + p + '</p>').join('')}
+` : ''}
+
+</body></html>`;
+
+  downloadBlob(html, 'application/msword', title.replace(/[^a-z0-9]/gi,'_').toLowerCase(), '.doc');
+}
+
+function exportBookDocx(idx) {
+  const lib = loadLibrary();
+  const b = lib[idx];
+  if (!b) return;
+  exportAsDoc(b.kdpData, '');
+}
+
+function downloadBlob(content, type, filename, ext) {
+  const blob = new Blob([content], {type: type + ';charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  const title = (state.selectedBook?.title || 'kdp-package').replace(/[^a-z0-9]/gi,'_').toLowerCase();
-  a.download = 'kdp_' + title + '_' + Date.now() + '.txt';
+  a.download = filename + '_' + Date.now() + ext;
   a.click();
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 // FIX 5: show export button after package is rendered
@@ -1945,8 +2148,221 @@ generatePackage = async function() {
   if (exportBtn && document.getElementById('packageOut').children.length > 0) {
     exportBtn.style.display = 'flex';
   }
-  saveState(); // FIX 4: save after package
+  saveState();
 };
+
+// ── COMPETITOR CHECK ──────────────────────────────────────────
+function checkCompetitors() {
+  const b = state.selectedBook;
+  const t = state.selectedTrend;
+  if (!b) return;
+
+  const title = state.customTitle || b.title || '';
+  const keywords = (b.subtitle || '').split(' ').slice(0,4).join(' ');
+  const searchQ = encodeURIComponent(title);
+  const kwQ = encodeURIComponent(keywords);
+
+  const links = [
+    {
+      label: '🛒 Amazon — Ricerca diretta per titolo',
+      url: `https://www.amazon.com/s?k=${searchQ}&i=stripbooks`,
+      desc: 'Vedi quanti libri simili esistono e a che prezzo'
+    },
+    {
+      label: '🔑 Amazon — Ricerca per keyword',
+      url: `https://www.amazon.com/s?k=${kwQ}&i=stripbooks`,
+      desc: 'Analizza i competitor per keyword SEO'
+    },
+    {
+      label: '📊 Google Trends — Volume keyword',
+      url: `https://trends.google.com/trends/explore?q=${encodeURIComponent(title)}&geo=US`,
+      desc: 'Verifica il trend nel tempo'
+    },
+    {
+      label: '💬 Reddit — Discussioni sul topic',
+      url: `https://www.reddit.com/search/?q=${searchQ}&sort=top&t=month`,
+      desc: 'Leggi cosa dice la community'
+    },
+  ];
+
+  const out = document.getElementById('competitorOut');
+  const linksEl = document.getElementById('competitorLinks');
+  if (!out || !linksEl) return;
+
+  linksEl.innerHTML = links.map(l => `
+    <a href="${l.url}" target="_blank" rel="noopener"
+       style="display:flex;gap:12px;align-items:flex-start;padding:10px 14px;margin-bottom:8px;
+              background:var(--s2);border:1px solid var(--border2);border-radius:8px;
+              text-decoration:none;color:var(--text);transition:border-color 0.12s"
+       onmouseover="this.style.borderColor='var(--accent2)'"
+       onmouseout="this.style.borderColor='var(--border2)'">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500;margin-bottom:3px">${l.label}</div>
+        <div style="font-size:11px;color:var(--muted)">${l.desc}</div>
+      </div>
+      <span style="font-size:11px;color:var(--muted2);flex-shrink:0;padding-top:2px">↗</span>
+    </a>`).join('');
+
+  out.style.display = 'block';
+}
+
+// ── EXPORT CURRENT PACKAGE AS .DOC ───────────────────────────
+function exportCurrentDoc() {
+  const lib = loadLibrary();
+  const latest = lib[0]; // most recently saved
+  if (latest?.kdpData) {
+    exportAsDoc(latest.kdpData, state.allChaptersText || '');
+  } else {
+    exportFullPackage(); // fallback to txt
+  }
+}
+
+// ── ANALYZE MARKET ───────────────────────────────────────────
+async function analyzeMarket() {
+  const textarea = document.getElementById('competitorTitles');
+  const raw = (textarea?.value || '').trim();
+  if (!raw) { alert('Incolla almeno 3 titoli competitor prima di analizzare.'); return; }
+
+  const titles = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  if (titles.length < 2) { alert('Incolla almeno 2-3 titoli, uno per riga.'); return; }
+
+  const btn = document.getElementById('mktBtnTxt');
+  const spin = document.getElementById('mktSpin');
+  const out = document.getElementById('marketAnalysisOut');
+  if (btn) btn.textContent = 'Analizzando…';
+  if (spin) spin.style.display = 'block';
+  if (out) out.innerHTML = '';
+
+  const b = state.selectedBook;
+  const t = state.selectedTrend;
+
+  try {
+    const res = await callBackend('/analyze-market', {
+      titles,
+      prices: [],
+      book_title: state.customTitle || b?.title || '',
+      book_type: document.getElementById('bookTypeSelect')?.value || b?.type || '',
+      niche: t?.name || ''
+    });
+    const a = res.analysis || {};
+    const verdictColor = {go:'#22c55e', caution:'#f59e0b', avoid:'#ef4444'}[a.verdict] || '#666';
+    const verdictLabel = {go:'✅ Procedi', caution:'⚠️ Attenzione', avoid:'🛑 Evita'}[a.verdict] || a.verdict;
+
+    if (out) out.innerHTML = `
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px">
+        <div style="padding:8px 14px;border-radius:8px;background:${verdictColor}18;border:1px solid ${verdictColor}44;font-size:12px;font-weight:700;color:${verdictColor}">${verdictLabel}</div>
+        <div style="padding:8px 14px;border-radius:8px;background:var(--s2);font-size:12px;color:var(--muted)">Saturazione: <strong style="color:var(--text)">${a.saturation_level || '?'}</strong> (${a.saturation_score || '?'}/5)</div>
+        <div style="padding:8px 14px;border-radius:8px;background:var(--s2);font-size:12px;color:var(--muted)">Prezzo: <strong style="color:var(--text)">${a.price_sweet_spot || '?'}</strong></div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600">💡 Positioning advice</div>
+      <div style="font-size:13px;line-height:1.6;margin-bottom:12px">${escHtml(a.positioning_advice || '')}</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600">🎯 Angolo titolo consigliato</div>
+      <div style="font-size:13px;line-height:1.6;margin-bottom:12px;color:var(--accent2)">${escHtml(a.recommended_title_angle || '')}</div>
+      ${(a.gaps_identified||[]).length ? `<div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600">🕳 Gap identificati</div><ul style="font-size:12px;line-height:1.8;padding-left:16px">${a.gaps_identified.map(g=>`<li>${escHtml(g)}</li>`).join('')}</ul>` : ''}
+    `;
+  } catch(e) {
+    if (out) out.innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}</div>`;
+  } finally {
+    if (btn) btn.textContent = '🤖 Analizza con Claude';
+    if (spin) spin.style.display = 'none';
+  }
+}
+
+// ── GENERATE TITLE VARIANTS ───────────────────────────────────
+async function generateTitleVariants() {
+  const b = state.selectedBook;
+  const t = state.selectedTrend;
+  if (!b) return;
+
+  const out = document.getElementById('titleVariantsOut');
+  const list = document.getElementById('titleVariantsList');
+  const spin = document.getElementById('tvSpin');
+  if (out) out.style.display = 'block';
+  if (spin) spin.style.display = 'block';
+  if (list) list.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px 0">Generando 5 varianti…</div>';
+
+  try {
+    const res = await callBackend('/title-variants', {
+      book_type: document.getElementById('bookTypeSelect')?.value || b.type || '',
+      niche: t?.name || '',
+      trend: t?.description || '',
+      audience: document.getElementById('audience')?.value || '',
+      current_title: state.customTitle || b.title || '',
+      language: document.getElementById('outputLanguage')?.value || 'English'
+    });
+
+    const variants = res.variants || [];
+    const angleColors = {
+      'Curiosity Gap': '#a78bfa',
+      'Benefit-Driven': '#22c55e',
+      'Problem-Aware': '#ef4444',
+      'Identity-Based': '#3b82f6',
+      'Authority/Method': '#ff8c42',
+    };
+
+    if (list) list.innerHTML = variants.map(v => {
+      const color = angleColors[v.angle] || '#666';
+      const titleId = 'tv_' + Math.random().toString(36).slice(2);
+      return `<div style="padding:14px;border:1px solid var(--border);border-radius:8px;margin-bottom:10px;cursor:pointer;transition:border-color 0.12s"
+                   onmouseover="this.style.borderColor='${color}'" onmouseout="this.style.borderColor='var(--border)'"
+                   onclick="applyTitleVariant('${v.title.replace(/'/g,'\'')}',' ${v.subtitle.replace(/'/g,'\'') }')">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${color};margin-bottom:6px">${escHtml(v.angle)}</div>
+        <div id="${titleId}" style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;margin-bottom:3px">${escHtml(v.title)}</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px">${escHtml(v.subtitle)}</div>
+        <div style="font-size:11px;color:var(--muted2);font-style:italic">${escHtml(v.why)}</div>
+        <div style="font-size:10px;color:${color};margin-top:8px;font-weight:600">← Clicca per usare questo titolo</div>
+      </div>`;
+    }).join('');
+
+  } catch(e) {
+    if (list) list.innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}</div>`;
+  } finally {
+    if (spin) spin.style.display = 'none';
+  }
+}
+
+function applyTitleVariant(title, subtitle) {
+  const input = document.getElementById('customTitle');
+  if (input) {
+    input.value = title;
+    state.customTitle = title;
+    saveState();
+  }
+  // Close the panel
+  const out = document.getElementById('titleVariantsOut');
+  if (out) out.style.display = 'none';
+  // Visual feedback
+  const btn = document.getElementById('titleVariantsBtn');
+  if (btn) { btn.textContent = '✅ Titolo applicato'; setTimeout(() => btn.textContent = '✏️ Varianti Titolo', 2000); }
+}
+
+// ── SHOW EXPORT + COMPETITOR BTN AFTER BOOK SELECTED ─────────
+const _origSelectBook = selectBook;
+selectBook = function(i) {
+  _origSelectBook(i);
+  const cb = document.getElementById('competitorBtn');
+  if (cb) cb.style.display = 'flex';
+  const tv = document.getElementById('titleVariantsBtn');
+  if (tv) tv.style.display = 'flex';
+};
+
+// ── SHOW EXPORT BUTTONS AFTER PACKAGE ────────────────────────
+const _origGenPkg2 = generatePackage;
+generatePackage = async function() {
+  await _origGenPkg2();
+  ['exportAllBtn','exportTxtBtn'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && document.getElementById('packageOut').children.length > 0)
+      el.style.display = 'flex';
+  });
+  saveState();
+};
+
+// ── RENDER LIBRARY ON LOAD ────────────────────────────────────
+const _origDOMLoad = window.onload;
+document.addEventListener('DOMContentLoaded', () => {
+  renderLibrary();
+});
 </script>
 </body>
 </html>

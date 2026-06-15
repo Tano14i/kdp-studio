@@ -3,12 +3,14 @@ KDP Studio — Live Trend Backend v2
 ====================================
 Endpoints:
   GET  /health
-  GET  /discover        ← ZERO-BIAS: raw global data, no niche pre-selection
-  POST /trends          ← niche-guided discovery
+  GET  /discover          ← ZERO-BIAS: raw global data, no niche pre-selection
+  POST /trends            ← niche-guided discovery
   POST /niches
-  POST /generate
-  POST /generate-all
-  POST /package
+  POST /generate          ← book-type-aware content generation
+  POST /generate-all      ← sequential all chapters
+  POST /analyze-market    ← competitor intelligence from pasted Amazon data
+  POST /title-variants    ← 5 title angles (curiosity/benefit/problem/identity/authority)
+  POST /package           ← multilingual KDP package
 """
 
 import os, asyncio, json, random
@@ -16,7 +18,7 @@ from datetime import datetime
 from typing import Optional, List
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse, FileResponse
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 import httpx
 import anthropic
@@ -31,12 +33,6 @@ REDDIT_USER_AGENT = env("REDDIT_USER_AGENT", "KDPStudio/1.0 (personal use, no au
 app = FastAPI(title="KDP Studio API", version="2.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 claude = anthropic.Anthropic(api_key=ANTHROPIC_KEY)
-
-FRONTEND_FILE = os.path.join(os.path.dirname(__file__), "kdp-trend-hunter.html")
-
-@app.get("/")
-async def serve_frontend():
-    return FileResponse(FRONTEND_FILE)
 
 # ══════════════════════════════════════════════════════════════
 # UNIQUENESS ENGINE
@@ -235,6 +231,69 @@ NICHE_SUBREDDIT_POOL = {
     ],
 }
 
+# ── Book type templates — specific structure per format ──────
+BOOK_TYPE_TEMPLATES = {
+    "Guided Journal": {
+        "structure": "Each chapter contains: a 1-page intro explaining the theme, 4-6 guided journal prompts with 8-10 lines of writing space each, a reflection box at the end, and an affirmation. No long prose — prompts are the content.",
+        "chapter_instruction": "Write the chapter intro (150-200 words), then 5 SPECIFIC journal prompts (each prompt is 1-2 sentences, thought-provoking and personal), then a closing reflection prompt.",
+        "length_note": "Chapters are SHORT — prompts, not essays. 400-600 words of actual text per chapter, rest is writing space.",
+        "unique_elements": "Include space cues like '[Write here...]' after each prompt. End each chapter with a 1-sentence affirmation in italics.",
+    },
+    "Workbook": {
+        "structure": "Each chapter = one skill or concept. Sections: (1) Concept explanation 300w, (2) Why it matters, (3) Exercise or worksheet with fill-in sections, (4) Action steps checklist, (5) Progress tracker.",
+        "chapter_instruction": "Write concept explanation, then create a structured EXERCISE with labeled fields the reader fills in (e.g. 'My current situation:', 'My goal:', 'Action I will take:'). End with a numbered action checklist.",
+        "length_note": "Balance: 40% explanation, 60% exercises and worksheets. Make it interactive on the page.",
+        "unique_elements": "Use checkbox lists for action steps. Include 'My Notes:' sections. Add a chapter score tracker (1-10 how well they applied the concept).",
+    },
+    "30-Day Challenge Book": {
+        "structure": "Introduction + 30 daily entries. Each day = Day number, Theme, Challenge task (specific action), Reflection prompt, Done checkbox. Days build on each other progressively.",
+        "chapter_instruction": "Each DAY entry: Day X header, 1-sentence theme, specific CHALLENGE TASK (what exactly to do today, actionable), 2 reflection prompts, space for notes.",
+        "length_note": "Each day entry: 200-300 words max. The book is a daily companion, not an essay collection.",
+        "unique_elements": "Start with a Week 1/2/3/4 overview. Include a habit tracker grid. Day 1 should be extremely easy, Day 30 should feel like a milestone.",
+    },
+    "Planner": {
+        "structure": "Goal-setting intro + weekly/monthly spreads. Sections: Annual goals, Monthly intention pages, Weekly layout (Mon-Sun with priorities, tasks, notes), Daily log pages, Reflection pages.",
+        "chapter_instruction": "Create a PLANNING SPREAD with labeled sections: Weekly Intention (1 sentence), Top 3 Priorities, Daily task columns (Mon-Sun), Wins of the week, What to improve.",
+        "length_note": "Minimal prose — this is functional. Headers, labels, fill-in sections. The reader writes IN it.",
+        "unique_elements": "Include a habit tracker, mood tracker, water intake log. Monthly review pages with percentage-completion fields.",
+    },
+    "Prompt Book": {
+        "structure": "Organized by theme/section. Each page = one prompt. Variety of prompt types: writing prompts, thinking prompts, creative prompts, memory prompts. No answers provided.",
+        "chapter_instruction": "Write 8-10 VARIED prompts for this chapter theme. Mix: open-ended questions, scenario-based prompts, memory exploration, creative imagination, values clarification. Each prompt on its own conceptual space.",
+        "length_note": "Each prompt is 1-3 sentences maximum. The SPACE for the reader to write is the product. Include 8-10 lines of dotted space after each.",
+        "unique_elements": "Categorize by difficulty or depth: Surface → Deeper → Core. Include occasional 'Big Question' prompts marked with a star.",
+    },
+    "Activity Book": {
+        "structure": "Chapters by theme. Each chapter mixes: short reading (200w), activity or exercise (specific to the topic), reflection, and a mini-challenge to complete in daily life.",
+        "chapter_instruction": "Write a short intro, then design ONE SPECIFIC ACTIVITY (e.g. mapping exercise, letter-writing, body scan, values sort, gratitude list with twist). Make it interactive and time-bound (10-15 min).",
+        "length_note": "Activities should have clear instructions: Step 1, Step 2, Step 3. Include a 'You will need:' section if relevant.",
+        "unique_elements": "Include estimated time per activity. Add 'Level up' variations for each activity (easier and harder versions).",
+    },
+    "Self-help Guide": {
+        "structure": "Classic non-fiction structure. Each chapter: hook opening, core concept, research or evidence, personal application framework, case study or story, action steps.",
+        "chapter_instruction": "Write a full chapter with: compelling opening (hook), main concept explained clearly, 1 research reference or expert insight, practical framework (3-step or similar), concrete action steps, chapter summary.",
+        "length_note": "This is prose-heavy. Full paragraphs, narrative flow, 1200-2000 words per chapter.",
+        "unique_elements": "End each chapter with 'Key Takeaways' (3 bullets) and 'This Week's Practice' (1 specific action). Include pull-quotes.",
+    },
+}
+
+def get_book_template(book_type: str) -> dict:
+    """Match book type string to template, with fuzzy matching."""
+    book_type_lower = book_type.lower()
+    for key, template in BOOK_TYPE_TEMPLATES.items():
+        if key.lower() in book_type_lower or book_type_lower in key.lower():
+            return template
+    # Defaults
+    if any(w in book_type_lower for w in ["journal", "diary"]):
+        return BOOK_TYPE_TEMPLATES["Guided Journal"]
+    if any(w in book_type_lower for w in ["work", "exercise"]):
+        return BOOK_TYPE_TEMPLATES["Workbook"]
+    if any(w in book_type_lower for w in ["plan", "organiz"]):
+        return BOOK_TYPE_TEMPLATES["Planner"]
+    if any(w in book_type_lower for w in ["challenge", "day"]):
+        return BOOK_TYPE_TEMPLATES["30-Day Challenge Book"]
+    return BOOK_TYPE_TEMPLATES["Self-help Guide"]
+
 # ── Chapter opening styles pool ───────────────────────────────
 OPENING_STYLES = [
     "Start with a vivid real-world scenario or micro-story (2-3 sentences) that drops the reader into the feeling",
@@ -359,6 +418,7 @@ class PackageRequest(BaseModel):
     audience: str
     tone: Optional[str] = ""
     reader_persona: Optional[str] = ""
+    language: Optional[str] = "English"
 
 # ══════════════════════════════════════════════════════════════
 # REDDIT HELPER
@@ -515,6 +575,18 @@ def build_voice_ctx(tone="", language="English", cultural_inspiration="",
 # ══════════════════════════════════════════════════════════════
 # ROUTES
 # ══════════════════════════════════════════════════════════════
+# ── Serve frontend HTML (so Railway hosts everything) ────────
+@app.get("/")
+async def serve_frontend():
+    from fastapi.responses import FileResponse
+    import os
+    # Look for index.html in same dir as server
+    html_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "index.html")
+    if os.path.exists(html_path):
+        return FileResponse(html_path, media_type="text/html")
+    return {"message": "KDP Studio API running. Frontend not found — place index.html in same folder."}
+
+
 @app.get("/health")
 async def health():
     # Return immediately — Reddit status checked async in background
@@ -987,6 +1059,14 @@ async def generate_content(req: GenerateRequest):
         f'Trend: "{req.trend_name}"\n'
         f'Audience: {req.audience}'
     )
+    # Get book-type-specific template
+    book_tmpl = get_book_template(req.book_type)
+    book_format_ctx = f"""BOOK FORMAT RULES (follow precisely for {req.book_type}):
+Structure: {book_tmpl["structure"]}
+Chapter instruction: {book_tmpl["chapter_instruction"]}
+Length note: {book_tmpl["length_note"]}
+Unique elements: {book_tmpl["unique_elements"]}"""
+
     voice_ctx = build_voice_ctx(
         tone=req.tone,
         language=req.language or "English",
@@ -1002,11 +1082,12 @@ async def generate_content(req: GenerateRequest):
 
 {book_ctx}
 
+{book_format_ctx}
+
 {voice_ctx}
 
-Write a professional outline with 10 chapters. For each chapter:
-- Chapter number and punchy title
-- 4 subsection titles (titles only, no descriptions)
+Write a professional outline with 10 chapters structured for a {req.book_type}.
+For each chapter: chapter number, punchy title, and 4 subsection titles.
 
 Format:
 Chapter 1: Title
@@ -1025,16 +1106,17 @@ All 10 chapters. No extra text."""
 {book_ctx}
 {f"Outline:{chr(10)}{req.outline[:600]}" if req.outline else ""}
 
+{book_format_ctx}
+
 {voice_ctx}
 
-Write CHAPTER {n} completely:
+Write CHAPTER {n} completely following the book format rules above.
 - Chapter title as header
 - Follow the opening style specified above EXACTLY
-- 3-4 full sections with subheadings, content, prompts or exercises for {req.book_type}
-- Chapter summary or key takeaways
+- Follow the chapter instruction for {req.book_type} precisely
 - Target: {word_count} words
 
-Follow the voice guidelines precisely. Make it feel like no other chapter in any other book."""
+Make it feel like no other chapter in any other book."""
         max_tok = 4000
 
     elif req.tab == "intro":
@@ -1160,11 +1242,120 @@ Use the uniqueness seed to ensure this version is unlike any previous generation
     )
 
 
+@app.post("/analyze-market")
+async def analyze_market(req: dict):
+    """
+    Analyze market positioning based on user-pasted Amazon competitor data.
+    User pastes titles/prices from Amazon search results, Claude analyzes.
+    """
+    titles = req.get("titles", [])         # list of competitor titles
+    prices = req.get("prices", [])          # list of prices as strings
+    book_title = req.get("book_title", "")
+    book_type = req.get("book_type", "")
+    niche = req.get("niche", "")
+    stamp = now_stamp()
+
+    if not titles:
+        raise HTTPException(status_code=400, detail="Provide at least 3 competitor titles")
+
+    competitors_block = "\n".join(
+        f'- "{t}" — ${prices[i]}' if i < len(prices) and prices[i] else f'- "{t}"'
+        for i, t in enumerate(titles)
+    )
+
+    prompt = f"""You are an Amazon KDP market analyst. Analyze this competitor data and give strategic advice.
+
+My book: "{book_title}" ({book_type}) in niche: "{niche}"
+Analysis date: {stamp}
+
+COMPETITOR TITLES ON AMAZON:
+{competitors_block}
+
+Analyze and return ONLY raw JSON, ASCII-safe:
+{{"analysis":{{
+  "competitor_count": {len(titles)},
+  "saturation_level": "low|medium|high",
+  "saturation_score": 3,
+  "avg_price_estimate": "$X.XX",
+  "price_sweet_spot": "$X.XX - $X.XX",
+  "title_patterns": ["pattern 1 seen in competitors","pattern 2","pattern 3"],
+  "gaps_identified": ["gap or angle not covered by competitors 1","gap 2","gap 3"],
+  "positioning_advice": "2-3 sentences on how to differentiate from these competitors",
+  "recommended_title_angle": "Specific angle for MY book title that stands out from these competitors",
+  "subtitle_keywords": ["keyword 1","keyword 2","keyword 3","keyword 4"],
+  "verdict": "go|caution|avoid",
+  "verdict_reason": "1 sentence explaining the verdict"
+}}}}"""
+
+    try:
+        text = call_claude(prompt, 1500)
+        result = parse_json_safe(text)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/title-variants")
+async def generate_title_variants(req: dict):
+    """
+    Generate 5 title variants with different positioning angles.
+    """
+    book_type = req.get("book_type", "")
+    niche = req.get("niche", "")
+    trend = req.get("trend", "")
+    audience = req.get("audience", "")
+    current_title = req.get("current_title", "")
+    language = req.get("language", "English")
+
+    prompt = f"""You are an Amazon KDP title expert. Generate 5 title variants with different angles.
+
+Book type: {book_type}
+Niche/trend: {niche} — {trend}
+Audience: {audience}
+Current working title: "{current_title}"
+Output language: {language}
+
+Generate 5 title + subtitle combinations, each with a DIFFERENT psychological angle:
+1. CURIOSITY GAP — makes reader feel they are missing crucial knowledge
+2. BENEFIT-DRIVEN — leads with the transformation or outcome
+3. PROBLEM-AWARE — names the specific pain point first
+4. IDENTITY-BASED — speaks to who the reader wants to become
+5. AUTHORITY/METHOD — implies a specific system or proven approach
+
+Return ONLY raw JSON, ASCII-safe:
+{{"variants":[
+{{"angle":"Curiosity Gap","title":"Title here","subtitle":"Subtitle here","why":"1 sentence why this angle works for this audience"}},
+{{"angle":"Benefit-Driven","title":"Title here","subtitle":"Subtitle here","why":"1 sentence"}},
+{{"angle":"Problem-Aware","title":"Title here","subtitle":"Subtitle here","why":"1 sentence"}},
+{{"angle":"Identity-Based","title":"Title here","subtitle":"Subtitle here","why":"1 sentence"}},
+{{"angle":"Authority/Method","title":"Title here","subtitle":"Subtitle here","why":"1 sentence"}}
+]}}"""
+
+    try:
+        text = call_claude(prompt, 1500)
+        return parse_json_safe(text)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/package")
 async def generate_package(req: PackageRequest):
     tone_note = f"Tone/voice of the book: {req.tone}" if req.tone else ""
     persona_note = f"Target reader persona: {req.reader_persona}" if req.reader_persona else ""
     stamp = now_stamp()
+
+    # Determine target marketplace from language
+    lang = getattr(req, 'language', 'English') or 'English'
+    marketplace_map = {
+        "Italian": "Amazon.it",
+        "Dutch": "Amazon.nl",
+        "German": "Amazon.de",
+        "French": "Amazon.fr",
+        "Spanish": "Amazon.es",
+        "English": "Amazon.com",
+    }
+    marketplace = marketplace_map.get(lang, "Amazon.com")
+    lang_note = f"Output language: {lang} (optimize for {marketplace})" if lang != "English" else "Output language: English (optimize for Amazon.com and Amazon.co.uk)"
 
     prompt = f"""You are an Amazon KDP publishing expert. Generate a complete KDP listing package.
 
@@ -1175,7 +1366,11 @@ Audience: {req.audience}
 Platform: {req.trend_platform}
 {tone_note}
 {persona_note}
+{lang_note}
 Generated: {stamp}
+
+IMPORTANT: Write title, subtitle, description, tagline, and keywords in {lang}.
+Keywords must be search terms that {lang}-speaking readers actually use on {marketplace}.
 
 Return ONLY raw JSON. No markdown. ASCII-safe strings only.
 
@@ -1216,9 +1411,10 @@ if __name__ == "__main__":
     print(f"   Subreddit pool:  {sum(len(v) for v in NICHE_SUBREDDIT_POOL.values())} subreddits across {len(NICHE_SUBREDDIT_POOL)} niches")
     print(f"   Opening styles:  {len(OPENING_STYLES)} rotating")
     print(f"   Tone variants:   {len(TONE_DESCRIPTORS)} rotating")
-    port = int(env("PORT", "8000"))
-    print(f"\n   Docs:        http://localhost:{port}/docs")
-    print(f"   Zero-bias:   http://localhost:{port}/discover\n")
-    print(f"   Health: http://localhost:{port}/health\n")
+    print(f"\n   Docs:        http://localhost:8000/docs")
+    print(f"   Zero-bias:   http://localhost:8000/discover\n")
+    print(f"   Health: http://localhost:8000/health\n")
 
+    port = int(os.environ.get("PORT", 8000))
+    print(f"   Port: {port}")
     uvicorn.run(app, host="0.0.0.0", port=port, reload=False)
