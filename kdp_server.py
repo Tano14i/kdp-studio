@@ -1015,6 +1015,15 @@ RULES — THIS IS CRITICAL:
 - Be specific and surprising — avoid obvious conclusions
 - Each of the 5 must be in a DIFFERENT niche/category
 
+KDP FIT — for each opportunity, honestly assess:
+- "kdp_fit": "high" | "medium" | "low" — how well this niche translates into a
+  book/journal/workbook/planner people would actually PAY for, vs. a topic
+  people only consume as free video/news/forum content
+  - "high" = clear evergreen audience for a companion book/journal/workbook/planner
+  - "medium" = possible but needs the right angle (e.g. fandom journal, not a "guide")
+  - "low" = pure entertainment/news/gaming content — audience expects free video/wiki, not a paid book
+- "kdp_fit_reason": 1 sentence explaining the verdict, specific to this niche
+
 CROSS-SOURCE SCORING — for each opportunity:
 - "sources": list which raw data blocks above (reddit, google, youtube, tiktok) contain
   a signal supporting this opportunity. Only include a source if you can quote
@@ -1033,6 +1042,8 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
   "data_signals": ["exact Reddit post title or Google query or YouTube title 1", "signal 2", "signal 3"],
   "sources": ["reddit","google"],
   "stage": "Crescita",
+  "kdp_fit": "high",
+  "kdp_fit_reason": "1 sentence on why this fits a paid book/journal/workbook audience",
   "heat": 4,
   "why_now": "1 sentence: why this moment is the right time for this book",
   "books": [
@@ -1046,6 +1057,8 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
   "data_signals": ["signal 1","signal 2"],
   "sources": ["reddit"],
   "stage": "Pre-virale",
+  "kdp_fit": "medium",
+  "kdp_fit_reason": "1 sentence",
   "heat": 5,
   "why_now": "1 sentence",
   "books": [
@@ -1059,6 +1072,8 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
   "data_signals": ["signal 1","signal 2"],
   "sources": ["google","youtube"],
   "stage": "Forte",
+  "kdp_fit": "low",
+  "kdp_fit_reason": "1 sentence",
   "heat": 3,
   "why_now": "1 sentence",
   "books": [
@@ -1072,6 +1087,8 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
   "data_signals": ["signal 1","signal 2"],
   "sources": ["reddit","google","youtube"],
   "stage": "Esplode",
+  "kdp_fit": "high",
+  "kdp_fit_reason": "1 sentence",
   "heat": 4,
   "why_now": "1 sentence",
   "books": [
@@ -1085,6 +1102,8 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
   "data_signals": ["signal 1","signal 2"],
   "sources": ["reddit"],
   "stage": "Crescita",
+  "kdp_fit": "medium",
+  "kdp_fit_reason": "1 sentence",
   "heat": 5,
   "why_now": "1 sentence",
   "books": [
