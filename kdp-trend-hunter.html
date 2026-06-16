@@ -1211,8 +1211,8 @@ function renderTrends() {
     return;
   }
   const badge = state.dataBadge || '';
-  const html = `<div>${badge}</div><div class="trend-grid" style="margin-top:8px">${state.trends.map((t,i) => `
-    <div class="trend-card" onclick="selectTrend(${i})">
+  const cardsHtml = state.trends.map((t,i) => `
+    <div class="trend-card" id="tcard_${i}" onclick="selectTrend(${i})">
       <div class="sel-badge">✓ Selezionato</div>
       <div class="t-platform">${escHtml(t.platform)}</div>
       <div class="t-name">${escHtml(t.name)}</div>
@@ -1221,10 +1221,84 @@ function renderTrends() {
         📡 ${escHtml(t.data_signal)}
         ${interpretSignal(t.data_signal) ? `<div style="margin-top:4px;font-size:10px;color:var(--accent2);font-weight:500">${escHtml(interpretSignal(t.data_signal))}</div>` : ''}
       </div>` : ''}
-      <div class="heat-row">${Array.from({length:5},(_,j)=>`<div class="hdot${j<t.heat?' on':''}"></div>`).join('')}</div>
-    </div>`).join('')}</div>`;
-  document.getElementById('trendsOut').innerHTML = html;
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
+        <div class="heat-row" style="margin-top:0">${Array.from({length:5},(_,j)=>`<div class="hdot${j<t.heat?' on':''}"></div>`).join('')}</div>
+        <button onclick="event.stopPropagation();verifyTrend(${i})" style="font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid rgba(59,130,246,0.4);background:rgba(59,130,246,0.08);color:#93c5fd;cursor:pointer;white-space:nowrap" id="vbtn_${i}">🔍 Verifica</button>
+      </div>
+      <div id="verify_${i}" style="display:none;margin-top:10px;padding:10px;background:rgba(0,0,0,0.3);border-radius:8px;border:1px solid rgba(255,255,255,0.06)"></div>
+    </div>`).join('');
+  const extendBtn = `<div style="margin-top:16px;text-align:center">
+    <button onclick="extendSearch()" id="extendBtn" style="padding:8px 20px;border-radius:8px;border:1px solid rgba(255,140,66,0.4);background:rgba(255,140,66,0.08);color:var(--accent2);font-size:12px;font-weight:600;cursor:pointer">
+      <span id="extendBtnTxt">➕ Estendi ricerca — aggiungi altri risultati</span>
+    </button>
+  </div>`;
+  document.getElementById('trendsOut').innerHTML = `<div>${badge}</div><div class="trend-grid" style="margin-top:8px">${cardsHtml}</div>${extendBtn}`;
   document.getElementById('p1actions').style.display = 'none';
+}
+
+async function verifyTrend(idx) {
+  const t = state.trends[idx];
+  if (!t) return;
+  const panel = document.getElementById('verify_' + idx);
+  const btn = document.getElementById('vbtn_' + idx);
+  if (panel.style.display !== 'none') { panel.style.display = 'none'; btn.textContent = '🔍 Verifica'; return; }
+
+  btn.textContent = '⏳…';
+  panel.style.display = 'block';
+  panel.innerHTML = '<div style="font-size:11px;color:var(--muted)">Recupero dati…</div>';
+
+  try {
+    const data = await callBackend('/validate-niche', { niche: t.name, market_language: getMarketLang() });
+    const gtScore = data.google_trends_score;
+    const gtColor = gtScore === null ? '#666' : gtScore >= 50 ? '#22c55e' : gtScore >= 20 ? '#eab308' : '#ef4444';
+    const gtLabel = gtScore === null ? 'N/D' : gtScore + '/100';
+    const suggestions = [...(data.google_suggestions||[]).slice(0,6), ...(data.youtube_suggestions||[]).slice(0,4)];
+    panel.innerHTML = `
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+        <span style="font-size:10px;padding:3px 8px;border-radius:4px;background:${gtColor}18;color:${gtColor};border:1px solid ${gtColor}40">📈 Google Trends: ${gtLabel}</span>
+        ${data.rising_queries && data.rising_queries.length ? `<span style="font-size:10px;padding:3px 8px;border-radius:4px;background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.3)">🚀 Rising: ${escHtml(data.rising_queries.slice(0,2).join(', '))}</span>` : ''}
+      </div>
+      ${suggestions.length ? `<div style="font-size:10px;color:var(--muted);margin-bottom:6px">🔍 Cosa cercano: ${suggestions.map(s=>`"${escHtml(s)}"`).join(' · ')}</div>` : ''}
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <a href="${escHtml(data.amazon_search_url)}" target="_blank" onclick="event.stopPropagation()" style="font-size:11px;padding:4px 10px;border-radius:6px;background:rgba(255,140,66,0.12);color:var(--accent2);border:1px solid rgba(255,140,66,0.3);text-decoration:none">🛒 Amazon →</a>
+        <a href="${escHtml(data.google_trends_url)}" target="_blank" onclick="event.stopPropagation()" style="font-size:11px;padding:4px 10px;border-radius:6px;background:rgba(59,130,246,0.1);color:#93c5fd;border:1px solid rgba(59,130,246,0.3);text-decoration:none">📈 Google Trends →</a>
+      </div>`;
+  } catch(e) {
+    panel.innerHTML = `<div style="font-size:11px;color:#ef4444">⚠️ ${escHtml(e.message)}</div>`;
+  }
+  btn.textContent = '🔍 Chiudi';
+}
+
+async function extendSearch() {
+  const btn = document.getElementById('extendBtn');
+  const txt = document.getElementById('extendBtnTxt');
+  if (!btn || btn.disabled) return;
+  btn.disabled = true;
+  txt.textContent = '⏳ Cercando altri trend…';
+
+  const platforms = getPills('platPills');
+  const niches = getPills('nichePills');
+  const kw = document.getElementById('kwInput').value.trim();
+  const niche = state.customNiche || niches[0] || 'Any niche';
+  const existingNames = new Set(state.trends.map(t => t.name.toLowerCase()));
+
+  try {
+    const parsed = await callBackend('/trends', {
+      platforms, niche, keyword: kw || 'emerging underserved',
+      timeframe: getTimeframe(), market_language: getMarketLang()
+    });
+    const newTrends = (parsed.trends || []).filter(t => !existingNames.has(t.name.toLowerCase()));
+    if (newTrends.length === 0) {
+      txt.textContent = '✓ Nessun trend nuovo trovato — tutti già mostrati';
+    } else {
+      state.trends = [...state.trends, ...newTrends];
+      renderTrends();
+    }
+  } catch(e) {
+    txt.textContent = '⚠️ Errore — riprova';
+  } finally {
+    if (btn) { btn.disabled = false; }
+  }
 }
 
 // ── ZERO-BIAS DISCOVERY ───────────────────────────────────────

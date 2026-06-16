@@ -487,6 +487,72 @@ class PackageRequest(BaseModel):
     language: Optional[str] = "English"
 
 # ══════════════════════════════════════════════════════════════
+LANG_CODE_MAP = {
+    "English": "en", "Italian": "it", "Spanish": "es",
+    "German": "de", "French": "fr", "Portuguese": "pt",
+}
+
+# ══════════════════════════════════════════════════════════════
+# GOOGLE / YOUTUBE AUTOCOMPLETE HELPERS
+# ══════════════════════════════════════════════════════════════
+async def fetch_google_autocomplete(query: str, lang_code: str = "en") -> list[str]:
+    try:
+        async with httpx.AsyncClient(timeout=8) as client:
+            r = await client.get(
+                "https://suggestqueries.google.com/complete/search",
+                params={"client": "firefox", "q": query, "hl": lang_code},
+                headers={"Accept-Language": lang_code}
+            )
+            if r.status_code != 200:
+                return []
+            data = r.json()
+            return [s for s in (data[1] if len(data) > 1 else []) if s.lower() != query.lower()][:10]
+    except Exception as e:
+        print(f"[Google Autocomplete] {query}: {e}")
+        return []
+
+async def fetch_youtube_autocomplete(query: str, lang_code: str = "en") -> list[str]:
+    try:
+        async with httpx.AsyncClient(timeout=8) as client:
+            r = await client.get(
+                "https://suggestqueries.google.com/complete/search",
+                params={"client": "firefox", "ds": "yt", "q": query, "hl": lang_code},
+                headers={"Accept-Language": lang_code}
+            )
+            if r.status_code != 200:
+                return []
+            data = r.json()
+            return [s for s in (data[1] if len(data) > 1 else []) if s.lower() != query.lower()][:10]
+    except Exception as e:
+        print(f"[YouTube Autocomplete] {query}: {e}")
+        return []
+
+async def fetch_multi_autocomplete(niche: str, lang_code: str = "en") -> dict:
+    """Batch Google + YouTube autocomplete across multiple seed queries."""
+    kw = niche.strip()
+    seeds_google = [kw, f"{kw} book", f"{kw} guide", f"how to {kw}", f"best {kw}"]
+    seeds_yt = [kw, f"how to {kw}", f"{kw} tips"]
+    tasks = [fetch_google_autocomplete(s, lang_code) for s in seeds_google]
+    tasks += [fetch_youtube_autocomplete(s, lang_code) for s in seeds_yt]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    google_seen, google_all = set(), []
+    for r in results[:len(seeds_google)]:
+        if isinstance(r, list):
+            for s in r:
+                if s not in google_seen:
+                    google_seen.add(s); google_all.append(s)
+
+    yt_seen, yt_all = set(), []
+    for r in results[len(seeds_google):]:
+        if isinstance(r, list):
+            for s in r:
+                if s not in yt_seen:
+                    yt_seen.add(s); yt_all.append(s)
+
+    return {"google": google_all[:25], "youtube": yt_all[:15]}
+
+# ══════════════════════════════════════════════════════════════
 # REDDIT HELPER
 # ══════════════════════════════════════════════════════════════
 async def fetch_reddit_posts(niche: str, keyword: str = "", timeframe: str = "week", force_subreddits: list = None) -> list[dict]:
@@ -1323,79 +1389,101 @@ async def get_trends(req: TrendRequest):
     amazon_market = lang_cfg["amazon"]
     lang_subreddits = lang_cfg["subreddits"]
 
+    lang_code = LANG_CODE_MAP.get(lang, "en")
     tf_info = get_timeframe(req.timeframe or "week")
-    reddit_posts, gtrends = await asyncio.gather(
-        fetch_reddit_posts(req.niche, req.keyword or "", req.timeframe or "week", force_subreddits=lang_subreddits),
-        fetch_google_trends(req.niche, req.keyword or "", req.timeframe or "week")
-    )
 
-    reddit_summary = ""
-    if reddit_posts:
-        reddit_summary = f"REDDIT — Top viral posts this week (from: {', '.join(set(p['subreddit'] for p in reddit_posts[:10]))}):\n"
-        for i, p in enumerate(reddit_posts[:15], 1):
-            reddit_summary += f"{i}. [r/{p['subreddit']}] \"{p['title']}\" — {p['score']} upvotes\n"
-    else:
-        reddit_summary = "Reddit data unavailable this run.\n"
+    # Primary: Google + YouTube autocomplete (language-aware, works from any IP)
+    # Secondary: Google Trends
+    # Reddit: English only (low signal for non-EN markets)
+    fetch_tasks = [
+        fetch_multi_autocomplete(req.niche, lang_code),
+        fetch_google_trends(req.niche, req.keyword or "", req.timeframe or "week"),
+    ]
+    if lang == "English":
+        fetch_tasks.append(fetch_reddit_posts(req.niche, req.keyword or "", req.timeframe or "week", force_subreddits=lang_subreddits))
+    results = await asyncio.gather(*fetch_tasks, return_exceptions=True)
+
+    autocomplete_data = results[0] if isinstance(results[0], dict) else {"google": [], "youtube": []}
+    gtrends = results[1] if isinstance(results[1], dict) else {}
+    reddit_posts = results[2] if len(results) > 2 and isinstance(results[2], list) else []
+
+    autocomplete_block = ""
+    if autocomplete_data["google"]:
+        autocomplete_block += f"GOOGLE SEARCH — What {lang} speakers actively search in this niche:\n"
+        for s in autocomplete_data["google"][:20]:
+            autocomplete_block += f'  - "{s}"\n'
+    if autocomplete_data["youtube"]:
+        autocomplete_block += f"\nYOUTUBE — What {lang} speakers want to learn (video intent):\n"
+        for s in autocomplete_data["youtube"][:12]:
+            autocomplete_block += f'  - "{s}"\n'
+    if not autocomplete_block:
+        autocomplete_block = "Autocomplete data unavailable this run.\n"
 
     gtrends_summary = ""
     if gtrends.get("avg_interest"):
-        gtrends_summary = f"GOOGLE TRENDS — 7-day avg (seeds rotated each run):\n"
+        gtrends_summary = "GOOGLE TRENDS — Interest over time:\n"
         for term, val in gtrends["avg_interest"].items():
             gtrends_summary += f"  '{term}': {val}/100\n"
         if gtrends.get("rising_queries"):
-            gtrends_summary += "Rising breakout queries:\n"
+            gtrends_summary += "Rising queries:\n"
             for term, queries in gtrends["rising_queries"].items():
                 if queries:
                     tops = [q.get("query","") for q in queries[:3]]
                     gtrends_summary += f"  Under '{term}': {', '.join(tops)}\n"
 
-    prompt = f"""You are a KDP publishing expert analyzing REAL social media data.
+    reddit_summary = ""
+    if reddit_posts:
+        reddit_summary = "\nREDDIT (English signal) — Viral posts:\n"
+        for i, p in enumerate(reddit_posts[:12], 1):
+            reddit_summary += f'{i}. [r/{p["subreddit"]}] "{p["title"]}" — {p["score"]} upvotes\n'
+
+    prompt = f"""You are a KDP publishing expert analyzing REAL search intent data.
 
 CURRENT MOMENT: {stamp}
-ANALYSIS WINDOW: {tf_info["label"]} ({tf_info["gtrends"]})
+ANALYSIS WINDOW: {tf_info["label"]}
 STRATEGIC CONTEXT: {tf_info["strategy"]}
-TARGET MARKET: {lang} — books must be written in {lang}, targeting readers on {amazon_market}
-{"" if lang == "English" else f"IMPORTANT: All book titles, subtitles, descriptions must be in {lang}. Trends must resonate with {lang}-speaking readers and their cultural context."}
+TARGET MARKET: {lang} — books must be written in {lang}, targeting {amazon_market}
+{"IMPORTANT: All book titles, subtitles, descriptions must be in " + lang + ". Trends must resonate with " + lang + "-speaking readers and their cultural context." if lang != "English" else ""}
 
-This is a UNIQUE run — identify trends emerging within the specified time window.
-Match your recommendations to the window: short windows = act fast, long windows = find gaps.
+REAL SEARCH INTENT DATA (what people are actively searching right now):
+{autocomplete_block}
+{gtrends_summary}{reddit_summary}
 
-REAL DATA COLLECTED RIGHT NOW:
-{reddit_summary}
-{gtrends_summary}
-
-TASK: Identify 4 SPECIFIC, UNDERSERVED KDP book opportunities for the "{req.niche}" category.
+TASK: Identify 4 SPECIFIC, UNDERSERVED KDP book opportunities for the "{req.niche}" category on {amazon_market}.
 Platforms context: {platforms_str}
 {f'Keyword focus: "{req.keyword}"' if req.keyword else ''}
 
+INTERPRETATION GUIDE:
+- Autocomplete queries = proven demand (people typing this = they want content on it)
+- High Google Trends score = broad awareness
+- Rising queries = emerging, not yet saturated — BEST opportunity
+- Find the intersection: high search intent + low existing books = gap
+
 UNIQUENESS RULES:
 - Do NOT suggest: generic journals, gratitude journals, mindfulness basics, morning routines
-- Each trend must be backed by a SPECIFIC signal from the data above
+- Each trend must cite a SPECIFIC autocomplete query from the data above as its signal
 - Find angles that feel fresh and slightly unexpected
-- Think: what is JUST starting to emerge, not what has already peaked?
 
-TITLE RULES — Amazon KDP rejects listings with "title": "subtitle"-style titles
-or keyword-stuffed titles (combined title+subtitle over ~200 characters):
-- "title": SHORT and punchy, under 60 characters, NO colon followed by a long
-  second subtitle baked into it
-- "subtitle": separate field for SEO/keywords, under 140 characters
-- title + subtitle combined MUST be under 200 characters total
+TITLE RULES:
+- "title": SHORT and punchy, under 60 characters, NO colon-subtitle inside it
+- "subtitle": separate SEO field, under 140 characters
+- title + subtitle combined MUST be under 200 characters
 
 Return ONLY raw JSON, no markdown, ASCII-safe strings only:
 {{"trends":[
-{{"name":"SPECIFIC TREND","platform":"PLATFORM","description":"2 sentences with specific data reference","heat":4,"data_signal":"Quote the exact Reddit post title or Google Trends query that supports this","books":[
+{{"name":"SPECIFIC TREND","platform":"Google/YouTube","description":"2 sentences citing a specific autocomplete query","heat":4,"data_signal":"Exact autocomplete query that proves demand","books":[
 {{"type":"TYPE","title":"TITLE","subtitle":"SEO subtitle"}},
 {{"type":"TYPE","title":"TITLE 2","subtitle":"SEO subtitle 2"}}
 ]}},
-{{"name":"TREND 2","platform":"PLATFORM","description":"2 sentences","heat":5,"data_signal":"specific signal","books":[
+{{"name":"TREND 2","platform":"Google/YouTube","description":"2 sentences","heat":5,"data_signal":"exact signal","books":[
 {{"type":"TYPE","title":"TITLE","subtitle":"subtitle"}},
 {{"type":"TYPE","title":"TITLE 2","subtitle":"subtitle 2"}}
 ]}},
-{{"name":"TREND 3","platform":"PLATFORM","description":"2 sentences","heat":3,"data_signal":"signal","books":[
+{{"name":"TREND 3","platform":"Google/YouTube","description":"2 sentences","heat":3,"data_signal":"signal","books":[
 {{"type":"TYPE","title":"TITLE","subtitle":"subtitle"}},
 {{"type":"TYPE","title":"TITLE 2","subtitle":"subtitle 2"}}
 ]}},
-{{"name":"TREND 4","platform":"PLATFORM","description":"2 sentences","heat":4,"data_signal":"signal","books":[
+{{"name":"TREND 4","platform":"Google/YouTube","description":"2 sentences","heat":4,"data_signal":"signal","books":[
 {{"type":"TYPE","title":"TITLE","subtitle":"subtitle"}},
 {{"type":"TYPE","title":"TITLE 2","subtitle":"subtitle 2"}}
 ]}}
@@ -1406,14 +1494,16 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
         result = parse_json_safe(text)
         result["meta"] = {
             "reddit_posts_found": len(reddit_posts),
-            "gtrends_seeds_used": gtrends.get("terms", []),
+            "google_autocomplete_found": len(autocomplete_data["google"]),
+            "youtube_autocomplete_found": len(autocomplete_data["youtube"]),
             "gtrends_avg": gtrends.get("avg_interest", {}),
-            "subreddits_used": list(set(p["subreddit"] for p in reddit_posts[:10])) if reddit_posts else [],
             "fetched_at": stamp,
             "timeframe": req.timeframe or "week",
             "timeframe_label": tf_info["label"],
             "timeframe_strategy": tf_info["strategy"],
             "data_sources": {
+                "google_autocomplete": len(autocomplete_data["google"]) > 0,
+                "youtube_autocomplete": len(autocomplete_data["youtube"]) > 0,
                 "reddit": len(reddit_posts) > 0,
                 "google_trends": bool(gtrends.get("avg_interest"))
             }
@@ -1421,6 +1511,42 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/validate-niche")
+async def validate_niche(req: dict):
+    """Quick validation: fetch autocomplete + Google Trends for a specific niche name."""
+    niche = req.get("niche", "")
+    market_language = req.get("market_language", "English")
+    lang_code = LANG_CODE_MAP.get(market_language, "en")
+    lang_cfg = MARKET_LANG_CONFIG.get(market_language, MARKET_LANG_CONFIG["English"])
+    amazon_market = lang_cfg["amazon"]
+    import urllib.parse
+
+    autocomplete_data, gtrends = await asyncio.gather(
+        fetch_multi_autocomplete(niche, lang_code),
+        fetch_google_trends(niche, "", "month"),
+    )
+
+    search_url = "https://" + lang_cfg["amazon"].split("/")[0].replace("Amazon.", "amazon.") + "/s?" + urllib.parse.urlencode({"k": niche, "i": "stripbooks"})
+    gtrends_url = "https://trends.google.com/trends/explore?" + urllib.parse.urlencode({"q": niche, "geo": lang_code.upper()})
+
+    gt_score = None
+    if gtrends.get("avg_interest"):
+        vals = list(gtrends["avg_interest"].values())
+        gt_score = round(sum(vals) / len(vals)) if vals else None
+
+    return {
+        "niche": niche,
+        "market_language": market_language,
+        "amazon_market": amazon_market,
+        "google_suggestions": autocomplete_data.get("google", [])[:15],
+        "youtube_suggestions": autocomplete_data.get("youtube", [])[:10],
+        "google_trends_score": gt_score,
+        "rising_queries": [q.get("query","") for qs in (gtrends.get("rising_queries") or {}).values() for q in qs[:2]][:6],
+        "amazon_search_url": search_url,
+        "google_trends_url": gtrends_url,
+    }
 
 
 @app.post("/niches")
