@@ -556,6 +556,10 @@ select option{background:var(--s2)}
       <label>Persona lettore ideale (opzionale)</label>
       <input type="text" id="readerPersona" placeholder="es: donna italiana di 35 anni, expat in Germania, coach di professione, legge libri di filosofia..." style="font-size:12px" />
     </div>
+    <div class="field" style="margin:12px 0 0 0">
+      <label style="display:flex;align-items:center;gap:6px">⚠️ Istruzioni personalizzate <span style="font-size:10px;color:var(--muted);font-weight:400">(restrizioni, termini da evitare, stile specifico)</span></label>
+      <textarea id="customInstructions" rows="3" placeholder="es: Non usare mai i termini 'D&D', 'Dungeons & Dragons', 'Hasbro' — usa alternative come 'gioco di ruolo fantasy', 'GDR', 'roleplay da tavolo'. Evita riferimenti a brand specifici o personaggi con copyright." style="font-size:12px;resize:vertical"></textarea>
+    </div>
     <div style="margin-top:12px;padding:10px 14px;background:rgba(232,121,249,0.06);border-radius:8px;font-size:11px;color:#a78bfa;line-height:1.5">
       💡 Stile apertura capitoli e seed di unicità vengono scelti <strong>casualmente ad ogni generazione</strong> — stesso libro, risultati sempre diversi.
     </div>
@@ -1799,7 +1803,8 @@ Write in warm, second-person voice.`;
         language: document.getElementById('outputLanguage')?.value || 'English',
         cultural_inspiration: document.getElementById('culturalInspiration')?.value || '',
         chapter_length: document.getElementById('chapterLength')?.value || 'medium',
-        reader_persona: document.getElementById('readerPersona')?.value || ''
+        reader_persona: document.getElementById('readerPersona')?.value || '',
+        custom_instructions: document.getElementById('customInstructions')?.value.trim() || ''
       };
       const res = await callBackend('/generate', {
         trend_name: trend,
@@ -1997,7 +2002,8 @@ Return ONLY raw JSON. No markdown. No backticks. ASCII-safe strings only.
         audience,
         tone: document.getElementById('voiceTone')?.value || '',
         reader_persona: document.getElementById('readerPersona')?.value || '',
-        language: document.getElementById('outputLanguage')?.value || 'English'
+        language: document.getElementById('outputLanguage')?.value || 'English',
+        custom_instructions: document.getElementById('customInstructions')?.value.trim() || ''
       });
     } else {
       const text = await callClaude(prompt, 4000);
@@ -2397,7 +2403,8 @@ async function generateAllAuto() {
         language: document.getElementById('outputLanguage')?.value || 'English',
         cultural_inspiration: document.getElementById('culturalInspiration')?.value || '',
         chapter_length: document.getElementById('chapterLength')?.value || 'medium',
-        reader_persona: document.getElementById('readerPersona')?.value || ''
+        reader_persona: document.getElementById('readerPersona')?.value || '',
+        custom_instructions: document.getElementById('customInstructions')?.value.trim() || ''
       };
       const res = await fetch(BACKEND_URL + '/generate-all', {
         method: 'POST',

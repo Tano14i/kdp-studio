@@ -461,6 +461,7 @@ class GenerateRequest(BaseModel):
     cultural_inspiration: Optional[str] = ""
     chapter_length: Optional[str] = "medium"   # short|medium|long
     reader_persona: Optional[str] = ""
+    custom_instructions: Optional[str] = ""
 
 class AllChaptersRequest(BaseModel):
     trend_name: str
@@ -474,6 +475,7 @@ class AllChaptersRequest(BaseModel):
     cultural_inspiration: Optional[str] = ""
     chapter_length: Optional[str] = "medium"
     reader_persona: Optional[str] = ""
+    custom_instructions: Optional[str] = ""
 
 class PackageRequest(BaseModel):
     trend_name: str
@@ -485,6 +487,7 @@ class PackageRequest(BaseModel):
     tone: Optional[str] = ""
     reader_persona: Optional[str] = ""
     language: Optional[str] = "English"
+    custom_instructions: Optional[str] = ""
 
 # ══════════════════════════════════════════════════════════════
 LANG_CODE_MAP = {
@@ -686,7 +689,7 @@ def parse_json_safe(text: str) -> dict:
         return json.loads(j)
 
 def build_voice_ctx(tone="", language="English", cultural_inspiration="",
-                    chapter_length="medium", reader_persona="") -> str:
+                    chapter_length="medium", reader_persona="", custom_instructions="") -> str:
     """Build a voice/style context block to inject into every content prompt."""
     length_map = {"short": "800-1000", "medium": "1200-1600", "long": "2000-2500"}
     word_count = length_map.get(chapter_length, "1200-1600")
@@ -703,6 +706,8 @@ def build_voice_ctx(tone="", language="English", cultural_inspiration="",
         lines.append(f"- Cultural lens: draw references, metaphors, or philosophy from {cultural_inspiration} tradition")
     if reader_persona:
         lines.append(f"- Write as if speaking directly to: {reader_persona}")
+    if custom_instructions:
+        lines.append(f"\nCUSTOM RESTRICTIONS (MANDATORY — apply to every sentence):\n{custom_instructions}")
     lines.append(f"- Uniqueness seed: {now_stamp()} — use this to make this version distinct from any previous generation")
     lines.append(f"- IMPORTANT: Do NOT use generic self-help clichés. Make every sentence specific and surprising.")
     return "\n".join(lines)
@@ -1635,7 +1640,8 @@ Unique elements: {book_tmpl["unique_elements"]}"""
         language=req.language or "English",
         cultural_inspiration=req.cultural_inspiration or "",
         chapter_length=req.chapter_length or "medium",
-        reader_persona=req.reader_persona or ""
+        reader_persona=req.reader_persona or "",
+        custom_instructions=req.custom_instructions or ""
     )
     length_map = {"short": "800-1000", "medium": "1200-1600", "long": "2000-2500"}
     word_count = length_map.get(req.chapter_length or "medium", "1200-1600")
@@ -1761,7 +1767,8 @@ async def generate_all_chapters(req: AllChaptersRequest):
                 language=req.language or "English",
                 cultural_inspiration=req.cultural_inspiration or "",
                 chapter_length=req.chapter_length or "medium",
-                reader_persona=req.reader_persona or ""
+                reader_persona=req.reader_persona or "",
+                custom_instructions=req.custom_instructions or ""
             )
             prompt = f"""You are a bestselling KDP author. Write Chapter {n} of {total}.
 
@@ -1906,6 +1913,7 @@ Return ONLY raw JSON, ASCII-safe:
 async def generate_package(req: PackageRequest):
     tone_note = f"Tone/voice of the book: {req.tone}" if req.tone else ""
     persona_note = f"Target reader persona: {req.reader_persona}" if req.reader_persona else ""
+    custom_note = f"\nCUSTOM RESTRICTIONS (MANDATORY — apply to every field):\n{req.custom_instructions}" if req.custom_instructions else ""
     stamp = now_stamp()
 
     # Determine target marketplace from language
@@ -1930,7 +1938,7 @@ Audience: {req.audience}
 Platform: {req.trend_platform}
 {tone_note}
 {persona_note}
-{lang_note}
+{lang_note}{custom_note}
 Generated: {stamp}
 
 IMPORTANT: Write title, subtitle, description, tagline, and keywords in {lang}.
