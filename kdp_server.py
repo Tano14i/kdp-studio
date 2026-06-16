@@ -683,7 +683,13 @@ def parse_json_safe(text: str) -> dict:
     j = m.group(0)
     try:
         return json.loads(j)
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
+        # "Extra data" means valid JSON followed by trailing text \u2014 truncate at e.pos
+        if e.pos and e.pos > 0:
+            try:
+                return json.loads(j[:e.pos])
+            except json.JSONDecodeError:
+                pass
         j = re.sub(r',\s*([\]}])', r'\1', j)
         j = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', j)
         return json.loads(j)
