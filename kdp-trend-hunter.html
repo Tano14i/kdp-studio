@@ -605,10 +605,13 @@ select option{background:var(--s2)}
       <div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;margin-bottom:4px">📚 Genera tutti i capitoli in automatico</div>
       <div style="font-size:12px;color:var(--muted)" id="autoGenChapCount">Claude scrive ogni capitolo in sequenza — uno alla volta, progress live</div>
     </div>
-    <button class="btn btn-green" id="autoGenBtn" onclick="generateAllAuto()" style="white-space:nowrap;flex-shrink:0">
-      <span id="autoGenBtnTxt">⚡ Avvia Generazione Automatica</span>
-      <div class="spin" id="autoGenSpin" style="display:none;border-top-color:#000"></div>
-    </button>
+    <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+      <button class="btn btn-green" id="autoGenBtn" onclick="generateAllAuto()" style="white-space:nowrap">
+        <span id="autoGenBtnTxt">⚡ Avvia Generazione Automatica</span>
+        <div class="spin" id="autoGenSpin" style="display:none;border-top-color:#000"></div>
+      </button>
+      <button id="autoGenStopBtn" onclick="stopAutoGeneration()" style="display:none;white-space:nowrap;padding:8px 16px;border-radius:8px;border:1px solid rgba(239,68,68,0.5);background:rgba(239,68,68,0.1);color:#ef4444;font-size:13px;font-weight:600;cursor:pointer">⏹ Stop</button>
+    </div>
   </div>
 
   <div class="gen-tabs">
@@ -2216,6 +2219,17 @@ function discardSession() {
 }
 
 // ── AUTO GENERATE ALL CHAPTERS ────────────────────────────────
+let _autoGenAbort = null;
+
+function stopAutoGeneration() {
+  if (_autoGenAbort) { _autoGenAbort.abort(); _autoGenAbort = null; }
+  state.stopGeneration = true;
+  document.getElementById('autoGenStopBtn').style.display = 'none';
+  const status = document.getElementById('agStatus');
+  if (status) status.textContent = '⏹ Generazione interrotta dall\'utente.';
+  document.getElementById('p3actions').style.display = 'flex';
+}
+
 async function generateAllAuto() {
   if (!state.outline) {
     alert('Genera prima l\u2019Outline (Step 3 → Outline) per poter generare tutti i capitoli.');
@@ -2229,9 +2243,13 @@ async function generateAllAuto() {
   const btn = document.getElementById('autoGenBtn');
   const spin = document.getElementById('autoGenSpin');
   const txt = document.getElementById('autoGenBtnTxt');
+  const stopBtn = document.getElementById('autoGenStopBtn');
   btn.disabled = true;
   spin.style.display = 'block';
   txt.textContent = 'Generando…';
+  stopBtn.style.display = 'block';
+  state.stopGeneration = false;
+  _autoGenAbort = new AbortController();
 
   const title = state.customTitle || state.selectedBook.title;
   const bookType = state.bookType || state.selectedBook.type;
@@ -2280,6 +2298,7 @@ async function generateAllAuto() {
       const res = await fetch(BACKEND_URL + '/generate-all', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: _autoGenAbort.signal,
         body: JSON.stringify({
           trend_name: state.selectedTrend.name,
           book_title: title,
@@ -2303,6 +2322,7 @@ async function generateAllAuto() {
       let dotsBuilt = false;
 
       while (true) {
+        if (state.stopGeneration) break;
         const { done, value } = await reader.read();
         if (done) break;
         buffer += decoder.decode(value, { stream: true });
@@ -2396,6 +2416,7 @@ async function generateAllAuto() {
       ).join('');
 
       for (let n = 1; n <= total; n++) {
+        if (state.stopGeneration) break;
         // Skip already checkpointed chapters
         if (completedNums.includes(n)) {
           const dot = document.getElementById('agdot_' + n);
@@ -2431,12 +2452,16 @@ Write chapter ${n} completely with title, 3-4 sections, exercises, 1000-1500 wor
     }
 
   } catch(e) {
-    document.getElementById('agStatus').textContent = '⚠️ Errore: ' + e.message;
-    document.getElementById('p3actions').style.display = 'flex';
+    if (e.name !== 'AbortError' && !state.stopGeneration) {
+      document.getElementById('agStatus').textContent = '⚠️ Errore: ' + e.message;
+      document.getElementById('p3actions').style.display = 'flex';
+    }
   } finally {
     btn.disabled = false;
     spin.style.display = 'none';
     txt.textContent = '⚡ Avvia Generazione Automatica';
+    stopBtn.style.display = 'none';
+    _autoGenAbort = null;
     saveState();
   }
 }
