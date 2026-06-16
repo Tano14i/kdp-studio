@@ -418,11 +418,21 @@ def pick_tone() -> str:
 # ══════════════════════════════════════════════════════════════
 # PYDANTIC MODELS
 # ══════════════════════════════════════════════════════════════
+MARKET_LANG_CONFIG = {
+    "English":    {"amazon": "Amazon.com", "subreddits": ["books","selfhelp","personalfinance","productivity","Fitness","mentalhealth","relationships","Parenting","Entrepreneur"]},
+    "Italian":    {"amazon": "Amazon.it",  "subreddits": ["italy","italiani","crescitapersonale","ItalyInformatica","psicologia"]},
+    "Spanish":    {"amazon": "Amazon.es / Amazon.com.mx", "subreddits": ["es","mexico","argentina","colombia","emprendimiento","psicologia"]},
+    "German":     {"amazon": "Amazon.de",  "subreddits": ["de","Austria","finanzen","Persoenlichkeitsentwicklung","Switzerland"]},
+    "French":     {"amazon": "Amazon.fr",  "subreddits": ["france","francophonie","Quebec","developpementpersonnel"]},
+    "Portuguese": {"amazon": "Amazon.com.br", "subreddits": ["brasil","portugal","empreendedorismo","desabafos"]},
+}
+
 class TrendRequest(BaseModel):
     platforms: list[str]
     niche: str
     keyword: Optional[str] = ""
     timeframe: Optional[str] = "week"   # day|week|month|3months|year
+    market_language: Optional[str] = "English"
 
 class NicheRequest(BaseModel):
     platforms: list[str]
@@ -479,8 +489,11 @@ class PackageRequest(BaseModel):
 # ══════════════════════════════════════════════════════════════
 # REDDIT HELPER
 # ══════════════════════════════════════════════════════════════
-async def fetch_reddit_posts(niche: str, keyword: str = "", timeframe: str = "week") -> list[dict]:
-    subreddits = pick_subreddits(niche, n=4)
+async def fetch_reddit_posts(niche: str, keyword: str = "", timeframe: str = "week", force_subreddits: list = None) -> list[dict]:
+    if force_subreddits:
+        subreddits = random.sample(force_subreddits, min(4, len(force_subreddits)))
+    else:
+        subreddits = pick_subreddits(niche, n=4)
     tf = get_timeframe(timeframe)
     reddit_t = tf["reddit_t"]
     print(f"[Reddit] Subreddits: {subreddits} | timeframe: {reddit_t}")
@@ -992,7 +1005,7 @@ async def fetch_tiktok_trending(limit: int = 20) -> list[dict]:
 
 
 @app.get("/discover")
-async def discover_unbiased():
+async def discover_unbiased(market_language: str = "English"):
     """
     Zero-bias discovery: fetch raw global signals from Reddit + Google Trends,
     then let Claude identify KDP opportunities — no niche pre-selection.
@@ -1050,12 +1063,17 @@ async def discover_unbiased():
     else:
         tiktok_block = "TikTok Trending data unavailable this run.\n"
 
+    lang_cfg = MARKET_LANG_CONFIG.get(market_language, MARKET_LANG_CONFIG["English"])
+    amazon_market = lang_cfg["amazon"]
+    lang_note = f"\nTARGET MARKET: {market_language} — all book titles and content must be in {market_language}, targeting {amazon_market} readers." if market_language != "English" else ""
+
     prompt = f"""You are a KDP publishing expert with zero preconceptions about what niche to target.
 
-CURRENT MOMENT: {stamp}
+CURRENT MOMENT: {stamp}{lang_note}
 
 You are about to read RAW, UNFILTERED social data — no topic was specified, no niche was chosen.
 Your job: find what is organically emerging and identify KDP book opportunities from it.
+{"Translate all book titles and subtitles into " + market_language + " — they must be ready to publish on " + amazon_market + "." if market_language != "English" else ""}
 
 RAW DATA:
 {reddit_block}
@@ -1300,9 +1318,14 @@ async def get_trends(req: TrendRequest):
     stamp = now_stamp()
     platforms_str = ", ".join(req.platforms)
 
+    lang = req.market_language or "English"
+    lang_cfg = MARKET_LANG_CONFIG.get(lang, MARKET_LANG_CONFIG["English"])
+    amazon_market = lang_cfg["amazon"]
+    lang_subreddits = lang_cfg["subreddits"]
+
     tf_info = get_timeframe(req.timeframe or "week")
     reddit_posts, gtrends = await asyncio.gather(
-        fetch_reddit_posts(req.niche, req.keyword or "", req.timeframe or "week"),
+        fetch_reddit_posts(req.niche, req.keyword or "", req.timeframe or "week", force_subreddits=lang_subreddits),
         fetch_google_trends(req.niche, req.keyword or "", req.timeframe or "week")
     )
 
@@ -1331,6 +1354,8 @@ async def get_trends(req: TrendRequest):
 CURRENT MOMENT: {stamp}
 ANALYSIS WINDOW: {tf_info["label"]} ({tf_info["gtrends"]})
 STRATEGIC CONTEXT: {tf_info["strategy"]}
+TARGET MARKET: {lang} — books must be written in {lang}, targeting readers on {amazon_market}
+{"" if lang == "English" else f"IMPORTANT: All book titles, subtitles, descriptions must be in {lang}. Trends must resonate with {lang}-speaking readers and their cultural context."}
 
 This is a UNIQUE run — identify trends emerging within the specified time window.
 Match your recommendations to the window: short windows = act fast, long windows = find gaps.
