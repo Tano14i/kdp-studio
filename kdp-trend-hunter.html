@@ -2564,8 +2564,20 @@ Write chapter ${n} completely with title, 3-4 sections, exercises, 1000-1500 wor
 
   } catch(e) {
     if (e.name !== 'AbortError' && !state.stopGeneration) {
-      document.getElementById('agStatus').textContent = '⚠️ Errore: ' + e.message;
+      const statusEl = document.getElementById('agStatus');
+      if (statusEl) statusEl.textContent = '⚠️ Errore: ' + e.message;
       document.getElementById('p3actions').style.display = 'flex';
+      // Show resume banner if checkpoint exists
+      const cp = loadChapterCheckpoint(state.customTitle || (state.selectedBook && state.selectedBook.title) || '');
+      if (cp) {
+        const done = Object.keys(cp.chapters).length;
+        const total = cp.total || '?';
+        const resumeBanner = document.createElement('div');
+        resumeBanner.style.cssText = 'margin:12px 20px;padding:12px 16px;background:rgba(255,140,66,0.08);border:1px solid rgba(255,140,66,0.35);border-radius:8px;display:flex;align-items:center;justify-content:space-between;gap:12px';
+        resumeBanner.innerHTML = `<div style="font-size:12px;color:var(--accent2)">♻️ <strong>${done} capitoli salvati</strong> su ${total} — puoi riprendere da dove si è interrotto</div><button onclick="this.closest('div').remove();generateAllAuto()" style="padding:6px 14px;border-radius:6px;border:1px solid rgba(255,140,66,0.5);background:rgba(255,140,66,0.15);color:var(--accent2);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">▶️ Riprendi</button>`;
+        const container = document.getElementById('contentOut');
+        if (container) container.prepend(resumeBanner);
+      }
     }
   } finally {
     btn.disabled = false;
