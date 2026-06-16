@@ -1147,8 +1147,11 @@ Replace all PLACEHOLDER values with real, specific, marketable content for ${yea
       if (parsed.meta) {
         const m = parsed.meta;
         const tfColor = {day:'#ef4444',week:'#ff8c42',month:'#eab308','3months':'#22c55e',year:'#3b82f6'}[m.timeframe] || '#ff8c42';
+        const ds = m.data_sources || {};
         const badge = `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;margin-top:4px">
-          <span style="font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2)">📡 ${m.reddit_posts_found} post Reddit</span>
+          ${ds.google_autocomplete || m.google_autocomplete_found > 0 ? `<span style="font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2)">🔍 ${m.google_autocomplete_found || '?'} query Google</span>` : ''}
+          ${ds.youtube_autocomplete || m.youtube_autocomplete_found > 0 ? `<span style="font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.2)">▶️ ${m.youtube_autocomplete_found || '?'} query YouTube</span>` : ''}
+          ${ds.reddit && m.reddit_posts_found > 0 ? `<span style="font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(255,140,66,0.1);color:#ff8c42;border:1px solid rgba(255,140,66,0.2)">👾 ${m.reddit_posts_found} post Reddit</span>` : ''}
           ${m.gtrends_avg && Object.keys(m.gtrends_avg).length ? '<span style="font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(59,130,246,0.1);color:#3b82f6;border:1px solid rgba(59,130,246,0.2)">📈 Google Trends</span>' : ''}
           <span style="font-size:10px;padding:3px 10px;border-radius:4px;background:rgba(255,140,66,0.1);color:#ff8c42;border:1px solid rgba(255,140,66,0.2)">🤖 Claude</span>
           ${m.timeframe_label ? `<span style="font-size:10px;padding:3px 10px;border-radius:4px;background:${tfColor}18;color:${tfColor};border:1px solid ${tfColor}40">🕐 ${m.timeframe_label}</span>` : ''}
