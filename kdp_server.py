@@ -580,13 +580,13 @@ async def fetch_google_trends(niche: str, keyword: str = "", timeframe: str = "w
 # ══════════════════════════════════════════════════════════════
 # CLAUDE HELPER
 # ══════════════════════════════════════════════════════════════
-def call_claude(prompt: str, max_tokens: int = 4000) -> str:
+def call_claude(prompt: str, max_tokens: int = 4000, allow_truncated: bool = False) -> str:
     msg = claude.messages.create(
         model="claude-sonnet-4-6",
         max_tokens=max_tokens,
         messages=[{"role": "user", "content": prompt}]
     )
-    if msg.stop_reason == "max_tokens":
+    if msg.stop_reason == "max_tokens" and not allow_truncated:
         raise ValueError("Risposta troncata — usa Capitolo Singolo o riduci la lunghezza.")
     return msg.content[0].text
 
@@ -1529,7 +1529,7 @@ Write CHAPTER {n} completely following the book format rules above.
 - Target: {word_count} words
 
 Make it feel like no other chapter in any other book."""
-        max_tok = 4000
+        max_tok = 8000
 
     elif req.tab == "intro":
         prompt = f"""You are a bestselling KDP author. Write the Introduction AND Conclusion.
@@ -1566,7 +1566,8 @@ Follow voice guidelines throughout. Make every chapter feel distinct."""
         raise HTTPException(status_code=400, detail=f"Unknown tab: {req.tab}")
 
     try:
-        text = call_claude(prompt, max_tok)
+        allow_trunc = req.tab in ("chapter", "allchapters", "draft")
+        text = call_claude(prompt, max_tok, allow_truncated=allow_trunc)
         return {"content": text, "tab": req.tab, "chapter_num": req.chapter_num}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -1632,7 +1633,7 @@ This chapter must feel completely distinct from chapters before it.
 Use the uniqueness seed to ensure this version is unlike any previous generation."""
 
             try:
-                text = call_claude(prompt, 4000)
+                text = call_claude(prompt, 8000, allow_truncated=True)
                 yield json.dumps({
                     "chapter": n, "title": title, "content": text,
                     "total": total, "done": False
