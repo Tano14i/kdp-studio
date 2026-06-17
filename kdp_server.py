@@ -2090,36 +2090,53 @@ async def apify_trends(req: dict):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+async def _amazon_autocomplete(query: str) -> list[str]:
+    """Call Amazon's own autocomplete endpoint directly — no Apify, sub-second."""
+    async with httpx.AsyncClient(timeout=8) as client:
+        res = await client.get(
+            "https://completion.amazon.com/search/complete",
+            params={
+                "method": "completion",
+                "q": query,
+                "search-alias": "stripbooks",
+                "mkt": "1",
+                "noCacheFilter": "1",
+            },
+            headers={
+                "User-Agent": "Mozilla/5.0 (compatible; KDPStudio/2.0)",
+                "Accept": "application/json",
+            },
+        )
+        res.raise_for_status()
+        payload = res.json()
+        # Format: ["original_query", ["sug1", "sug2", ...], ...]
+        if isinstance(payload, list) and len(payload) > 1 and isinstance(payload[1], list):
+            return [s for s in payload[1] if isinstance(s, str)]
+        return []
+
+
 @app.post("/api/apify/amazon-niche")
 async def apify_amazon_niche(req: dict):
-    """Amazon keyword suggestions for KDP competitor research (lightweight actor)."""
+    """Amazon keyword autocomplete — direct call, no actor cold start."""
     keyword = req.get("keyword", "")
+    if not keyword:
+        return {"data": []}
     try:
-        data = await run_actor(
-            "keyword-auto-complete/keyword-suggestions",
-            {"query": keyword, "platforms": ["amazon"], "maxSuggestions": 20},
-            timeout_sec=60,
-        )
-        return {"data": data}
-    except HTTPException:
-        raise
+        suggestions = await _amazon_autocomplete(keyword)
+        return {"data": [{"platform": "amazon", "suggestions": suggestions}]}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/api/apify/amazon-best")
 async def apify_amazon_best(req: dict):
-    """Amazon keyword suggestions for a niche (lightweight actor)."""
+    """Amazon keyword autocomplete for a niche — direct call, no actor cold start."""
     niche = req.get("niche", "")
+    if not niche:
+        return {"data": []}
     try:
-        data = await run_actor(
-            "keyword-auto-complete/keyword-suggestions",
-            {"query": niche, "platforms": ["amazon"], "maxSuggestions": 20},
-            timeout_sec=60,
-        )
-        return {"data": data}
-    except HTTPException:
-        raise
+        suggestions = await _amazon_autocomplete(niche)
+        return {"data": [{"platform": "amazon", "suggestions": suggestions}]}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
