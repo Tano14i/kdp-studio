@@ -2091,28 +2091,29 @@ async def apify_trends(req: dict):
 
 
 async def _amazon_autocomplete(query: str) -> list[str]:
-    """Call Amazon's own autocomplete endpoint directly — no Apify, sub-second."""
+    """Call Amazon's autocomplete API (2017 version) directly — no Apify, sub-second."""
     async with httpx.AsyncClient(timeout=8) as client:
         res = await client.get(
-            "https://completion.amazon.com/search/complete",
+            "https://completion.amazon.com/api/2017/suggestions",
             params={
-                "method": "completion",
-                "q": query,
-                "search-alias": "stripbooks",
-                "mkt": "1",
-                "noCacheFilter": "1",
+                "lop": "en_US",
+                "site-variant": "desktop",
+                "category": "stripbooks",
+                "prefix": query,
+                "mid": "ATVPDKIKX0DER",
+                "alias": "stripbooks",
             },
             headers={
-                "User-Agent": "Mozilla/5.0 (compatible; KDPStudio/2.0)",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                 "Accept": "application/json",
+                "Referer": "https://www.amazon.com/",
             },
         )
         res.raise_for_status()
         payload = res.json()
-        # Format: ["original_query", ["sug1", "sug2", ...], ...]
-        if isinstance(payload, list) and len(payload) > 1 and isinstance(payload[1], list):
-            return [s for s in payload[1] if isinstance(s, str)]
-        return []
+        # Format: {"suggestions": [{"value": "...", "refTag": "..."}, ...]}
+        suggestions = payload.get("suggestions", [])
+        return [s["value"] for s in suggestions if isinstance(s, dict) and s.get("value")]
 
 
 @app.post("/api/apify/amazon-niche")
