@@ -3233,7 +3233,9 @@ async function checkCompetitors() {
   let nicheHtml = '';
   if (nicheRes.status === 'fulfilled' && nicheRes.value?.data?.length) {
     const books = nicheRes.value.data.slice(0, 15);
-    const scores = books.map(b => b.nicheScore ?? b.niche_score ?? b.score ?? 0).filter(s => s > 0);
+    // Log first item to console so we can debug field names if needed
+    if (books[0]) console.log('[Apify niche] sample item keys:', Object.keys(books[0]), books[0]);
+    const scores = books.map(b => b.nicheScore ?? b.niche_score ?? b.score ?? b.Score ?? b.niching_score ?? 0).filter(s => s > 0);
     const avgScore = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : null;
     const verdict = avgScore === null ? '' : avgScore >= 60 ? '✅ Nicchia ok' : avgScore >= 40 ? '⚠️ Nicchia competitiva' : '🛑 Nicchia satura';
     const verdictColor = avgScore === null ? '#666' : avgScore >= 60 ? '#22c55e' : avgScore >= 40 ? '#eab308' : '#ef4444';
@@ -3257,13 +3259,19 @@ async function checkCompetitors() {
             </thead>
             <tbody>
               ${books.map(bk => {
-                const sc = bk.nicheScore ?? bk.niche_score ?? bk.score ?? null;
+                // Flexible field extraction — actor field names vary across versions
+                const bkTitle = bk.title ?? bk.bookTitle ?? bk.book_title ?? bk.name ?? bk.Title ?? '';
+                const sc = bk.nicheScore ?? bk.niche_score ?? bk.score ?? bk.Score ?? bk.niching_score ?? bk.nicheAnalysisScore ?? null;
+                const bsr = bk.bsr ?? bk.BSR ?? bk.bestSellerRank ?? bk.best_seller_rank ?? bk.bsrRank ?? bk.salesRank ?? null;
+                const rawPrice = bk.price ?? bk.bookPrice ?? bk.Price ?? bk.listPrice ?? null;
+                const priceStr = rawPrice ? (String(rawPrice).startsWith('$') ? rawPrice : '$' + rawPrice) : '—';
+                const rev = bk.reviews ?? bk.reviewCount ?? bk.review_count ?? bk.ratingsCount ?? bk.ratings_count ?? bk.numberOfReviews ?? null;
                 const scColor = sc === null ? '#666' : sc >= 60 ? '#22c55e' : sc >= 40 ? '#eab308' : '#ef4444';
                 return `<tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
-                  <td style="padding:5px 8px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(bk.title || bk.name || '')}</td>
-                  <td style="padding:5px 8px;text-align:right;color:var(--muted)">${bk.bsr ?? bk.BSR ?? '—'}</td>
-                  <td style="padding:5px 8px;text-align:right;color:var(--muted)">${bk.price ? '$'+bk.price : '—'}</td>
-                  <td style="padding:5px 8px;text-align:right;color:var(--muted)">${bk.reviews ?? bk.reviewCount ?? '—'}</td>
+                  <td style="padding:5px 8px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(String(bkTitle))}</td>
+                  <td style="padding:5px 8px;text-align:right;color:var(--muted)">${bsr ?? '—'}</td>
+                  <td style="padding:5px 8px;text-align:right;color:var(--muted)">${priceStr}</td>
+                  <td style="padding:5px 8px;text-align:right;color:var(--muted)">${rev ?? '—'}</td>
                   <td style="padding:5px 8px;text-align:right;color:${scColor};font-weight:600">${sc !== null ? sc : '—'}</td>
                 </tr>`;
               }).join('')}

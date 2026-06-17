@@ -2041,21 +2041,33 @@ async def run_actor(actor_id: str, input_data: dict, timeout_sec: int = 120) -> 
         raise HTTPException(status_code=503, detail="APIFY_TOKEN non configurato — aggiungerlo nelle variabili d'ambiente Railway")
     actor_id_url = actor_id.replace("/", "~")
     async with httpx.AsyncClient(timeout=timeout_sec + 15) as client:
-        run_res = await client.post(
-            f"{APIFY_BASE}/acts/{actor_id_url}/runs",
-            params={"token": APIFY_TOKEN, "waitForFinish": timeout_sec},
-            json=input_data,
-        )
-        run_res.raise_for_status()
+        try:
+            run_res = await client.post(
+                f"{APIFY_BASE}/acts/{actor_id_url}/runs",
+                params={"token": APIFY_TOKEN, "waitForFinish": timeout_sec},
+                json=input_data,
+            )
+            run_res.raise_for_status()
+        except httpx.HTTPStatusError as e:
+            raise HTTPException(
+                status_code=e.response.status_code,
+                detail=f"Apify actor '{actor_id}' HTTP {e.response.status_code} — {e.response.text[:300]}",
+            )
         run_data = run_res.json().get("data", {})
         dataset_id = run_data.get("defaultDatasetId")
         if not dataset_id:
             raise HTTPException(status_code=502, detail="Apify actor non ha restituito un dataset ID")
-        data_res = await client.get(
-            f"{APIFY_BASE}/datasets/{dataset_id}/items",
-            params={"token": APIFY_TOKEN, "format": "json"},
-        )
-        data_res.raise_for_status()
+        try:
+            data_res = await client.get(
+                f"{APIFY_BASE}/datasets/{dataset_id}/items",
+                params={"token": APIFY_TOKEN, "format": "json"},
+            )
+            data_res.raise_for_status()
+        except httpx.HTTPStatusError as e:
+            raise HTTPException(
+                status_code=e.response.status_code,
+                detail=f"Apify dataset fetch HTTP {e.response.status_code}",
+            )
         return data_res.json()
 
 
@@ -2097,7 +2109,7 @@ async def apify_amazon_niche(req: dict):
 
 @app.post("/api/apify/amazon-best")
 async def apify_amazon_best(req: dict):
-    """Amazon bestsellers for a given niche (dainty_screw/amazon-bestsellers-scraper)."""
+    """Amazon bestsellers for a given niche (apify/amazon-bestsellers-scraper)."""
     niche = req.get("niche", "")
     category_url = NICHE_CATEGORY_URLS.get(
         niche,
@@ -2105,8 +2117,8 @@ async def apify_amazon_best(req: dict):
     )
     try:
         data = await run_actor(
-            "dainty_screw/amazon-bestsellers-scraper",
-            {"startUrls": [{"url": category_url}], "maxItems": 20},
+            "apify/amazon-bestsellers-scraper",
+            {"startUrls": [{"url": category_url}], "maxItems": 20, "proxyConfiguration": {"useApifyProxy": True}},
             timeout_sec=120,
         )
         return {"data": data}
