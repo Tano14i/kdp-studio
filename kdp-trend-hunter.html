@@ -3221,102 +3221,69 @@ async function checkCompetitors() {
   out.style.display = 'block';
   linksEl.innerHTML = `<div style="display:flex;gap:10px;align-items:center;padding:12px 0;color:var(--muted);font-size:12px">
     <div class="spin" style="width:14px;height:14px;flex-shrink:0"></div>
-    Analisi Amazon in corso — Niche Score + Bestseller… (30–60s)
+    Raccogliendo keyword Amazon… (5–15s)
   </div>`;
 
-  // Both calls use the same niche analyzer — title search + niche-name search
-  const [nicheRes, bestRes] = await Promise.allSettled([
+  // Lightweight parallel calls — Amazon keyword autocomplete (no memory limits)
+  const [titleRes, nicheRes] = await Promise.allSettled([
     callBackend('/api/apify/amazon-niche', { keyword: title }),
     callBackend('/api/apify/amazon-niche', { keyword: niche || title }),
   ]);
 
-  // Auto-detect field names from an object by scanning keys for patterns
-  function autoField(obj, patterns) {
-    if (!obj || typeof obj !== 'object') return null;
-    const keys = Object.keys(obj);
-    for (const pat of patterns) {
-      const k = keys.find(k => k.toLowerCase().includes(pat));
-      if (k !== undefined && obj[k] !== null && obj[k] !== undefined && obj[k] !== '') return obj[k];
-    }
-    return null;
+  function extractKeywords(res) {
+    if (!res || res.status !== 'fulfilled' || !res.value) return [];
+    const items = res.value.data || [];
+    return items
+      .flatMap(item => item.suggestions || item.keywords || (typeof item === 'string' ? [item] : []))
+      .map(s => typeof s === 'string' ? s : (s.keyword || s.text || s.query || ''))
+      .filter(Boolean);
   }
 
-  function renderNicheTable(label, data) {
-    if (!data?.length) return `<div class="apify-section"><div class="apify-section-body" style="color:var(--muted);font-size:12px">Nessun risultato restituito.</div></div>`;
-    const books = data.slice(0, 15);
-    const sample = books[0];
-    console.log('[Apify] sample keys:', Object.keys(sample), sample);
+  function renderChips(kws, fallbackMsg) {
+    if (!kws.length) return `<span style="color:var(--muted);font-size:11px">${fallbackMsg || 'Nessun suggerimento.'}</span>`;
+    return kws.map(kw => `<span class="kw-chip">${escHtml(kw)}<button onclick="navigator.clipboard.writeText('${kw.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')">📋</button></span>`).join('');
+  }
 
-    const scores = books.map(b => parseFloat(autoField(b, ['nichescore','niche_score','score','niching']) ?? 0)).filter(s => s > 0);
-    const avgScore = scores.length ? Math.round(scores.reduce((a,c)=>a+c,0)/scores.length) : null;
-    const verdict = avgScore === null ? '' : avgScore >= 60 ? '✅ Nicchia ok' : avgScore >= 40 ? '⚠️ Competitiva' : '🛑 Satura';
-    const verdictColor = avgScore === null ? '#666' : avgScore >= 60 ? '#22c55e' : avgScore >= 40 ? '#eab308' : '#ef4444';
+  const titleKws = extractKeywords(titleRes);
+  const nicheKws = extractKeywords(nicheRes);
+  const titleErr = titleRes.status === 'rejected' ? titleRes.reason?.message : null;
+  const nicheErr = nicheRes.status === 'rejected' ? nicheRes.reason?.message : null;
 
-    const rows = books.map(bk => {
-      const t  = autoField(bk, ['title','name','book']) ?? '';
-      const sc = parseFloat(autoField(bk, ['nichescore','niche_score','score','niching']) ?? -1);
-      const bsr = autoField(bk, ['bsr','rank','seller','bestsell']);
-      const rawP = autoField(bk, ['price','cost']);
-      const priceStr = rawP != null ? (String(rawP).startsWith('$') ? rawP : '$'+rawP) : '—';
-      const rev = autoField(bk, ['review','rating','count','number']);
-      const scVal = sc >= 0 ? sc : null;
-      const scColor = scVal === null ? '#666' : scVal >= 60 ? '#22c55e' : scVal >= 40 ? '#eab308' : '#ef4444';
-      return `<tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
-        <td style="padding:5px 8px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(String(t))}</td>
-        <td style="padding:5px 8px;text-align:right;color:var(--muted)">${bsr ?? '—'}</td>
-        <td style="padding:5px 8px;text-align:right;color:var(--muted)">${priceStr}</td>
-        <td style="padding:5px 8px;text-align:right;color:var(--muted)">${rev ?? '—'}</td>
-        <td style="padding:5px 8px;text-align:right;color:${scColor};font-weight:600">${scVal !== null ? scVal : '—'}</td>
-      </tr>`;
-    }).join('');
+  const shortTitle = title.length > 32 ? title.slice(0,32)+'…' : title;
+  const shortNiche = (niche||title).length > 32 ? (niche||title).slice(0,32)+'…' : (niche||title);
 
-    // If everything is blank, show raw first item so we can diagnose field names
-    const allBlank = !rows.includes('<td style="padding:5px 8px;max-width:180px') || books.every(b => !autoField(b, ['title','name','book']));
-    const debugSection = allBlank ? `<details style="margin-top:8px"><summary style="font-size:10px;color:var(--muted);cursor:pointer">🔧 Debug: raw item</summary><pre style="font-size:9px;color:#666;overflow-x:auto;white-space:pre-wrap">${escHtml(JSON.stringify(sample, null, 2))}</pre></details>` : '';
+  const amazonTitle = `https://www.amazon.com/s?k=${encodeURIComponent(title)}&i=stripbooks`;
+  const amazonNiche = `https://www.amazon.com/s?k=${encodeURIComponent(niche||title)}&i=stripbooks`;
+  const gTrends     = `https://trends.google.com/trends/explore?q=${encodeURIComponent(title)}&geo=US`;
+  const reddit      = `https://www.reddit.com/search/?q=${encodeURIComponent(title)}&type=link`;
 
-    return `<div class="apify-section">
-      <button class="apify-section-header" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
-        <span>${label}</span>
-        ${avgScore !== null ? `<span style="color:${verdictColor};font-size:12px">${avgScore}/100 — ${verdict}</span>` : ''}
-      </button>
-      <div class="apify-section-body">
-        <div style="overflow-x:auto">
-        <table style="width:100%;border-collapse:collapse;font-size:11px">
-          <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted)">
-            <th style="text-align:left;padding:4px 8px">Titolo</th>
-            <th style="text-align:right;padding:4px 8px">BSR</th>
-            <th style="text-align:right;padding:4px 8px">Prezzo</th>
-            <th style="text-align:right;padding:4px 8px">Rec.</th>
-            <th style="text-align:right;padding:4px 8px">Score</th>
-          </tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
+  linksEl.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px">
+      <div class="apify-section">
+        <div class="apify-section-header" style="display:flex;justify-content:space-between;align-items:center">
+          <span>🔍 Titolo — "${escHtml(shortTitle)}"</span>
+          <a href="${amazonTitle}" target="_blank" rel="noopener" style="font-size:10px;color:var(--muted);text-decoration:none">Amazon →</a>
         </div>
-        ${debugSection}
+        <div class="apify-section-body">
+          ${titleErr ? `<span style="color:#ef4444;font-size:11px">⚠️ ${escHtml(titleErr)}</span>` : renderChips(titleKws, 'Nessun suggerimento — riprova.')}
+        </div>
       </div>
+      <div class="apify-section">
+        <div class="apify-section-header" style="display:flex;justify-content:space-between;align-items:center">
+          <span>📚 Nicchia — "${escHtml(shortNiche)}"</span>
+          <a href="${amazonNiche}" target="_blank" rel="noopener" style="font-size:10px;color:var(--muted);text-decoration:none">Amazon →</a>
+        </div>
+        <div class="apify-section-body">
+          ${nicheErr ? `<span style="color:#ef4444;font-size:11px">⚠️ ${escHtml(nicheErr)}</span>` : renderChips(nicheKws, 'Nessun suggerimento — riprova.')}
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;padding-top:10px;border-top:1px solid var(--border)">
+      <a href="${amazonTitle}" target="_blank" rel="noopener" style="font-size:11px;color:var(--muted);text-decoration:none">🛒 Amazon Libri</a>
+      <a href="${gTrends}" target="_blank" rel="noopener" style="font-size:11px;color:var(--muted);text-decoration:none">📈 Google Trends</a>
+      <a href="${reddit}" target="_blank" rel="noopener" style="font-size:11px;color:var(--muted);text-decoration:none">💬 Reddit</a>
+      <a href="https://www.amazon.com/gp/bestsellers/books/" target="_blank" rel="noopener" style="font-size:11px;color:var(--muted);text-decoration:none">🏆 Bestseller</a>
     </div>`;
-  }
-
-  const nicheData = nicheRes.status === 'fulfilled' ? nicheRes.value?.data : null;
-  const bestData  = bestRes.status  === 'fulfilled' ? bestRes.value?.data  : null;
-  const nicheErr  = nicheRes.status === 'rejected'  ? nicheRes.reason?.message : null;
-  const bestErr   = bestRes.status  === 'rejected'  ? bestRes.reason?.message  : null;
-
-  const nicheHtml = nicheData
-    ? renderNicheTable(`🎯 Competitor — "${title}"`, nicheData)
-    : `<div class="apify-section"><div class="apify-section-body" style="color:var(--muted);font-size:12px">⚠️ ${escHtml(nicheErr || 'Nessun dato')}</div></div>`;
-
-  const bestHtml = bestData
-    ? renderNicheTable(`📊 Nicchia — ${escHtml(niche || title)}`, bestData)
-    : `<div class="apify-section"><div class="apify-section-body" style="color:var(--muted);font-size:12px">⚠️ ${escHtml(bestErr || 'Nessun dato')}</div></div>`;
-
-  linksEl.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:4px">
-    <div>${nicheHtml}</div><div>${bestHtml}</div>
-  </div>
-  <div style="text-align:right;margin-top:4px">
-    <a href="https://www.amazon.com/s?k=${encodeURIComponent(title)}&i=stripbooks" target="_blank" rel="noopener"
-       style="font-size:11px;color:var(--muted);text-decoration:none">🔗 Apri su Amazon →</a>
-  </div>`;
 }
 
 // ── EXPORT CURRENT PACKAGE AS .DOC ───────────────────────────

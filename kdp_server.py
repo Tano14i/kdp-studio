@@ -2092,13 +2092,13 @@ async def apify_trends(req: dict):
 
 @app.post("/api/apify/amazon-niche")
 async def apify_amazon_niche(req: dict):
-    """KDP niche analysis from Amazon (sarginstudio/kdp-amazon-book-niche-analyzer)."""
+    """Amazon keyword suggestions for KDP competitor research (lightweight actor)."""
     keyword = req.get("keyword", "")
     try:
         data = await run_actor(
-            "sarginstudio/kdp-amazon-book-niche-analyzer",
-            {"keyword": keyword, "maxResults": 15},
-            timeout_sec=120,
+            "keyword-auto-complete/keyword-suggestions",
+            {"query": keyword, "platforms": ["amazon"], "maxSuggestions": 20},
+            timeout_sec=60,
         )
         return {"data": data}
     except HTTPException:
@@ -2109,17 +2109,13 @@ async def apify_amazon_niche(req: dict):
 
 @app.post("/api/apify/amazon-best")
 async def apify_amazon_best(req: dict):
-    """Amazon bestsellers for a given niche (apify/amazon-bestsellers-scraper)."""
+    """Amazon keyword suggestions for a niche (lightweight actor)."""
     niche = req.get("niche", "")
-    category_url = NICHE_CATEGORY_URLS.get(
-        niche,
-        "https://www.amazon.com/Best-Sellers-Books-Self-Help/zgbs/books/4736",
-    )
     try:
         data = await run_actor(
-            "apify/amazon-bestsellers-scraper",
-            {"startUrls": [{"url": category_url}], "maxItems": 20, "proxyConfiguration": {"useApifyProxy": True}},
-            timeout_sec=120,
+            "keyword-auto-complete/keyword-suggestions",
+            {"query": niche, "platforms": ["amazon"], "maxSuggestions": 20},
+            timeout_sec=60,
         )
         return {"data": data}
     except HTTPException:
