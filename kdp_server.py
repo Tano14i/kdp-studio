@@ -2090,30 +2090,61 @@ async def apify_trends(req: dict):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+_STOP = {
+    "the","a","an","is","are","was","were","be","been","being","or","and","but",
+    "for","with","from","by","to","of","in","on","at","as","it","vs","vs.","its",
+    "—","-","'s","&","i","my","your","our","their","this","that","how","why",
+    "what","when","where","who","will","would","can","could","do","does","did",
+    "not","no","so","than","then","if","about","into","over","after","more",
+}
+
+def _key_query(text: str, max_words: int = 4) -> str:
+    """Extract the most meaningful words for an autocomplete query."""
+    import re
+    words = re.sub(r"[\"'()!?:;,.]", "", text).split()
+    key = [w for w in words if w.lower() not in _STOP]
+    short = " ".join(key[:max_words]) if key else " ".join(words[:max_words])
+    return short or text[:40]
+
+
 async def _amazon_autocomplete(query: str) -> list[str]:
-    """Call Amazon's autocomplete API (2017 version) directly — no Apify, sub-second."""
-    async with httpx.AsyncClient(timeout=8) as client:
-        res = await client.get(
-            "https://completion.amazon.com/api/2017/suggestions",
-            params={
-                "lop": "en_US",
-                "site-variant": "desktop",
-                "category": "stripbooks",
-                "prefix": query,
-                "mid": "ATVPDKIKX0DER",
-                "alias": "stripbooks",
-            },
-            headers={
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-                "Accept": "application/json",
-                "Referer": "https://www.amazon.com/",
-            },
-        )
-        res.raise_for_status()
-        payload = res.json()
-        # Format: {"suggestions": [{"value": "...", "refTag": "..."}, ...]}
-        suggestions = payload.get("suggestions", [])
-        return [s["value"] for s in suggestions if isinstance(s, dict) and s.get("value")]
+    """Call Amazon's autocomplete API (2017 version) directly — no Apify, sub-second.
+    Tries the full query first; falls back to key-words only if empty."""
+    async def _fetch(prefix: str) -> list[str]:
+        async with httpx.AsyncClient(timeout=8) as client:
+            res = await client.get(
+                "https://completion.amazon.com/api/2017/suggestions",
+                params={
+                    "lop": "en_US",
+                    "site-variant": "desktop",
+                    "category": "stripbooks",
+                    "prefix": prefix,
+                    "mid": "ATVPDKIKX0DER",
+                    "alias": "stripbooks",
+                },
+                headers={
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                    "Accept": "application/json",
+                    "Referer": "https://www.amazon.com/",
+                },
+            )
+            res.raise_for_status()
+            payload = res.json()
+            sugg = payload.get("suggestions", [])
+            return [s["value"] for s in sugg if isinstance(s, dict) and s.get("value")]
+
+    results = await _fetch(query)
+    if not results:
+        # Full title returned nothing — retry with extracted key words
+        short = _key_query(query, max_words=3)
+        if short and short.lower() != query.lower():
+            results = await _fetch(short)
+    if not results:
+        # Last resort: first meaningful word only
+        first = _key_query(query, max_words=1)
+        if first and first.lower() != query.lower():
+            results = await _fetch(first)
+    return results
 
 
 @app.post("/api/apify/amazon-niche")
