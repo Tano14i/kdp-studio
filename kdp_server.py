@@ -2173,9 +2173,10 @@ async def _amazon_autocomplete(query: str) -> list[str]:
         if short and short.lower() != query.lower():
             results = await _fetch(short)
     if not results:
-        # Last resort: first meaningful word only
+        # Last resort: first meaningful word only — skip if < 4 chars (avoids
+        # language collisions like Italian "chi" → Amazon Chinese New Year results)
         first = _key_query(query, max_words=1)
-        if first and first.lower() != query.lower():
+        if first and len(first) >= 4 and first.lower() != query.lower():
             results = await _fetch(first)
     return results
 

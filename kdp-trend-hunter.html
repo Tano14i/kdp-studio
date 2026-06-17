@@ -3229,9 +3229,14 @@ async function checkCompetitors() {
     Raccogliendo keyword Amazon… (5–15s)
   </div>`;
 
+  // If title is non-English (contains non-ASCII OR common romance-lang words),
+  // fall back to niche keywords for the title column — Amazon is English-first
+  const nonEnglishPattern = /[àáâãäåæçèéêëìíîïðñòóôõöùúûüý]|(?:^|\s)(sei|chi|quando|nessuno|come|una|per|con|del|della|che|hai|sono|fare|non|questo|quella|anche|degli|degli|alle|agli|degli)\s/i;
+  const titleQuery = nonEnglishPattern.test(title) ? (niche || title) : title;
+
   // Lightweight parallel calls — Amazon keyword autocomplete (no memory limits)
   const [titleRes, nicheRes] = await Promise.allSettled([
-    callBackend('/api/apify/amazon-niche', { keyword: title }),
+    callBackend('/api/apify/amazon-niche', { keyword: titleQuery }),
     callBackend('/api/apify/amazon-niche', { keyword: niche || title }),
   ]);
 
