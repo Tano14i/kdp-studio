@@ -2112,18 +2112,30 @@ async def apify_trends(req: dict):
 
 
 _STOP = {
-    "the","a","an","is","are","was","were","be","been","being","or","and","but",
-    "for","with","from","by","to","of","in","on","at","as","it","vs","vs.","its",
-    "—","-","'s","&","i","my","your","our","their","this","that","how","why",
-    "what","when","where","who","will","would","can","could","do","does","did",
-    "not","no","so","than","then","if","about","into","over","after","more",
+    # Articles, prepositions, conjunctions
+    "the","a","an","or","and","but","for","with","from","by","to","of","in",
+    "on","at","as","it","its","vs","vs.","&","i","my","your","our","their",
+    "this","that","how","why","what","when","where","who","will","would",
+    "can","could","do","does","did","not","no","so","than","then","if",
+    "about","into","over","after","more","—","-","'s",
+    # Be/have
+    "is","are","was","were","be","been","being","have","has","had",
+    # Common title adjectives — cause bad autocomplete (e.g. "first" → school bracelets)
+    "first","second","third","new","little","big","great","good","best",
+    "last","next","small","old","other","complete","ultimate","essential",
+    "simple","easy","quick","fast","real","true","full","every","all","top",
+    # Generic book-type words (too broad for autocomplete)
+    "book","books","workbook","journal","notebook","planner","guide","manual",
+    # Numbers as words
+    "one","two","three","four","five","six","ten",
 }
 
 def _key_query(text: str, max_words: int = 4) -> str:
     """Extract the most meaningful words for an autocomplete query."""
     import re
     words = re.sub(r"[\"'()!?:;,.]", "", text).split()
-    key = [w for w in words if w.lower() not in _STOP]
+    # Keep words: not in stop list AND at least 3 chars (skip 1-2 char tokens)
+    key = [w for w in words if w.lower() not in _STOP and len(w) >= 3]
     short = " ".join(key[:max_words]) if key else " ".join(words[:max_words])
     return short or text[:40]
 
