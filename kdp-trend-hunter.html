@@ -644,6 +644,7 @@ select option{background:var(--s2)}
     <button class="btn btn-ghost" id="competitorBtn" style="display:none" onclick="checkCompetitors()">🔍 Check Amazon</button>
     <button class="btn btn-ghost" id="titleVariantsBtn" style="display:none" onclick="generateTitleVariants()">✏️ Varianti Titolo</button>
     <button class="btn btn-accent" id="p2NextBtn" onclick="goPanel('p3')" disabled>Genera Contenuto →</button>
+    <span id="amazonKwBadge2" style="display:none;font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);color:#22c55e;margin-left:6px"></span>
   </div>
 
   <!-- Competitor panel -->
@@ -725,6 +726,7 @@ select option{background:var(--s2)}
       <div class="spin" id="genSpin" style="display:none"></div>
     </button>
     <button class="btn btn-ghost" onclick="goPanel('p2')">← Indietro</button>
+    <span id="amazonKwBadge3" style="display:none;font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);color:#22c55e"></span>
   </div>
 
   <div id="contentOut"></div>
@@ -2191,7 +2193,8 @@ Write in warm, second-person voice.`;
         tab,
         chapter_num: parseInt(chNum) || 1,
         outline: state.outline ? state.outline.substring(0, 600) : '',
-        ...voiceParams
+        ...voiceParams,
+        amazon_keywords: state.amazonKeywords || [],
       });
       text = res.content;
     } else {
@@ -2793,7 +2796,8 @@ async function generateAllAuto() {
           book_type: bookType,
           audience,
           outline: state.outline,
-          ...autoVoiceParams
+          ...autoVoiceParams,
+          amazon_keywords: state.amazonKeywords || [],
         })
       });
 
@@ -3247,6 +3251,16 @@ async function checkCompetitors() {
 
   const titleKws = extractKeywords(titleRes);
   const nicheKws = extractKeywords(nicheRes);
+  // Save for injection into Claude prompts
+  const allKws = [...new Set([...titleKws, ...nicheKws])].slice(0, 12);
+  state.amazonKeywords = allKws;
+  const badgeText = allKws.length ? `🛒 ${allKws.length} keyword Amazon attive` : '';
+  ['amazonKwBadge2','amazonKwBadge3'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = badgeText;
+    el.style.display = allKws.length ? 'inline-flex' : 'none';
+  });
   const titleErr = titleRes.status === 'rejected' ? titleRes.reason?.message : null;
   const nicheErr = nicheRes.status === 'rejected' ? nicheRes.reason?.message : null;
 

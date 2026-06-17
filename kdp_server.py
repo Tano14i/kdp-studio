@@ -462,6 +462,7 @@ class GenerateRequest(BaseModel):
     chapter_length: Optional[str] = "medium"   # short|medium|long
     reader_persona: Optional[str] = ""
     custom_instructions: Optional[str] = ""
+    amazon_keywords: Optional[List[str]] = []
 
 class AllChaptersRequest(BaseModel):
     trend_name: str
@@ -476,6 +477,7 @@ class AllChaptersRequest(BaseModel):
     chapter_length: Optional[str] = "medium"
     reader_persona: Optional[str] = ""
     custom_instructions: Optional[str] = ""
+    amazon_keywords: Optional[List[str]] = []
 
 class PackageRequest(BaseModel):
     trend_name: str
@@ -1649,6 +1651,13 @@ Unique elements: {book_tmpl["unique_elements"]}"""
         reader_persona=req.reader_persona or "",
         custom_instructions=req.custom_instructions or ""
     )
+    kw_ctx = ""
+    if req.amazon_keywords:
+        kw_ctx = (
+            f"\nKDP KEYWORD OPTIMIZATION — These are real Amazon search terms buyers use. "
+            f"Weave them naturally into chapter titles, section headings, and the first/last paragraph of each chapter "
+            f"(never stuff them unnaturally): {', '.join(req.amazon_keywords[:12])}\n"
+        )
     length_map = {"short": "800-1000", "medium": "1200-1600", "long": "2000-2500"}
     word_count = length_map.get(req.chapter_length or "medium", "1200-1600")
 
@@ -1656,7 +1665,7 @@ Unique elements: {book_tmpl["unique_elements"]}"""
         prompt = f"""You are a bestselling KDP author. Create a detailed book outline.
 
 {book_ctx}
-
+{kw_ctx}
 {book_format_ctx}
 
 {voice_ctx}
@@ -1679,6 +1688,7 @@ All 10 chapters. No extra text."""
         prompt = f"""You are a bestselling KDP author. Write Chapter {n}.
 
 {book_ctx}
+{kw_ctx}
 {f"Outline:{chr(10)}{req.outline[:600]}" if req.outline else ""}
 
 {book_format_ctx}
@@ -1698,6 +1708,7 @@ Make it feel like no other chapter in any other book."""
         prompt = f"""You are a bestselling KDP author. Write the Introduction AND Conclusion.
 
 {book_ctx}
+{kw_ctx}
 {voice_ctx}
 
 INTRODUCTION ({word_count} words):
@@ -1716,6 +1727,7 @@ CONCLUSION (600-800 words):
         prompt = f"""You are a bestselling KDP author. Write a complete {req.book_type}.
 
 {book_ctx}
+{kw_ctx}
 {voice_ctx}
 
 Write the FULL book:
@@ -1764,6 +1776,14 @@ async def generate_all_chapters(req: AllChaptersRequest):
     total = len(unique_chapters)
     outline_snippet = req.outline[:800]
 
+    kw_ctx = ""
+    if req.amazon_keywords:
+        kw_ctx = (
+            f"\nKDP KEYWORD OPTIMIZATION — These are real Amazon search terms buyers use. "
+            f"Weave them naturally into chapter titles, section headings, and the first/last paragraph of each chapter "
+            f"(never stuff them unnaturally): {', '.join(req.amazon_keywords[:12])}\n"
+        )
+
     async def chapter_stream():
         for ch in unique_chapters:
             n, title = ch["num"], ch["title"]
@@ -1779,6 +1799,7 @@ async def generate_all_chapters(req: AllChaptersRequest):
             prompt = f"""You are a bestselling KDP author. Write Chapter {n} of {total}.
 
 {book_ctx}
+{kw_ctx}
 Chapter title: {title}
 Outline reference:
 {outline_snippet}
