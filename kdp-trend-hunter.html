@@ -216,6 +216,77 @@ select option{background:var(--s2)}
 /* EMPTY */
 .empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px}
 .empty .ico{font-size:28px;margin-bottom:10px}
+
+/* MARKETING TABS */
+.mkt-tab{
+  padding:10px 18px;font-size:12px;font-weight:500;
+  color:var(--muted);cursor:pointer;border:none;background:none;
+  border-bottom:2px solid transparent;white-space:nowrap;
+  transition:all 0.15s;
+}
+.mkt-tab:hover{color:var(--text)}
+.mkt-tab.active{color:var(--text);border-bottom-color:var(--accent)}
+.mkt-panel{display:none}
+.mkt-panel.active{display:block}
+
+/* MARKETING VIDEO MODE BUTTONS */
+.mkt-video-mode-btn{
+  padding:8px 16px;font-size:12px;font-weight:600;
+  border-radius:8px;border:1px solid var(--border2);
+  background:none;color:var(--muted);cursor:pointer;transition:all 0.15s;
+}
+.mkt-video-mode-btn.active{background:rgba(255,69,0,0.12);border-color:var(--accent);color:var(--accent)}
+
+/* MARKETING PUBLISH ACTION BUTTONS */
+.mkt-pub-action-btn{
+  padding:8px 16px;font-size:12px;font-weight:600;
+  border-radius:8px;border:1px solid var(--border2);
+  background:none;color:var(--muted);cursor:pointer;transition:all 0.15s;
+}
+.mkt-pub-action-btn.active{background:rgba(255,69,0,0.12);border-color:var(--accent);color:var(--accent)}
+
+/* KEYWORD CHIP */
+.kw-chip{
+  display:inline-flex;align-items:center;gap:6px;padding:4px 10px;
+  background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);
+  border-radius:20px;font-size:11px;color:#93c5fd;cursor:default;
+  margin:3px;
+}
+.kw-chip button{background:none;border:none;color:#93c5fd;cursor:pointer;font-size:10px;padding:0;line-height:1}
+
+/* SPARKLINE */
+.sparkline-bar{display:inline-flex;gap:1px;align-items:flex-end;height:18px;vertical-align:middle}
+.sparkline-bar span{width:4px;background:currentColor;border-radius:1px;min-height:2px}
+
+/* MARKETING PILL LABEL */
+.mkt-pill-label{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:11px;color:var(--muted);cursor:pointer;
+  padding:3px 8px;border:1px solid var(--border2);border-radius:12px;
+  transition:all 0.12s;user-select:none;
+}
+.mkt-pill-label:has(input:checked){
+  background:rgba(255,69,0,0.1);border-color:rgba(255,69,0,0.4);color:var(--text);
+}
+.mkt-pill-label input{display:none}
+
+/* AMAZON NICHE COLLAPSIBLE */
+.apify-section{
+  border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:12px;
+}
+.apify-section-header{
+  padding:10px 14px;background:var(--s2);cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);
+  border:none;width:100%;text-align:left;
+}
+.apify-section-header:hover{color:var(--text)}
+.apify-section-body{padding:12px 14px}
+
+/* NICHE SCORE COLORS */
+.ns-green{color:#22c55e}
+.ns-yellow{color:#eab308}
+.ns-red{color:#ef4444}
 </style>
 </head>
 <body>
@@ -280,6 +351,9 @@ select option{background:var(--s2)}
   </button>
   <button class="step-tab" data-panel="p6" onclick="goPanel('p6')">
     <span class="step-num">📊</span> Tracking
+  </button>
+  <button class="step-tab" data-panel="p7" onclick="goPanel('p7')">
+    <span class="step-num">📣</span> Marketing
   </button>
 </nav>
 
@@ -575,14 +649,14 @@ select option{background:var(--s2)}
   <!-- Competitor panel -->
   <div id="competitorOut" style="display:none;margin-top:16px;background:var(--s1);border:1px solid var(--border);border-radius:12px;overflow:hidden">
     <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-      <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted)">🔍 Competitor Check</div>
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted)">🔍 Amazon Check — Niche Score + Bestseller (Apify)</div>
     </div>
     <div id="competitorLinks" style="padding:14px 18px"></div>
-    
-    <!-- Market analysis: paste competitor titles -->
+
+    <!-- Market analysis: paste competitor titles (manual fallback) -->
     <div style="padding:14px 18px;border-top:1px solid var(--border);background:var(--s2)">
-      <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">📊 Analisi Mercato — incolla titoli da Amazon</div>
-      <textarea id="competitorTitles" rows="4" placeholder="Incolla qui i titoli dei competitor trovati su Amazon, uno per riga:&#10;The Daily Stoic Journal&#10;Atomic Habits Workbook&#10;The 5 AM Club Journal..." style="font-size:12px;margin-bottom:8px"></textarea>
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">📊 Analisi Manuale — incolla titoli da Amazon per analisi Claude</div>
+      <textarea id="competitorTitles" rows="3" placeholder="Incolla qui titoli competitor trovati su Amazon, uno per riga:&#10;The Daily Stoic Journal&#10;Atomic Habits Workbook…" style="font-size:12px;margin-bottom:8px"></textarea>
       <button class="btn btn-ghost" onclick="analyzeMarket()" style="font-size:12px;padding:8px 16px">
         <span id="mktBtnTxt">🤖 Analizza con Claude</span>
         <div class="spin" id="mktSpin" style="display:none;width:12px;height:12px"></div>
@@ -701,6 +775,268 @@ select option{background:var(--s2)}
   <div id="trackerOut"></div>
 </div>
 
+<!-- ============ PANEL 7: MARKETING ============ -->
+<div class="panel" id="p7">
+  <div class="panel-hero">
+    <h2>📣 <span>Marketing</span></h2>
+    <p>Keyword reali, caption social, video promozionali e pubblicazione diretta sulle piattaforme.</p>
+  </div>
+
+  <div id="mktNoBook" style="display:none;padding:24px;background:var(--s1);border:1px solid var(--border);border-radius:12px;text-align:center;color:var(--muted);font-size:13px">
+    ⚠️ Genera prima un libro per usare le funzioni marketing. Torna allo Step 1.
+  </div>
+
+  <div id="mktMain">
+    <!-- Sub-tabs -->
+    <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto">
+      <button class="mkt-tab active" data-mkt="mkt-keywords" onclick="switchMktTab('mkt-keywords')">🔍 Keyword Ideas</button>
+      <button class="mkt-tab" data-mkt="mkt-caption" onclick="switchMktTab('mkt-caption')">✍️ Caption</button>
+      <button class="mkt-tab" data-mkt="mkt-video" onclick="switchMktTab('mkt-video')">🎬 Video</button>
+      <button class="mkt-tab" data-mkt="mkt-publish" onclick="switchMktTab('mkt-publish')">📤 Pubblica</button>
+    </div>
+
+    <!-- TAB: Keyword Ideas -->
+    <div class="mkt-panel active" id="mkt-keywords">
+      <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+        <input id="mktKwQuery" type="text" placeholder="Cerca keyword o tema…" style="flex:1;min-width:180px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          <span style="font-size:11px;color:var(--muted)">Piattaforme:</span>
+          <label class="mkt-pill-label"><input type="checkbox" value="google" checked class="mktKwPlatform"> Google</label>
+          <label class="mkt-pill-label"><input type="checkbox" value="amazon" checked class="mktKwPlatform"> Amazon</label>
+          <label class="mkt-pill-label"><input type="checkbox" value="pinterest" checked class="mktKwPlatform"> Pinterest</label>
+          <label class="mkt-pill-label"><input type="checkbox" value="tiktok" class="mktKwPlatform"> TikTok</label>
+          <label class="mkt-pill-label"><input type="checkbox" value="instagram" class="mktKwPlatform"> Instagram</label>
+          <label class="mkt-pill-label"><input type="checkbox" value="youtube" class="mktKwPlatform"> YouTube</label>
+        </div>
+        <button class="btn btn-accent" onclick="searchKeywords()" style="white-space:nowrap">
+          <span id="mktKwBtnTxt">Cerca</span>
+          <div class="spin" id="mktKwSpin" style="display:none;width:12px;height:12px"></div>
+        </button>
+      </div>
+      <div id="mktKwOut"></div>
+    </div>
+
+    <!-- TAB: Caption -->
+    <div class="mkt-panel" id="mkt-caption">
+      <div style="display:grid;gap:12px;max-width:560px;margin-bottom:16px">
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">URL video (opzionale — es. trailer YouTube)</label>
+          <input id="mktVideoUrl" type="text" placeholder="https://youtube.com/watch?v=…">
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <div style="flex:1;min-width:140px">
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Tono</label>
+            <select id="mktTone">
+              <option value="warm">Caldo</option>
+              <option value="bold">Audace</option>
+              <option value="calm">Calmo</option>
+              <option value="professional">Professionale</option>
+            </select>
+          </div>
+          <div style="flex:1;min-width:140px">
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Lingua output</label>
+            <select id="mktCaptionLang">
+              <option value="it">Italiano</option>
+              <option value="en">English</option>
+              <option value="it+en">Blend IT+EN</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Piattaforme</label>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <label class="mkt-pill-label"><input type="checkbox" value="instagram" checked class="mktCaptionPlatform"> Instagram</label>
+            <label class="mkt-pill-label"><input type="checkbox" value="facebook" checked class="mktCaptionPlatform"> Facebook</label>
+            <label class="mkt-pill-label"><input type="checkbox" value="tiktok" checked class="mktCaptionPlatform"> TikTok</label>
+            <label class="mkt-pill-label"><input type="checkbox" value="pinterest" class="mktCaptionPlatform"> Pinterest</label>
+            <label class="mkt-pill-label"><input type="checkbox" value="twitter" class="mktCaptionPlatform"> Twitter</label>
+            <label class="mkt-pill-label"><input type="checkbox" value="linkedin" class="mktCaptionPlatform"> LinkedIn</label>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-accent" onclick="generateCaptions()">
+        <span id="mktCapBtnTxt">Genera caption</span>
+        <div class="spin" id="mktCapSpin" style="display:none;width:12px;height:12px"></div>
+      </button>
+      <div id="mktCapOut" style="margin-top:16px"></div>
+    </div>
+
+    <!-- TAB: Video -->
+    <div class="mkt-panel" id="mkt-video">
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <button class="mkt-video-mode-btn active" data-mode="story" onclick="switchVideoMode('story')">🎬 AI Story</button>
+        <button class="mkt-video-mode-btn" data-mode="ugc" onclick="switchVideoMode('ugc')">🖼️ UGC da copertina</button>
+      </div>
+
+      <div id="mkt-video-story">
+        <div style="display:grid;gap:12px;max-width:560px;margin-bottom:16px">
+          <div>
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Prompt video</label>
+            <textarea id="mktVideoPrompt" rows="4" placeholder="Es: Promo 30 secondi per anxiety workbook, mood calmo, scena finale con copertina libro…"></textarea>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div style="flex:1;min-width:120px">
+              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Durata</label>
+              <select id="mktVideoDuration">
+                <option value="15">15s</option>
+                <option value="30" selected>30s</option>
+                <option value="60">60s</option>
+              </select>
+            </div>
+            <div style="flex:1;min-width:120px">
+              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Piattaforma</label>
+              <select id="mktVideoPlatform">
+                <option value="instagram">Instagram</option>
+                <option value="tiktok">TikTok</option>
+                <option value="youtube">YouTube</option>
+                <option value="facebook">Facebook</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-accent" onclick="generateVideoStory()">
+          <span id="mktVidStoryBtnTxt">Genera video</span>
+          <div class="spin" id="mktVidStorySpin" style="display:none;width:12px;height:12px"></div>
+        </button>
+      </div>
+
+      <div id="mkt-video-ugc" style="display:none">
+        <div style="display:grid;gap:12px;max-width:560px;margin-bottom:16px">
+          <div>
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">URL immagine copertina</label>
+            <input id="mktUgcImageUrl" type="text" placeholder="https://… (Amazon o Ideogram)">
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div style="flex:1;min-width:120px">
+              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Piattaforma</label>
+              <select id="mktUgcPlatform">
+                <option value="tiktok">TikTok</option>
+                <option value="instagram">Instagram</option>
+                <option value="youtube">YouTube</option>
+                <option value="facebook">Facebook</option>
+              </select>
+            </div>
+            <div style="flex:1;min-width:120px">
+              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Durata</label>
+              <select id="mktUgcDuration">
+                <option value="15">15s</option>
+                <option value="30" selected>30s</option>
+                <option value="60">60s</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-accent" onclick="generateVideoUgc()">
+          <span id="mktVidUgcBtnTxt">Genera</span>
+          <div class="spin" id="mktVidUgcSpin" style="display:none;width:12px;height:12px"></div>
+        </button>
+      </div>
+
+      <div id="mktVideoOut" style="margin-top:16px"></div>
+    </div>
+
+    <!-- TAB: Pubblica -->
+    <div class="mkt-panel" id="mkt-publish">
+      <!-- Sub-actions -->
+      <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+        <button class="mkt-pub-action-btn active" data-action="post" onclick="switchPubAction('post')">📤 Pubblica</button>
+        <button class="mkt-pub-action-btn" data-action="analyze" onclick="switchPubAction('analyze')">🔎 Analizza competitor</button>
+        <button class="mkt-pub-action-btn" data-action="influencers" onclick="switchPubAction('influencers')">🌟 Scopri influencer</button>
+      </div>
+
+      <!-- Post -->
+      <div id="pub-action-post">
+        <div style="display:grid;gap:12px;max-width:600px;margin-bottom:16px">
+          <div>
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Caption (modificabile)</label>
+            <textarea id="pubCaption" rows="5" placeholder="La tua caption social…"></textarea>
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">URL immagine (opzionale)</label>
+            <input id="pubImageUrl" type="text" placeholder="https://…">
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Piattaforme</label>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <label class="mkt-pill-label"><input type="checkbox" value="instagram" checked class="pubPlatform"> Instagram</label>
+              <label class="mkt-pill-label"><input type="checkbox" value="facebook" checked class="pubPlatform"> Facebook</label>
+              <label class="mkt-pill-label"><input type="checkbox" value="pinterest" class="pubPlatform"> Pinterest</label>
+            </div>
+          </div>
+          <details style="border:1px solid var(--border);border-radius:8px;padding:10px">
+            <summary style="font-size:11px;font-weight:600;cursor:pointer;color:var(--muted)">🔑 API Keys piattaforme (salvate in locale)</summary>
+            <div style="margin-top:10px;display:grid;gap:8px">
+              <div>
+                <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px">Facebook Token</label>
+                <input id="pubFbToken" type="password" placeholder="EAABxx…" oninput="saveSocialKeys()">
+              </div>
+              <div>
+                <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px">Instagram Token</label>
+                <input id="pubIgToken" type="password" placeholder="IGQVJxx…" oninput="saveSocialKeys()">
+              </div>
+              <div>
+                <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px">Pinterest Token</label>
+                <input id="pubPinToken" type="password" placeholder="pina_xx…" oninput="saveSocialKeys()">
+              </div>
+            </div>
+          </details>
+        </div>
+        <button class="btn btn-accent" onclick="publishSocial()">
+          <span id="pubBtnTxt">📤 Pubblica ora</span>
+          <div class="spin" id="pubSpin" style="display:none;width:12px;height:12px"></div>
+        </button>
+        <div id="pubOut" style="margin-top:14px"></div>
+      </div>
+
+      <!-- Analyze -->
+      <div id="pub-action-analyze" style="display:none">
+        <div style="display:grid;gap:12px;max-width:560px;margin-bottom:16px">
+          <div>
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Topic o URL pagina da analizzare</label>
+            <input id="pubAnalyzeTopic" type="text" placeholder="Es: journaling self-help books">
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Piattaforme</label>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <label class="mkt-pill-label"><input type="checkbox" value="instagram" checked class="pubAnalyzePlatform"> Instagram</label>
+              <label class="mkt-pill-label"><input type="checkbox" value="tiktok" checked class="pubAnalyzePlatform"> TikTok</label>
+              <label class="mkt-pill-label"><input type="checkbox" value="pinterest" class="pubAnalyzePlatform"> Pinterest</label>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-accent" onclick="analyzeSocial()">
+          <span id="pubAnalyzeBtnTxt">Analizza</span>
+          <div class="spin" id="pubAnalyzeSpin" style="display:none;width:12px;height:12px"></div>
+        </button>
+        <div id="pubAnalyzeOut" style="margin-top:14px"></div>
+      </div>
+
+      <!-- Influencers -->
+      <div id="pub-action-influencers" style="display:none">
+        <div style="display:grid;gap:12px;max-width:560px;margin-bottom:16px">
+          <div>
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Nicchia (es. "journaling", "self-help books")</label>
+            <input id="pubInfluencerNiche" type="text" placeholder="Es: anxiety workbook">
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Piattaforme</label>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <label class="mkt-pill-label"><input type="checkbox" value="instagram" checked class="pubInfluencerPlatform"> Instagram</label>
+              <label class="mkt-pill-label"><input type="checkbox" value="tiktok" checked class="pubInfluencerPlatform"> TikTok</label>
+              <label class="mkt-pill-label"><input type="checkbox" value="youtube" class="pubInfluencerPlatform"> YouTube</label>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-accent" onclick="findInfluencers()">
+          <span id="pubInfluencerBtnTxt">Scopri influencer</span>
+          <div class="spin" id="pubInfluencerSpin" style="display:none;width:12px;height:12px"></div>
+        </button>
+        <div id="pubInfluencerOut" style="margin-top:14px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 // ─── CONFIG ──────────────────────────────────────────────
 // Auto-detect backend URL:
@@ -784,6 +1120,7 @@ function goPanel(id) {
   // Update voice summary bar when entering step 3
   if (id === 'p3') updateVoiceSummary();
   if (id === 'p6') renderTracker();
+  if (id === 'p7') initMarketing();
 }
 
 function updateVoiceSummary() {
@@ -1665,11 +2002,49 @@ function populateStep2() {
       <div class="bi-type">${escHtml(b.type)}</div>
       <div class="bi-title">${escHtml(b.title)}</div>
       <div class="bi-sub">${escHtml(b.subtitle)}</div>
+      <div id="sparkline_${i}" style="margin-top:8px;font-size:10px;color:var(--muted)"></div>
       <div class="bi-sel">✓ Selezionato</div>
     </div>`).join('');
 
   state.selectedBook = null;
   document.getElementById('p2NextBtn').disabled = true;
+
+  // Fetch Google Trends sparklines for the book keywords (non-blocking)
+  if (BACKEND_LIVE) {
+    const keywords = (t.books || []).map((b,i) => ({ kw: (b.title || '').split(' ').slice(0,3).join(' '), idx: i })).filter(x => x.kw);
+    if (keywords.length) {
+      callBackend('/api/apify/trends', {
+        keywords: keywords.map(x => x.kw),
+        market_language: getMarketLang()
+      }).then(res => {
+        const items = res.data || [];
+        // Map keyword → time-series values
+        const kwMap = {};
+        items.forEach(item => {
+          const term = item.keyword || item.term || item.searchTerm || '';
+          const timeline = item.interestOverTime || item.values || item.timeline || [];
+          const vals = timeline.map(p => typeof p === 'number' ? p : (p.value ?? p.interest ?? 0));
+          if (term && vals.length) kwMap[term.toLowerCase()] = vals;
+        });
+        keywords.forEach(({ kw, idx }) => {
+          const vals = kwMap[kw.toLowerCase()];
+          const el = document.getElementById('sparkline_' + idx);
+          if (!el || !vals || vals.length < 2) return;
+          const max = Math.max(...vals, 1);
+          const norm = vals.map(v => Math.round((v / max) * 16));
+          const first = vals.slice(0, Math.floor(vals.length/2)).reduce((a,b)=>a+b,0);
+          const second = vals.slice(Math.floor(vals.length/2)).reduce((a,b)=>a+b,0);
+          const avg = Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+          const trend = second > first * 1.1 ? { label:'📈 in salita', color:'#22c55e' } :
+                        second < first * 0.9 ? { label:'📉 in calo',   color:'#ef4444' } :
+                                               { label:'➡️ stabile',   color:'#eab308' };
+          el.innerHTML = `<span style="color:${trend.color}">${trend.label}</span>
+            <span style="margin-left:6px;color:var(--muted2)">${avg}/100</span>
+            <span class="sparkline-bar" style="margin-left:6px;color:${trend.color}">${norm.map(h=>`<span style="height:${h}px"></span>`).join('')}</span>`;
+        });
+      }).catch(() => {});
+    }
+  }
 }
 
 function selectBook(i) {
@@ -2830,59 +3205,114 @@ generatePackage = async function() {
   saveState();
 };
 
-// ── COMPETITOR CHECK ──────────────────────────────────────────
-function checkCompetitors() {
+// ── COMPETITOR CHECK (Apify-powered) ─────────────────────────
+async function checkCompetitors() {
   const b = state.selectedBook;
   const t = state.selectedTrend;
   if (!b) return;
 
   const title = state.customTitle || b.title || '';
-  const keywords = (b.subtitle || '').split(' ').slice(0,4).join(' ');
-  const searchQ = encodeURIComponent(title);
-  const kwQ = encodeURIComponent(keywords);
-
-  const links = [
-    {
-      label: '🛒 Amazon — Ricerca diretta per titolo',
-      url: `https://www.amazon.com/s?k=${searchQ}&i=stripbooks`,
-      desc: 'Vedi quanti libri simili esistono e a che prezzo'
-    },
-    {
-      label: '🔑 Amazon — Ricerca per keyword',
-      url: `https://www.amazon.com/s?k=${kwQ}&i=stripbooks`,
-      desc: 'Analizza i competitor per keyword SEO'
-    },
-    {
-      label: '📊 Google Trends — Volume keyword',
-      url: `https://trends.google.com/trends/explore?q=${encodeURIComponent(title)}&geo=US`,
-      desc: 'Verifica il trend nel tempo'
-    },
-    {
-      label: '💬 Reddit — Discussioni sul topic',
-      url: `https://www.reddit.com/search/?q=${searchQ}&sort=top&t=month`,
-      desc: 'Leggi cosa dice la community'
-    },
-  ];
+  const niche = t?.name || '';
 
   const out = document.getElementById('competitorOut');
   const linksEl = document.getElementById('competitorLinks');
   if (!out || !linksEl) return;
 
-  linksEl.innerHTML = links.map(l => `
-    <a href="${l.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()"
-       style="display:flex;gap:12px;align-items:flex-start;padding:10px 14px;margin-bottom:8px;
-              background:var(--s2);border:1px solid var(--border2);border-radius:8px;
-              text-decoration:none;color:var(--text);transition:border-color 0.12s"
-       onmouseover="this.style.borderColor='var(--accent2)'"
-       onmouseout="this.style.borderColor='var(--border2)'">
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:500;margin-bottom:3px">${l.label}</div>
-        <div style="font-size:11px;color:var(--muted)">${l.desc}</div>
-      </div>
-      <span style="font-size:11px;color:var(--muted2);flex-shrink:0;padding-top:2px">↗</span>
-    </a>`).join('');
-
   out.style.display = 'block';
+  linksEl.innerHTML = `<div style="display:flex;gap:10px;align-items:center;padding:12px 0;color:var(--muted);font-size:12px">
+    <div class="spin" style="width:14px;height:14px;flex-shrink:0"></div>
+    Analisi Amazon in corso — Niche Score + Bestseller… (30–60s)
+  </div>`;
+
+  const [nicheRes, bestRes] = await Promise.allSettled([
+    callBackend('/api/apify/amazon-niche', { keyword: title }),
+    callBackend('/api/apify/amazon-best', { niche }),
+  ]);
+
+  // Render niche analysis
+  let nicheHtml = '';
+  if (nicheRes.status === 'fulfilled' && nicheRes.value?.data?.length) {
+    const books = nicheRes.value.data.slice(0, 15);
+    const scores = books.map(b => b.nicheScore ?? b.niche_score ?? b.score ?? 0).filter(s => s > 0);
+    const avgScore = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : null;
+    const verdict = avgScore === null ? '' : avgScore >= 60 ? '✅ Nicchia ok' : avgScore >= 40 ? '⚠️ Nicchia competitiva' : '🛑 Nicchia satura';
+    const verdictColor = avgScore === null ? '#666' : avgScore >= 60 ? '#22c55e' : avgScore >= 40 ? '#eab308' : '#ef4444';
+    nicheHtml = `
+      <div class="apify-section">
+        <button class="apify-section-header" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+          <span>🎯 Niche Score — ${title}</span>
+          ${avgScore !== null ? `<span style="color:${verdictColor};font-size:13px">${avgScore}/100 — ${verdict}</span>` : ''}
+        </button>
+        <div class="apify-section-body">
+          <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:11px">
+            <thead>
+              <tr style="border-bottom:1px solid var(--border);color:var(--muted)">
+                <th style="text-align:left;padding:4px 8px;font-weight:600">Titolo</th>
+                <th style="text-align:right;padding:4px 8px;font-weight:600">BSR</th>
+                <th style="text-align:right;padding:4px 8px;font-weight:600">Prezzo</th>
+                <th style="text-align:right;padding:4px 8px;font-weight:600">Rec.</th>
+                <th style="text-align:right;padding:4px 8px;font-weight:600">Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${books.map(bk => {
+                const sc = bk.nicheScore ?? bk.niche_score ?? bk.score ?? null;
+                const scColor = sc === null ? '#666' : sc >= 60 ? '#22c55e' : sc >= 40 ? '#eab308' : '#ef4444';
+                return `<tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+                  <td style="padding:5px 8px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(bk.title || bk.name || '')}</td>
+                  <td style="padding:5px 8px;text-align:right;color:var(--muted)">${bk.bsr ?? bk.BSR ?? '—'}</td>
+                  <td style="padding:5px 8px;text-align:right;color:var(--muted)">${bk.price ? '$'+bk.price : '—'}</td>
+                  <td style="padding:5px 8px;text-align:right;color:var(--muted)">${bk.reviews ?? bk.reviewCount ?? '—'}</td>
+                  <td style="padding:5px 8px;text-align:right;color:${scColor};font-weight:600">${sc !== null ? sc : '—'}</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+          </div>
+        </div>
+      </div>`;
+  } else {
+    const errMsg = nicheRes.status === 'rejected' ? nicheRes.reason?.message : 'Dati non disponibili';
+    nicheHtml = `<div class="apify-section"><div class="apify-section-body" style="color:var(--muted);font-size:12px">⚠️ Niche Score: ${escHtml(errMsg)}</div></div>`;
+  }
+
+  // Render bestsellers
+  let bestHtml = '';
+  if (bestRes.status === 'fulfilled' && bestRes.value?.data?.length) {
+    const items = bestRes.value.data.slice(0, 10);
+    bestHtml = `
+      <div class="apify-section">
+        <button class="apify-section-header" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+          📊 Top Bestseller — ${escHtml(niche || 'Categoria')}
+        </button>
+        <div class="apify-section-body">
+          ${items.map((it, idx) => `
+            <div style="display:flex;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:11px;align-items:flex-start">
+              <span style="color:var(--accent2);font-weight:700;flex-shrink:0;width:20px">#${it.rank ?? (idx+1)}</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(it.title || it.name || '')}</div>
+                <div style="color:var(--muted);margin-top:2px">
+                  ${it.price ? `<span>$${it.price}</span> · ` : ''}
+                  ${it.rating ? `<span>⭐ ${it.rating}</span> · ` : ''}
+                  ${it.reviews ? `<span>${it.reviews} rec.</span>` : ''}
+                </div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+  } else {
+    const errMsg = bestRes.status === 'rejected' ? bestRes.reason?.message : 'Dati non disponibili';
+    bestHtml = `<div class="apify-section"><div class="apify-section-body" style="color:var(--muted);font-size:12px">⚠️ Bestseller: ${escHtml(errMsg)}</div></div>`;
+  }
+
+  linksEl.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:4px">
+    <div>${nicheHtml}</div><div>${bestHtml}</div>
+  </div>
+  <div style="text-align:right;margin-top:4px">
+    <a href="https://www.amazon.com/s?k=${encodeURIComponent(title)}&i=stripbooks" target="_blank" rel="noopener"
+       style="font-size:11px;color:var(--muted);text-decoration:none">🔗 Apri su Amazon →</a>
+  </div>`;
 }
 
 // ── EXPORT CURRENT PACKAGE AS .DOC ───────────────────────────
@@ -2947,7 +3377,7 @@ async function analyzeMarket() {
   }
 }
 
-// ── GENERATE TITLE VARIANTS ───────────────────────────────────
+// ── GENERATE TITLE VARIANTS (with Apify keyword enrichment) ──
 async function generateTitleVariants() {
   const b = state.selectedBook;
   const t = state.selectedTrend;
@@ -2958,6 +3388,24 @@ async function generateTitleVariants() {
   const spin = document.getElementById('tvSpin');
   if (out) out.style.display = 'block';
   if (spin) spin.style.display = 'block';
+  if (list) list.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px 0">Raccogliendo keyword reali… poi genero le varianti.</div>';
+
+  const currentTitle = state.customTitle || b.title || '';
+
+  // Silently fetch real keyword suggestions to enrich the prompt
+  let realKeywords = [];
+  try {
+    const kwRes = await callBackend('/api/apify/keywords', {
+      query: currentTitle,
+      platforms: ['google', 'amazon', 'pinterest'],
+    });
+    realKeywords = (kwRes.data || []).flatMap(item =>
+      item.suggestions || item.keywords || (typeof item === 'string' ? [item] : [])
+    ).slice(0, 15);
+  } catch(_) {
+    // keyword fetch failed — proceed without enrichment
+  }
+
   if (list) list.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px 0">Generando 5 varianti…</div>';
 
   try {
@@ -2966,8 +3414,9 @@ async function generateTitleVariants() {
       niche: t?.name || '',
       trend: t?.description || '',
       audience: document.getElementById('audience')?.value || '',
-      current_title: state.customTitle || b.title || '',
-      language: document.getElementById('outputLanguage')?.value || 'English'
+      current_title: currentTitle,
+      language: document.getElementById('outputLanguage')?.value || 'English',
+      ...(realKeywords.length ? { real_keywords: realKeywords } : {})
     });
 
     const variants = res.variants || [];
@@ -3041,7 +3490,376 @@ generatePackage = async function() {
 const _origDOMLoad = window.onload;
 document.addEventListener('DOMContentLoaded', () => {
   renderLibrary();
+  loadSocialKeys();
 });
+
+// ══════════════════════════════════════════════════════════════
+// MARKETING SECTION
+// ══════════════════════════════════════════════════════════════
+
+function switchMktTab(id) {
+  document.querySelectorAll('.mkt-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.mkt === id);
+  });
+  document.querySelectorAll('.mkt-panel').forEach(p => {
+    p.classList.toggle('active', p.id === id);
+  });
+}
+
+function switchVideoMode(mode) {
+  document.querySelectorAll('.mkt-video-mode-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+  document.getElementById('mkt-video-story').style.display = mode === 'story' ? 'block' : 'none';
+  document.getElementById('mkt-video-ugc').style.display = mode === 'ugc' ? 'block' : 'none';
+}
+
+function switchPubAction(action) {
+  document.querySelectorAll('.mkt-pub-action-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.action === action);
+  });
+  ['post','analyze','influencers'].forEach(a => {
+    const el = document.getElementById('pub-action-' + a);
+    if (el) el.style.display = a === action ? 'block' : 'none';
+  });
+}
+
+function initMarketing() {
+  const b = state.selectedBook;
+  const t = state.selectedTrend;
+  const hasBook = !!(b?.title);
+
+  document.getElementById('mktNoBook').style.display = hasBook ? 'none' : 'block';
+  document.getElementById('mktMain').style.display = hasBook ? 'block' : 'none';
+
+  if (!hasBook) return;
+
+  // Pre-populate keyword search with book title
+  const title = state.customTitle || b.title || '';
+  const kwInput = document.getElementById('mktKwQuery');
+  if (kwInput && !kwInput.value) kwInput.value = title;
+
+  // Pre-populate video prompt
+  const vidPrompt = document.getElementById('mktVideoPrompt');
+  if (vidPrompt && !vidPrompt.value) {
+    vidPrompt.value = `Promo 30 secondi per "${title}", nicchia ${t?.name || 'self-help'}, mood coinvolgente, scena finale con copertina libro.`;
+  }
+
+  // Pre-populate influencer niche
+  const infNiche = document.getElementById('pubInfluencerNiche');
+  if (infNiche && !infNiche.value) infNiche.value = t?.name || '';
+}
+
+// ── KEYWORD IDEAS ─────────────────────────────────────────────
+async function searchKeywords() {
+  const query = document.getElementById('mktKwQuery')?.value?.trim();
+  if (!query) return;
+
+  const platforms = [...document.querySelectorAll('.mktKwPlatform:checked')].map(c => c.value);
+  if (!platforms.length) { alert('Seleziona almeno una piattaforma.'); return; }
+
+  const btn = document.getElementById('mktKwBtnTxt');
+  const spin = document.getElementById('mktKwSpin');
+  const out = document.getElementById('mktKwOut');
+  if (btn) btn.textContent = 'Cercando…';
+  if (spin) spin.style.display = 'block';
+  if (out) out.innerHTML = `<div style="font-size:12px;color:var(--muted);padding:8px 0">Recupero suggerimenti da ${platforms.join(', ')}…</div>`;
+
+  try {
+    const res = await callBackend('/api/apify/keywords', { query, platforms });
+    const items = res.data || [];
+
+    // Group by platform
+    const byPlatform = {};
+    items.forEach(item => {
+      const plat = item.platform || item.source || 'other';
+      const sugg = item.suggestions || item.keywords || (typeof item === 'string' ? [item] : []);
+      if (!byPlatform[plat]) byPlatform[plat] = [];
+      byPlatform[plat].push(...sugg.map(s => typeof s === 'string' ? s : (s.keyword || s.text || '')).filter(Boolean));
+    });
+
+    // If no grouping, flatten all
+    if (!Object.keys(byPlatform).length) {
+      byPlatform['results'] = items.flat().map(x => typeof x === 'string' ? x : (x.keyword || x.text || '')).filter(Boolean);
+    }
+
+    // Stash for caption injection
+    window._mktKeywords = Object.values(byPlatform).flat().slice(0, 15);
+
+    const icons = { google:'🔍', amazon:'🛒', pinterest:'📌', tiktok:'🎵', instagram:'📸', youtube:'▶️', other:'💡', results:'💡' };
+    if (out) out.innerHTML = Object.entries(byPlatform).map(([plat, kws]) => `
+      <div style="margin-bottom:14px">
+        <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">
+          ${icons[plat]||'🔹'} ${plat}
+        </div>
+        <div>${kws.map(kw => `
+          <span class="kw-chip">
+            ${escHtml(kw)}
+            <button onclick="navigator.clipboard.writeText('${escHtml(kw).replace(/'/g,"\\'")}')" title="Copia">📋</button>
+          </span>`).join('')}
+        </div>
+      </div>`).join('') || '<div style="color:var(--muted);font-size:12px">Nessun risultato — riprova con una query diversa.</div>';
+  } catch(e) {
+    if (out) out.innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}</div>`;
+  } finally {
+    if (btn) btn.textContent = 'Cerca';
+    if (spin) spin.style.display = 'none';
+  }
+}
+
+// ── CAPTIONS ──────────────────────────────────────────────────
+async function generateCaptions() {
+  const b = state.selectedBook;
+  const t = state.selectedTrend;
+  const videoUrl = document.getElementById('mktVideoUrl')?.value?.trim() || '';
+  const tone = document.getElementById('mktTone')?.value || 'warm';
+  const language = document.getElementById('mktCaptionLang')?.value || 'it';
+  const platforms = [...document.querySelectorAll('.mktCaptionPlatform:checked')].map(c => c.value);
+
+  if (!platforms.length) { alert('Seleziona almeno una piattaforma.'); return; }
+
+  const btn = document.getElementById('mktCapBtnTxt');
+  const spin = document.getElementById('mktCapSpin');
+  const out = document.getElementById('mktCapOut');
+  if (btn) btn.textContent = 'Generando…';
+  if (spin) spin.style.display = 'block';
+  if (out) out.innerHTML = `<div style="font-size:12px;color:var(--muted);padding:8px 0">Generazione caption in corso…</div>`;
+
+  const title = state.customTitle || b?.title || '';
+  const niche = t?.name || '';
+  const kws = window._mktKeywords || [];
+  const customContext = `Book: "${title}". Niche: ${niche}.${kws.length ? ' Keywords: ' + kws.slice(0,8).join(', ') + '.' : ''} Generate KDP book promotional posts.`;
+
+  try {
+    const res = await callBackend('/api/apify/captions', {
+      videoUrl,
+      platforms,
+      tone,
+      language,
+      customContext,
+    });
+    const items = res.data || [];
+
+    const platIcons = { instagram:'📸', facebook:'👥', tiktok:'🎵', pinterest:'📌', twitter:'🐦', linkedin:'💼' };
+
+    if (!items.length) {
+      if (out) out.innerHTML = '<div style="color:var(--muted);font-size:12px">Nessun risultato — riprova.</div>';
+      return;
+    }
+
+    if (out) out.innerHTML = items.map(item => {
+      const plat = item.platform || '';
+      const caption = item.caption || item.text || item.content || JSON.stringify(item);
+      const hashtags = item.hashtags || item.tags || [];
+      const capId = 'cap_' + Math.random().toString(36).slice(2);
+      return `<div style="background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted)">${platIcons[plat]||'📱'} ${escHtml(plat)}</div>
+          <button onclick="navigator.clipboard.writeText(document.getElementById('${capId}').textContent)" style="font-size:10px;padding:3px 8px;border-radius:5px;background:var(--s2);border:1px solid var(--border2);color:var(--muted);cursor:pointer">📋 Copia</button>
+        </div>
+        <div id="${capId}" style="font-size:12px;line-height:1.6;white-space:pre-wrap">${escHtml(String(caption))}</div>
+        ${hashtags.length ? `<div style="margin-top:8px;font-size:11px;color:#3b82f6">${Array.isArray(hashtags) ? hashtags.map(h => escHtml('#'+h.replace(/^#/,''))).join(' ') : escHtml(String(hashtags))}</div>` : ''}
+        <button onclick="document.getElementById('pubCaption').value=document.getElementById('${capId}').textContent;switchMktTab('mkt-publish')" style="margin-top:8px;font-size:10px;padding:3px 8px;border-radius:5px;background:rgba(255,69,0,0.1);border:1px solid rgba(255,69,0,0.3);color:var(--accent);cursor:pointer">→ Usa in Pubblica</button>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    if (out) out.innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}</div>`;
+  } finally {
+    if (btn) btn.textContent = 'Genera caption';
+    if (spin) spin.style.display = 'none';
+  }
+}
+
+// ── VIDEO ─────────────────────────────────────────────────────
+async function generateVideoStory() {
+  const prompt = document.getElementById('mktVideoPrompt')?.value?.trim();
+  if (!prompt) { alert('Inserisci un prompt per il video.'); return; }
+  const duration = parseInt(document.getElementById('mktVideoDuration')?.value || '30');
+  const outputPlatform = document.getElementById('mktVideoPlatform')?.value || 'instagram';
+
+  const btn = document.getElementById('mktVidStoryBtnTxt');
+  const spin = document.getElementById('mktVidStorySpin');
+  const out = document.getElementById('mktVideoOut');
+  if (btn) btn.textContent = 'Generando…';
+  if (spin) spin.style.display = 'block';
+  if (out) out.innerHTML = `<div style="font-size:12px;color:var(--muted);padding:8px 0">Generazione video (1–3 min)… attendere.</div>`;
+
+  try {
+    const res = await callBackend('/api/apify/video-story', { prompt, duration, outputPlatform });
+    renderVideoResult(out, res.data);
+  } catch(e) {
+    if (out) out.innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}</div>`;
+  } finally {
+    if (btn) btn.textContent = 'Genera video';
+    if (spin) spin.style.display = 'none';
+  }
+}
+
+async function generateVideoUgc() {
+  const imageUrl = document.getElementById('mktUgcImageUrl')?.value?.trim();
+  if (!imageUrl) { alert('Inserisci URL immagine copertina.'); return; }
+  const platform = document.getElementById('mktUgcPlatform')?.value || 'tiktok';
+  const duration = parseInt(document.getElementById('mktUgcDuration')?.value || '30');
+
+  const btn = document.getElementById('mktVidUgcBtnTxt');
+  const spin = document.getElementById('mktVidUgcSpin');
+  const out = document.getElementById('mktVideoOut');
+  if (btn) btn.textContent = 'Generando…';
+  if (spin) spin.style.display = 'block';
+  if (out) out.innerHTML = `<div style="font-size:12px;color:var(--muted);padding:8px 0">Generazione video UGC (1–3 min)… attendere.</div>`;
+
+  try {
+    const res = await callBackend('/api/apify/video-ugc', { imageUrl, platform, duration });
+    renderVideoResult(out, res.data);
+  } catch(e) {
+    if (out) out.innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}</div>`;
+  } finally {
+    if (btn) btn.textContent = 'Genera';
+    if (spin) spin.style.display = 'none';
+  }
+}
+
+function renderVideoResult(out, data) {
+  if (!out) return;
+  const items = Array.isArray(data) ? data : (data ? [data] : []);
+  if (!items.length) { out.innerHTML = '<div style="color:var(--muted);font-size:12px">Nessun risultato video restituito.</div>'; return; }
+  out.innerHTML = items.map(item => {
+    const url = item.videoUrl || item.url || item.outputUrl || '';
+    const thumb = item.thumbnailUrl || item.thumbnail || '';
+    return `<div style="background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px">
+      ${thumb ? `<img src="${escHtml(thumb)}" style="max-width:100%;border-radius:6px;margin-bottom:10px">` : ''}
+      ${url ? `<a href="${escHtml(url)}" target="_blank" rel="noopener" class="btn btn-accent" style="display:inline-flex;text-decoration:none;font-size:12px;padding:8px 16px">⬇️ Scarica video</a>` : ''}
+      ${!url && !thumb ? `<div style="font-size:11px;color:var(--muted);word-break:break-all">${escHtml(JSON.stringify(item))}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ── SOCIAL KEYS ───────────────────────────────────────────────
+const SOCIAL_KEYS_KEY = 'kdp_social_keys';
+
+function saveSocialKeys() {
+  const keys = {
+    facebook: document.getElementById('pubFbToken')?.value || '',
+    instagram: document.getElementById('pubIgToken')?.value || '',
+    pinterest: document.getElementById('pubPinToken')?.value || '',
+  };
+  localStorage.setItem(SOCIAL_KEYS_KEY, JSON.stringify(keys));
+}
+
+function loadSocialKeys() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SOCIAL_KEYS_KEY) || '{}');
+    if (document.getElementById('pubFbToken')) document.getElementById('pubFbToken').value = saved.facebook || '';
+    if (document.getElementById('pubIgToken')) document.getElementById('pubIgToken').value = saved.instagram || '';
+    if (document.getElementById('pubPinToken')) document.getElementById('pubPinToken').value = saved.pinterest || '';
+  } catch(_) {}
+}
+
+// ── PUBLISH ───────────────────────────────────────────────────
+async function publishSocial() {
+  const caption = document.getElementById('pubCaption')?.value?.trim() || '';
+  const imageUrl = document.getElementById('pubImageUrl')?.value?.trim() || '';
+  const platforms = [...document.querySelectorAll('.pubPlatform:checked')].map(c => c.value);
+
+  if (!caption) { alert('Inserisci una caption prima di pubblicare.'); return; }
+  if (!platforms.length) { alert('Seleziona almeno una piattaforma.'); return; }
+
+  const socialKeys = {
+    facebook: document.getElementById('pubFbToken')?.value || '',
+    instagram: document.getElementById('pubIgToken')?.value || '',
+    pinterest: document.getElementById('pubPinToken')?.value || '',
+  };
+
+  const btn = document.getElementById('pubBtnTxt');
+  const spin = document.getElementById('pubSpin');
+  const out = document.getElementById('pubOut');
+  if (btn) btn.textContent = 'Pubblicando…';
+  if (spin) spin.style.display = 'block';
+  if (out) out.innerHTML = '';
+
+  try {
+    const res = await callBackend('/api/apify/social-post', {
+      action: 'post',
+      caption,
+      platforms,
+      imageUrl,
+      socialKeys,
+    });
+    const items = res.data || [];
+    if (out) out.innerHTML = (items.length ? items : [{ status: 'ok', message: 'Pubblicato' }]).map(it => {
+      const ok = it.success || it.status === 'ok' || it.status === 'success';
+      return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px">
+        <span style="color:${ok ? '#22c55e' : '#ef4444'}">${ok ? '✅' : '❌'}</span>
+        <span>${escHtml(it.platform || it.channel || '')}</span>
+        <span style="color:var(--muted)">${escHtml(it.message || it.error || '')}</span>
+        ${it.postUrl ? `<a href="${escHtml(it.postUrl)}" target="_blank" rel="noopener" style="color:#3b82f6;font-size:11px;text-decoration:none">Apri post →</a>` : ''}
+      </div>`;
+    }).join('');
+  } catch(e) {
+    if (out) out.innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}</div>`;
+  } finally {
+    if (btn) btn.textContent = '📤 Pubblica ora';
+    if (spin) spin.style.display = 'none';
+  }
+}
+
+async function analyzeSocial() {
+  const topic = document.getElementById('pubAnalyzeTopic')?.value?.trim() || '';
+  if (!topic) { alert('Inserisci un topic da analizzare.'); return; }
+  const platforms = [...document.querySelectorAll('.pubAnalyzePlatform:checked')].map(c => c.value);
+
+  const btn = document.getElementById('pubAnalyzeBtnTxt');
+  const spin = document.getElementById('pubAnalyzeSpin');
+  const out = document.getElementById('pubAnalyzeOut');
+  if (btn) btn.textContent = 'Analizzando…';
+  if (spin) spin.style.display = 'block';
+  if (out) out.innerHTML = '';
+
+  try {
+    const res = await callBackend('/api/apify/social-post', { action: 'analyze', topic, platforms });
+    const items = res.data || [];
+    if (out) out.innerHTML = items.length
+      ? `<div style="background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:14px;font-size:12px;white-space:pre-wrap">${escHtml(JSON.stringify(items, null, 2))}</div>`
+      : '<div style="color:var(--muted);font-size:12px">Nessun dato restituito.</div>';
+  } catch(e) {
+    if (out) out.innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}</div>`;
+  } finally {
+    if (btn) btn.textContent = 'Analizza';
+    if (spin) spin.style.display = 'none';
+  }
+}
+
+async function findInfluencers() {
+  const niche = document.getElementById('pubInfluencerNiche')?.value?.trim() || '';
+  if (!niche) { alert('Inserisci una nicchia.'); return; }
+  const platforms = [...document.querySelectorAll('.pubInfluencerPlatform:checked')].map(c => c.value);
+
+  const btn = document.getElementById('pubInfluencerBtnTxt');
+  const spin = document.getElementById('pubInfluencerSpin');
+  const out = document.getElementById('pubInfluencerOut');
+  if (btn) btn.textContent = 'Cercando…';
+  if (spin) spin.style.display = 'block';
+  if (out) out.innerHTML = '';
+
+  try {
+    const res = await callBackend('/api/apify/social-post', { action: 'influencers', topic: niche, platforms });
+    const items = res.data || [];
+    if (out) out.innerHTML = items.length
+      ? items.map(it => `<div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;align-items:flex-start">
+          <div style="flex:1">
+            <div style="font-weight:600">${escHtml(it.name || it.username || it.handle || '')}</div>
+            <div style="color:var(--muted);margin-top:2px">${it.platform ? escHtml(it.platform) + ' · ' : ''}${it.followers ? it.followers + ' followers' : ''}${it.engagement ? ' · ' + it.engagement + ' eng.' : ''}</div>
+          </div>
+          ${it.profileUrl ? `<a href="${escHtml(it.profileUrl)}" target="_blank" rel="noopener" style="color:#3b82f6;font-size:11px;text-decoration:none;flex-shrink:0">Profilo →</a>` : ''}
+        </div>`).join('')
+      : '<div style="color:var(--muted);font-size:12px">Nessun influencer trovato.</div>';
+  } catch(e) {
+    if (out) out.innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}</div>`;
+  } finally {
+    if (btn) btn.textContent = 'Scopri influencer';
+    if (spin) spin.style.display = 'none';
+  }
+}
 </script>
 </body>
 </html>

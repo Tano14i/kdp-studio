@@ -1883,6 +1883,11 @@ async def generate_title_variants(req: dict):
     audience = req.get("audience", "")
     current_title = req.get("current_title", "")
     language = req.get("language", "English")
+    real_keywords = req.get("real_keywords", [])
+
+    kw_context = ""
+    if real_keywords:
+        kw_context = f"\nReal search terms from Google/Amazon autocomplete (use these to make titles resonate with actual searches): {', '.join(real_keywords[:15])}\n"
 
     prompt = f"""You are an Amazon KDP title expert. Generate 5 title variants with different angles.
 
@@ -1890,7 +1895,7 @@ Book type: {book_type}
 Niche/trend: {niche} — {trend}
 Audience: {audience}
 Current working title: "{current_title}"
-Output language: {language}
+Output language: {language}{kw_context}
 
 Generate 5 title + subtitle combinations, each with a DIFFERENT psychological angle:
 1. CURIOSITY GAP — makes reader feel they are missing crucial knowledge
@@ -1997,6 +2002,231 @@ Return ONLY raw JSON. No markdown. ASCII-safe strings only.
 
 
 # ══════════════════════════════════════════════════════════════
+# APIFY INTEGRATION
+# ══════════════════════════════════════════════════════════════
+
+APIFY_TOKEN = env("APIFY_TOKEN")
+APIFY_BASE = "https://api.apify.com/v2"
+
+NICHE_CATEGORY_URLS = {
+    "Self-help": "https://www.amazon.com/Best-Sellers-Books-Self-Help/zgbs/books/4736",
+    "Self-help & Personal growth": "https://www.amazon.com/Best-Sellers-Books-Self-Help/zgbs/books/4736",
+    "Health": "https://www.amazon.com/Best-Sellers-Books-Health-Fitness-Dieting/zgbs/books/6",
+    "Health & Wellness": "https://www.amazon.com/Best-Sellers-Books-Health-Fitness-Dieting/zgbs/books/6",
+    "Finance": "https://www.amazon.com/Best-Sellers-Books-Business-Money/zgbs/books/2",
+    "Finance & Money": "https://www.amazon.com/Best-Sellers-Books-Business-Money/zgbs/books/2",
+    "Relationships": "https://www.amazon.com/Best-Sellers-Books-Relationships-Parenting-Personal-Development/zgbs/books/48",
+    "Relationships & Dating": "https://www.amazon.com/Best-Sellers-Books-Relationships-Parenting-Personal-Development/zgbs/books/48",
+    "Productivity": "https://www.amazon.com/Best-Sellers-Books-Time-Management/zgbs/books/173514",
+    "Mindset": "https://www.amazon.com/Best-Sellers-Books-Success-Self-Motivation/zgbs/books/4019",
+    "Fitness": "https://www.amazon.com/Best-Sellers-Books-Exercise-Fitness/zgbs/books/31",
+    "Parenting": "https://www.amazon.com/Best-Sellers-Books-Parenting-Relationships/zgbs/books/4735",
+    "Business": "https://www.amazon.com/Best-Sellers-Books-Entrepreneurship/zgbs/books/12901",
+    "Psychology": "https://www.amazon.com/Best-Sellers-Books-Psychology-Counseling/zgbs/books/25",
+}
+
+MARKET_GEO_MAP = {
+    "English": "US",
+    "Italiano": "IT",
+    "Tedesco": "DE",
+    "Spagnolo": "ES",
+    "Francese": "FR",
+    "Portoghese": "BR",
+}
+
+
+async def run_actor(actor_id: str, input_data: dict, timeout_sec: int = 120) -> list:
+    """Launch an Apify actor synchronously and return the dataset items."""
+    if not APIFY_TOKEN:
+        raise HTTPException(status_code=503, detail="APIFY_TOKEN non configurato — aggiungerlo nelle variabili d'ambiente Railway")
+    actor_id_url = actor_id.replace("/", "~")
+    async with httpx.AsyncClient(timeout=timeout_sec + 15) as client:
+        run_res = await client.post(
+            f"{APIFY_BASE}/acts/{actor_id_url}/runs",
+            params={"token": APIFY_TOKEN, "waitForFinish": timeout_sec},
+            json=input_data,
+        )
+        run_res.raise_for_status()
+        run_data = run_res.json().get("data", {})
+        dataset_id = run_data.get("defaultDatasetId")
+        if not dataset_id:
+            raise HTTPException(status_code=502, detail="Apify actor non ha restituito un dataset ID")
+        data_res = await client.get(
+            f"{APIFY_BASE}/datasets/{dataset_id}/items",
+            params={"token": APIFY_TOKEN, "format": "json"},
+        )
+        data_res.raise_for_status()
+        return data_res.json()
+
+
+@app.post("/api/apify/trends")
+async def apify_trends(req: dict):
+    """Google Trends data for given keywords (automation-lab/google-trends-scraper)."""
+    keywords = req.get("keywords", [])
+    market_language = req.get("market_language", "English")
+    geo = MARKET_GEO_MAP.get(market_language, "US")
+    try:
+        data = await run_actor(
+            "automation-lab/google-trends-scraper",
+            {"searchTerms": keywords, "timeRange": "today 3-m", "geo": geo, "outputMode": "interest_over_time"},
+            timeout_sec=90,
+        )
+        return {"data": data, "geo": geo}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/apify/amazon-niche")
+async def apify_amazon_niche(req: dict):
+    """KDP niche analysis from Amazon (sarginstudio/kdp-amazon-book-niche-analyzer)."""
+    keyword = req.get("keyword", "")
+    try:
+        data = await run_actor(
+            "sarginstudio/kdp-amazon-book-niche-analyzer",
+            {"keyword": keyword, "maxResults": 15},
+            timeout_sec=120,
+        )
+        return {"data": data}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/apify/amazon-best")
+async def apify_amazon_best(req: dict):
+    """Amazon bestsellers for a given niche (dainty_screw/amazon-bestsellers-scraper)."""
+    niche = req.get("niche", "")
+    category_url = NICHE_CATEGORY_URLS.get(
+        niche,
+        "https://www.amazon.com/Best-Sellers-Books-Self-Help/zgbs/books/4736",
+    )
+    try:
+        data = await run_actor(
+            "dainty_screw/amazon-bestsellers-scraper",
+            {"startUrls": [{"url": category_url}], "maxItems": 20},
+            timeout_sec=120,
+        )
+        return {"data": data}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/apify/keywords")
+async def apify_keywords(req: dict):
+    """Multi-platform keyword suggestions (keyword-auto-complete/keyword-suggestions)."""
+    query = req.get("query", "")
+    platforms = req.get("platforms", ["google", "amazon", "pinterest"])
+    try:
+        data = await run_actor(
+            "keyword-auto-complete/keyword-suggestions",
+            {"query": query, "platforms": platforms, "maxSuggestions": 15},
+            timeout_sec=60,
+        )
+        return {"data": data}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/apify/captions")
+async def apify_captions(req: dict):
+    """Generate social media captions (truefetch/social-media-marketing)."""
+    video_url = req.get("videoUrl", "")
+    platforms = req.get("platforms", ["instagram", "facebook"])
+    tone = req.get("tone", "warm")
+    language = req.get("language", "it")
+    custom_context = req.get("customContext", "")
+    actor_input: dict = {
+        "videoUrl": video_url or "https://placeholder.kdpstudio.io/book",
+        "platforms": platforms,
+        "tone": tone,
+        "language": language,
+    }
+    if custom_context:
+        actor_input["customContext"] = custom_context
+    try:
+        data = await run_actor("truefetch/social-media-marketing", actor_input, timeout_sec=120)
+        return {"data": data}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/apify/video-story")
+async def apify_video_story(req: dict):
+    """Generate AI story video (apify/ai-story-short-video-generator)."""
+    prompt = req.get("prompt", "")
+    duration = req.get("duration", 30)
+    output_platform = req.get("outputPlatform", "instagram")
+    try:
+        data = await run_actor(
+            "apify/ai-story-short-video-generator",
+            {"prompt": prompt, "duration": duration, "outputPlatform": output_platform, "style": "cinematic"},
+            timeout_sec=180,
+        )
+        return {"data": data}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/apify/video-ugc")
+async def apify_video_ugc(req: dict):
+    """Generate UGC video from cover image (actums/ai-ugc-video-maker)."""
+    image_url = req.get("imageUrl", "")
+    platform = req.get("platform", "tiktok")
+    duration = req.get("duration", 30)
+    try:
+        data = await run_actor(
+            "actums/ai-ugc-video-maker",
+            {"imageUrl": image_url, "platform": platform, "duration": duration},
+            timeout_sec=180,
+        )
+        return {"data": data}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/apify/social-post")
+async def apify_social_post(req: dict):
+    """Publish/analyze social content (alizarin_refrigerator-owner/social-media-mcp-server)."""
+    caption = req.get("caption", "")
+    platforms = req.get("platforms", [])
+    social_keys = req.get("socialKeys", {})
+    action = req.get("action", "post")
+    topic = req.get("topic", "")
+    image_url = req.get("imageUrl", "")
+    try:
+        data = await run_actor(
+            "alizarin_refrigerator-owner/social-media-mcp-server",
+            {
+                "action": action,
+                "caption": caption,
+                "platforms": platforms,
+                "apiKeys": social_keys,
+                "topic": topic,
+                "imageUrl": image_url,
+            },
+            timeout_sec=120,
+        )
+        return {"data": data}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ══════════════════════════════════════════════════════════════
 # ENTRY POINT
 # ══════════════════════════════════════════════════════════════
 if __name__ == "__main__":
@@ -2019,6 +2249,7 @@ if __name__ == "__main__":
 
     print("\n🚀 KDP Studio Backend v2")
     print(f"   Claude API:      {'OK' if ANTHROPIC_KEY else 'MISSING ANTHROPIC_API_KEY'}")
+    print(f"   Apify:           {'OK' if APIFY_TOKEN else 'MISSING APIFY_TOKEN (Apify features disabled)'}")
     print(f"   Reddit mode:     Public JSON (no API key needed)")
     print(f"   Seed pool:       {sum(len(v) for v in NICHE_SEEDS.values())} seeds across {len(NICHE_SEEDS)} niches")
     print(f"   Subreddit pool:  {sum(len(v) for v in NICHE_SUBREDDIT_POOL.values())} subreddits across {len(NICHE_SUBREDDIT_POOL)} niches")
