@@ -2285,38 +2285,84 @@ async def apify_captions(req: dict):
 
 @app.post("/api/apify/video-story")
 async def apify_video_story(req: dict):
-    """Generate AI story video (apify/ai-story-short-video-generator)."""
+    """Generate a promotional video script + storyboard using Claude."""
     prompt = req.get("prompt", "")
     duration = req.get("duration", 30)
     output_platform = req.get("outputPlatform", "instagram")
+    book_title = req.get("bookTitle", "")
+    niche = req.get("niche", "")
+
+    context = prompt or f'Book "{book_title}" — niche: {niche}'
+    sys_prompt = (
+        f"You are a professional social media video director specializing in book promotion. "
+        f"Create a {duration}-second video script for {output_platform}. "
+        f"Output ONLY valid JSON, no markdown, no extra text."
+    )
+    user_prompt = (
+        f"Create a {duration}s promotional video script for: {context}\n\n"
+        f"Return JSON with this exact structure:\n"
+        f'{{"title":"...", "hook":"...(0-3s hook text)", '
+        f'"scenes":[{{"time":"0-5s","visual":"scene description","voiceover":"spoken text"}}, ...], '
+        f'"cta":"...call to action text", "music":"...suggested music genre/mood", '
+        f'"caption":"...ready-to-post social caption with hashtags"}}'
+    )
     try:
-        data = await run_actor(
-            "apify/ai-story-short-video-generator",
-            {"prompt": prompt, "duration": duration, "outputPlatform": output_platform, "style": "cinematic"},
-            timeout_sec=180,
+        msg = claude.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=1200,
+            system=sys_prompt,
+            messages=[{"role": "user", "content": user_prompt}],
         )
-        return {"data": data}
-    except HTTPException:
-        raise
+        raw = msg.content[0].text.strip()
+        # Strip markdown code fences if present
+        if raw.startswith("```"):
+            raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+        script = json.loads(raw)
+        return {"script": script}
+    except json.JSONDecodeError:
+        return {"script": {"title": context, "raw": raw if 'raw' in dir() else ""}}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/api/apify/video-ugc")
 async def apify_video_ugc(req: dict):
-    """Generate UGC video from cover image (actums/ai-ugc-video-maker)."""
+    """Generate a UGC-style video script from a cover image using Claude."""
     image_url = req.get("imageUrl", "")
     platform = req.get("platform", "tiktok")
     duration = req.get("duration", 30)
+    book_title = req.get("bookTitle", "")
+    niche = req.get("niche", "")
+
+    context = f'Book: "{book_title}", niche: {niche}' if book_title else "KDP book"
+    sys_prompt = (
+        f"You are a UGC content creator specializing in book promotion on {platform}. "
+        f"Create an authentic {duration}-second UGC video script. "
+        f"Output ONLY valid JSON, no markdown, no extra text."
+    )
+    cover_note = f" Cover image: {image_url}" if image_url else ""
+    user_prompt = (
+        f"Create a {duration}s UGC-style video script for {platform}. {context}.{cover_note}\n\n"
+        f"Return JSON with this exact structure:\n"
+        f'{{"title":"...", "hook":"...grabby opening line", '
+        f'"scenes":[{{"time":"0-5s","action":"what creator does on camera","text":"spoken/overlay text"}}, ...], '
+        f'"cta":"...end CTA", "music":"...trending audio suggestion", '
+        f'"caption":"...caption with hashtags for {platform}"}}'
+    )
     try:
-        data = await run_actor(
-            "actums/ai-ugc-video-maker",
-            {"imageUrl": image_url, "platform": platform, "duration": duration},
-            timeout_sec=180,
+        msg = claude.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=1200,
+            system=sys_prompt,
+            messages=[{"role": "user", "content": user_prompt}],
         )
-        return {"data": data}
-    except HTTPException:
-        raise
+        raw = msg.content[0].text.strip()
+        if raw.startswith("```"):
+            raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+        script = json.loads(raw)
+        return {"script": script}
+    except json.JSONDecodeError:
+        return {"script": {"title": context, "raw": raw if 'raw' in dir() else ""}}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
