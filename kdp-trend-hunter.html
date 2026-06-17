@@ -807,6 +807,7 @@ select option{background:var(--s2)}
           <label class="mkt-pill-label"><input type="checkbox" value="tiktok" class="mktKwPlatform"> TikTok</label>
           <label class="mkt-pill-label"><input type="checkbox" value="instagram" class="mktKwPlatform"> Instagram</label>
           <label class="mkt-pill-label"><input type="checkbox" value="youtube" class="mktKwPlatform"> YouTube</label>
+          <label class="mkt-pill-label" style="border-color:rgba(168,85,247,0.5);color:#a855f7"><input type="checkbox" id="mktKwLongtail"> 📊 SEO Metrics</label>
         </div>
         <button class="btn btn-accent" onclick="searchKeywords()" style="white-space:nowrap">
           <span id="mktKwBtnTxt">Cerca</span>
@@ -3528,19 +3529,21 @@ async function searchKeywords() {
 
   const platforms = [...document.querySelectorAll('.mktKwPlatform:checked')].map(c => c.value);
   if (!platforms.length) { alert('Seleziona almeno una piattaforma.'); return; }
+  const longtail = document.getElementById('mktKwLongtail')?.checked || false;
 
   const btn = document.getElementById('mktKwBtnTxt');
   const spin = document.getElementById('mktKwSpin');
   const out = document.getElementById('mktKwOut');
   if (btn) btn.textContent = 'Cercando…';
   if (spin) spin.style.display = 'block';
-  if (out) out.innerHTML = `<div style="font-size:12px;color:var(--muted);padding:8px 0">Recupero suggerimenti da ${platforms.join(', ')}…</div>`;
+  if (out) out.innerHTML = `<div style="font-size:12px;color:var(--muted);padding:8px 0">Recupero suggerimenti da ${platforms.join(', ')}${longtail ? ' + metriche SEO' : ''}…</div>`;
 
   try {
-    const res = await callBackend('/api/apify/keywords', { query, platforms });
+    const res = await callBackend('/api/apify/keywords', { query, platforms, longtail });
     const items = res.data || [];
+    const ltItems = res.longtail || [];
 
-    // Group by platform
+    // Group suggestions by platform
     const byPlatform = {};
     items.forEach(item => {
       const plat = item.platform || item.source || 'other';
@@ -3548,28 +3551,52 @@ async function searchKeywords() {
       if (!byPlatform[plat]) byPlatform[plat] = [];
       byPlatform[plat].push(...sugg.map(s => typeof s === 'string' ? s : (s.keyword || s.text || '')).filter(Boolean));
     });
-
-    // If no grouping, flatten all
     if (!Object.keys(byPlatform).length) {
       byPlatform['results'] = items.flat().map(x => typeof x === 'string' ? x : (x.keyword || x.text || '')).filter(Boolean);
     }
-
-    // Stash for caption injection
     window._mktKeywords = Object.values(byPlatform).flat().slice(0, 15);
 
     const icons = { google:'🔍', amazon:'🛒', pinterest:'📌', tiktok:'🎵', instagram:'📸', youtube:'▶️', other:'💡', results:'💡' };
-    if (out) out.innerHTML = Object.entries(byPlatform).map(([plat, kws]) => `
+    const chipsHtml = Object.entries(byPlatform).map(([plat, kws]) => `
       <div style="margin-bottom:14px">
         <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">
           ${icons[plat]||'🔹'} ${plat}
         </div>
-        <div>${kws.map(kw => `
-          <span class="kw-chip">
-            ${escHtml(kw)}
-            <button onclick="navigator.clipboard.writeText('${escHtml(kw).replace(/'/g,"\\'")}')" title="Copia">📋</button>
-          </span>`).join('')}
-        </div>
+        <div>${kws.map(kw => `<span class="kw-chip">${escHtml(kw)}<button onclick="navigator.clipboard.writeText('${escHtml(kw).replace(/'/g,"\\'")}')">📋</button></span>`).join('')}</div>
       </div>`).join('') || '<div style="color:var(--muted);font-size:12px">Nessun risultato — riprova con una query diversa.</div>';
+
+    let ltHtml = '';
+    if (ltItems.length) {
+      const rows = ltItems.map(it => {
+        const kw  = it.keyword || it.phrase || it.query || '';
+        const vol = it.searchVolume || it.volume || it.monthlySearches || '—';
+        const cpc = it.cpc != null ? '$' + Number(it.cpc).toFixed(2) : '—';
+        const diff = it.competition || it.difficulty || it.competitionLevel || '—';
+        const diffColor = typeof diff === 'number' ? (diff < 0.33 ? '#22c55e' : diff < 0.66 ? '#eab308' : '#ef4444') : '#666';
+        return `<tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+          <td style="padding:5px 8px;font-size:11px">${escHtml(String(kw))}</td>
+          <td style="padding:5px 8px;text-align:right;font-size:11px;color:var(--muted)">${vol}</td>
+          <td style="padding:5px 8px;text-align:right;font-size:11px;color:var(--muted)">${cpc}</td>
+          <td style="padding:5px 8px;text-align:right;font-size:11px;color:${diffColor}">${typeof diff === 'number' ? Math.round(diff*100)+'%' : diff}</td>
+        </tr>`;
+      }).join('');
+      ltHtml = `<div style="margin-top:16px">
+        <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#a855f7;margin-bottom:8px">📊 Long-tail SEO Metrics</div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse">
+            <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted)">
+              <th style="text-align:left;padding:4px 8px;font-size:10px">Keyword</th>
+              <th style="text-align:right;padding:4px 8px;font-size:10px">Volume/mo</th>
+              <th style="text-align:right;padding:4px 8px;font-size:10px">CPC</th>
+              <th style="text-align:right;padding:4px 8px;font-size:10px">Difficoltà</th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      </div>`;
+    }
+
+    if (out) out.innerHTML = chipsHtml + ltHtml;
   } catch(e) {
     if (out) out.innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}</div>`;
   } finally {
@@ -3813,7 +3840,7 @@ async function findInfluencers() {
   if (out) out.innerHTML = '';
 
   try {
-    const res = await callBackend('/api/apify/social-post', { action: 'influencers', topic: niche, platforms });
+    const res = await callBackend('/api/apify/influencers', { niche, platforms });
     const items = res.data || [];
     if (out) out.innerHTML = items.length
       ? items.map(it => `<div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;align-items:flex-start">

@@ -2144,43 +2144,77 @@ async def apify_amazon_best(req: dict):
 
 @app.post("/api/apify/keywords")
 async def apify_keywords(req: dict):
-    """Multi-platform keyword suggestions (keyword-auto-complete/keyword-suggestions)."""
+    """Multi-platform keyword suggestions + optional long-tail SEO metrics."""
     query = req.get("query", "")
     platforms = req.get("platforms", ["google", "amazon", "pinterest"])
-    try:
-        data = await run_actor(
+    longtail = req.get("longtail", False)
+
+    async def suggestions_call():
+        return await run_actor(
             "keyword-auto-complete/keyword-suggestions",
             {"query": query, "platforms": platforms, "maxSuggestions": 15},
             timeout_sec=60,
         )
-        return {"data": data}
-    except HTTPException:
-        raise
+
+    async def longtail_call():
+        if not longtail:
+            return []
+        return await run_actor(
+            "powerai/long-tail-keyword-discovery",
+            {"keyword": query, "country": "US", "limit": 20},
+            timeout_sec=90,
+        )
+
+    try:
+        sugg_data, lt_data = await asyncio.gather(
+            suggestions_call(), longtail_call(), return_exceptions=True
+        )
+        if isinstance(sugg_data, Exception):
+            sugg_data = []
+        if isinstance(lt_data, Exception):
+            lt_data = []
+        return {"data": sugg_data, "longtail": lt_data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/api/apify/captions")
 async def apify_captions(req: dict):
-    """Generate social media captions (truefetch/social-media-marketing)."""
-    video_url = req.get("videoUrl", "")
+    """Generate social media captions using platform-specific actors in parallel."""
     platforms = req.get("platforms", ["instagram", "facebook"])
     tone = req.get("tone", "warm")
     language = req.get("language", "it")
     custom_context = req.get("customContext", "")
-    actor_input: dict = {
-        "videoUrl": video_url or "https://placeholder.kdpstudio.io/book",
-        "platforms": platforms,
-        "tone": tone,
-        "language": language,
+
+    ACTOR_MAP = {
+        "instagram": "powerai/instagram-ad-copywriter-creator",
+        "facebook":  "powerai/facebook-ad-copywriter-creator",
+        "twitter":   "easyapi/twitter-thread-generator",
+        "linkedin":  "easyapi/linkedin-posts-generator",
     }
-    if custom_context:
-        actor_input["customContext"] = custom_context
+
+    async def run_platform(platform: str) -> list:
+        actor_id = ACTOR_MAP.get(platform)
+        if not actor_id:
+            return []
+        actor_input = {
+            "topic":    custom_context or "Book promotion post",
+            "tone":     tone,
+            "language": language,
+        }
+        try:
+            items = await run_actor(actor_id, actor_input, timeout_sec=90)
+            for item in items:
+                if isinstance(item, dict):
+                    item["platform"] = platform
+            return items
+        except Exception as e:
+            return [{"platform": platform, "caption": f"⚠️ {str(e)[:120]}", "error": True}]
+
     try:
-        data = await run_actor("truefetch/social-media-marketing", actor_input, timeout_sec=120)
-        return {"data": data}
-    except HTTPException:
-        raise
+        results = await asyncio.gather(*[run_platform(p) for p in platforms])
+        flat = [item for sub in results for item in sub]
+        return {"data": flat}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -2243,6 +2277,24 @@ async def apify_social_post(req: dict):
                 "topic": topic,
                 "imageUrl": image_url,
             },
+            timeout_sec=120,
+        )
+        return {"data": data}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/apify/influencers")
+async def apify_influencers(req: dict):
+    """Find influencers by niche (easyapi/find-my-influencers)."""
+    niche = req.get("niche", "")
+    platforms = req.get("platforms", ["instagram", "tiktok"])
+    try:
+        data = await run_actor(
+            "easyapi/find-my-influencers",
+            {"niche": niche, "platforms": platforms, "limit": 20},
             timeout_sec=120,
         )
         return {"data": data}
