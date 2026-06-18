@@ -628,15 +628,19 @@ async def fetch_reddit_posts(niche: str, keyword: str = "", timeframe: str = "we
 # GOOGLE TRENDS HELPER
 # ══════════════════════════════════════════════════════════════
 async def fetch_google_trends(niche: str, keyword: str = "", timeframe: str = "week") -> dict:
+    """Fetch Google Trends via pytrends. Google blocks unauthenticated server-side
+    requests heavily — treat any failure as a graceful N/A, not an error."""
+    _EMPTY = {"terms": [], "avg_interest": {}, "rising_queries": {}}
     try:
         from pytrends.request import TrendReq
         terms = pick_seeds(niche, keyword, n=4)
         tf = get_timeframe(timeframe)
         gtrends_tf = tf["gtrends"]
-        print(f"[GTrends] Seeds: {terms} | timeframe: {gtrends_tf}")
 
         def _fetch():
-            pt = TrendReq(hl='en-US', tz=360, timeout=(10,25))
+            # Short connect timeout — if Google is blocking, fail fast (4s) rather
+            # than hanging for 25s and making every trend card slow.
+            pt = TrendReq(hl='en-US', tz=360, timeout=(4, 10))
             pt.build_payload(terms, timeframe=gtrends_tf, geo='')
             interest = pt.interest_over_time()
             rising = {}
@@ -656,10 +660,18 @@ async def fetch_google_trends(niche: str, keyword: str = "", timeframe: str = "w
             return {"terms": terms, "avg_interest": avg, "rising_queries": rising}
 
         loop = asyncio.get_event_loop()
-        return await loop.run_in_executor(None, _fetch)
+        # Hard cap: 12 s total. If Google blocks, don't hang the whole request.
+        result = await asyncio.wait_for(
+            loop.run_in_executor(None, _fetch),
+            timeout=12
+        )
+        return result
+    except asyncio.TimeoutError:
+        print("[GTrends] Timeout — Google likely rate-limiting this IP")
+        return _EMPTY
     except Exception as e:
-        print(f"[GTrends] Error: {e}")
-        return {"terms": [], "avg_interest": {}, "rising_queries": {}, "error": str(e)}
+        print(f"[GTrends] Unavailable: {type(e).__name__}")
+        return _EMPTY
 
 # ══════════════════════════════════════════════════════════════
 # CLAUDE HELPER
