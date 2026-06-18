@@ -516,7 +516,38 @@ select option{background:var(--s2)}
 
   <div id="trendsOut"></div>
 
-
+  <!-- MOVERS & SHAKERS — quick research links -->
+  <div style="margin-top:20px;background:rgba(255,140,66,0.04);border:1px solid rgba(255,140,66,0.2);border-radius:12px;padding:16px 18px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700">🚀 Movers & Shakers Amazon</div>
+      <span style="font-size:10px;color:var(--muted);font-weight:400">— scopri cosa sta scalando le classifiche adesso</span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a href="https://www.amazon.com/gp/movers-and-shakers/books" target="_blank" rel="noopener"
+         style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:rgba(255,140,66,0.12);border:1px solid rgba(255,140,66,0.35);color:var(--accent2);font-size:12px;font-weight:500;text-decoration:none;white-space:nowrap">
+        📈 Movers &amp; Shakers US
+      </a>
+      <a href="https://www.amazon.it/gp/movers-and-shakers/books" target="_blank" rel="noopener"
+         style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:rgba(255,140,66,0.08);border:1px solid rgba(255,140,66,0.25);color:var(--accent2);font-size:12px;font-weight:500;text-decoration:none;white-space:nowrap">
+        📈 Movers &amp; Shakers IT
+      </a>
+      <a href="https://www.amazon.com/gp/new-releases/books" target="_blank" rel="noopener"
+         style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.25);color:#60a5fa;font-size:12px;font-weight:500;text-decoration:none;white-space:nowrap">
+        ✨ New Releases US
+      </a>
+      <a href="https://www.amazon.com/Best-Sellers-Books/zgbs/books" target="_blank" rel="noopener"
+         style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);color:#4ade80;font-size:12px;font-weight:500;text-decoration:none;white-space:nowrap">
+        🏆 Best Sellers US
+      </a>
+      <a href="https://www.amazon.it/gp/bestsellers/books" target="_blank" rel="noopener"
+         style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2);color:#4ade80;font-size:12px;font-weight:500;text-decoration:none;white-space:nowrap">
+        🏆 Best Sellers IT
+      </a>
+    </div>
+    <div style="font-size:10px;color:var(--muted);margin-top:8px;line-height:1.5">
+      💡 Apri i link, trova categorie che crescono, incolla i titoli nel campo "Analisi Manuale" al passo 2 per analisi Claude.
+    </div>
+  </div>
 
   <div class="action-row" id="p1actions" style="display:none">
     <button class="btn btn-accent" onclick="goPanel('p2')">Continua →</button>
@@ -674,6 +705,107 @@ select option{background:var(--s2)}
     </div>
     <div id="titleVariantsList" style="padding:14px 18px"></div>
   </div>
+
+  <!-- ===== MODI PER VINCERE — Niche Opportunity Framework ===== -->
+  <div style="margin-top:16px;background:rgba(168,85,247,0.04);border:1px solid rgba(168,85,247,0.2);border-radius:12px;overflow:hidden">
+    <div style="padding:14px 18px;border-bottom:1px solid rgba(168,85,247,0.15);display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleSection('modiSection')">
+      <div>
+        <div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:#c084fc">⚔️ Modi per Vincere</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">Gap analysis · Niche-down · USP angles — Claude valuta se entrare e come</div>
+      </div>
+      <span id="modiSectionArrow" style="color:var(--muted);font-size:14px;transition:transform 0.2s">▼</span>
+    </div>
+    <div id="modiSection" style="display:none;padding:16px 18px">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.6">
+        Incolla qui i titoli dei competitor trovati su Amazon (da Movers &amp; Shakers, ricerca manuale, ecc.) oppure lascia vuoto per far analizzare solo nicchia e titolo.
+      </div>
+      <textarea id="modiCompetitors" rows="3" placeholder="Opzionale — titoli competitor, uno per riga:&#10;The Daily Stoic Journal&#10;Atomic Habits Workbook&#10;The 5 AM Club..." style="font-size:12px;margin-bottom:10px"></textarea>
+      <button class="btn" onclick="analyzeNicheOpportunity()" style="background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.4);color:#c084fc;font-size:13px">
+        <span id="modiBtnTxt">⚔️ Analizza Opportunità</span>
+        <div class="spin" id="modiSpin" style="display:none;border-top-color:#c084fc"></div>
+      </button>
+      <div id="modiOut" style="margin-top:14px"></div>
+    </div>
+  </div>
+
+  <!-- ===== CUSTOMER AVATAR GENERATOR ===== -->
+  <div style="margin-top:16px;background:rgba(251,191,36,0.04);border:1px solid rgba(251,191,36,0.2);border-radius:12px;overflow:hidden">
+    <div style="padding:14px 18px;border-bottom:1px solid rgba(251,191,36,0.15);display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleSection('avatarSection')">
+      <div>
+        <div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:#fbbf24">👤 Customer Avatar Generator</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">Incolla recensioni competitor → Claude genera 2 avatars profilati con pain points, trigger, pattern linguistici</div>
+      </div>
+      <span id="avatarSectionArrow" style="color:var(--muted);font-size:14px;transition:transform 0.2s">▼</span>
+    </div>
+    <div id="avatarSection" style="display:none;padding:16px 18px">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.6">
+        Vai su Amazon, apri 3-5 libri competitor, copia le recensioni (anche solo le prime 10 per libro) e incollale qui. Claude estrae i profili psicografici reali dei tuoi acquirenti.
+      </div>
+      <textarea id="avatarReviews" rows="6" placeholder="Incolla qui le recensioni dei libri competitor (minimo 5-6 recensioni per risultati accurati):&#10;&#10;★★★★★ Questo libro ha cambiato il mio approccio alla vita quotidiana...&#10;★★★☆☆ Buon contenuto ma troppo teorico, avrei voluto più esercizi pratici...&#10;★★★★★ Finalmente qualcosa che parla a chi come me si sente sopraffatto..." style="font-size:12px;margin-bottom:10px"></textarea>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <button class="btn" onclick="generateAvatar()" style="background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.4);color:#fbbf24;font-size:13px">
+          <span id="avatarBtnTxt">👤 Genera Avatar</span>
+          <div class="spin" id="avatarSpin" style="display:none;border-top-color:#fbbf24"></div>
+        </button>
+        <span id="avatarAppliedBadge" style="display:none;font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#fbbf24">✓ Avatar attivo nella generazione</span>
+      </div>
+      <div id="avatarOut" style="margin-top:14px"></div>
+    </div>
+  </div>
+
+  <!-- ===== ROYALTY CALCULATOR ===== -->
+  <div style="margin-top:16px;background:rgba(34,197,94,0.04);border:1px solid rgba(34,197,94,0.2);border-radius:12px;overflow:hidden">
+    <div style="padding:14px 18px;border-bottom:1px solid rgba(34,197,94,0.15);display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleSection('royaltySection')">
+      <div>
+        <div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:#4ade80">💰 Royalty Calculator</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">Stima margine netto KDP · printing cost · income mensile a diversi BSR</div>
+      </div>
+      <span id="royaltySectionArrow" style="color:var(--muted);font-size:14px;transition:transform 0.2s">▼</span>
+    </div>
+    <div id="royaltySection" style="display:none;padding:16px 18px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div class="field" style="margin:0">
+          <label style="font-size:11px">Formato (trim size)</label>
+          <select id="rcTrimSize" onchange="calcRoyalty()" style="font-size:12px">
+            <option value="6x9">6" × 9" (standard)</option>
+            <option value="5x8">5" × 8" (pocket)</option>
+            <option value="8.5x11">8.5" × 11" (large)</option>
+          </select>
+        </div>
+        <div class="field" style="margin:0">
+          <label style="font-size:11px">Pagine</label>
+          <input type="number" id="rcPages" value="120" min="24" max="828" onchange="calcRoyalty()" style="font-size:12px" />
+        </div>
+        <div class="field" style="margin:0">
+          <label style="font-size:11px">Prezzo di listino ($)</label>
+          <input type="number" id="rcPrice" value="9.99" step="0.01" min="0.99" onchange="calcRoyalty()" style="font-size:12px" />
+        </div>
+        <div class="field" style="margin:0">
+          <label style="font-size:11px">Stampa</label>
+          <select id="rcColor" onchange="calcRoyalty()" style="font-size:12px">
+            <option value="bw">B&amp;N (standard)</option>
+            <option value="color">Colore</option>
+          </select>
+        </div>
+        <div class="field" style="margin:0">
+          <label style="font-size:11px">Mercato</label>
+          <select id="rcMarket" onchange="calcRoyalty()" style="font-size:12px">
+            <option value="us">Amazon.com (USA)</option>
+            <option value="eu">Amazon.eu (Europa)</option>
+          </select>
+        </div>
+        <div class="field" style="margin:0">
+          <label style="font-size:11px">Piano royalty</label>
+          <select id="rcRoyaltyPlan" onchange="calcRoyalty()" style="font-size:12px">
+            <option value="60">60% (Espansa — $2.99+)</option>
+            <option value="35">35% (Standard — qualsiasi prezzo)</option>
+          </select>
+        </div>
+      </div>
+      <div id="royaltyResult" style="background:var(--s2);border-radius:10px;padding:16px"></div>
+    </div>
+  </div>
+
 </div>
 
 <!-- ============ PANEL 3: CONTENT GENERATOR ============ -->
@@ -1108,7 +1240,9 @@ const state = {
   customNiche: _saved?.customNiche || '',
   allChaptersText: '',
   dataBadge: '',
-  discoveryMode: 'niche'  // 'niche' | 'global'
+  discoveryMode: 'niche',  // 'niche' | 'global'
+  amazonKeywords: [],
+  customerAvatar: null,
 };
 
 // ─── PANEL NAV ───────────────────────────────────────────
@@ -3942,6 +4076,257 @@ async function findInfluencers() {
     if (btn) btn.textContent = 'Scopri influencer';
     if (spin) spin.style.display = 'none';
   }
+}
+
+// ── TOGGLE COLLAPSIBLE SECTIONS ────────────────────────────────
+function toggleSection(sectionId) {
+  const el = document.getElementById(sectionId);
+  const arrow = document.getElementById(sectionId + 'Arrow');
+  if (!el) return;
+  const open = el.style.display !== 'none';
+  el.style.display = open ? 'none' : 'block';
+  if (arrow) arrow.style.transform = open ? '' : 'rotate(180deg)';
+  if (!open && sectionId === 'royaltySection') calcRoyalty();
+}
+
+// ── MODI PER VINCERE — Niche Opportunity Analysis ──────────────
+async function analyzeNicheOpportunity() {
+  const b = state.selectedBook;
+  const t = state.selectedTrend;
+  const niche = state.customNiche || t?.name || document.querySelector('#nichePills .pill.active')?.dataset?.v || '';
+  if (!niche) { alert('Seleziona prima una nicchia o scopri i trend.'); return; }
+
+  const btn = document.getElementById('modiBtnTxt');
+  const spin = document.getElementById('modiSpin');
+  const out = document.getElementById('modiOut');
+  if (btn) btn.textContent = 'Analizzando…';
+  if (spin) spin.style.display = 'block';
+  if (out) out.innerHTML = '<div style="font-size:12px;color:var(--muted)">Claude sta valutando gap, niche-down e USP angles…</div>';
+
+  try {
+    const res = await callBackend('/api/niche-opportunity', {
+      niche,
+      book_title: state.customTitle || b?.title || '',
+      book_type: document.getElementById('bookTypeSelect')?.value || b?.type || '',
+      competitor_titles: (document.getElementById('modiCompetitors')?.value || '').trim(),
+    });
+
+    const gap = res.gap_analysis || {};
+    const nd = res.niche_down || {};
+    const usps = res.usp_angles || [];
+    const scoreColor = gap.opportunity_score >= 7 ? '#22c55e' : gap.opportunity_score >= 4 ? '#f59e0b' : '#ef4444';
+
+    if (out) out.innerHTML = `
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+        <div style="padding:6px 14px;border-radius:8px;background:${gap.has_gap ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.1)'};border:1px solid ${gap.has_gap ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'};font-size:12px;font-weight:700;color:${gap.has_gap ? '#22c55e' : '#ef4444'}">${gap.has_gap ? '✅ Gap trovato' : '🛑 Nessun gap evidente'}</div>
+        <div style="padding:6px 14px;border-radius:8px;background:${scoreColor}18;border:1px solid ${scoreColor}44;font-size:12px;font-weight:700;color:${scoreColor}">Score: ${gap.opportunity_score || '?'}/10</div>
+      </div>
+
+      <div style="margin-bottom:14px;padding:12px 14px;background:var(--s2);border-radius:8px">
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em">1. Gap Analysis</div>
+        <div style="font-size:13px;line-height:1.6;margin-bottom:6px">${escHtml(gap.gap_description || '')}</div>
+        <div style="font-size:11px;color:var(--muted);font-style:italic">${escHtml(gap.evidence || '')}</div>
+      </div>
+
+      <div style="margin-bottom:14px;padding:12px 14px;background:var(--s2);border-radius:8px">
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em">2. Niche-Down Opportunities</div>
+        ${(nd.opportunities || []).map((o, i) => `
+          <div style="margin-bottom:8px;padding:8px 10px;background:var(--s1);border-radius:6px;border-left:3px solid rgba(168,85,247,0.5)">
+            <div style="font-size:12px;font-weight:600;color:#c084fc">${escHtml(o.angle || '')}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">→ "${escHtml(o.example_title || '')}" — <em>${escHtml(o.target || '')}</em></div>
+          </div>`).join('')}
+        <div style="font-size:11px;color:#c084fc;margin-top:6px">💡 ${escHtml(nd.best_pick || '')}</div>
+      </div>
+
+      <div style="margin-bottom:14px;padding:12px 14px;background:var(--s2);border-radius:8px">
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em">3. USP Angles</div>
+        ${usps.map(u => `
+          <div style="margin-bottom:8px;padding:8px 10px;background:var(--s1);border-radius:6px;border-left:3px solid rgba(255,140,66,0.5)">
+            <div style="font-size:12px;font-weight:600;color:var(--accent2)">${escHtml(u.angle || '')}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">"${escHtml(u.positioning_line || '')}"</div>
+            <div style="font-size:11px;color:var(--muted)">↳ ${escHtml(u.differentiator || '')}</div>
+          </div>`).join('')}
+      </div>
+
+      <div style="padding:12px 14px;background:rgba(168,85,247,0.06);border-radius:8px;border:1px solid rgba(168,85,247,0.2)">
+        <div style="font-size:11px;font-weight:600;color:#c084fc;margin-bottom:4px">Verdetto</div>
+        <div style="font-size:13px;line-height:1.6">${escHtml(res.verdict || '')}</div>
+        ${(res.red_flags || []).length ? `<div style="margin-top:8px;font-size:11px;color:#f87171">⚠️ ${res.red_flags.map(f => escHtml(f)).join(' · ')}</div>` : ''}
+      </div>
+    `;
+  } catch(e) {
+    if (out) out.innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}</div>`;
+  } finally {
+    if (btn) btn.textContent = '⚔️ Analizza Opportunità';
+    if (spin) spin.style.display = 'none';
+  }
+}
+
+// ── CUSTOMER AVATAR GENERATOR ──────────────────────────────────
+async function generateAvatar() {
+  const reviews = (document.getElementById('avatarReviews')?.value || '').trim();
+  if (!reviews || reviews.length < 100) { alert('Incolla almeno qualche recensione (min ~100 caratteri) per risultati accurati.'); return; }
+
+  const b = state.selectedBook;
+  const t = state.selectedTrend;
+  const btn = document.getElementById('avatarBtnTxt');
+  const spin = document.getElementById('avatarSpin');
+  const out = document.getElementById('avatarOut');
+  if (btn) btn.textContent = 'Analizzando…';
+  if (spin) spin.style.display = 'block';
+  if (out) out.innerHTML = '<div style="font-size:12px;color:var(--muted)">Claude sta costruendo i profili dal linguaggio delle recensioni…</div>';
+
+  try {
+    const res = await callBackend('/api/avatar', {
+      reviews,
+      book_title: state.customTitle || b?.title || '',
+      niche: state.customNiche || t?.name || '',
+      audience: document.getElementById('audience')?.value || '',
+    });
+
+    state.customerAvatar = res;
+    const avatars = res.avatars || [];
+    const themes = res.common_themes || [];
+    const insight = res.positioning_insight || '';
+
+    const avatarColors = ['#fbbf24', '#60a5fa'];
+    const avatarBgs = ['rgba(251,191,36,0.08)', 'rgba(96,165,250,0.08)'];
+    const avatarBorders = ['rgba(251,191,36,0.25)', 'rgba(96,165,250,0.25)'];
+
+    if (out) out.innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+        ${avatars.map((av, i) => `
+          <div style="padding:14px;background:${avatarBgs[i]};border:1px solid ${avatarBorders[i]};border-radius:10px">
+            <div style="font-size:14px;font-weight:700;color:${avatarColors[i]};margin-bottom:2px">👤 ${escHtml(av.name || `Avatar ${i+1}`)}</div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:8px">${escHtml(av.age_range || '')} · ${escHtml(av.occupation || '')}</div>
+            <div style="font-size:11px;color:var(--text);font-style:italic;margin-bottom:8px;line-height:1.5">"${escHtml(av.tagline || '')}"</div>
+
+            <div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">Obiettivo principale</div>
+            <div style="font-size:12px;margin-bottom:8px;line-height:1.5">${escHtml(av.main_goal || '')}</div>
+
+            <div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">Pain points</div>
+            <ul style="font-size:11px;line-height:1.7;padding-left:14px;margin-bottom:8px">${(av.pain_points || []).map(p => `<li>${escHtml(p)}</li>`).join('')}</ul>
+
+            <div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">Pattern linguistici</div>
+            <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">${(av.language_patterns || []).map(lp => `<span style="font-size:10px;padding:2px 7px;border-radius:12px;background:var(--s1);border:1px solid var(--border2);color:${avatarColors[i]}">"${escHtml(lp)}"</span>`).join('')}</div>
+
+            <div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">Trigger di acquisto</div>
+            <ul style="font-size:11px;line-height:1.7;padding-left:14px;margin-bottom:8px">${(av.buying_triggers || []).map(bt => `<li>${escHtml(bt)}</li>`).join('')}</ul>
+
+            <div style="font-size:10px;color:var(--muted);font-style:italic;line-height:1.5">${escHtml(av.content_implication || '')}</div>
+
+            <button onclick="applyAvatarToGeneration(${i})" style="margin-top:10px;width:100%;padding:6px;border-radius:6px;border:1px solid ${avatarBorders[i]};background:${avatarBgs[i]};color:${avatarColors[i]};font-size:11px;font-weight:600;cursor:pointer">→ Usa in generazione</button>
+          </div>`).join('')}
+      </div>
+
+      ${themes.length ? `
+        <div style="padding:10px 14px;background:var(--s2);border-radius:8px;margin-bottom:10px">
+          <div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px">Temi comuni a tutte le recensioni</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">${themes.map(th => `<span style="font-size:11px;padding:3px 9px;border-radius:12px;background:var(--s1);border:1px solid var(--border2);color:var(--text)">${escHtml(th)}</span>`).join('')}</div>
+        </div>` : ''}
+
+      ${insight ? `
+        <div style="padding:10px 14px;background:rgba(34,197,94,0.06);border-radius:8px;border:1px solid rgba(34,197,94,0.2)">
+          <div style="font-size:10px;font-weight:600;color:#4ade80;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">💡 Insight di posizionamento</div>
+          <div style="font-size:12px;line-height:1.6">${escHtml(insight)}</div>
+        </div>` : ''}
+    `;
+  } catch(e) {
+    if (out) out.innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}</div>`;
+  } finally {
+    if (btn) btn.textContent = '👤 Genera Avatar';
+    if (spin) spin.style.display = 'none';
+  }
+}
+
+function applyAvatarToGeneration(idx) {
+  if (!state.customerAvatar?.avatars) return;
+  const av = state.customerAvatar.avatars[idx];
+  if (!av) return;
+  const summary = `${av.name}, ${av.age_range}, ${av.occupation}. Obiettivo: ${av.main_goal}. Pain points: ${(av.pain_points || []).join('; ')}. Usa il loro linguaggio: ${(av.language_patterns || []).join(', ')}.`;
+  const rpField = document.getElementById('readerPersona');
+  if (rpField) rpField.value = summary;
+  const badge = document.getElementById('avatarAppliedBadge');
+  if (badge) badge.style.display = 'inline-flex';
+  // Smooth scroll to confirm
+  rpField?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ── ROYALTY CALCULATOR ─────────────────────────────────────────
+function calcRoyalty() {
+  const trimSize = document.getElementById('rcTrimSize')?.value || '6x9';
+  const pages = parseInt(document.getElementById('rcPages')?.value || '120', 10);
+  const price = parseFloat(document.getElementById('rcPrice')?.value || '9.99');
+  const color = document.getElementById('rcColor')?.value || 'bw';
+  const market = document.getElementById('rcMarket')?.value || 'us';
+  const royaltyPct = parseInt(document.getElementById('rcRoyaltyPlan')?.value || '60', 10);
+  const out = document.getElementById('royaltyResult');
+  if (!out) return;
+
+  // KDP printing cost formula (US, B&W interior)
+  // Fixed + per-page rate varies by trim and color
+  const fixedCost = market === 'us' ? 0.85 : 0.90;
+  const perPageBW = market === 'us' ? 0.012 : 0.012;
+  const perPageColor = market === 'us' ? 0.07 : 0.07;
+  const perPage = color === 'color' ? perPageColor : perPageBW;
+  const printCost = fixedCost + (perPage * Math.max(pages, 24));
+
+  let royalty, netMargin;
+  if (royaltyPct === 60) {
+    royalty = price * 0.60;
+    netMargin = royalty - printCost;
+  } else {
+    royalty = price * 0.35;
+    netMargin = royalty; // no printing cost deducted for 35% plan
+  }
+
+  // Minimum price to break even (60% plan)
+  const minPriceBreakEven = royaltyPct === 60 ? (printCost / 0.60) : 0;
+
+  // BSR → monthly sales estimates (rough US market figures)
+  const bsrEstimates = [
+    { bsr: 1000, sales: 350 },
+    { bsr: 5000, sales: 70 },
+    { bsr: 10000, sales: 30 },
+    { bsr: 50000, sales: 6 },
+  ];
+
+  const marginColor = netMargin > 0 ? '#22c55e' : '#ef4444';
+  const eligible60 = price >= 2.99 && price <= 9.99;
+
+  out.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
+      <div style="text-align:center;padding:10px;background:var(--s1);border-radius:8px;border:1px solid var(--border)">
+        <div style="font-size:18px;font-weight:700;color:var(--accent2)">$${printCost.toFixed(2)}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">Costo stampa KDP</div>
+      </div>
+      <div style="text-align:center;padding:10px;background:var(--s1);border-radius:8px;border:1px solid var(--border)">
+        <div style="font-size:18px;font-weight:700;color:#60a5fa">$${royalty.toFixed(2)}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">Royalty lorda (${royaltyPct}%)</div>
+      </div>
+      <div style="text-align:center;padding:10px;background:var(--s1);border-radius:8px;border:1px solid ${marginColor}33">
+        <div style="font-size:18px;font-weight:700;color:${marginColor}">$${netMargin.toFixed(2)}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">Margine netto/copia</div>
+      </div>
+    </div>
+
+    ${!eligible60 && royaltyPct === 60 ? `<div style="font-size:11px;color:#f87171;margin-bottom:10px;padding:6px 10px;background:rgba(239,68,68,0.08);border-radius:6px">⚠️ Il piano 60% richiede prezzo tra $2.99 e $9.99. Prezzo attuale ($${price.toFixed(2)}) non idoneo.</div>` : ''}
+    ${minPriceBreakEven > 0 && royaltyPct === 60 ? `<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Prezzo minimo per break-even: <strong style="color:var(--text)">$${minPriceBreakEven.toFixed(2)}</strong></div>` : ''}
+
+    <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">Income mensile stimato per BSR</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+      ${bsrEstimates.map(e => {
+        const monthly = netMargin * e.sales;
+        const mc = monthly > 500 ? '#22c55e' : monthly > 100 ? '#f59e0b' : '#666';
+        return `<div style="text-align:center;padding:8px;background:var(--s1);border-radius:8px;border:1px solid var(--border)">
+          <div style="font-size:15px;font-weight:700;color:${mc}">$${Math.round(monthly)}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px">BSR ${e.bsr.toLocaleString()}</div>
+          <div style="font-size:10px;color:var(--muted)">${e.sales} copie/mese</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="font-size:10px;color:var(--muted2);margin-top:8px;font-style:italic">Stime indicative — vendite reali dipendono da categoria, stagionalità, marketing. Fonte: KDP pricing guidelines.</div>
+  `;
 }
 </script>
 </body>
