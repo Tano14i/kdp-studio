@@ -1755,9 +1755,11 @@ async function verifyTrend(idx) {
     const data = await callBackend('/validate-niche', { niche: t.name, market_language: getMarketLang() });
     const gtScore = data.google_trends_score;
     const gtColor = gtScore === null ? '#666' : gtScore >= 50 ? '#22c55e' : gtScore >= 20 ? '#eab308' : '#ef4444';
+    const dirArrow = {'up':'↑','down':'↓','stable':'→'}[data.trend_direction] || '';
+    const dirColor = {'up':'#22c55e','down':'#ef4444','stable':'#eab308'}[data.trend_direction] || '#666';
     const gtBadge = gtScore !== null
-      ? `<span style="font-size:10px;padding:3px 8px;border-radius:4px;background:${gtColor}18;color:${gtColor};border:1px solid ${gtColor}40">📈 Trends: ${gtScore}/100</span>`
-      : '';
+      ? `<span style="font-size:10px;padding:3px 8px;border-radius:4px;background:${gtColor}18;color:${gtColor};border:1px solid ${gtColor}40">📈 Trends: ${gtScore}/100${dirArrow ? ` <span style="color:${dirColor};font-weight:700">${dirArrow}</span>` : ''}</span>`
+      : (dirArrow ? `<span style="font-size:10px;padding:3px 8px;border-radius:4px;background:${dirColor}18;color:${dirColor};border:1px solid ${dirColor}40">📈 Trend <span style="font-weight:700">${dirArrow}</span></span>` : '');
     const suggestions = [...(data.google_suggestions||[]).slice(0,6), ...(data.youtube_suggestions||[]).slice(0,4)];
     panel.innerHTML = `
       ${(gtBadge || (data.rising_queries && data.rising_queries.length)) ? `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
