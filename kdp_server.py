@@ -668,10 +668,27 @@ async def fetch_google_trends(niche: str, keyword: str = "", timeframe: str = "w
         return _EMPTY
 
 
+def _parse_traffic(s: str) -> int:
+    """Convert '100+', '10K+', '1M+' traffic strings to integers."""
+    s = str(s).upper().replace("+", "").replace(",", "").strip()
+    mult = 1
+    if s.endswith("K"):
+        s, mult = s[:-1], 1_000
+    elif s.endswith("M"):
+        s, mult = s[:-1], 1_000_000
+    try:
+        return int(float(s) * mult)
+    except (ValueError, TypeError):
+        return 0
+
+
 async def fetch_google_trends_apify(niche: str, keyword: str = "",
                                      market_language: str = "English") -> dict:
-    """Reliable Google Trends via Apify actor — used in validate-niche where
-    the user explicitly requested data and can wait 15-20s for accurate results."""
+    """Google Trends data via Apify. The automation-lab actor returns trending
+    topics (type='trending') rather than interest-over-time, so we:
+    1. Check if any of our seed terms appear in the trending list → interest score
+    2. Return all trending keywords for the geo as rising_queries (genuinely useful)
+    3. Preserve interest-over-time parsing for if/when we switch actors."""
     _EMPTY = {"terms": [], "avg_interest": {}, "rising_queries": {}, "trend_direction": None}
     if not APIFY_TOKEN:
         return _EMPTY
@@ -682,62 +699,67 @@ async def fetch_google_trends_apify(niche: str, keyword: str = "",
     try:
         items = await run_actor(
             "automation-lab/google-trends-scraper",
-            {
-                "searchTerms": terms,
-                "timeRange": "today 3-m",
-                "geo": geo,
-                "outputMode": "interest_over_time",
-            },
+            {"geo": geo, "timeRange": "today 3-m"},
             timeout_sec=90,
         )
     except Exception as e:
         print(f"[GTrends/Apify] Error: {e}")
         return _EMPTY
 
+    if not items:
+        return _EMPTY
+
     avg_interest: dict[str, int] = {}
     rising_queries: dict[str, list] = {}
-    trend_direction: dict[str, str] = {}  # "up" | "down" | "stable" per term
+    trend_direction: dict[str, str] = {}
+    trending_pool: list[dict] = []   # all trending items for this geo
 
-    # Debug: log raw structure of first item to diagnose field names
-    if items:
-        first = items[0] if isinstance(items[0], dict) else {}
-        print(f"[GTrends/Apify] items={len(items)} first_keys={list(first.keys())[:12]}")
-        for k, v in list(first.items())[:4]:
-            print(f"  {k}: {str(v)[:120]}")
-
-    for item in (items or []):
+    for item in items:
         if not isinstance(item, dict):
             continue
-        kw = item.get("keyword") or item.get("term") or item.get("searchTerm") or item.get("query") or ""
+
+        item_type = item.get("type", "")
+
+        # ── Trending-topics format (automation-lab actor default output) ──
+        if item_type == "trending":
+            kw = item.get("keyword", "")
+            traffic = _parse_traffic(item.get("traffic", "0"))
+            if kw:
+                trending_pool.append({"query": kw, "value": str(traffic)})
+                # If one of our seed terms matches a trending topic → score it
+                for term in terms:
+                    if term.lower() in kw.lower() or kw.lower() in term.lower():
+                        # Scale: 100 traffic → ~30, 1K → ~55, 10K → ~75, 1M → ~100
+                        import math
+                        score = min(100, max(10, int(30 + 10 * math.log10(max(traffic, 1)))))
+                        avg_interest[term] = max(avg_interest.get(term, 0), score)
+            continue
+
+        # ── Interest-over-time format (future actor or different mode) ──
+        kw = (item.get("keyword") or item.get("term") or
+              item.get("searchTerm") or item.get("query") or "")
         if not kw:
             continue
 
-        # --- avg interest from timeline ---
         timeline = (item.get("timeline") or item.get("interestOverTime") or
                     item.get("interest_over_time") or item.get("data") or [])
         if timeline:
-            vals = [p.get("value", 0) for p in timeline if isinstance(p, dict)]
-            int_vals = []
-            for v in vals:
+            vals = []
+            for p in timeline:
+                if not isinstance(p, dict):
+                    continue
                 try:
-                    int_vals.append(int(str(v).replace("<1", "0")))
+                    vals.append(int(str(p.get("value", 0)).replace("<1", "0")))
                 except (ValueError, TypeError):
                     pass
-            if int_vals:
-                avg_interest[kw] = round(sum(int_vals) / len(int_vals))
-                # trend direction: compare last quarter vs first quarter of timeline
-                mid = len(int_vals) // 2
-                first_half = sum(int_vals[:mid]) / max(mid, 1)
-                second_half = sum(int_vals[mid:]) / max(len(int_vals) - mid, 1)
-                if second_half > first_half * 1.15:
-                    trend_direction[kw] = "up"
-                elif second_half < first_half * 0.85:
-                    trend_direction[kw] = "down"
-                else:
-                    trend_direction[kw] = "stable"
+            if vals:
+                avg_interest[kw] = round(sum(vals) / len(vals))
+                mid = len(vals) // 2
+                fh = sum(vals[:mid]) / max(mid, 1)
+                sh = sum(vals[mid:]) / max(len(vals) - mid, 1)
+                trend_direction[kw] = "up" if sh > fh * 1.15 else ("down" if sh < fh * 0.85 else "stable")
 
-        # --- rising queries ---
-        rq = item.get("relatedQueries", {}) or item.get("related_queries", {}) or {}
+        rq = item.get("relatedQueries") or item.get("related_queries") or {}
         rising = rq.get("rising") or []
         if rising:
             rising_queries[kw] = [
@@ -745,6 +767,17 @@ async def fetch_google_trends_apify(niche: str, keyword: str = "",
                  "value": r.get("value", "") if isinstance(r, dict) else ""}
                 for r in rising[:5]
             ]
+
+    # Trending pool → rising_queries (top items by traffic, useful for the user)
+    if trending_pool and not rising_queries:
+        try:
+            sorted_pool = sorted(trending_pool, key=lambda x: -int(x["value"]) if x["value"].isdigit() else 0)
+        except Exception:
+            sorted_pool = trending_pool
+        primary = terms[0] if terms else niche
+        rising_queries[primary] = sorted_pool[:8]
+
+    print(f"[GTrends/Apify] geo={geo} trending={len(trending_pool)} matched={list(avg_interest.keys())}")
 
     return {
         "terms": terms,
