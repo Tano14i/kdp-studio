@@ -1721,7 +1721,7 @@ CONCLUSION (600-800 words):
 - Recap the transformation arc
 - Motivational, specific closing
 - Next steps / call to action"""
-        max_tok = 3000
+        max_tok = 6000
 
     elif req.tab == "full":
         prompt = f"""You are a bestselling KDP author. Write a complete {req.book_type}.
@@ -1741,7 +1741,7 @@ Follow voice guidelines throughout. Make every chapter feel distinct."""
         raise HTTPException(status_code=400, detail=f"Unknown tab: {req.tab}")
 
     try:
-        allow_trunc = req.tab in ("chapter", "allchapters", "draft")
+        allow_trunc = req.tab in ("chapter", "allchapters", "draft", "intro", "full")
         text = call_claude(prompt, max_tok, allow_truncated=allow_trunc)
         return {"content": text, "tab": req.tab, "chapter_num": req.chapter_num}
     except Exception as e:
