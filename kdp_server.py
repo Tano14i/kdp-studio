@@ -2235,6 +2235,150 @@ async def apify_social_post(req: dict):
 
 
 # ══════════════════════════════════════════════════════════════
+# CUSTOMER AVATAR GENERATOR
+# ══════════════════════════════════════════════════════════════
+
+class AvatarRequest(BaseModel):
+    reviews: str
+    book_title: Optional[str] = ""
+    niche: Optional[str] = ""
+    audience: Optional[str] = ""
+
+@app.post("/api/avatar")
+async def generate_avatar(req: AvatarRequest):
+    """Generate 2 customer avatars from competitor reviews using Claude."""
+    context_parts = []
+    if req.book_title:
+        context_parts.append(f"Book: {req.book_title}")
+    if req.niche:
+        context_parts.append(f"Niche: {req.niche}")
+    if req.audience:
+        context_parts.append(f"Audience hint: {req.audience}")
+    context_line = " | ".join(context_parts) if context_parts else "KDP non-fiction book"
+
+    system_prompt = (
+        "You are an expert customer research analyst for Amazon KDP publishers. "
+        "Analyze competitor reviews to identify distinct buyer personas. "
+        "Output ONLY valid JSON — no markdown, no extra text."
+    )
+    user_prompt = f"""Context: {context_line}
+
+Competitor Reviews:
+{req.reviews[:4000]}
+
+Analyze these reviews and generate EXACTLY 2 distinct customer avatars. Return JSON:
+{{
+  "avatars": [
+    {{
+      "name": "First name + last initial (fictional, e.g. Sofia M.)",
+      "age_range": "e.g. 28-35",
+      "occupation": "job or life stage",
+      "tagline": "one sentence who they are",
+      "psychographics": ["3-4 key personality traits/values"],
+      "main_goal": "the #1 thing they want from this book",
+      "pain_points": ["3 specific frustrations/struggles mentioned in reviews"],
+      "buying_triggers": ["2-3 things that made them click Buy"],
+      "language_patterns": ["3-4 exact phrases/words they use — quote style from reviews"],
+      "content_implication": "what chapter topics/tone will resonate most with this avatar"
+    }},
+    {{ ...second avatar... }}
+  ],
+  "common_themes": ["top 3 themes across ALL reviews"],
+  "positioning_insight": "one key differentiation opportunity based on what reviews LACK or complain about"
+}}"""
+
+    try:
+        msg = claude.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=2000,
+            system=system_prompt,
+            messages=[{"role": "user", "content": user_prompt}],
+        )
+        raw = msg.content[0].text.strip()
+        if raw.startswith("```"):
+            raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+        data = json.loads(raw)
+        return data
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500, detail="Risposta Claude non valida — riprova")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ══════════════════════════════════════════════════════════════
+# MODI PER VINCERE — NICHE OPPORTUNITY FRAMEWORK
+# ══════════════════════════════════════════════════════════════
+
+class NicheOpportunityRequest(BaseModel):
+    niche: str
+    book_title: Optional[str] = ""
+    book_type: Optional[str] = ""
+    competitor_titles: Optional[str] = ""
+
+@app.post("/api/niche-opportunity")
+async def niche_opportunity(req: NicheOpportunityRequest):
+    """Evaluate niche opportunity using the 3-question 'Modi per Vincere' framework."""
+    context = f"Niche: {req.niche}"
+    if req.book_title:
+        context += f" | Book title idea: {req.book_title}"
+    if req.book_type:
+        context += f" | Book type: {req.book_type}"
+
+    system_prompt = (
+        "You are an Amazon KDP market strategist. Apply the 'Ways to Win' framework to evaluate "
+        "a niche opportunity. Be specific, actionable, and honest — avoid generic advice. "
+        "Output ONLY valid JSON."
+    )
+    competitor_section = ""
+    if req.competitor_titles:
+        competitor_section = f"\nExisting competitor titles:\n{req.competitor_titles[:1500]}"
+
+    user_prompt = f"""Evaluate this KDP niche opportunity: {context}{competitor_section}
+
+Apply the 3-question framework and return JSON:
+{{
+  "gap_analysis": {{
+    "has_gap": true/false,
+    "gap_description": "specific underserved angle or format gap in this niche",
+    "evidence": "why this gap exists based on what's missing or over-represented",
+    "opportunity_score": 1-10
+  }},
+  "niche_down": {{
+    "opportunities": [
+      {{"angle": "niche-down idea", "example_title": "example book title", "target": "who exactly"}},
+      {{"angle": "...", "example_title": "...", "target": "..."}},
+      {{"angle": "...", "example_title": "...", "target": "..."}}
+    ],
+    "best_pick": "which of the 3 is strongest and why"
+  }},
+  "usp_angles": [
+    {{"angle": "unique selling angle", "positioning_line": "one-line pitch", "differentiator": "what makes it stand out"}},
+    {{"angle": "...", "positioning_line": "...", "differentiator": "..."}},
+    {{"angle": "...", "positioning_line": "...", "differentiator": "..."}}
+  ],
+  "verdict": "overall 2-sentence assessment: should they enter this niche, and how?",
+  "red_flags": ["any warning signs — saturation, declining trend, etc."]
+}}"""
+
+    try:
+        msg = claude.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=2000,
+            system=system_prompt,
+            messages=[{"role": "user", "content": user_prompt}],
+        )
+        raw = msg.content[0].text.strip()
+        if raw.startswith("```"):
+            raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+        data = json.loads(raw)
+        return data
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500, detail="Risposta Claude non valida — riprova")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ══════════════════════════════════════════════════════════════
 # ENTRY POINT
 # ══════════════════════════════════════════════════════════════
 if __name__ == "__main__":
