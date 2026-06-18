@@ -698,15 +698,23 @@ async def fetch_google_trends_apify(niche: str, keyword: str = "",
     rising_queries: dict[str, list] = {}
     trend_direction: dict[str, str] = {}  # "up" | "down" | "stable" per term
 
+    # Debug: log raw structure of first item to diagnose field names
+    if items:
+        first = items[0] if isinstance(items[0], dict) else {}
+        print(f"[GTrends/Apify] items={len(items)} first_keys={list(first.keys())[:12]}")
+        for k, v in list(first.items())[:4]:
+            print(f"  {k}: {str(v)[:120]}")
+
     for item in (items or []):
         if not isinstance(item, dict):
             continue
-        kw = item.get("keyword") or item.get("term") or ""
+        kw = item.get("keyword") or item.get("term") or item.get("searchTerm") or item.get("query") or ""
         if not kw:
             continue
 
         # --- avg interest from timeline ---
-        timeline = item.get("timeline") or item.get("interestOverTime") or []
+        timeline = (item.get("timeline") or item.get("interestOverTime") or
+                    item.get("interest_over_time") or item.get("data") or [])
         if timeline:
             vals = [p.get("value", 0) for p in timeline if isinstance(p, dict)]
             int_vals = []
