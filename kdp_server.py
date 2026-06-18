@@ -1862,6 +1862,7 @@ async def analyze_market(req: dict):
     )
 
     prompt = f"""You are an Amazon KDP market analyst. Analyze this competitor data and give strategic advice.
+IMPORTANT: Detect the language of the titles/niche provided and write ALL text fields in that same language.
 
 My book: "{book_title}" ({book_type}) in niche: "{niche}"
 Analysis date: {stamp}
@@ -2440,6 +2441,8 @@ async def generate_avatar(req: AvatarRequest):
     system_prompt = (
         "You are an expert customer research analyst for Amazon KDP publishers. "
         "Analyze competitor reviews to identify distinct buyer personas. "
+        "IMPORTANT: Detect the language of the reviews and input data, then respond entirely "
+        "in that same language (Italian input → Italian output, English input → English output, etc.). "
         "Output ONLY valid JSON — no markdown, no extra text."
     )
     user_prompt = f"""Context: {context_line}
@@ -2508,6 +2511,8 @@ async def niche_opportunity(req: NicheOpportunityRequest):
     system_prompt = (
         "You are an Amazon KDP market strategist. Apply the 'Ways to Win' framework to evaluate "
         "a niche opportunity. Be specific, actionable, and honest — avoid generic advice. "
+        "IMPORTANT: Detect the language of the niche/title/competitor titles provided, then write "
+        "ALL text fields in that same language (Italian input → Italian output, English → English, etc.). "
         "Output ONLY valid JSON."
     )
     competitor_section = ""
