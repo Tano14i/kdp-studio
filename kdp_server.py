@@ -626,6 +626,9 @@ async def fetch_reddit_posts(niche: str, keyword: str = "", timeframe: str = "we
 # GOOGLE TRENDS HELPER
 # ══════════════════════════════════════════════════════════════
 async def fetch_google_trends(niche: str, keyword: str = "", timeframe: str = "week") -> dict:
+    """Fast pytrends call for main discovery flow. Fails quickly if Google blocks —
+    N/A is acceptable there. Use fetch_google_trends_apify() for validate-niche."""
+    _EMPTY = {"terms": [], "avg_interest": {}, "rising_queries": {}}
     try:
         from pytrends.request import TrendReq
         terms = pick_seeds(niche, keyword, n=4)
@@ -634,7 +637,7 @@ async def fetch_google_trends(niche: str, keyword: str = "", timeframe: str = "w
         print(f"[GTrends] Seeds: {terms} | timeframe: {gtrends_tf}")
 
         def _fetch():
-            pt = TrendReq(hl='en-US', tz=360, timeout=(10,25))
+            pt = TrendReq(hl='en-US', tz=360, timeout=(4, 10))
             pt.build_payload(terms, timeframe=gtrends_tf, geo='')
             interest = pt.interest_over_time()
             rising = {}
@@ -654,10 +657,93 @@ async def fetch_google_trends(niche: str, keyword: str = "", timeframe: str = "w
             return {"terms": terms, "avg_interest": avg, "rising_queries": rising}
 
         loop = asyncio.get_event_loop()
-        return await loop.run_in_executor(None, _fetch)
+        result = await asyncio.wait_for(loop.run_in_executor(None, _fetch), timeout=12)
+        return result
+    except asyncio.TimeoutError:
+        print("[GTrends] Timeout — Google rate-limiting this IP")
+        return _EMPTY
     except Exception as e:
         print(f"[GTrends] Error: {e}")
         return {"terms": [], "avg_interest": {}, "rising_queries": {}, "error": str(e)}
+
+
+async def fetch_google_trends_apify(niche: str, keyword: str = "",
+                                     market_language: str = "English") -> dict:
+    """Reliable Google Trends via Apify actor — used in validate-niche where
+    the user explicitly requested data and can wait 15-20s for accurate results."""
+    _EMPTY = {"terms": [], "avg_interest": {}, "rising_queries": {}, "trend_direction": None}
+    if not APIFY_TOKEN:
+        return _EMPTY
+
+    terms = pick_seeds(niche, keyword, n=3)
+    geo = MARKET_GEO_MAP.get(market_language, "US")
+
+    try:
+        items = await run_actor(
+            "automation-lab/google-trends-scraper",
+            {
+                "searchTerms": terms,
+                "timeRange": "today 3-m",
+                "geo": geo,
+                "outputMode": "interest_over_time",
+            },
+            timeout_sec=90,
+        )
+    except Exception as e:
+        print(f"[GTrends/Apify] Error: {e}")
+        return _EMPTY
+
+    avg_interest: dict[str, int] = {}
+    rising_queries: dict[str, list] = {}
+    trend_direction: dict[str, str] = {}  # "up" | "down" | "stable" per term
+
+    for item in (items or []):
+        if not isinstance(item, dict):
+            continue
+        kw = item.get("keyword") or item.get("term") or ""
+        if not kw:
+            continue
+
+        # --- avg interest from timeline ---
+        timeline = item.get("timeline") or item.get("interestOverTime") or []
+        if timeline:
+            vals = [p.get("value", 0) for p in timeline if isinstance(p, dict)]
+            int_vals = []
+            for v in vals:
+                try:
+                    int_vals.append(int(str(v).replace("<1", "0")))
+                except (ValueError, TypeError):
+                    pass
+            if int_vals:
+                avg_interest[kw] = round(sum(int_vals) / len(int_vals))
+                # trend direction: compare last quarter vs first quarter of timeline
+                mid = len(int_vals) // 2
+                first_half = sum(int_vals[:mid]) / max(mid, 1)
+                second_half = sum(int_vals[mid:]) / max(len(int_vals) - mid, 1)
+                if second_half > first_half * 1.15:
+                    trend_direction[kw] = "up"
+                elif second_half < first_half * 0.85:
+                    trend_direction[kw] = "down"
+                else:
+                    trend_direction[kw] = "stable"
+
+        # --- rising queries ---
+        rq = item.get("relatedQueries", {}) or item.get("related_queries", {}) or {}
+        rising = rq.get("rising") or []
+        if rising:
+            rising_queries[kw] = [
+                {"query": r.get("query", r) if isinstance(r, dict) else str(r),
+                 "value": r.get("value", "") if isinstance(r, dict) else ""}
+                for r in rising[:5]
+            ]
+
+    return {
+        "terms": terms,
+        "avg_interest": avg_interest,
+        "rising_queries": rising_queries,
+        "trend_direction": trend_direction,
+        "geo": geo,
+    }
 
 # ══════════════════════════════════════════════════════════════
 # CLAUDE HELPER
@@ -1536,7 +1622,7 @@ async def validate_niche(req: dict):
 
     autocomplete_data, gtrends = await asyncio.gather(
         fetch_multi_autocomplete(niche, lang_code),
-        fetch_google_trends(niche, "", "month"),
+        fetch_google_trends_apify(niche, "", market_language),
     )
 
     search_url = "https://" + lang_cfg["amazon"].split("/")[0].replace("Amazon.", "amazon.") + "/s?" + urllib.parse.urlencode({"k": niche, "i": "stripbooks"})
@@ -1547,6 +1633,13 @@ async def validate_niche(req: dict):
         vals = list(gtrends["avg_interest"].values())
         gt_score = round(sum(vals) / len(vals)) if vals else None
 
+    # Aggregate trend_direction: majority vote across terms
+    td_map = gtrends.get("trend_direction") or {}
+    agg_direction = None
+    if td_map:
+        from collections import Counter
+        agg_direction = Counter(td_map.values()).most_common(1)[0][0]
+
     return {
         "niche": niche,
         "market_language": market_language,
@@ -1554,6 +1647,8 @@ async def validate_niche(req: dict):
         "google_suggestions": autocomplete_data.get("google", [])[:15],
         "youtube_suggestions": autocomplete_data.get("youtube", [])[:10],
         "google_trends_score": gt_score,
+        "trend_direction": agg_direction,
+        "trend_direction_by_term": td_map,
         "rising_queries": [q.get("query","") for qs in (gtrends.get("rising_queries") or {}).values() for q in qs[:2]][:6],
         "amazon_search_url": search_url,
         "google_trends_url": gtrends_url,
