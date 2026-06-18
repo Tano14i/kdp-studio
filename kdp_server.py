@@ -1662,25 +1662,10 @@ async def validate_niche(req: dict):
     amazon_market = lang_cfg["amazon"]
     import urllib.parse
 
-    autocomplete_data, gtrends = await asyncio.gather(
-        fetch_multi_autocomplete(niche, lang_code),
-        fetch_google_trends_apify(niche, "", market_language),
-    )
+    autocomplete_data = await fetch_multi_autocomplete(niche, lang_code)
 
     search_url = "https://" + lang_cfg["amazon"].split("/")[0].replace("Amazon.", "amazon.") + "/s?" + urllib.parse.urlencode({"k": niche, "i": "stripbooks"})
     gtrends_url = "https://trends.google.com/trends/explore?" + urllib.parse.urlencode({"q": niche, "geo": lang_code.upper()})
-
-    gt_score = None
-    if gtrends.get("avg_interest"):
-        vals = list(gtrends["avg_interest"].values())
-        gt_score = round(sum(vals) / len(vals)) if vals else None
-
-    # Aggregate trend_direction: majority vote across terms
-    td_map = gtrends.get("trend_direction") or {}
-    agg_direction = None
-    if td_map:
-        from collections import Counter
-        agg_direction = Counter(td_map.values()).most_common(1)[0][0]
 
     return {
         "niche": niche,
@@ -1688,12 +1673,28 @@ async def validate_niche(req: dict):
         "amazon_market": amazon_market,
         "google_suggestions": autocomplete_data.get("google", [])[:15],
         "youtube_suggestions": autocomplete_data.get("youtube", [])[:10],
-        "google_trends_score": gt_score,
-        "trend_direction": agg_direction,
-        "trend_direction_by_term": td_map,
-        "rising_queries": [q.get("query","") for qs in (gtrends.get("rising_queries") or {}).values() for q in qs[:2]][:6],
+        "google_trends_score": None,
+        "trend_direction": None,
+        "rising_queries": [],
         "amazon_search_url": search_url,
         "google_trends_url": gtrends_url,
+    }
+
+
+@app.post("/trending-now")
+async def trending_now(req: dict):
+    """Return what's viral right now on Google in the target market.
+    Powered by Apify automation-lab/google-trends-scraper trending topics."""
+    market_language = req.get("market_language", "English")
+    data = await fetch_google_trends_apify("", "", market_language)
+    pool = []
+    for qs in (data.get("rising_queries") or {}).values():
+        for q in qs:
+            pool.append({"keyword": q.get("query", ""), "traffic": q.get("value", "")})
+    return {
+        "market_language": market_language,
+        "geo": data.get("geo", "US"),
+        "trending": pool[:20],
     }
 
 

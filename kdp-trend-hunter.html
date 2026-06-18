@@ -550,6 +550,21 @@ select option{background:var(--s2)}
     </div>
   </div>
 
+  <!-- TRENDING ORA — viral Google searches in target market -->
+  <div style="margin-top:14px;background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:14px 16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700">🔥 Trending ora</div>
+        <span style="font-size:10px;color:var(--muted);font-weight:400">— cosa è virale oggi su Google nel tuo mercato</span>
+      </div>
+      <button onclick="loadTrendingNow()" id="trendingNowBtn"
+        style="font-size:11px;padding:5px 12px;border-radius:7px;border:1px solid rgba(239,68,68,0.4);background:rgba(239,68,68,0.08);color:#f87171;cursor:pointer;font-weight:600">
+        Carica
+      </button>
+    </div>
+    <div id="trendingNowOut" style="margin-top:10px"></div>
+  </div>
+
   <div class="action-row" id="p1actions" style="display:none">
     <button class="btn btn-accent" onclick="goPanel('p2')">Continua →</button>
   </div>
@@ -1738,6 +1753,44 @@ function renderTrends() {
   </div>`;
   document.getElementById('trendsOut').innerHTML = `<div>${badge}</div><div class="trend-grid" style="margin-top:8px">${cardsHtml}</div>${extendBtn}`;
   document.getElementById('p1actions').style.display = 'none';
+}
+
+async function loadTrendingNow() {
+  const btn = document.getElementById('trendingNowBtn');
+  const out = document.getElementById('trendingNowOut');
+  if (btn.disabled) return;
+  btn.disabled = true;
+  btn.textContent = '⏳…';
+  out.innerHTML = '<div style="font-size:11px;color:var(--muted)">Caricamento trending Google…</div>';
+  try {
+    const data = await callBackend('/trending-now', { market_language: getMarketLang() });
+    const items = data.trending || [];
+    if (!items.length) {
+      out.innerHTML = '<div style="font-size:11px;color:var(--muted)">Nessun dato disponibile per questo mercato.</div>';
+    } else {
+      out.innerHTML = `
+        <div style="font-size:10px;color:var(--muted);margin-bottom:8px">🌍 Mercato: <b>${escHtml(data.geo)}</b> — Aggiornato adesso</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${items.map(item => `
+            <span onclick="injectTrendingKeyword(${JSON.stringify(item.keyword)})"
+              style="font-size:11px;padding:4px 10px;border-radius:20px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;cursor:pointer;white-space:nowrap"
+              title="Clicca per usare come nicchia">
+              🔥 ${escHtml(item.keyword)}${item.traffic ? `<span style="opacity:0.6;margin-left:4px">${escHtml(item.traffic)}</span>` : ''}
+            </span>`).join('')}
+        </div>
+        <div style="font-size:10px;color:var(--muted);margin-top:8px">💡 Clicca su un trend per usarlo come punto di partenza per la scoperta nicchie</div>`;
+    }
+    btn.textContent = '↻ Ricarica';
+  } catch(e) {
+    out.innerHTML = `<div style="font-size:11px;color:#ef4444">⚠️ ${escHtml(e.message)}</div>`;
+    btn.textContent = 'Carica';
+  }
+  btn.disabled = false;
+}
+
+function injectTrendingKeyword(kw) {
+  const kwInput = document.getElementById('kwInput');
+  if (kwInput) { kwInput.value = kw; kwInput.focus(); }
 }
 
 async function verifyTrend(idx) {
