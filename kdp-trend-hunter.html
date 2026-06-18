@@ -1278,6 +1278,7 @@ const state = {
   customNiche: _saved?.customNiche || '',
   allChaptersText: '',
   dataBadge: '',
+  nicheQueries: null,
   discoveryMode: 'niche',  // 'niche' | 'global'
   amazonKeywords: [],
   customerAvatar: null,
@@ -1674,6 +1675,8 @@ Replace all PLACEHOLDER values with real, specific, marketable content for ${yea
         </div>
         ${m.timeframe_strategy ? `<div style="font-size:11px;color:var(--accent2);font-style:italic;margin-bottom:12px">💡 ${m.timeframe_strategy}</div>` : ''}`;
         state.dataBadge = badge;
+        // Store niche-specific queries for prominent display
+        state.nicheQueries = m.niche_queries || null;
       }
     } else {
       // ⚫ STANDALONE MODE: Claude-only (no live data)
@@ -1730,6 +1733,38 @@ function renderTrends() {
     return;
   }
   const badge = state.dataBadge || '';
+
+  // Niche-specific search queries box (shown when a custom niche is set)
+  let nicheQueriesHtml = '';
+  const nq = state.nicheQueries;
+  if (nq && state.customNiche && (nq.google?.length || nq.youtube?.length)) {
+    const gQueries = (nq.google || []).slice(0, 15);
+    const ytQueries = (nq.youtube || []).slice(0, 8);
+    const allTags = [
+      ...gQueries.map(q => ({q, src:'g'})),
+      ...ytQueries.filter(q => !gQueries.includes(q)).map(q => ({q, src:'yt'}))
+    ];
+    nicheQueriesHtml = `
+    <div style="margin-bottom:16px;background:rgba(59,130,246,0.04);border:1px solid rgba(59,130,246,0.2);border-radius:12px;padding:14px 16px">
+      <div style="font-size:12px;font-weight:700;color:#93c5fd;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+        🔍 Cosa cercano per <em style="color:white">"${escHtml(state.customNiche)}"</em>
+        <span style="font-size:10px;font-weight:400;color:var(--muted)">${allTags.length} query reali da Google e YouTube</span>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${allTags.map(({q, src}) => `
+          <span onclick="injectTrendingKeyword(${JSON.stringify(q)})"
+            style="font-size:11px;padding:4px 10px;border-radius:20px;cursor:pointer;white-space:nowrap;
+              ${src==='g'
+                ? 'background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);color:#86efac'
+                : 'background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);color:#fca5a5'}"
+            title="${src==='g' ? 'Google' : 'YouTube'} — clicca per cercare">
+            ${src==='g' ? '🔍' : '▶️'} ${escHtml(q)}
+          </span>`).join('')}
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:8px">💡 Queste sono ricerche reali. Clicca per usare come keyword di partenza.</div>
+    </div>`;
+  }
+
   const cardsHtml = state.trends.map((t,i) => `
     <div class="trend-card" id="tcard_${i}" onclick="selectTrend(${i})">
       <div class="sel-badge">✓ Selezionato</div>
@@ -1751,7 +1786,7 @@ function renderTrends() {
       <span id="extendBtnTxt">➕ Estendi ricerca — aggiungi altri risultati</span>
     </button>
   </div>`;
-  document.getElementById('trendsOut').innerHTML = `<div>${badge}</div><div class="trend-grid" style="margin-top:8px">${cardsHtml}</div>${extendBtn}`;
+  document.getElementById('trendsOut').innerHTML = `<div>${badge}</div>${nicheQueriesHtml}<div class="trend-grid" style="margin-top:8px">${cardsHtml}</div>${extendBtn}`;
   document.getElementById('p1actions').style.display = 'none';
 }
 

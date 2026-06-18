@@ -1645,6 +1645,11 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
                 "youtube_autocomplete": len(autocomplete_data["youtube"]) > 0,
                 "reddit": len(reddit_posts) > 0,
                 "google_trends": bool(gtrends.get("avg_interest"))
+            },
+            # Pass niche-specific search queries to the frontend for prominent display
+            "niche_queries": {
+                "google": autocomplete_data.get("google", [])[:20],
+                "youtube": autocomplete_data.get("youtube", [])[:12],
             }
         }
         return result
