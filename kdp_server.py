@@ -1897,7 +1897,8 @@ Analyze and return ONLY raw JSON, ASCII-safe:
 @app.post("/title-variants")
 async def generate_title_variants(req: dict):
     """
-    Generate 5 title variants with different positioning angles.
+    DLAB Title Generator — 7 positioning strategies × 8 proven schemas.
+    Each title scored on 5 evaluation criteria.
     """
     book_type = req.get("book_type", "")
     niche = req.get("niche", "")
@@ -1906,37 +1907,130 @@ async def generate_title_variants(req: dict):
     current_title = req.get("current_title", "")
     language = req.get("language", "English")
     real_keywords = req.get("real_keywords", [])
+    usp = req.get("usp", "")
+    avatar_summary = req.get("avatar_summary", "")
+    preferred_strategies = req.get("preferred_strategies", [])
 
-    kw_context = ""
-    if real_keywords:
-        kw_context = f"\nReal search terms from Google/Amazon autocomplete (use these to make titles resonate with actual searches): {', '.join(real_keywords[:15])}\n"
+    kw_ctx = f"\nReal Amazon/Google search terms (weave into titles naturally): {', '.join(real_keywords[:15])}" if real_keywords else ""
+    usp_ctx = f"\nUSP / unique feature: {usp}" if usp else ""
+    avatar_ctx = f"\nAvatar summary: {avatar_summary}" if avatar_summary else ""
+    strategy_ctx = f"\nPreferred strategies (prioritize these): {', '.join(preferred_strategies)}" if preferred_strategies else ""
 
-    prompt = f"""You are an Amazon KDP title expert. Generate 5 title variants with different angles.
+    prompt = f"""You are a KDP title strategist using the DLAB framework. Generate exactly 5 title + subtitle combinations.
 
 Book type: {book_type}
 Niche/trend: {niche} — {trend}
 Audience: {audience}
-Current working title: "{current_title}"
-Output language: {language}{kw_context}
+Working title: "{current_title}"{usp_ctx}{avatar_ctx}{kw_ctx}{strategy_ctx}
+Output language: {language}
 
-Generate 5 title + subtitle combinations, each with a DIFFERENT psychological angle:
-1. CURIOSITY GAP — makes reader feel they are missing crucial knowledge
-2. BENEFIT-DRIVEN — leads with the transformation or outcome
-3. PROBLEM-AWARE — names the specific pain point first
-4. IDENTITY-BASED — speaks to who the reader wants to become
-5. AUTHORITY/METHOD — implies a specific system or proven approach
+POSITIONING STRATEGIES available (pick the 5 most effective for this specific niche/audience):
+- Reframe: redefine a common belief about the topic
+- Contrarian: take the opposite position from all competitors
+- USP: lead with a specific concrete feature others don't have
+- Blue Ocean: target an underserved sub-segment to avoid direct competition
+- Authority: imply exclusive insider knowledge or a clinical/professional method
+- Story-Driven: frame as a transformation journey (from X to Y)
+- Process-Driven: a clear named method or system (3 steps, formula, blueprint)
 
-Return ONLY raw JSON, ASCII-safe:
+PROVEN SCHEMAS to apply (use different ones for variety):
+1. [Keyword] per [Specific Audience]
+2. [Number] [methods/secrets/strategies] per [achieve goal]
+3. Come [achieve goal] senza [common obstacle]
+4. [Benefit], [Keyword]
+5. [Achieve goal] in [time period]
+6. [Action verb] [keyword] per [benefit]
+7. [Keyword]: La Guida Completa / Il Blueprint / I Segreti
+8. Contrarian or Authority angle title
+
+EVALUATION — score each title 1-10 on:
+- chiarezza: does a browser instantly understand what it's about?
+- memorabilita: easy to say, remember, and search?
+- curiosita: creates desire to know more?
+- rilevanza: matches what the target reader is actively searching for?
+- competizione: stands out from existing Amazon titles in this niche?
+
+Return ONLY valid JSON:
 {{"variants":[
-{{"angle":"Curiosity Gap","title":"Title here","subtitle":"Subtitle here","why":"1 sentence why this angle works for this audience"}},
-{{"angle":"Benefit-Driven","title":"Title here","subtitle":"Subtitle here","why":"1 sentence"}},
-{{"angle":"Problem-Aware","title":"Title here","subtitle":"Subtitle here","why":"1 sentence"}},
-{{"angle":"Identity-Based","title":"Title here","subtitle":"Subtitle here","why":"1 sentence"}},
-{{"angle":"Authority/Method","title":"Title here","subtitle":"Subtitle here","why":"1 sentence"}}
-]}}"""
+  {{
+    "strategy": "Strategy name",
+    "schema": "Schema used (brief description)",
+    "title": "Main title",
+    "subtitle": "Subtitle (include keywords, USP, audience where natural)",
+    "why": "One sentence: why this strategy+schema works for this specific audience",
+    "scores": {{"chiarezza":8,"memorabilita":7,"curiosita":9,"rilevanza":8,"competizione":7}},
+    "total": 39
+  }}
+]}}
+
+Generate exactly 5 variants using 5 DIFFERENT strategies. No duplicate strategies."""
 
     try:
-        text = call_claude(prompt, 1500)
+        text = call_claude(prompt, 2500)
+        return parse_json_safe(text)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/cover-brief")
+async def generate_cover_brief(req: dict):
+    """Generate a cover design brief for Canva/Midjourney based on title + positioning."""
+    title = req.get("title", "")
+    subtitle = req.get("subtitle", "")
+    niche = req.get("niche", "")
+    book_type = req.get("book_type", "")
+    audience = req.get("audience", "")
+    usp = req.get("usp", "")
+    strategy = req.get("strategy", "")
+    language = req.get("language", "English")
+
+    prompt = f"""You are an expert book cover designer and KDP publishing strategist.
+Generate a complete cover design brief for this book.
+
+Title: "{title}"
+Subtitle: "{subtitle}"
+Niche: {niche}
+Book type: {book_type}
+Target audience: {audience}
+USP: {usp}
+Positioning strategy: {strategy}
+Language/market: {language}
+
+IMPORTANT: Detect the language of the title/niche and write ALL text fields in that same language.
+
+A great cover must:
+1. Communicate the emotional promise instantly (primordial emotion)
+2. Target the avatar visually — they should see themselves in it
+3. Be clear and decisive — no confusion about topic
+4. Use colors that match the emotional tone of the content
+5. Have a title that is readable as a thumbnail (small on mobile)
+
+Return ONLY valid JSON:
+{{
+  "mood": "overall visual mood in 3-5 words",
+  "primary_emotion": "the one emotion the cover must evoke",
+  "color_palette": {{
+    "primary": "#hexcode — name and why",
+    "secondary": "#hexcode — name and why",
+    "accent": "#hexcode — name and why",
+    "background": "#hexcode — name and why"
+  }},
+  "typography": {{
+    "title_style": "font style description (e.g. bold serif, minimal sans-serif, handwritten)",
+    "title_size": "dominant/medium/subtle",
+    "subtitle_style": "description",
+    "recommendation": "specific font pairing recommendation"
+  }},
+  "visual_elements": ["element 1 with placement", "element 2", "element 3"],
+  "composition": "brief description of layout and hierarchy",
+  "avoid": ["thing to avoid 1", "thing to avoid 2", "thing to avoid 3"],
+  "canva_search": ["search term 1 for Canva templates", "search term 2", "search term 3"],
+  "midjourney_prompt": "complete ready-to-use Midjourney prompt for the cover image (no text, just background/visual)",
+  "thumbnail_test": "how this cover will look at 80x120px — what survives and what gets lost"
+}}"""
+
+    try:
+        text = call_claude(prompt, 2000)
         return parse_json_safe(text)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
