@@ -478,6 +478,7 @@ class AllChaptersRequest(BaseModel):
     reader_persona: Optional[str] = ""
     custom_instructions: Optional[str] = ""
     amazon_keywords: Optional[List[str]] = []
+    start_from: Optional[int] = 1  # resume support: skip chapters before this number
 
 class PackageRequest(BaseModel):
     trend_name: str
@@ -1925,9 +1926,18 @@ async def generate_all_chapters(req: AllChaptersRequest):
             f"(never stuff them unnaturally): {', '.join(req.amazon_keywords[:12])}\n"
         )
 
+    start_from = max(1, req.start_from or 1)
+
     async def chapter_stream():
         for ch in unique_chapters:
             n, title = ch["num"], ch["title"]
+            # Skip already-generated chapters when resuming
+            if n < start_from:
+                yield json.dumps({
+                    "chapter": n, "title": title, "content": "",
+                    "skipped": True, "total": total, "done": False
+                }, ensure_ascii=False) + "\n"
+                continue
             # Each chapter gets its own random opening style + uniqueness seed
             voice_ctx = build_voice_ctx(
                 tone=req.tone,

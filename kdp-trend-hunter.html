@@ -3034,6 +3034,7 @@ async function generateAllAuto() {
         reader_persona: document.getElementById('readerPersona')?.value || '',
         custom_instructions: document.getElementById('customInstructions')?.value.trim() || ''
       };
+      const startFrom = completedNums.length > 0 ? Math.max(...completedNums) + 1 : 1;
       const res = await fetch(BACKEND_URL + '/generate-all', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -3047,6 +3048,7 @@ async function generateAllAuto() {
           outline: state.outline,
           ...autoVoiceParams,
           amazon_keywords: state.amazonKeywords || [],
+          start_from: startFrom,
         })
       });
 
@@ -3106,6 +3108,13 @@ async function generateAllAuto() {
 
           const n = obj.chapter;
           const dot = document.getElementById('agdot_' + n);
+
+          // Skipped (already checkpointed) — just mark dot and move on
+          if (obj.skipped) {
+            if (dot) { dot.style.background = 'rgba(34,197,94,0.08)'; dot.style.borderColor = 'var(--green)'; dot.style.color = 'var(--green)'; dot.title = 'Dal checkpoint'; }
+            document.getElementById('agStatus').textContent = `Capitolo ${n} già presente (checkpoint) — skip`;
+            continue;
+          }
 
           if (obj.error) {
             document.getElementById('agStatus').textContent = `⚠️ Capitolo ${n} fallito — continuo…`;
