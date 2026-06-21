@@ -2594,7 +2594,7 @@ Return ONLY valid JSON array, no markdown, no extra text:
         items = json.loads(raw)
         if not isinstance(items, list):
             items = []
-        return {"data": items}
+        return {"data": items, "book_detected": book_info.get("title") or None}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
