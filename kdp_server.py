@@ -2645,7 +2645,6 @@ async def apify_social_post(req: dict):
                     "postUrl": "https://www.pinterest.com/pin-builder/",
                     "copyText": caption,
                 })
-                })
 
             else:
                 # Instagram/Facebook require complex OAuth setup — honest message
