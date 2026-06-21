@@ -2625,31 +2625,79 @@ async def apify_video_ugc(req: dict):
 
 @app.post("/api/apify/social-post")
 async def apify_social_post(req: dict):
-    """Publish/analyze social content (alizarin_refrigerator-owner/social-media-mcp-server)."""
+    """Publish social content. Pinterest: real API. Others: not yet supported."""
     caption = req.get("caption", "")
     platforms = req.get("platforms", [])
     social_keys = req.get("socialKeys", {})
-    action = req.get("action", "post")
-    topic = req.get("topic", "")
     image_url = req.get("imageUrl", "")
-    try:
-        data = await run_actor(
-            "alizarin_refrigerator-owner/social-media-mcp-server",
-            {
-                "action": action,
-                "caption": caption,
-                "platforms": platforms,
-                "apiKeys": social_keys,
-                "topic": topic,
-                "imageUrl": image_url,
-            },
-            timeout_sec=120,
-        )
-        return {"data": data}
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+
+    results = []
+
+    async with httpx.AsyncClient(timeout=30) as client:
+        for platform in platforms:
+            if platform == "pinterest":
+                token = social_keys.get("pinterest", "")
+                if not token:
+                    results.append({"platform": "pinterest", "success": False, "message": "Token Pinterest mancante — inseriscilo in API Keys"})
+                    continue
+                try:
+                    # Fetch first board
+                    boards_r = await client.get(
+                        "https://api.pinterest.com/v5/boards",
+                        headers={"Authorization": f"Bearer {token}"},
+                        params={"page_size": 1}
+                    )
+                    boards_r.raise_for_status()
+                    boards = boards_r.json().get("items", [])
+                    if not boards:
+                        results.append({"platform": "pinterest", "success": False, "message": "Nessuna board trovata. Crea almeno una board su Pinterest."})
+                        continue
+                    board_id = boards[0]["id"]
+                    board_name = boards[0].get("name", board_id)
+
+                    # Create pin
+                    pin_body: dict = {
+                        "board_id": board_id,
+                        "title": caption[:100] if caption else "KDP Book",
+                        "description": caption,
+                    }
+                    if image_url:
+                        pin_body["media_source"] = {"source_type": "image_url", "url": image_url}
+                    else:
+                        pin_body["media_source"] = {"source_type": "image_url", "url": "https://via.placeholder.com/600x900/ff4500/ffffff?text=KDP+Book"}
+
+                    pin_r = await client.post(
+                        "https://api.pinterest.com/v5/pins",
+                        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+                        json=pin_body,
+                    )
+                    pin_r.raise_for_status()
+                    pin = pin_r.json()
+                    pin_id = pin.get("id", "")
+                    results.append({
+                        "platform": "pinterest",
+                        "success": True,
+                        "message": f"Pin pubblicato su board \"{board_name}\"",
+                        "postUrl": f"https://www.pinterest.com/pin/{pin_id}/" if pin_id else "",
+                    })
+                except httpx.HTTPStatusError as e:
+                    err_body = {}
+                    try: err_body = e.response.json()
+                    except Exception: pass
+                    msg = err_body.get("message") or err_body.get("error_description") or str(e)
+                    results.append({"platform": "pinterest", "success": False, "message": f"Errore Pinterest API: {msg}"})
+                except Exception as e:
+                    results.append({"platform": "pinterest", "success": False, "message": str(e)})
+
+            else:
+                # Instagram/Facebook require complex OAuth setup — honest message
+                results.append({
+                    "platform": platform,
+                    "success": False,
+                    "message": f"Pubblicazione diretta su {platform.capitalize()} non ancora supportata — copia la caption e pubblica manualmente."
+                })
+
+    return {"data": results}
 
 
 @app.post("/api/apify/influencers")

@@ -4262,7 +4262,11 @@ async function publishSocial() {
       socialKeys,
     });
     const items = res.data || [];
-    if (out) out.innerHTML = (items.length ? items : [{ status: 'ok', message: 'Pubblicato' }]).map(it => {
+    if (!items.length) {
+      if (out) out.innerHTML = `<div class="err">⚠️ Nessuna risposta dal server — riprova.</div>`;
+      return;
+    }
+    if (out) out.innerHTML = items.map(it => {
       const ok = it.success || it.status === 'ok' || it.status === 'success';
       return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px">
         <span style="color:${ok ? '#22c55e' : '#ef4444'}">${ok ? '✅' : '❌'}</span>
