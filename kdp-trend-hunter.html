@@ -964,6 +964,7 @@ select option{background:var(--s2)}
       <button class="mkt-tab active" data-mkt="mkt-keywords" onclick="switchMktTab('mkt-keywords')">🔍 Keyword Ideas</button>
       <button class="mkt-tab" data-mkt="mkt-caption" onclick="switchMktTab('mkt-caption')">✍️ Caption</button>
       <button class="mkt-tab" data-mkt="mkt-video" onclick="switchMktTab('mkt-video')">🎬 Video</button>
+      <button class="mkt-tab" data-mkt="mkt-ads" onclick="switchMktTab('mkt-ads')">📊 Ads</button>
       <button class="mkt-tab" data-mkt="mkt-publish" onclick="switchMktTab('mkt-publish')">📤 Pubblica</button>
     </div>
 
@@ -1110,6 +1111,52 @@ select option{background:var(--s2)}
       </div>
 
       <div id="mktVideoOut" style="margin-top:16px"></div>
+    </div>
+
+    <!-- TAB: Ads -->
+    <div class="mkt-panel" id="mkt-ads">
+      <div style="margin-bottom:14px">
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px">📊 Amazon Sponsored Products</div>
+        <div style="font-size:11px;color:var(--muted)">Claude genera la struttura della campagna. Scarica il CSV e caricalo su <strong>Amazon Advertising → Bulk Operations</strong>.</div>
+      </div>
+      <div style="display:grid;gap:12px;max-width:560px;margin-bottom:16px">
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <div style="flex:1;min-width:140px">
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Titolo libro</label>
+            <input id="adBookTitle" type="text" placeholder="Il tuo titolo KDP">
+          </div>
+          <div style="flex:1;min-width:140px">
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">ASIN (opzionale)</label>
+            <input id="adAsin" type="text" placeholder="B0XXXXXXXXX">
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <div style="flex:1;min-width:120px">
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Budget giornaliero ($)</label>
+            <input id="adBudget" type="number" min="1" max="100" step="0.5" value="5">
+          </div>
+          <div style="flex:1;min-width:120px">
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Marketplace</label>
+            <select id="adMarket">
+              <option value="US">🇺🇸 USA</option>
+              <option value="IT">🇮🇹 Italia</option>
+              <option value="DE">🇩🇪 Germania</option>
+              <option value="GB">🇬🇧 UK</option>
+              <option value="ES">🇪🇸 Spagna</option>
+              <option value="FR">🇫🇷 Francia</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Keyword seed <span style="color:#22c55e">(auto-compilate da Keyword Ideas)</span></label>
+          <textarea id="adKeywords" rows="3" placeholder="Una keyword per riga..." style="resize:vertical;font-size:11px"></textarea>
+        </div>
+      </div>
+      <button class="btn btn-accent" onclick="generateAdsCampaign()">
+        <span id="adsBtnTxt">⚡ Genera campagna</span>
+        <div class="spin" id="adsSpin" style="display:none;width:12px;height:12px"></div>
+      </button>
+      <div id="adsOut" style="margin-top:18px"></div>
     </div>
 
     <!-- TAB: Pubblica -->
@@ -3892,6 +3939,16 @@ function switchMktTab(id) {
   document.querySelectorAll('.mkt-panel').forEach(p => {
     p.classList.toggle('active', p.id === id);
   });
+  if (id === 'mkt-ads') {
+    const titleEl = document.getElementById('adBookTitle');
+    if (titleEl && !titleEl.value) {
+      titleEl.value = state.customTitle || state.selectedBook?.title || '';
+    }
+    const kwEl = document.getElementById('adKeywords');
+    if (kwEl && !kwEl.value && window._mktKeywords?.length) {
+      kwEl.value = window._mktKeywords.slice(0, 20).join('\n');
+    }
+  }
 }
 
 function switchVideoMode(mode) {
@@ -4096,6 +4153,103 @@ async function generateCaptions() {
     if (spin) spin.style.display = 'none';
   }
 }
+
+// ── ADS ───────────────────────────────────────────────────────
+let _adsCsvData = '';
+
+function switchMktTabAds() { switchMktTab('mkt-ads'); }
+
+async function generateAdsCampaign() {
+  const bookTitle = document.getElementById('adBookTitle')?.value?.trim()
+    || state.customTitle || state.selectedBook?.title || '';
+  const asin = document.getElementById('adAsin')?.value?.trim() || '';
+  const dailyBudget = parseFloat(document.getElementById('adBudget')?.value) || 5;
+  const marketplace = document.getElementById('adMarket')?.value || 'US';
+  const kwRaw = document.getElementById('adKeywords')?.value?.trim() || '';
+  const keywords = kwRaw ? kwRaw.split('\n').map(s => s.trim()).filter(Boolean)
+    : (window._mktKeywords || []);
+  const niche = state.selectedTrend?.name || state.customNiche || '';
+
+  if (!bookTitle) { alert('Inserisci il titolo del libro.'); return; }
+
+  const btn = document.getElementById('adsBtnTxt');
+  const spin = document.getElementById('adsSpin');
+  const out = document.getElementById('adsOut');
+  if (btn) btn.textContent = 'Generando…';
+  if (spin) spin.style.display = 'block';
+  if (out) out.innerHTML = `<div style="font-size:12px;color:var(--muted)">Claude sta costruendo la campagna…</div>`;
+
+  try {
+    const res = await callBackend('/api/ads/campaign', {
+      bookTitle, asin, niche, keywords, dailyBudget, marketplace,
+    });
+    const campaign = res.data;
+    _adsCsvData = res.csv || '';
+
+    const matchColor = { EXACT: '#22c55e', PHRASE: '#3b82f6', BROAD: '#f59e0b' };
+
+    const agHtml = (campaign.ad_groups || []).map(ag => {
+      const kwRows = (ag.keywords || []).map(kw =>
+        `<tr>
+          <td style="padding:4px 8px;font-size:11px">${escHtml(kw.keyword)}</td>
+          <td style="padding:4px 8px;text-align:center"><span style="font-size:10px;padding:1px 6px;border-radius:4px;background:${matchColor[kw.match_type]||'#666'}22;color:${matchColor[kw.match_type]||'#666'};font-weight:600">${escHtml(kw.match_type)}</span></td>
+          <td style="padding:4px 8px;text-align:right;font-size:11px;font-weight:600">$${(+kw.bid).toFixed(2)}</td>
+        </tr>`
+      ).join('');
+      return `<div style="margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;margin-bottom:6px;color:var(--fg)">${escHtml(ag.name)} <span style="font-weight:400;color:var(--muted)">— default bid $${(+ag.default_bid).toFixed(2)}</span></div>
+        <table style="width:100%;border-collapse:collapse;background:var(--s1);border-radius:8px;overflow:hidden">
+          <thead><tr style="background:var(--s2)">
+            <th style="padding:5px 8px;font-size:10px;text-align:left;font-weight:600;color:var(--muted)">KEYWORD</th>
+            <th style="padding:5px 8px;font-size:10px;text-align:center;font-weight:600;color:var(--muted)">MATCH</th>
+            <th style="padding:5px 8px;font-size:10px;text-align:right;font-weight:600;color:var(--muted)">BID</th>
+          </tr></thead>
+          <tbody>${kwRows}</tbody>
+        </table>
+      </div>`;
+    }).join('');
+
+    const negHtml = (campaign.negative_keywords || []).map(n =>
+      `<span style="display:inline-block;background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:2px 8px;font-size:10px;margin:2px">${escHtml(n)}</span>`
+    ).join('');
+
+    if (out) out.innerHTML = `
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+          <div>
+            <div style="font-size:13px;font-weight:700">${escHtml(campaign.campaign_name || '')}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">Budget: <strong>$${campaign.daily_budget}/giorno</strong> · Marketplace: ${marketplace} · ${campaign.targeting_type||'MANUAL'}</div>
+          </div>
+          ${_adsCsvData ? `<button onclick="downloadAdsCsv()" style="padding:7px 14px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">⬇️ Scarica CSV</button>` : ''}
+        </div>
+        ${campaign.strategy_note ? `<div style="font-size:11px;color:var(--muted);background:var(--s1);border-radius:8px;padding:10px;margin-bottom:14px;line-height:1.6">💡 ${escHtml(campaign.strategy_note)}</div>` : ''}
+        ${agHtml}
+        ${negHtml ? `<div style="margin-top:10px"><div style="font-size:10px;font-weight:600;color:var(--muted);margin-bottom:6px">NEGATIVE KEYWORDS</div>${negHtml}</div>` : ''}
+      </div>
+      <div style="font-size:10px;color:var(--muted);line-height:1.6">
+        📌 Come usare: scarica il CSV → vai su <strong>Amazon Advertising → Campagne → Operazioni in blocco → Carica</strong> → seleziona il file → Invia.
+      </div>`;
+  } catch(e) {
+    if (out) out.innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}</div>`;
+  } finally {
+    if (btn) btn.textContent = '⚡ Genera campagna';
+    if (spin) spin.style.display = 'none';
+  }
+}
+
+function downloadAdsCsv() {
+  if (!_adsCsvData) return;
+  const blob = new Blob([_adsCsvData], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'amazon_ads_campaign.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Auto-fill book title and keywords when switching to Ads tab
+const _origSwitchMktTab = typeof switchMktTab === 'function' ? switchMktTab : null;
 
 // ── VIDEO ─────────────────────────────────────────────────────
 async function generateVideoStory() {

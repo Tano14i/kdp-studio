@@ -2599,6 +2599,162 @@ Return ONLY valid JSON array, no markdown, no extra text:
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/api/ads/campaign")
+async def generate_ads_campaign(req: dict):
+    """Generate Amazon Sponsored Products campaign structure using Claude, return JSON + CSV."""
+    book_title = req.get("bookTitle", "")
+    niche = req.get("niche", "")
+    keywords = req.get("keywords", [])
+    daily_budget = float(req.get("dailyBudget", 5.0))
+    marketplace = req.get("marketplace", "US")
+    asin = req.get("asin", "")
+
+    kw_block = "\n".join(f"- {kw}" for kw in keywords[:30]) if keywords else "(generate relevant keywords for this niche)"
+
+    prompt = f"""You are an Amazon Advertising expert specializing in KDP book campaigns.
+
+Book: "{book_title}"
+Niche: {niche}
+Marketplace: Amazon {marketplace}
+Daily budget: ${daily_budget:.2f}
+{f'ASIN: {asin}' if asin else ''}
+Seed keywords:
+{kw_block}
+
+Generate a Sponsored Products (manual targeting) campaign with 3 ad groups:
+- Exact Match: 6-8 high-intent keywords, highest bids
+- Phrase Match: 8-12 keywords, medium bids
+- Broad Match: 10-15 broad keywords, lowest bids
+
+Books typically bid $0.25-$1.50 CPC. Scale bids to niche competitiveness.
+Also produce 12-15 negative exact keywords to block irrelevant clicks.
+
+Return ONLY valid JSON (no markdown, no extra text):
+{{
+  "campaign_name": "SP - {book_title[:40]} - Manual",
+  "daily_budget": {daily_budget},
+  "targeting_type": "MANUAL",
+  "bidding_strategy": "DYNAMIC_BIDS_DOWN_ONLY",
+  "strategy_note": "2-3 sentence rationale",
+  "ad_groups": [
+    {{
+      "name": "Exact Match",
+      "default_bid": 0.75,
+      "keywords": [{{"keyword": "...", "match_type": "EXACT", "bid": 0.80}}]
+    }},
+    {{
+      "name": "Phrase Match",
+      "default_bid": 0.50,
+      "keywords": [{{"keyword": "...", "match_type": "PHRASE", "bid": 0.55}}]
+    }},
+    {{
+      "name": "Broad Match",
+      "default_bid": 0.30,
+      "keywords": [{{"keyword": "...", "match_type": "BROAD", "bid": 0.35}}]
+    }}
+  ],
+  "negative_keywords": ["keyword1", "keyword2"]
+}}"""
+
+    try:
+        raw = call_claude(prompt, 2500)
+        if raw.startswith("```"):
+            raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+        campaign = json.loads(raw)
+
+        # Build Amazon Sponsored Products bulk-upload CSV
+        import csv, io
+        from datetime import datetime, timedelta
+        start_date = datetime.utcnow().strftime("%Y%m%d")
+        cols = [
+            "Product","Entity","Operation","Campaign ID","Ad Group ID","Portfolio ID",
+            "Ad ID","Keyword ID","Product Targeting ID","Campaign Name","Ad Group Name",
+            "Start Date","End Date","Targeting Type","State","Daily Budget","SKU","ASIN",
+            "Ad Group Default Bid","Bid","Keyword Text","Match Type","Bidding Strategy",
+            "Placement","Percentage","Product Targeting Expression"
+        ]
+        rows = []
+
+        def row(**kw):
+            r = {c: "" for c in cols}
+            r.update(kw)
+            return r
+
+        cname = campaign.get("campaign_name", f"SP - {book_title}")
+
+        # Campaign row
+        rows.append(row(
+            Product="Sponsored Products",
+            Entity="Campaign",
+            Operation="create",
+            **{"Campaign Name": cname,
+               "Targeting Type": "MANUAL",
+               "State": "enabled",
+               "Daily Budget": f"{campaign.get('daily_budget', daily_budget):.2f}",
+               "Start Date": start_date,
+               "Bidding Strategy": campaign.get("bidding_strategy", "DYNAMIC_BIDS_DOWN_ONLY")}
+        ))
+
+        for ag in campaign.get("ad_groups", []):
+            ag_name = ag.get("name", "Ad Group")
+            # Ad group row
+            rows.append(row(
+                Product="Sponsored Products",
+                Entity="Ad Group",
+                Operation="create",
+                **{"Campaign Name": cname,
+                   "Ad Group Name": ag_name,
+                   "Ad Group Default Bid": f"{ag.get('default_bid', 0.50):.2f}",
+                   "State": "enabled"}
+            ))
+            # Product ad row (ASIN if provided)
+            if asin:
+                rows.append(row(
+                    Product="Sponsored Products",
+                    Entity="Product Ad",
+                    Operation="create",
+                    **{"Campaign Name": cname,
+                       "Ad Group Name": ag_name,
+                       "ASIN": asin,
+                       "State": "enabled"}
+                ))
+            # Keyword rows
+            for kw in ag.get("keywords", []):
+                rows.append(row(
+                    Product="Sponsored Products",
+                    Entity="Keyword",
+                    Operation="create",
+                    **{"Campaign Name": cname,
+                       "Ad Group Name": ag_name,
+                       "Keyword Text": kw.get("keyword", ""),
+                       "Match Type": kw.get("match_type", "EXACT").upper(),
+                       "Bid": f"{kw.get('bid', ag.get('default_bid', 0.50)):.2f}",
+                       "State": "enabled"}
+                ))
+
+        # Negative keywords (campaign-level, exact)
+        for neg in campaign.get("negative_keywords", []):
+            rows.append(row(
+                Product="Sponsored Products",
+                Entity="Negative keyword",
+                Operation="create",
+                **{"Campaign Name": cname,
+                   "Keyword Text": neg,
+                   "Match Type": "NEGATIVE EXACT",
+                   "State": "enabled"}
+            ))
+
+        buf = io.StringIO()
+        writer = csv.DictWriter(buf, fieldnames=cols)
+        writer.writeheader()
+        writer.writerows(rows)
+        csv_content = buf.getvalue()
+
+        return {"data": campaign, "csv": csv_content}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/api/apify/video-story")
 async def apify_video_story(req: dict):
     """Generate a promotional video script + storyboard using Claude."""
