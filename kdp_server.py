@@ -2499,41 +2499,74 @@ async def apify_amazon_best(req: dict):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-async def _autocomplete_google(query: str, client_param: str = "firefox") -> list[str]:
-    url = "https://suggestqueries.google.com/complete/search"
-    params = {"client": client_param, "q": query, "hl": "en", "output": "firefox"}
-    async with httpx.AsyncClient(timeout=10) as c:
-        r = await c.get(url, params=params, headers={"User-Agent": "Mozilla/5.0"})
-        data = r.json()
-        return data[1] if isinstance(data, list) and len(data) > 1 else []
+def _shorten_query(q: str, max_words: int = 4) -> str:
+    """Strip punctuation/stop-words and keep the most meaningful words."""
+    import re
+    stop = {"la","il","lo","le","i","gli","un","una","del","della","di","da","per","con","su","e","a"}
+    words = [w for w in re.split(r'[\s\-–—]+', q) if w and w.lower() not in stop]
+    return " ".join(words[:max_words])
+
+
+async def _autocomplete_google(query: str, client_param: str = "firefox", lang: str = "it") -> list[str]:
+    short = _shorten_query(query)
+    for q in ([query, short] if short != query else [query]):
+        for url in [
+            "https://suggestqueries.google.com/complete/search",
+            "https://clients1.google.com/complete/search",
+        ]:
+            try:
+                params = {"client": client_param, "q": q, "hl": lang}
+                async with httpx.AsyncClient(timeout=8) as c:
+                    r = await c.get(url, params=params, headers={"User-Agent": "Mozilla/5.0"})
+                    data = r.json()
+                    results = data[1] if isinstance(data, list) and len(data) > 1 else []
+                    if results:
+                        return [str(x) for x in results][:15]
+            except Exception:
+                continue
+    return []
 
 
 async def _autocomplete_pinterest(query: str) -> list[str]:
-    url = "https://www.pinterest.com/typeahead/search/"
-    params = {"q": query, "rs": "ac", "prefix": "/search/"}
-    async with httpx.AsyncClient(timeout=10, follow_redirects=True) as c:
-        r = await c.get(url, params=params,
-                        headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"})
-        data = r.json()
-        items = data.get("resource_response", {}).get("data", []) or []
-        return [i.get("display") or i.get("term", "") for i in items if i.get("display") or i.get("term")][:15]
+    short = _shorten_query(query)
+    for q in ([short, query] if short != query else [query]):
+        try:
+            url = "https://www.pinterest.com/typeahead/search/"
+            params = {"q": q, "rs": "ac", "prefix": "/search/"}
+            async with httpx.AsyncClient(timeout=10, follow_redirects=True) as c:
+                r = await c.get(url, params=params,
+                                headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"})
+                data = r.json()
+                items = data.get("resource_response", {}).get("data", []) or []
+                result = [i.get("display") or i.get("term", "") for i in items
+                          if i.get("display") or i.get("term")][:15]
+                if result:
+                    return result
+        except Exception:
+            continue
+    return []
 
 
 async def _autocomplete_tiktok(query: str) -> list[str]:
-    url = "https://www.tiktok.com/api/search/general/preview/"
-    params = {"keyword": query, "from_page": "fyp"}
-    try:
-        async with httpx.AsyncClient(timeout=10) as c:
-            r = await c.get(url, params=params,
-                            headers={"User-Agent": "Mozilla/5.0", "Referer": "https://www.tiktok.com/"})
-            data = r.json()
-            items = data.get("sug_list") or data.get("data", []) or []
-            if isinstance(items, list) and items and isinstance(items[0], dict):
-                return [i.get("keyword") or i.get("word", "") for i in items if i.get("keyword") or i.get("word")][:15]
-    except Exception:
-        pass
-    # Fallback: YouTube suggestions are similar to TikTok search intent
-    return await _autocomplete_google(query, client_param="youtube")
+    short = _shorten_query(query)
+    for q in ([short, query] if short != query else [query]):
+        try:
+            url = "https://www.tiktok.com/api/search/general/preview/"
+            params = {"keyword": q, "from_page": "fyp"}
+            async with httpx.AsyncClient(timeout=10) as c:
+                r = await c.get(url, params=params,
+                                headers={"User-Agent": "Mozilla/5.0", "Referer": "https://www.tiktok.com/"})
+                data = r.json()
+                items = data.get("sug_list") or data.get("data", []) or []
+                if isinstance(items, list) and items and isinstance(items[0], dict):
+                    result = [i.get("keyword") or i.get("word", "")
+                              for i in items if i.get("keyword") or i.get("word")][:15]
+                    if result:
+                        return result
+        except Exception:
+            continue
+    # Fallback: YouTube suggestions
+    return await _autocomplete_google(short or query, client_param="youtube")
 
 
 @app.post("/api/apify/keywords")
@@ -2572,6 +2605,26 @@ async def apify_keywords(req: dict):
     tasks = [fetch_platform(p) for p in platforms if p in platform_set]
     results = await asyncio.gather(*tasks, return_exceptions=True)
     sugg_data = [r for r in results if isinstance(r, dict)]
+
+    # Fill empty platforms with Claude-generated suggestions
+    empty_platforms = [r["platform"] for r in sugg_data if not r.get("suggestions")]
+    if empty_platforms:
+        short = _shorten_query(query)
+        fill_prompt = f"""You are a keyword research expert.
+Topic: "{short or query}"
+Generate 10 realistic search suggestions a user would type on each of these platforms: {', '.join(empty_platforms)}.
+Suggestions should reflect how real users search on that platform (TikTok = short/trending, Instagram = hashtag-style, Pinterest = visual/tutorial, YouTube = "how to", Google = questions/intent).
+Return ONLY valid JSON: {{"platform_name": ["suggestion1", "suggestion2", ...]}}"""
+        try:
+            raw = call_claude(fill_prompt, 600)
+            if raw.startswith("```"):
+                raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+            filled = json.loads(raw)
+            for item in sugg_data:
+                if not item.get("suggestions") and item["platform"] in filled:
+                    item["suggestions"] = [s for s in filled[item["platform"]] if s][:12]
+        except Exception:
+            pass
 
     # Long-tail: Claude-generated variations (no Apify actor needed)
     lt_data = []
