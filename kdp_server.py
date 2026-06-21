@@ -2636,23 +2636,15 @@ async def apify_social_post(req: dict):
     async with httpx.AsyncClient(timeout=30) as client:
         for platform in platforms:
             if platform == "pinterest":
-                # Pinterest API v5 requires an approved Business app — use the
-                # web Save URL instead, which works for any account immediately.
-                from urllib.parse import urlencode
-                qs: dict = {}
-                if image_url:
-                    qs["media"] = image_url
-                    qs["url"] = image_url
-                else:
-                    qs["url"] = "https://www.pinterest.com"
-                if caption:
-                    qs["description"] = caption[:500]
-                save_url = f"https://pinterest.com/pin/create/button/?{urlencode(qs)}"
+                # Pinterest API requires Business approval; Save URL fails in mobile app.
+                # Best UX: user copies caption, opens Pin Builder directly.
                 results.append({
                     "platform": "pinterest",
                     "success": True,
-                    "message": "Clicca 'Apri pin →' per salvare su Pinterest (si apre pre-compilato)",
-                    "postUrl": save_url,
+                    "message": "Caption pronta — copia il testo e incollalo su Pinterest",
+                    "postUrl": "https://www.pinterest.com/pin-builder/",
+                    "copyText": caption,
+                })
                 })
 
             else:

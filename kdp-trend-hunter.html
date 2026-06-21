@@ -4266,15 +4266,22 @@ async function publishSocial() {
       if (out) out.innerHTML = `<div class="err">⚠️ Nessuna risposta dal server — riprova.</div>`;
       return;
     }
-    if (out) out.innerHTML = items.map(it => {
+    const pubCopyTexts = {};
+    if (out) out.innerHTML = items.map((it, idx) => {
       const ok = it.success || it.status === 'ok' || it.status === 'success';
-      return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px">
+      if (it.copyText) pubCopyTexts[idx] = it.copyText;
+      const copyBtn = it.copyText
+        ? `<button id="pubCopy${idx}" onclick="navigator.clipboard.writeText(window.pubCopyTexts[${idx}]).then(()=>{document.getElementById('pubCopy${idx}').textContent='✓ Copiato!';setTimeout(()=>{document.getElementById('pubCopy${idx}').textContent='📋 Copia caption'},1500)})" style="font-size:10px;padding:2px 7px;border-radius:4px;border:1px solid var(--border);background:var(--card);cursor:pointer">📋 Copia caption</button>` : '';
+      const linkLabel = it.platform === 'pinterest' ? 'Apri Pin Builder →' : 'Apri post →';
+      return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px;flex-wrap:wrap">
         <span style="color:${ok ? '#22c55e' : '#ef4444'}">${ok ? '✅' : '❌'}</span>
         <span>${escHtml(it.platform || it.channel || '')}</span>
         <span style="color:var(--muted)">${escHtml(it.message || it.error || '')}</span>
-        ${it.postUrl ? `<a href="${escHtml(it.postUrl)}" target="_blank" rel="noopener" style="color:#3b82f6;font-size:11px;text-decoration:none">${it.platform === 'pinterest' ? 'Apri pin →' : 'Apri post →'}</a>` : ''}
+        ${copyBtn}
+        ${it.postUrl ? `<a href="${escHtml(it.postUrl)}" target="_blank" rel="noopener" style="color:#3b82f6;font-size:11px;text-decoration:none">${linkLabel}</a>` : ''}
       </div>`;
     }).join('');
+    window.pubCopyTexts = pubCopyTexts;
   } catch(e) {
     if (out) out.innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}</div>`;
   } finally {
