@@ -2491,41 +2491,50 @@ async def apify_keywords(req: dict):
 
 @app.post("/api/apify/captions")
 async def apify_captions(req: dict):
-    """Generate social media captions using platform-specific actors in parallel."""
+    """Generate social media captions for all platforms using Claude."""
     platforms = req.get("platforms", ["instagram", "facebook"])
     tone = req.get("tone", "warm")
     language = req.get("language", "it")
     custom_context = req.get("customContext", "")
+    video_url = req.get("videoUrl", "")
 
-    ACTOR_MAP = {
-        "instagram": "powerai/instagram-ad-copywriter-creator",
-        "facebook":  "powerai/facebook-ad-copywriter-creator",
-        "twitter":   "easyapi/twitter-thread-generator",
-        "linkedin":  "easyapi/linkedin-posts-generator",
-    }
+    lang_label = {"it": "Italian", "en": "English", "it+en": "Italian with some English phrases"}.get(language, "Italian")
+    tone_label = {"warm": "warm and friendly", "professional": "professional", "funny": "fun and playful", "urgent": "urgent and compelling"}.get(tone, tone)
+    url_ctx = f"\nAmazon page: {video_url}" if video_url else ""
 
-    async def run_platform(platform: str) -> list:
-        actor_id = ACTOR_MAP.get(platform)
-        if not actor_id:
-            return []
-        actor_input = {
-            "topic":    custom_context or "Book promotion post",
-            "tone":     tone,
-            "language": language,
-        }
-        try:
-            items = await run_actor(actor_id, actor_input, timeout_sec=90)
-            for item in items:
-                if isinstance(item, dict):
-                    item["platform"] = platform
-            return items
-        except Exception as e:
-            return [{"platform": platform, "caption": f"⚠️ {str(e)[:120]}", "error": True}]
+    platforms_str = ", ".join(platforms)
+    prompt = f"""You are a social media expert specializing in book promotion for Amazon KDP.
+
+Context: {custom_context}{url_ctx}
+
+Generate ONE promotional post for EACH of these platforms: {platforms_str}
+
+Rules:
+- Language: {lang_label}
+- Tone: {tone_label}
+- Each post must be platform-native (length, style, emoji usage)
+- Instagram: 150-220 chars + 8-10 hashtags
+- Facebook: 180-280 chars, conversational, 3-5 hashtags
+- TikTok: short punchy hook + 5-7 trending hashtags
+- Pinterest: descriptive, keyword-rich, 100-150 chars + 5 hashtags
+- Twitter: max 240 chars, punchy, 2-3 hashtags
+- LinkedIn: professional, 200-300 chars, no hashtags or 2-3 professional ones
+
+Return ONLY valid JSON array, no markdown, no extra text:
+[
+  {{"platform":"instagram","caption":"...","hashtags":["tag1","tag2"]}},
+  {{"platform":"facebook","caption":"...","hashtags":["tag1"]}},
+  ...one object per platform...
+]"""
 
     try:
-        results = await asyncio.gather(*[run_platform(p) for p in platforms])
-        flat = [item for sub in results for item in sub]
-        return {"data": flat}
+        raw = call_claude(prompt, 1500)
+        if raw.startswith("```"):
+            raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+        items = json.loads(raw)
+        if not isinstance(items, list):
+            items = []
+        return {"data": items}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
