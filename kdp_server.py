@@ -1094,6 +1094,52 @@ AMAZON_HEADERS = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
 }
 
+async def fetch_amazon_book_info(url: str) -> dict:
+    """Follow redirect and extract title/author/description from an Amazon product page."""
+    if not url:
+        return {}
+    try:
+        async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client:
+            r = await client.get(url, headers=AMAZON_HEADERS)
+        html = r.text
+
+        import re, json as _json
+
+        # Try JSON-LD first (most reliable)
+        for m in re.finditer(r'<script[^>]*type="application/ld\+json"[^>]*>(.*?)</script>', html, re.DOTALL):
+            try:
+                obj = _json.loads(m.group(1))
+                if isinstance(obj, list):
+                    obj = obj[0]
+                if obj.get("@type") in ("Book", "Product"):
+                    info: dict = {}
+                    if obj.get("name"):
+                        info["title"] = obj["name"]
+                    if obj.get("description"):
+                        info["description"] = re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', obj["description"])).strip()[:600]
+                    if obj.get("author"):
+                        a = obj["author"]
+                        info["author"] = a.get("name", "") if isinstance(a, dict) else str(a)
+                    if info.get("title"):
+                        return info
+            except Exception:
+                pass
+
+        # Fallback: regex scrape
+        info = {}
+        t = re.search(r'id="productTitle"[^>]*>\s*(.*?)\s*</span>', html, re.DOTALL)
+        if t:
+            info["title"] = re.sub(r'\s+', ' ', t.group(1)).strip()
+        d = re.search(r'id="bookDescription_feature_div".*?<span[^>]*>(.*?)</span>', html, re.DOTALL)
+        if not d:
+            d = re.search(r'id="productDescription".*?<p[^>]*>(.*?)</p>', html, re.DOTALL)
+        if d:
+            info["description"] = re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', d.group(1))).strip()[:600]
+        return info
+    except Exception:
+        return {}
+
+
 async def fetch_amazon_book_count(query: str) -> dict:
     """
     Gap analysis: how many books on Amazon already match this niche.
@@ -2500,12 +2546,26 @@ async def apify_captions(req: dict):
 
     lang_label = {"it": "Italian", "en": "English", "it+en": "Italian with some English phrases"}.get(language, "Italian")
     tone_label = {"warm": "warm and friendly", "professional": "professional", "funny": "fun and playful", "urgent": "urgent and compelling"}.get(tone, tone)
-    url_ctx = f"\nAmazon page: {video_url}" if video_url else ""
+
+    # Fetch real book info from Amazon URL so captions are accurate
+    book_info = await fetch_amazon_book_info(video_url) if video_url else {}
+    book_ctx_parts = []
+    if book_info.get("title"):
+        book_ctx_parts.append(f'Book title: "{book_info["title"]}"')
+    if book_info.get("author"):
+        book_ctx_parts.append(f'Author: {book_info["author"]}')
+    if book_info.get("description"):
+        book_ctx_parts.append(f'Description: {book_info["description"]}')
+    if video_url:
+        book_ctx_parts.append(f'Amazon link: {video_url}')
+    book_ctx = "\n".join(book_ctx_parts) if book_ctx_parts else (custom_context or "KDP book on Amazon")
 
     platforms_str = ", ".join(platforms)
     prompt = f"""You are a social media expert specializing in book promotion for Amazon KDP.
 
-Context: {custom_context}{url_ctx}
+Book info:
+{book_ctx}
+{f"Additional context: {custom_context}" if custom_context and book_ctx_parts else ""}
 
 Generate ONE promotional post for EACH of these platforms: {platforms_str}
 
