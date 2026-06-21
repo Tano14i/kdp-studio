@@ -1148,8 +1148,8 @@ select option{background:var(--s2)}
                 <input id="pubIgToken" type="password" placeholder="IGQVJxx…" oninput="saveSocialKeys()">
               </div>
               <div>
-                <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px">Pinterest Token</label>
-                <input id="pubPinToken" type="password" placeholder="pina_xx…" oninput="saveSocialKeys()">
+                <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px">Pinterest</label>
+                <div style="font-size:11px;color:#22c55e;padding:6px 0">✅ Nessun token richiesto — apre Pinterest pre-compilato</div>
               </div>
             </div>
           </details>
@@ -4272,7 +4272,7 @@ async function publishSocial() {
         <span style="color:${ok ? '#22c55e' : '#ef4444'}">${ok ? '✅' : '❌'}</span>
         <span>${escHtml(it.platform || it.channel || '')}</span>
         <span style="color:var(--muted)">${escHtml(it.message || it.error || '')}</span>
-        ${it.postUrl ? `<a href="${escHtml(it.postUrl)}" target="_blank" rel="noopener" style="color:#3b82f6;font-size:11px;text-decoration:none">Apri post →</a>` : ''}
+        ${it.postUrl ? `<a href="${escHtml(it.postUrl)}" target="_blank" rel="noopener" style="color:#3b82f6;font-size:11px;text-decoration:none">${it.platform === 'pinterest' ? 'Apri pin →' : 'Apri post →'}</a>` : ''}
       </div>`;
     }).join('');
   } catch(e) {

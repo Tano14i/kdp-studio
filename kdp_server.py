@@ -2636,58 +2636,24 @@ async def apify_social_post(req: dict):
     async with httpx.AsyncClient(timeout=30) as client:
         for platform in platforms:
             if platform == "pinterest":
-                token = social_keys.get("pinterest", "")
-                if not token:
-                    results.append({"platform": "pinterest", "success": False, "message": "Token Pinterest mancante — inseriscilo in API Keys"})
-                    continue
-                try:
-                    # Fetch first board
-                    boards_r = await client.get(
-                        "https://api.pinterest.com/v5/boards",
-                        headers={"Authorization": f"Bearer {token}"},
-                        params={"page_size": 1}
-                    )
-                    boards_r.raise_for_status()
-                    boards = boards_r.json().get("items", [])
-                    if not boards:
-                        results.append({"platform": "pinterest", "success": False, "message": "Nessuna board trovata. Crea almeno una board su Pinterest."})
-                        continue
-                    board_id = boards[0]["id"]
-                    board_name = boards[0].get("name", board_id)
-
-                    # Create pin
-                    pin_body: dict = {
-                        "board_id": board_id,
-                        "title": caption[:100] if caption else "KDP Book",
-                        "description": caption,
-                    }
-                    if image_url:
-                        pin_body["media_source"] = {"source_type": "image_url", "url": image_url}
-                    else:
-                        pin_body["media_source"] = {"source_type": "image_url", "url": "https://via.placeholder.com/600x900/ff4500/ffffff?text=KDP+Book"}
-
-                    pin_r = await client.post(
-                        "https://api.pinterest.com/v5/pins",
-                        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
-                        json=pin_body,
-                    )
-                    pin_r.raise_for_status()
-                    pin = pin_r.json()
-                    pin_id = pin.get("id", "")
-                    results.append({
-                        "platform": "pinterest",
-                        "success": True,
-                        "message": f"Pin pubblicato su board \"{board_name}\"",
-                        "postUrl": f"https://www.pinterest.com/pin/{pin_id}/" if pin_id else "",
-                    })
-                except httpx.HTTPStatusError as e:
-                    err_body = {}
-                    try: err_body = e.response.json()
-                    except Exception: pass
-                    msg = err_body.get("message") or err_body.get("error_description") or str(e)
-                    results.append({"platform": "pinterest", "success": False, "message": f"Errore Pinterest API: {msg}"})
-                except Exception as e:
-                    results.append({"platform": "pinterest", "success": False, "message": str(e)})
+                # Pinterest API v5 requires an approved Business app — use the
+                # web Save URL instead, which works for any account immediately.
+                from urllib.parse import urlencode
+                qs: dict = {}
+                if image_url:
+                    qs["media"] = image_url
+                    qs["url"] = image_url
+                else:
+                    qs["url"] = "https://www.pinterest.com"
+                if caption:
+                    qs["description"] = caption[:500]
+                save_url = f"https://pinterest.com/pin/create/button/?{urlencode(qs)}"
+                results.append({
+                    "platform": "pinterest",
+                    "success": True,
+                    "message": "Clicca 'Apri pin →' per salvare su Pinterest (si apre pre-compilato)",
+                    "postUrl": save_url,
+                })
 
             else:
                 # Instagram/Facebook require complex OAuth setup — honest message
