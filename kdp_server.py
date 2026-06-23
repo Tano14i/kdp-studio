@@ -16,7 +16,7 @@ Endpoints:
 import os, asyncio, json, random
 from datetime import datetime
 from typing import Optional, List
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -29,10 +29,67 @@ def env(key, default=""):
 
 ANTHROPIC_KEY     = env("ANTHROPIC_API_KEY")
 REDDIT_USER_AGENT = env("REDDIT_USER_AGENT", "KDPStudio/1.0 (personal use, no auth)")
-YOUTUBE_API_KEY   = env("YOUTUBE_API_KEY")  # optional — enables YouTube Trending as a 3rd discovery source
+YOUTUBE_API_KEY   = env("YOUTUBE_API_KEY")
+KDP_API_KEY       = env("KDP_API_KEY")   # if set, all POST endpoints require X-API-Key header
 
-app = FastAPI(title="KDP Studio API", version="2.0.0")
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+# ── SSRF-safe allowed hosts for user-supplied URLs ────────────
+_AMAZON_HOSTS = {
+    "amazon.com", "www.amazon.com", "amazon.it", "www.amazon.it",
+    "amazon.de", "www.amazon.de", "amazon.co.uk", "www.amazon.co.uk",
+    "amazon.es", "www.amazon.es", "amazon.fr", "www.amazon.fr",
+    "amazon.co.jp", "www.amazon.co.jp", "a.co",
+}
+
+def _validate_amazon_url(url: str) -> str:
+    """Return url if it points to an allowed Amazon host, else raise."""
+    from urllib.parse import urlparse
+    import ipaddress
+    if not url:
+        return url
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https"):
+        raise ValueError(f"URL scheme not allowed: {parsed.scheme}")
+    host = parsed.hostname or ""
+    # Block private/loopback IPs
+    try:
+        ip = ipaddress.ip_address(host)
+        if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved:
+            raise ValueError("Private/internal IP not allowed")
+    except ValueError as e:
+        if "not allowed" in str(e):
+            raise
+    # Whitelist Amazon domains only
+    if not any(host == h or host.endswith("." + h) for h in _AMAZON_HOSTS):
+        raise ValueError(f"Host not in Amazon whitelist: {host}")
+    return url
+
+
+app = FastAPI(title="KDP Studio API", version="2.0.0", docs_url=None, redoc_url=None)
+
+# CORS: allow Railway domain + localhost dev. Never wildcard in production.
+_ALLOWED_ORIGINS = [
+    "https://web-production-e6914.up.railway.app",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_ALLOWED_ORIGINS,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "X-API-Key"],
+)
+
+
+async def require_api_key(request: Request):
+    """Dependency: check X-API-Key header if KDP_API_KEY env var is set."""
+    if not KDP_API_KEY:
+        return  # auth disabled — set KDP_API_KEY in Railway env to enable
+    key = request.headers.get("X-API-Key", "")
+    if key != KDP_API_KEY:
+        raise HTTPException(status_code=401, detail="Invalid or missing API key")
+
+_AUTH = Depends(require_api_key)
+
 claude = anthropic.Anthropic(api_key=ANTHROPIC_KEY)
 
 # ══════════════════════════════════════════════════════════════
@@ -1099,6 +1156,10 @@ async def fetch_amazon_book_info(url: str) -> dict:
     if not url:
         return {}
     try:
+        url = _validate_amazon_url(url)
+    except ValueError as e:
+        return {"error": str(e)}
+    try:
         async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client:
             r = await client.get(url, headers=AMAZON_HEADERS)
         html = r.text
@@ -1503,7 +1564,7 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/positioning")
+@app.post("/positioning", dependencies=[_AUTH])
 async def positioning_to_books(req: PositioningRequest):
     """
     Inverse flow from /discover: instead of starting from 'what's trending'
@@ -1564,7 +1625,7 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/trends")
+@app.post("/trends", dependencies=[_AUTH])
 async def get_trends(req: TrendRequest):
     year = datetime.now().year
     stamp = now_stamp()
@@ -1704,7 +1765,7 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/validate-niche")
+@app.post("/validate-niche", dependencies=[_AUTH])
 async def validate_niche(req: dict):
     """Quick validation: fetch autocomplete + Google Trends for a specific niche name."""
     niche = req.get("niche", "")
@@ -1733,7 +1794,7 @@ async def validate_niche(req: dict):
     }
 
 
-@app.post("/trending-now")
+@app.post("/trending-now", dependencies=[_AUTH])
 async def trending_now(req: dict):
     """Return what's viral right now on Google in the target market.
     Powered by Apify automation-lab/google-trends-scraper trending topics."""
@@ -1750,7 +1811,7 @@ async def trending_now(req: dict):
     }
 
 
-@app.post("/niches")
+@app.post("/niches", dependencies=[_AUTH])
 async def discover_niches(req: NicheRequest):
     stamp = now_stamp()
     year = datetime.now().year
@@ -1815,7 +1876,7 @@ Return ONLY raw JSON, ASCII-safe text only:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/generate")
+@app.post("/generate", dependencies=[_AUTH])
 async def generate_content(req: GenerateRequest):
     book_ctx = (
         f'Book: "{req.book_title}" - {req.book_subtitle}\n'
@@ -1936,7 +1997,7 @@ Follow voice guidelines throughout. Make every chapter feel distinct."""
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/generate-all")
+@app.post("/generate-all", dependencies=[_AUTH])
 async def generate_all_chapters(req: AllChaptersRequest):
     import re as _re
     book_ctx = (
@@ -1960,6 +2021,9 @@ async def generate_all_chapters(req: AllChaptersRequest):
             unique_chapters.append(ch)
     if not unique_chapters:
         raise HTTPException(status_code=400, detail="Nessun capitolo trovato. Genera prima l'Outline.")
+    _MAX_CHAPTERS = 25
+    if len(unique_chapters) > _MAX_CHAPTERS:
+        raise HTTPException(status_code=400, detail=f"Troppi capitoli: max {_MAX_CHAPTERS} per richiesta.")
 
     total = len(unique_chapters)
     outline_snippet = req.outline[:800]
@@ -2037,7 +2101,7 @@ Use the uniqueness seed to ensure this version is unlike any previous generation
     )
 
 
-@app.post("/analyze-market")
+@app.post("/analyze-market", dependencies=[_AUTH])
 async def analyze_market(req: dict):
     """
     Analyze market positioning based on user-pasted Amazon competitor data.
@@ -2091,7 +2155,7 @@ Analyze and return ONLY raw JSON, ASCII-safe:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/title-variants")
+@app.post("/title-variants", dependencies=[_AUTH])
 async def generate_title_variants(req: dict):
     """
     DLAB Title Generator — 7 positioning strategies × 8 proven schemas.
@@ -2169,7 +2233,7 @@ Generate exactly 5 variants using 5 DIFFERENT strategies. No duplicate strategie
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/api/cover-brief")
+@app.post("/api/cover-brief", dependencies=[_AUTH])
 async def generate_cover_brief(req: dict):
     """Generate a cover design brief for Canva/Midjourney based on title + positioning."""
     title = req.get("title", "")
@@ -2233,7 +2297,7 @@ Return ONLY valid JSON:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/package")
+@app.post("/package", dependencies=[_AUTH])
 async def generate_package(req: PackageRequest):
     tone_note = f"Tone/voice of the book: {req.tone}" if req.tone else ""
     persona_note = f"Target reader persona: {req.reader_persona}" if req.reader_persona else ""
@@ -2384,7 +2448,7 @@ async def run_actor(actor_id: str, input_data: dict, timeout_sec: int = 120) -> 
         return data_res.json()
 
 
-@app.post("/api/apify/trends")
+@app.post("/api/apify/trends", dependencies=[_AUTH])
 async def apify_trends(req: dict):
     """Google Trends data for given keywords (automation-lab/google-trends-scraper)."""
     keywords = req.get("keywords", [])
@@ -2473,7 +2537,7 @@ async def _amazon_autocomplete(query: str) -> list[str]:
     return results
 
 
-@app.post("/api/apify/amazon-niche")
+@app.post("/api/apify/amazon-niche", dependencies=[_AUTH])
 async def apify_amazon_niche(req: dict):
     """Amazon keyword autocomplete — direct call, no actor cold start."""
     keyword = req.get("keyword", "")
@@ -2486,7 +2550,7 @@ async def apify_amazon_niche(req: dict):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/api/apify/amazon-best")
+@app.post("/api/apify/amazon-best", dependencies=[_AUTH])
 async def apify_amazon_best(req: dict):
     """Amazon keyword autocomplete for a niche — direct call, no actor cold start."""
     niche = req.get("niche", "")
@@ -2569,7 +2633,7 @@ async def _autocomplete_tiktok(query: str) -> list[str]:
     return await _autocomplete_google(short or query, client_param="youtube")
 
 
-@app.post("/api/apify/keywords")
+@app.post("/api/apify/keywords", dependencies=[_AUTH])
 async def apify_keywords(req: dict):
     """Multi-platform keyword suggestions via direct autocomplete APIs (no Apify actor)."""
     query = req.get("query", "")
@@ -2649,7 +2713,7 @@ Return ONLY valid JSON array."""
     return {"data": sugg_data, "longtail": lt_data}
 
 
-@app.post("/api/apify/captions")
+@app.post("/api/apify/captions", dependencies=[_AUTH])
 async def apify_captions(req: dict):
     """Generate social media captions for all platforms using Claude."""
     platforms = req.get("platforms", ["instagram", "facebook"])
@@ -2713,7 +2777,7 @@ Return ONLY valid JSON array, no markdown, no extra text:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/api/ads/campaign")
+@app.post("/api/ads/campaign", dependencies=[_AUTH])
 async def generate_ads_campaign(req: dict):
     """Generate Amazon Sponsored Products campaign structure using Claude, return JSON + CSV."""
     book_title = req.get("bookTitle", "")
@@ -2869,7 +2933,7 @@ Return ONLY valid JSON (no markdown, no extra text):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/api/apify/video-story")
+@app.post("/api/apify/video-story", dependencies=[_AUTH])
 async def apify_video_story(req: dict):
     """Generate a promotional video script + storyboard using Claude."""
     prompt = req.get("prompt", "")
@@ -2911,7 +2975,7 @@ async def apify_video_story(req: dict):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/api/apify/video-ugc")
+@app.post("/api/apify/video-ugc", dependencies=[_AUTH])
 async def apify_video_ugc(req: dict):
     """Generate a UGC-style video script from a cover image using Claude."""
     image_url = req.get("imageUrl", "")
@@ -2953,7 +3017,7 @@ async def apify_video_ugc(req: dict):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/api/apify/social-post")
+@app.post("/api/apify/social-post", dependencies=[_AUTH])
 async def apify_social_post(req: dict):
     """Publish social content. Pinterest: real API. Others: not yet supported."""
     caption = req.get("caption", "")
@@ -2987,7 +3051,7 @@ async def apify_social_post(req: dict):
     return {"data": results}
 
 
-@app.post("/api/apify/influencers")
+@app.post("/api/apify/influencers", dependencies=[_AUTH])
 async def apify_influencers(req: dict):
     """Find influencers by niche (easyapi/find-my-influencers)."""
     niche = req.get("niche", "")
@@ -3015,7 +3079,7 @@ class AvatarRequest(BaseModel):
     niche: Optional[str] = ""
     audience: Optional[str] = ""
 
-@app.post("/api/avatar")
+@app.post("/api/avatar", dependencies=[_AUTH])
 async def generate_avatar(req: AvatarRequest):
     """Generate 2 customer avatars from competitor reviews using Claude."""
     context_parts = []
@@ -3088,7 +3152,7 @@ class NicheOpportunityRequest(BaseModel):
     book_type: Optional[str] = ""
     competitor_titles: Optional[str] = ""
 
-@app.post("/api/niche-opportunity")
+@app.post("/api/niche-opportunity", dependencies=[_AUTH])
 async def niche_opportunity(req: NicheOpportunityRequest):
     """Evaluate niche opportunity using the 3-question 'Modi per Vincere' framework."""
     context = f"Niche: {req.niche}"
