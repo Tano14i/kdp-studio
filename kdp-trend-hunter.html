@@ -4243,7 +4243,7 @@ async function runEditorPass(contentId, label, tab) {
     const data = await callBackend('/api/editor-pass', { content, label, tab });
     btn.textContent = '✏️ Revisiona';
     btn.disabled = false;
-    renderEditorSuggestions(outEl, data);
+    renderEditorSuggestions(outEl, data, contentId);
   } catch(e) {
     btn.textContent = '✏️ Revisiona';
     btn.disabled = false;
@@ -4251,18 +4251,26 @@ async function runEditorPass(contentId, label, tab) {
   }
 }
 
-function renderEditorSuggestions(outEl, d) {
+// Store suggestions for Apply buttons (keyed by a unique run id)
+window._editorSuggMap = {};
+
+function renderEditorSuggestions(outEl, d, contentId) {
   if (!d) return;
   const issueColors = {
     'Clarity':'#3b82f6', 'Rhythm':'#a78bfa', 'Repetition':'#f59e0b',
     'Weak verb':'#ff8c42', 'Passive voice':'#fb923c', 'Structure':'#22c55e', 'Engagement':'#e879f9'
   };
   const scoreColor = d.overall_score >= 8 ? '#22c55e' : d.overall_score >= 6 ? '#f59e0b' : '#ef4444';
-  const suggestions = (d.suggestions || []).map(s => {
+  const runKey = contentId + '_' + Date.now();
+  window._editorSuggMap[runKey] = d.suggestions || [];
+
+  const suggestions = (d.suggestions || []).map((s, i) => {
     const col = issueColors[s.issue] || '#888';
-    return `<div style="padding:10px 14px;border-left:3px solid ${col};background:${col}11;border-radius:0 6px 6px 0;margin-bottom:8px">
+    const applyId = `edApply_${runKey}_${i}`;
+    return `<div id="edSugg_${runKey}_${i}" style="padding:10px 14px;border-left:3px solid ${col};background:${col}11;border-radius:0 6px 6px 0;margin-bottom:8px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
         <span style="font-size:10px;font-weight:700;background:${col}22;color:${col};padding:2px 7px;border-radius:4px">${escHtml(s.issue)}</span>
+        <button id="${applyId}" onclick="applyEditorSuggestion('${contentId}','${runKey}',${i})" style="margin-left:auto;font-size:10px;padding:3px 10px;border-radius:6px;background:rgba(74,222,128,0.12);border:1px solid rgba(74,222,128,0.35);color:#4ade80;cursor:pointer;font-weight:700">→ Applica</button>
       </div>
       <div style="font-size:11px;color:var(--muted);margin-bottom:3px">❌ <em>${escHtml(s.original || '')}</em></div>
       <div style="font-size:11px;color:var(--text);margin-bottom:3px">✅ ${escHtml(s.suggestion || '')}</div>
@@ -4279,6 +4287,38 @@ function renderEditorSuggestions(outEl, d) {
     <div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.6">${escHtml(d.overall_notes || '')}</div>
     ${suggestions}
   </div>`;
+}
+
+function applyEditorSuggestion(contentId, runKey, idx) {
+  const el = document.getElementById(contentId);
+  const btn = document.getElementById(`edApply_${runKey}_${idx}`);
+  const suggRow = document.getElementById(`edSugg_${runKey}_${idx}`);
+  const sugg = (window._editorSuggMap[runKey] || [])[idx];
+  if (!el || !sugg) return;
+
+  const original = sugg.original || '';
+  const replacement = sugg.suggestion || '';
+  if (!original || !replacement) return;
+
+  // Try direct innerHTML replacement first, then textContent fallback
+  if (el.innerHTML.includes(original)) {
+    el.innerHTML = el.innerHTML.split(original).join(
+      `<mark style="background:rgba(74,222,128,0.18);border-radius:3px;padding:0 2px">${replacement}</mark>`
+    );
+    markApplied(btn, suggRow);
+  } else if (el.innerText.includes(original)) {
+    el.innerText = el.innerText.split(original).join(replacement);
+    markApplied(btn, suggRow);
+  } else {
+    // Text not found verbatim — copy to clipboard as fallback
+    navigator.clipboard?.writeText(replacement).catch(()=>{});
+    if (btn) { btn.textContent = '⚠️ Copiato'; btn.style.color = '#f59e0b'; setTimeout(() => { btn.textContent = '→ Applica'; }, 2500); }
+  }
+}
+
+function markApplied(btn, row) {
+  if (btn) { btn.textContent = '✅ Applicato'; btn.disabled = true; btn.style.background = 'rgba(74,222,128,0.15)'; btn.style.borderColor = 'rgba(74,222,128,0.4)'; btn.style.color = '#4ade80'; }
+  if (row) row.style.opacity = '0.5';
 }
 
 // ─── SERIE PLANNER ────────────────────────────────────────────
