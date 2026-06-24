@@ -3122,9 +3122,9 @@ async def asin_reverse(req: dict):
         raise HTTPException(status_code=400, detail="ASIN non valido — deve essere tipo B0XXXXXXXX")
 
     # Step 1: Try Apify to get real product data
+    tld_map = {"us": "com", "de": "de", "it": "it", "es": "es", "fr": "fr"}
     product_data: dict = {}
     if APIFY_TOKEN:
-        tld_map = {"us": "com", "de": "de", "it": "it", "es": "es", "fr": "fr"}
         tld = tld_map.get(marketplace, "com")
         product_url = f"https://www.amazon.{tld}/dp/{asin}"
         try:
