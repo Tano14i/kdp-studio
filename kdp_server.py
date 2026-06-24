@@ -90,7 +90,8 @@ async def require_api_key(request: Request):
 
 _AUTH = Depends(require_api_key)
 
-claude = anthropic.Anthropic(api_key=ANTHROPIC_KEY)
+claude     = anthropic.Anthropic(api_key=ANTHROPIC_KEY)
+claude_async = anthropic.AsyncAnthropic(api_key=ANTHROPIC_KEY)
 
 # ══════════════════════════════════════════════════════════════
 # UNIQUENESS ENGINE
@@ -848,15 +849,33 @@ async def fetch_google_trends_apify(niche: str, keyword: str = "",
 # ══════════════════════════════════════════════════════════════
 # CLAUDE HELPER
 # ══════════════════════════════════════════════════════════════
-def call_claude(prompt: str, max_tokens: int = 4000, allow_truncated: bool = False) -> str:
-    msg = claude.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=max_tokens,
-        messages=[{"role": "user", "content": prompt}]
-    )
-    if msg.stop_reason == "max_tokens" and not allow_truncated:
-        raise ValueError("Risposta troncata — usa Capitolo Singolo o riduci la lunghezza.")
-    return msg.content[0].text
+async def call_claude(prompt: str, max_tokens: int = 4000, allow_truncated: bool = False) -> str:
+    """Call Claude with a 90s timeout and 1 retry on transient errors (overload/rate-limit)."""
+    _RETRYABLE = {529, 529, 500, 503}  # HTTP-equivalent stop reasons / status codes
+    for attempt in range(2):
+        try:
+            msg = await asyncio.wait_for(
+                claude_async.messages.create(
+                    model="claude-sonnet-4-6",
+                    max_tokens=max_tokens,
+                    messages=[{"role": "user", "content": prompt}]
+                ),
+                timeout=90,
+            )
+            if msg.stop_reason == "max_tokens" and not allow_truncated:
+                raise ValueError("Risposta troncata — usa Capitolo Singolo o riduci la lunghezza.")
+            return msg.content[0].text
+        except asyncio.TimeoutError:
+            if attempt == 0:
+                await asyncio.sleep(3)
+                continue
+            raise HTTPException(status_code=504, detail="Claude timeout — riprova tra qualche secondo.")
+        except Exception as e:
+            code = getattr(e, 'status_code', None)
+            if attempt == 0 and code in (429, 529, 500, 503):
+                await asyncio.sleep(5)
+                continue
+            raise
 
 def parse_json_safe(text: str) -> dict:
     import re
@@ -1512,7 +1531,7 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
 ]}}"""
 
     try:
-        text = call_claude(prompt, 3500)
+        text = await call_claude(prompt, 3500)
         result = parse_json_safe(text)
 
         # Gap analysis — cross-check each discovered niche against Amazon book count
@@ -1614,7 +1633,7 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
 ]}}"""
 
     try:
-        text = call_claude(prompt, 2000)
+        text = await call_claude(prompt, 2000)
         result = parse_json_safe(text)
         result["meta"] = {
             "mode": "positioning",
@@ -1737,7 +1756,7 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
 ]}}"""
 
     try:
-        text = call_claude(prompt, 3000)
+        text = await call_claude(prompt, 3000)
         result = parse_json_safe(text)
         result["meta"] = {
             "reddit_posts_found": len(reddit_posts),
@@ -1864,7 +1883,7 @@ Return ONLY raw JSON, ASCII-safe text only:
 ]}}"""
 
     try:
-        text = call_claude(prompt, 2500)
+        text = await call_claude(prompt, 2500)
         result = parse_json_safe(text)
         result["meta"] = {
             "reddit_posts_found": len(general_posts),
@@ -1991,7 +2010,7 @@ Follow voice guidelines throughout. Make every chapter feel distinct."""
 
     try:
         allow_trunc = req.tab in ("chapter", "allchapters", "draft", "intro", "full")
-        text = call_claude(prompt, max_tok, allow_truncated=allow_trunc)
+        text = await call_claude(prompt, max_tok, allow_truncated=allow_trunc)
         return {"content": text, "tab": req.tab, "chapter_num": req.chapter_num}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -2079,7 +2098,7 @@ This chapter must feel completely distinct from chapters before it.
 Use the uniqueness seed to ensure this version is unlike any previous generation."""
 
             try:
-                text = call_claude(prompt, 8000, allow_truncated=True)
+                text = await call_claude(prompt, 8000, allow_truncated=True)
                 yield json.dumps({
                     "chapter": n, "title": title, "content": text,
                     "total": total, "done": False
@@ -2148,7 +2167,7 @@ Analyze and return ONLY raw JSON, ASCII-safe:
 }}}}"""
 
     try:
-        text = call_claude(prompt, 1500)
+        text = await call_claude(prompt, 1500)
         result = parse_json_safe(text)
         return result
     except Exception as e:
@@ -2227,7 +2246,7 @@ Return ONLY valid JSON:
 Generate exactly 5 variants using 5 DIFFERENT strategies. No duplicate strategies."""
 
     try:
-        text = call_claude(prompt, 2500)
+        text = await call_claude(prompt, 2500)
         return parse_json_safe(text)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -2291,7 +2310,7 @@ Return ONLY valid JSON:
 }}"""
 
     try:
-        text = call_claude(prompt, 2000)
+        text = await call_claude(prompt, 2000)
         return parse_json_safe(text)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -2346,7 +2365,7 @@ Return ONLY raw JSON. No markdown. ASCII-safe strings only.
 {{"kdp":{{"title":"short punchy title, under 60 chars, no embedded subtitle","subtitle":"SEO subtitle, under 140 chars, title+subtitle combined under 200 chars total","pen_name":"believable author name fitting this niche and tone","pen_name_rationale":"1 sentence why this name works","description":"Full Amazon description 400-600 words. Use <b> for headers, <br> for breaks. Hook, benefits, who it is for.","short_description":"80-word mobile preview","keywords":["kw1","kw2","kw3","kw4","kw5","kw6","kw7"],"categories":["Primary Amazon category","Secondary Amazon category"],"bisac":["BISAC 1","BISAC 2"],"price_ebook":4.99,"price_paperback":12.99,"page_count_estimate":120,"trim_size":"6x9","tagline":"Punchy tagline under 15 words","canva_cover":{{"main_prompt":"60-80 word Canva AI image prompt for cover background. Mood colors lighting style. No text in scene.","style":"one-word style","color_palette":["#hex1","#hex2","#hex3"],"color_palette_names":["name1","name2","name3"],"font_title":"Canva font for title","font_subtitle":"Canva font for subtitle and author","layout_tip":"One sentence on placement","variation_1":"Alternative 40-word prompt","variation_2":"Alternative 40-word prompt","canva_steps":"4-5 step instructions for KDP-ready cover in Canva"}}}}}}"""
 
     try:
-        text = call_claude(prompt, 4000)
+        text = await call_claude(prompt, 4000)
         result = parse_json_safe(text)
         kdp = result.get("kdp", {})
         title = kdp.get("title", "") or ""
@@ -2680,7 +2699,7 @@ Generate 10 realistic search suggestions a user would type on each of these plat
 Suggestions should reflect how real users search on that platform (TikTok = short/trending, Instagram = hashtag-style, Pinterest = visual/tutorial, YouTube = "how to", Google = questions/intent).
 Return ONLY valid JSON: {{"platform_name": ["suggestion1", "suggestion2", ...]}}"""
         try:
-            raw = call_claude(fill_prompt, 600)
+            raw = await call_claude(fill_prompt, 600)
             if raw.startswith("```"):
                 raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
             filled = json.loads(raw)
@@ -2701,7 +2720,7 @@ Return a JSON array of 15 long-tail keyword objects with estimated metrics:
 Use realistic ranges for book/publishing niche: volume 100-5000, cpc $0.20-$2.00, competition 0.1-0.9.
 Return ONLY valid JSON array."""
         try:
-            raw = call_claude(lt_prompt, 800)
+            raw = await call_claude(lt_prompt, 800)
             if raw.startswith("```"):
                 raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
             lt_data = json.loads(raw)
@@ -2766,7 +2785,7 @@ Return ONLY valid JSON array, no markdown, no extra text:
 ]"""
 
     try:
-        raw = call_claude(prompt, 1500)
+        raw = await call_claude(prompt, 1500)
         if raw.startswith("```"):
             raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
         items = json.loads(raw)
@@ -2835,7 +2854,7 @@ Return ONLY valid JSON (no markdown, no extra text):
 }}"""
 
     try:
-        raw = call_claude(prompt, 2500)
+        raw = await call_claude(prompt, 2500)
         if raw.startswith("```"):
             raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
         campaign = json.loads(raw)

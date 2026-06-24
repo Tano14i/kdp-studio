@@ -2081,22 +2081,13 @@ async function generateFromPositioning() {
     </div>`;
 
   try {
-    const res = await fetch(BACKEND_URL + '/positioning', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        author_identity: identity,
-        ideal_reader: reader,
-        transformation: transformation,
-        competitors: competitors,
-        unfair_advantage: advantage
-      })
+    const data = await callBackend('/positioning', {
+      author_identity: identity,
+      ideal_reader: reader,
+      transformation: transformation,
+      competitors: competitors,
+      unfair_advantage: advantage
     });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || 'Backend error ' + res.status);
-    }
-    const data = await res.json();
     renderPositioningResult(data);
   } catch(e) {
     document.getElementById('trendsOut').innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}</div>`;
@@ -3141,9 +3132,12 @@ async function generateAllAuto() {
         custom_instructions: document.getElementById('customInstructions')?.value.trim() || ''
       };
       const startFrom = completedNums.length > 0 ? Math.max(...completedNums) + 1 : 1;
+      const _agHeaders = { 'Content-Type': 'application/json' };
+      const _agKey = localStorage.getItem('kdp_api_key') || '';
+      if (_agKey) _agHeaders['X-API-Key'] = _agKey;
       const res = await fetch(BACKEND_URL + '/generate-all', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: _agHeaders,
         signal: _autoGenAbort.signal,
         body: JSON.stringify({
           trend_name: state.selectedTrend.name,
@@ -4109,7 +4103,10 @@ async function searchKeywords() {
         </tr>`;
       }).join('');
       ltHtml = `<div style="margin-top:16px">
-        <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#a855f7;margin-bottom:8px">📊 Long-tail SEO Metrics</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#a855f7">📊 Long-tail SEO Metrics</div>
+          <span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(168,85,247,0.12);color:#a855f7;border:1px solid rgba(168,85,247,0.3)">stima AI</span>
+        </div>
         <div style="overflow-x:auto">
           <table style="width:100%;border-collapse:collapse">
             <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted)">
@@ -4809,7 +4806,10 @@ function calcRoyalty() {
     ${!eligible60 && royaltyPct === 60 ? `<div style="font-size:11px;color:#f87171;margin-bottom:10px;padding:6px 10px;background:rgba(239,68,68,0.08);border-radius:6px">⚠️ Il piano 60% richiede prezzo tra $2.99 e $9.99. Prezzo attuale ($${price.toFixed(2)}) non idoneo.</div>` : ''}
     ${minPriceBreakEven > 0 && royaltyPct === 60 ? `<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Prezzo minimo per break-even: <strong style="color:var(--text)">$${minPriceBreakEven.toFixed(2)}</strong></div>` : ''}
 
-    <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">Income mensile stimato per BSR</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em">Income mensile stimato per BSR</div>
+      <span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(100,100,100,0.12);color:var(--muted);border:1px solid var(--border2)">stima AI</span>
+    </div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
       ${bsrEstimates.map(e => {
         const monthly = netMargin * e.sales;
