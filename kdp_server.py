@@ -3939,7 +3939,7 @@ async def fetch_amazon_reviews(req: dict):
             run_actor(
                 "junglee/amazon-reviews-scraper",
                 {
-                    "startUrls": [{"url": product_url}],
+                    "productUrls": [{"url": product_url}],
                     "maxReviews": max_reviews,
                     "proxyConfiguration": {"useApifyProxy": True},
                 },
