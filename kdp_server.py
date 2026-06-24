@@ -3916,7 +3916,13 @@ async def blotato_post(req: dict):
     results = []
     async with httpx.AsyncClient(timeout=60) as client:
         for post in posts:
-            payload = {"post": {k: v for k, v in post.items() if k not in _RESERVED}}
+            _CONTENT_KEYS = {"text", "mediaUrls"}
+            _TARGET_KEYS  = {"accountId", "platform", "boardId", "pageId",
+                              "privacyLevel", "privacyStatus", "title",
+                              "scheduledTime", "useNextFreeSlot"}
+            content = {k: v for k, v in post.items() if k in _CONTENT_KEYS}
+            target  = {k: v for k, v in post.items() if k in _TARGET_KEYS}
+            payload = {"post": {"content": content, "target": target}}
             try:
                 r = await client.post(
                     f"{_BLOTATO_BASE}/v2/posts",
