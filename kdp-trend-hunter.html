@@ -1007,6 +1007,7 @@ select option{background:var(--s2)}
     <button class="btn btn-accent" id="docxBtn" style="display:none" onclick="downloadDocx()">📄 Scarica DOCX</button>
     <button class="btn btn-ghost" id="exportTxtBtn" style="display:none" onclick="exportFullPackage()">⬇️ .txt</button>
     <button class="btn btn-ghost" id="seriePlanBtn" style="display:none" onclick="planSeries()">📚 Pianifica Serie</button>
+    <button class="btn btn-ghost" id="arcEmailBtn" style="display:none" onclick="openArcEmailForm()">📧 Email ARC</button>
     <div id="translateRow" style="display:none;align-items:center;gap:6px">
       <select id="translateLangSelect" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text);font-size:12px;cursor:pointer">
         <option value="de">🇩🇪 Tedesco</option>
@@ -3633,6 +3634,190 @@ function renderTranslation(d, lang, langLabel) {
   div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
+// ─── BSR TRACKER ─────────────────────────────────────────────
+function saveAsinData(idx) {
+  try {
+    const lib = loadLibrary();
+    if (!lib[idx]) return;
+    lib[idx].asin = (document.getElementById('asin_' + idx)?.value || '').trim();
+    lib[idx].reviewCount = parseInt(document.getElementById('reviews_' + idx)?.value) || 0;
+    lib[idx].daysSincePub = parseInt(document.getElementById('days_' + idx)?.value) || 0;
+    localStorage.setItem(LIBRARY_KEY, JSON.stringify(lib));
+  } catch(e) {}
+}
+
+async function checkBsrTracker(idx) {
+  saveAsinData(idx);
+  const lib = loadLibrary();
+  const b = lib[idx];
+  const asin = (document.getElementById('asin_' + idx)?.value || '').trim();
+  if (!asin) { alert('Inserisci prima l\'ASIN del libro (es. B0XXXXXXX).'); return; }
+
+  const btn = document.getElementById('bsrBtn_' + idx);
+  const out = document.getElementById('bsrOut_' + idx);
+  btn.disabled = true;
+  btn.textContent = '⏳ Analizzando…';
+  out.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:5px 0">Analisi BSR in corso…</div>';
+
+  try {
+    const data = await callBackend('/api/bsr-tracker', {
+      title: b.title || '',
+      niche: b.niche || '',
+      asin,
+      review_count: parseInt(document.getElementById('reviews_' + idx)?.value) || 0,
+      price_ebook: b.price_ebook || 4.99,
+      days_since_pub: parseInt(document.getElementById('days_' + idx)?.value) || 30,
+      keywords: b.keywords || []
+    });
+    btn.textContent = 'Analizza';
+    btn.disabled = false;
+    renderBsrResult(idx, data);
+  } catch(e) {
+    btn.textContent = 'Analizza';
+    btn.disabled = false;
+    out.innerHTML = `<div style="font-size:11px;color:var(--accent);padding:5px 0">⚠️ ${escHtml(e.message)}</div>`;
+  }
+}
+
+function renderBsrResult(idx, d) {
+  const out = document.getElementById('bsrOut_' + idx);
+  if (!out || !d) return;
+  const scoreColor = d.health_score >= 7 ? '#22c55e' : d.health_score >= 5 ? '#f59e0b' : '#ef4444';
+  const trendIcon = { Growing:'↑', Stable:'→', Declining:'↓' }[d.velocity_trend] || '→';
+  const trendColor = { Growing:'#22c55e', Stable:'#f59e0b', Declining:'#ef4444' }[d.velocity_trend] || '#888';
+
+  const actions = (d.actions || []).map(a =>
+    `<li style="font-size:11px;color:var(--text);margin-bottom:4px;line-height:1.5">${escHtml(a)}</li>`
+  ).join('');
+
+  out.innerHTML = `<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-top:8px">
+    <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;margin-bottom:8px">
+      <div style="text-align:center;min-width:44px">
+        <div style="font-size:20px;font-weight:800;color:${scoreColor}">${d.health_score}/10</div>
+        <div style="font-size:9px;color:var(--muted);text-transform:uppercase">salute</div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:600;color:var(--text)">${escHtml(d.bsr_estimate || '')}</div>
+        <div style="font-size:10px;color:var(--muted)">BSR stimato</div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:600;color:var(--text)">${escHtml(d.competitive_position || '')}</div>
+        <div style="font-size:10px;color:var(--muted)">posizione competitiva</div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:${trendColor}">${trendIcon} ${escHtml(d.velocity_trend || '')}</div>
+        <div style="font-size:10px;color:var(--muted)">tendenza</div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.6">${escHtml(d.diagnosis || '')}</div>
+    ${actions ? `<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:5px">Azioni re-ranking</div><ul style="padding-left:14px;margin:0">${actions}</ul>` : ''}
+  </div>`;
+}
+
+// ─── ARC EMAIL SEQUENCE ───────────────────────────────────────
+function openArcEmailForm() {
+  const existing = document.getElementById('arcEmailSection');
+  if (existing) { existing.remove(); return; }
+
+  const pkg = window._lastPackage;
+  const defaultLaunch = (() => {
+    const d = new Date(); d.setDate(d.getDate() + 14);
+    return d.toISOString().split('T')[0];
+  })();
+
+  const div = document.createElement('div');
+  div.id = 'arcEmailSection';
+  div.style.marginTop = '24px';
+  div.innerHTML = `<div style="background:rgba(34,197,94,0.04);border:1px solid rgba(34,197,94,0.2);border-radius:12px;overflow:hidden">
+    <div style="padding:14px 18px;border-bottom:1px solid rgba(34,197,94,0.15);display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:#4ade80">📧 Sequenza Email ARC Reviewers</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">5 email pronte per i tuoi ARC reviewers — dal giorno 0 al lancio</div>
+      </div>
+      <button onclick="document.getElementById('arcEmailSection').remove()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px">×</button>
+    </div>
+    <div style="padding:14px 18px;display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+      <div>
+        <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:4px">Data di lancio Amazon</label>
+        <input type="date" id="arcLaunchDate" value="${defaultLaunch}"
+          style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 10px;color:var(--text);font-size:12px">
+      </div>
+      <button class="btn btn-green" onclick="generateArcSequence()" id="arcGenBtn" style="padding:8px 18px">
+        <span id="arcGenTxt">Genera 5 Email</span>
+        <div class="spin" id="arcGenSpin" style="display:none"></div>
+      </button>
+    </div>
+    <div id="arcEmailOut"></div>
+  </div>`;
+
+  document.getElementById('packageOut').after(div);
+  div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+async function generateArcSequence() {
+  const pkg = window._lastPackage;
+  if (!pkg) { alert('Genera prima il KDP Package.'); return; }
+
+  const launchDate = document.getElementById('arcLaunchDate')?.value || '14 giorni da oggi';
+  const btn = document.getElementById('arcGenBtn');
+  const out = document.getElementById('arcEmailOut');
+  btn.disabled = true;
+  document.getElementById('arcGenTxt').textContent = 'Generando…';
+  document.getElementById('arcGenSpin').style.display = 'block';
+  out.innerHTML = '<div style="padding:14px 18px;font-size:12px;color:var(--muted)">Scrittura delle 5 email in corso…</div>';
+
+  try {
+    const data = await callBackend('/api/arc-sequence', {
+      title: pkg.title || '',
+      subtitle: pkg.subtitle || '',
+      pen_name: pkg.pen_name || '',
+      niche: state.selectedTrend?.name || '',
+      description: pkg.short_description || pkg.tagline || '',
+      launch_date: launchDate
+    });
+    btn.disabled = false;
+    document.getElementById('arcGenTxt').textContent = 'Genera 5 Email';
+    document.getElementById('arcGenSpin').style.display = 'none';
+    renderArcSequence(data);
+  } catch(e) {
+    btn.disabled = false;
+    document.getElementById('arcGenTxt').textContent = 'Genera 5 Email';
+    document.getElementById('arcGenSpin').style.display = 'none';
+    out.innerHTML = `<div style="padding:12px 18px;font-size:12px;color:var(--accent)">⚠️ ${escHtml(e.message)}</div>`;
+  }
+}
+
+function renderArcSequence(d) {
+  const out = document.getElementById('arcEmailOut');
+  if (!out || !d || !d.emails) return;
+
+  const emailColors = ['#22c55e','#3b82f6','#a78bfa','#ff8c42','#e879f9'];
+
+  const emailsHtml = (d.emails || []).map((e, idx) => {
+    const color = emailColors[idx] || '#888';
+    const emailId = 'arc_' + idx + '_' + Date.now();
+    const subjId = 'arcs_' + idx + '_' + Date.now();
+    return `<div style="border-top:1px solid var(--border);padding:14px 18px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span style="font-size:11px;font-weight:700;background:${color}22;color:${color};padding:3px 10px;border-radius:4px">Email ${e.number}</span>
+        <span style="font-size:11px;color:var(--muted)">${escHtml(e.timing || '')}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="font-size:10px;font-weight:600;color:var(--muted);white-space:nowrap">OGGETTO:</span>
+        <div id="${subjId}" style="font-size:12px;font-weight:600;color:var(--text);flex:1">${escHtml(e.subject || '')}</div>
+        <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('${subjId}').textContent)">Copia</button>
+      </div>
+      <div style="position:relative">
+        <div id="${emailId}" style="font-size:12px;line-height:1.7;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;white-space:pre-wrap;max-height:200px;overflow:hidden">${escHtml(e.body || '')}</div>
+        <div style="position:absolute;bottom:0;left:0;right:0;height:50px;background:linear-gradient(transparent,var(--bg));border-radius:0 0 8px 8px;pointer-events:none"></div>
+        <button class="copy-btn" style="margin-top:5px" onclick="copyContent('${emailId}');this.closest('div').querySelector('[style*=max-height]').style.maxHeight='none';this.closest('div').querySelector('[style*=linear-gradient]').style.display='none'">📋 Copia testo</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  out.innerHTML = emailsHtml;
+}
+
 // ── BOOK LIBRARY ─────────────────────────────────────────────
 const LIBRARY_KEY = 'kdp_studio_library_v1';
 
@@ -3702,22 +3887,41 @@ function renderLibrary() {
     return;
   }
   el.innerHTML = lib.map((b, i) => `
-    <div style="background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:12px;display:flex;gap:16px;align-items:flex-start">
-      <div style="flex:1;min-width:0">
-        <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:4px">${escHtml(b.niche || 'KDP Book')}</div>
-        <div style="font-family:Syne,sans-serif;font-size:15px;font-weight:700;letter-spacing:-0.02em;margin-bottom:4px;line-height:1.3">${escHtml(b.title)}</div>
-        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">${escHtml(b.subtitle || '')}</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          ${b.pen_name ? `<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(168,139,250,0.1);color:#a78bfa">✍️ ${escHtml(b.pen_name)}</span>` : ''}
-          ${b.price_ebook ? `<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(34,197,94,0.1);color:#22c55e">💰 $${b.price_ebook} eBook</span>` : ''}
-          ${b.keywords?.length ? `<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(59,130,246,0.1);color:#3b82f6">🔑 ${b.keywords.length} keywords</span>` : ''}
-          <span style="font-size:10px;color:var(--muted2)">${new Date(b.savedAt).toLocaleDateString('it-IT', {day:'2-digit',month:'short',year:'numeric'})}</span>
+    <div style="background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:12px">
+      <div style="display:flex;gap:16px;align-items:flex-start">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:4px">${escHtml(b.niche || 'KDP Book')}</div>
+          <div style="font-family:Syne,sans-serif;font-size:15px;font-weight:700;letter-spacing:-0.02em;margin-bottom:4px;line-height:1.3">${escHtml(b.title)}</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:8px">${escHtml(b.subtitle || '')}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            ${b.pen_name ? `<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(168,139,250,0.1);color:#a78bfa">✍️ ${escHtml(b.pen_name)}</span>` : ''}
+            ${b.price_ebook ? `<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(34,197,94,0.1);color:#22c55e">💰 $${b.price_ebook} eBook</span>` : ''}
+            ${b.keywords?.length ? `<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(59,130,246,0.1);color:#3b82f6">🔑 ${b.keywords.length} keywords</span>` : ''}
+            <span style="font-size:10px;color:var(--muted2)">${new Date(b.savedAt).toLocaleDateString('it-IT', {day:'2-digit',month:'short',year:'numeric'})}</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0">
+          <button onclick="restoreBook(${i})" class="btn btn-accent" style="padding:7px 14px;font-size:12px">↗ Apri</button>
+          <button onclick="exportBookDocx(${i})" class="btn btn-ghost" style="padding:7px 14px;font-size:12px">📄 .docx</button>
+          <button onclick="deleteFromLibrary(${i})" style="background:none;border:none;color:var(--muted2);cursor:pointer;font-size:11px;text-align:center">🗑 elimina</button>
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0">
-        <button onclick="restoreBook(${i})" class="btn btn-accent" style="padding:7px 14px;font-size:12px">↗ Apri</button>
-        <button onclick="exportBookDocx(${i})" class="btn btn-ghost" style="padding:7px 14px;font-size:12px">📄 .docx</button>
-        <button onclick="deleteFromLibrary(${i})" style="background:none;border:none;color:var(--muted2);cursor:pointer;font-size:11px;text-align:center">🗑 elimina</button>
+      <!-- BSR Tracker Row -->
+      <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">
+        <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
+          <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted)">📊 BSR Tracker</span>
+          <input id="asin_${i}" type="text" placeholder="ASIN (es. B0XXXXXXX)" value="${escHtml(b.asin||'')}"
+            style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:11px;color:var(--text);width:130px"
+            oninput="saveAsinData(${i})">
+          <input id="reviews_${i}" type="number" min="0" placeholder="Recensioni" value="${b.reviewCount||''}"
+            style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:11px;color:var(--text);width:90px"
+            oninput="saveAsinData(${i})">
+          <input id="days_${i}" type="number" min="0" placeholder="Giorni pub" value="${b.daysSincePub||''}"
+            style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:11px;color:var(--text);width:80px"
+            oninput="saveAsinData(${i})">
+          <button id="bsrBtn_${i}" class="btn btn-ghost" style="padding:4px 10px;font-size:11px" onclick="checkBsrTracker(${i})">Analizza</button>
+        </div>
+        <div id="bsrOut_${i}"></div>
       </div>
     </div>`).join('');
 }
@@ -3736,6 +3940,8 @@ function restoreBook(idx) {
   if (sb) sb.style.display = 'flex';
   const tr = document.getElementById('translateRow');
   if (tr) tr.style.display = 'flex';
+  const ab = document.getElementById('arcEmailBtn');
+  if (ab) ab.style.display = 'flex';
 }
 
 // ── Mark steps done when navigating forward
@@ -4751,6 +4957,8 @@ generatePackage = async function() {
     if (sb) sb.style.display = 'flex';
     const tr = document.getElementById('translateRow');
     if (tr) tr.style.display = 'flex';
+    const ab = document.getElementById('arcEmailBtn');
+    if (ab) ab.style.display = 'flex';
   }
   saveState();
 };

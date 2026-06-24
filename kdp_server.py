@@ -2880,6 +2880,101 @@ async def translate_package(req: dict):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/api/bsr-tracker", dependencies=[_AUTH])
+async def bsr_tracker(req: dict):
+    """Estimate BSR position and generate re-ranking suggestions for a published book."""
+    title = req.get("title", "")
+    niche = req.get("niche", "")
+    asin = req.get("asin", "")
+    review_count = int(req.get("review_count") or 0)
+    price_ebook = float(req.get("price_ebook") or 4.99)
+    days_since_pub = int(req.get("days_since_pub") or 30)
+    keywords = req.get("keywords", [])
+    kw_str = ", ".join(keywords[:7]) if isinstance(keywords, list) else ""
+
+    prompt = (
+        "You are an Amazon KDP ranking strategist. Estimate the BSR position and health of a book "
+        "based on its metadata, then give specific re-ranking actions.\n\n"
+        f"- ASIN: {asin}\n"
+        f"- Title: {title}\n"
+        f"- Niche: {niche}\n"
+        f"- Reviews: {review_count}\n"
+        f"- eBook price: ${price_ebook}\n"
+        f"- Days since publication: {days_since_pub}\n"
+        f"- Keywords: {kw_str or 'N/A'}\n\n"
+        "BSR estimation logic: 0 reviews + <30 days → very poor (BSR 500k+); "
+        "1-10 reviews → BSR 50k-500k; 11-50 reviews → BSR 5k-50k; "
+        "50+ reviews → BSR <5k (if niche is healthy).\n\n"
+        "IMPORTANT: Detect the language from the title/niche and write ALL text in that same language.\n\n"
+        "Return ONLY valid JSON:\n"
+        "{\n"
+        '  "bsr_estimate": "#50,000 – #150,000 in Books",\n'
+        '  "health_score": 4,\n'
+        '  "competitive_position": "Weak / Building / Competitive / Strong",\n'
+        '  "diagnosis": "2-sentence honest assessment of where the book stands",\n'
+        '  "velocity_trend": "Declining|Stable|Growing",\n'
+        '  "actions": [\n'
+        '    "Specific action 1 — what to do and why",\n'
+        '    "Specific action 2",\n'
+        '    "Specific action 3",\n'
+        '    "Specific action 4",\n'
+        '    "Specific action 5"\n'
+        '  ]\n'
+        "}"
+    )
+    try:
+        text = await call_claude(prompt, max_tokens=900)
+        return parse_json_safe(text)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/arc-sequence", dependencies=[_AUTH])
+async def arc_sequence(req: dict):
+    """Generate a 5-email ARC reviewer sequence for a KDP book launch."""
+    title = req.get("title", "")
+    subtitle = req.get("subtitle", "")
+    pen_name = req.get("pen_name", "")
+    niche = req.get("niche", "")
+    description = (req.get("description") or "")[:600]
+    launch_date = req.get("launch_date", "14 days from now")
+
+    prompt = (
+        "You are an email marketing expert for self-published authors. "
+        "Write a 5-email sequence for ARC (Advance Review Copy) reviewers.\n\n"
+        f"- Book title: {title}\n"
+        f"- Subtitle: {subtitle}\n"
+        f"- Author/pen name: {pen_name or 'the author'}\n"
+        f"- Niche: {niche}\n"
+        f"- Short description: {description or 'N/A'}\n"
+        f"- Amazon launch date: {launch_date}\n\n"
+        "Email schedule:\n"
+        "  Email 1: Day 0 — Welcome + ARC delivery confirmation\n"
+        "  Email 2: Day 3 — Reading check-in + value reminder\n"
+        "  Email 3: Day 7 — Step-by-step how to leave a review\n"
+        "  Email 4: Day 12 — Last chance reminder (2 days before launch)\n"
+        "  Email 5: Launch day — Book is LIVE! Direct link + thank you\n\n"
+        "IMPORTANT: Detect the language from the title/niche and write ALL emails in that same language. "
+        "Make each email feel personal and warm, not corporate. Subject lines must have high open rates.\n\n"
+        "Return ONLY valid JSON:\n"
+        "{\n"
+        '  "emails": [\n'
+        '    {\n'
+        '      "number": 1,\n'
+        '      "timing": "Giorno 0 — Subito dopo l\'invio dell\'ARC",\n'
+        '      "subject": "Email subject line",\n'
+        '      "body": "Full email body with personalization placeholders like [NOME]"\n'
+        '    }\n'
+        '  ]\n'
+        "}"
+    )
+    try:
+        text = await call_claude(prompt, max_tokens=3500)
+        return parse_json_safe(text)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 async def run_actor(actor_id: str, input_data: dict, timeout_sec: int = 120) -> list:
     """Launch an Apify actor synchronously and return the dataset items."""
     if not APIFY_TOKEN:
