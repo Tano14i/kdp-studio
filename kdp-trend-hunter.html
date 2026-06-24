@@ -3885,7 +3885,7 @@ async function generateAllChapters(bookCtx, title, bookType, trend, audience) {
     <div class="sect-label" style="margin-bottom:12px">📚 Generazione Tutti i Capitoli</div>
     <div id="chapProgress" style="font-size:13px;color:var(--muted);margin-bottom:12px">Inizio generazione...</div>
     <div style="display:flex;gap:6px;margin-bottom:16px" id="chapDots">
-      ${Array.from({length:totalChapters},(_,i)=>`<div id="cdot_${i}" style="width:28px;height:28px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--muted)">${i+1}</div>`).join('')}
+      ${Array.from({length:totalChapters},(_,i)=>`<div id="cdot_${i}" onclick="document.getElementById('chapBlock_${i+1}')?.scrollIntoView({behavior:'smooth',block:'start'})" style="width:28px;height:28px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer" title="Vai al Capitolo ${i+1}">${i+1}</div>`).join('')}
     </div>
     <div id="chapResults"></div>
   </div>`;
@@ -3913,8 +3913,10 @@ Write in warm second-person voice. Make it practical and immediately useful.`;
       const text = await callClaude(chPrompt, 4000);
       allText += '\n\n' + text;
       const rid = 'chap_' + n + '_' + Date.now();
+      const chapAnchorId = 'chapBlock_' + n;
       const chapDiv = document.createElement('div');
       chapDiv.className = 'content-block';
+      chapDiv.id = chapAnchorId;
       chapDiv.style.marginTop = '12px';
       chapDiv.innerHTML = `
         <div class="cb-header">
@@ -4956,7 +4958,7 @@ async function generateAllAuto() {
           if (!dotsBuilt && total > 0) {
             const dotsEl = document.getElementById('agDots');
             dotsEl.innerHTML = Array.from({length: total}, (_, i) =>
-              `<div id="agdot_${i+1}" style="width:30px;height:30px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--muted)">${i+1}</div>`
+              `<div id="agdot_${i+1}" onclick="document.getElementById('agBlock_${i+1}')?.scrollIntoView({behavior:'smooth',block:'start'})" style="width:30px;height:30px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer" title="Vai al Cap. ${i+1}">${i+1}</div>`
             ).join('');
             dotsBuilt = true;
           }
@@ -4964,10 +4966,32 @@ async function generateAllAuto() {
           const n = obj.chapter;
           const dot = document.getElementById('agdot_' + n);
 
-          // Skipped (already checkpointed) — just mark dot and move on
+          // Skipped (already checkpointed) — render from saved content + mark dot
           if (obj.skipped) {
             if (dot) { dot.style.background = 'rgba(34,197,94,0.08)'; dot.style.borderColor = 'var(--green)'; dot.style.color = 'var(--green)'; dot.title = 'Dal checkpoint'; }
             document.getElementById('agStatus').textContent = `Capitolo ${n} già presente (checkpoint) — skip`;
+            const savedContent = existingCp?.chapters?.[n] || obj.content || '';
+            if (savedContent) {
+              const rid = 'agch_' + n + '_ckpt';
+              const chDiv = document.createElement('div');
+              chDiv.className = 'content-block';
+              chDiv.id = 'agBlock_' + n;
+              chDiv.style.margin = '12px 0';
+              chDiv.style.opacity = '0.85';
+              chDiv.innerHTML = `
+                <div class="cb-header">
+                  <div class="cb-title">
+                    <span class="cb-badge" style="background:rgba(34,197,94,0.12);color:var(--green)">Cap. ${n} — ♻️ checkpoint</span>
+                  </div>
+                  <div style="display:flex;gap:6px">
+                    <button class="copy-btn" id="editBtn_${rid}" onclick="runEditorPass('${rid}','Capitolo ${n}','chapter')">✏️ Revisiona</button>
+                    <button class="copy-btn" onclick="copyContent('${rid}')">Copia</button>
+                  </div>
+                </div>
+                <div class="cb-body" id="${rid}">${escHtml(savedContent)}</div>
+                <div id="editorOut_${rid}"></div>`;
+              document.getElementById('agResults').appendChild(chDiv);
+            }
             continue;
           }
 
@@ -4993,13 +5017,17 @@ async function generateAllAuto() {
           const rid = 'agch_' + n + '_' + Date.now();
           const chDiv = document.createElement('div');
           chDiv.className = 'content-block';
+          chDiv.id = 'agBlock_' + n;
           chDiv.style.margin = '12px 0';
           chDiv.innerHTML = `
             <div class="cb-header">
               <div class="cb-title">
                 <span class="cb-badge" style="background:#ff8c4222;color:#ff8c42">Cap. ${n} — ${escHtml(obj.title)}</span>
               </div>
-              <button class="copy-btn" onclick="copyContent('${rid}')">Copia</button>
+              <div style="display:flex;gap:6px">
+                <button class="copy-btn" id="editBtn_${rid}" onclick="runEditorPass('${rid}','Capitolo ${n}','chapter')">✏️ Revisiona</button>
+                <button class="copy-btn" onclick="copyContent('${rid}')">Copia</button>
+              </div>
             </div>
             <div class="cb-body" id="${rid}">${escHtml(obj.content)}</div>`;
           document.getElementById('agResults').appendChild(chDiv);
