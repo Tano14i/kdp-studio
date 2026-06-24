@@ -3887,11 +3887,19 @@ async def blotato_accounts(req: dict):
             f"{_BLOTATO_BASE}/v2/users/me/accounts",
             headers={"Authorization": f"Bearer {api_key}"},
         )
+        print(f"[Blotato accounts] status={r.status_code} body={r.text[:500]}")
         if r.status_code == 401:
             raise HTTPException(status_code=401, detail="API key Blotato non valida — controlla su my.blotato.com/settings/api")
         if r.status_code != 200:
             raise HTTPException(status_code=r.status_code, detail=r.text[:300])
-        return r.json()
+        body = r.json()
+        # Normalise: Blotato may return {accounts:[...]}, {data:[...]}, or [...] directly
+        if isinstance(body, list):
+            return {"accounts": body, "_raw": body}
+        if isinstance(body, dict):
+            accounts = body.get("accounts") or body.get("data") or body.get("items") or body.get("socialAccounts") or []
+            return {"accounts": accounts, "_raw": body}
+        return {"accounts": [], "_raw": body}
 
 
 @app.post("/api/blotato/post", dependencies=[_AUTH])

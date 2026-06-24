@@ -6435,10 +6435,14 @@ async function fetchBlotatoAccounts() {
 
   try {
     const res = await callBackend('/api/blotato/accounts', { apiKey });
-    const accounts = res.accounts || res.data || res || [];
+    const accounts = res.accounts || res.data || res.items || res.socialAccounts || (Array.isArray(res) ? res : []);
     _blotatoAccounts = Array.isArray(accounts) ? accounts : [];
     _blotatoSelectedIds = new Set(_blotatoAccounts.map(a => a.id));
     renderBlotatoAccountChips();
+    if (!_blotatoAccounts.length) {
+      const noWrap = document.getElementById('blotatoNoAccounts');
+      if (noWrap) noWrap.innerHTML = `⚠️ Nessun account trovato. Collega i tuoi profili su <a href="https://my.blotato.com" target="_blank" rel="noopener" style="color:#3b82f6">my.blotato.com</a>.<br><span style="font-size:10px;color:var(--muted)">Debug risposta: <code>${escHtml(JSON.stringify(res).slice(0,300))}</code></span>`;
+    }
   } catch(e) {
     alert('Errore Blotato: ' + e.message);
   } finally {
