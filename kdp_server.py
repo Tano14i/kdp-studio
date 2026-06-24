@@ -2319,12 +2319,62 @@ Return ONLY valid JSON:
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# Real Amazon KDP browse categories + BISAC codes by book type
+_KDP_CATEGORIES = {
+    "Guided Journal": {
+        "categories": ["Books > Self-Help > Journaling & Bullet Journaling", "Books > Self-Help > Happiness"],
+        "bisac": ["SEL031000 SELF-HELP / Journaling", "SEL016000 SELF-HELP / Happiness"],
+    },
+    "Workbook": {
+        "categories": ["Books > Self-Help > Personal Transformation", "Books > Health, Fitness & Dieting > Mental Health > Anxiety, Phobias & Panic Attacks"],
+        "bisac": ["SEL023000 SELF-HELP / Personal Growth / General", "PSY022000 PSYCHOLOGY / Mental Health"],
+    },
+    "30-Day Challenge": {
+        "categories": ["Books > Self-Help > Personal Transformation", "Books > Self-Help > Motivational"],
+        "bisac": ["SEL023000 SELF-HELP / Personal Growth / General", "SEL027000 SELF-HELP / Motivational & Inspirational"],
+    },
+    "Planner": {
+        "categories": ["Books > Arts & Photography > Graphic Design > Commercial > Calendars & Planners", "Books > Self-Help > Time Management"],
+        "bisac": ["SEL043000 SELF-HELP / Time Management", "BUS107000 BUSINESS & ECONOMICS / Time Management"],
+    },
+    "Prompt Book": {
+        "categories": ["Books > Self-Help > Journaling & Bullet Journaling", "Books > Crafts, Hobbies & Home > Games & Activities > Writing"],
+        "bisac": ["SEL031000 SELF-HELP / Journaling", "GAM001000 GAMES & ACTIVITIES / General"],
+    },
+    "Activity Book": {
+        "categories": ["Books > Children's Books > Activities, Crafts & Games > Activity Books", "Books > Arts & Photography > Drawing"],
+        "bisac": ["JUV000000 JUVENILE FICTION / General", "GAM001000 GAMES & ACTIVITIES / General"],
+    },
+    "Self-help Guide": {
+        "categories": ["Books > Self-Help > Personal Transformation", "Books > Health, Fitness & Dieting > Mental Health > Depression"],
+        "bisac": ["SEL023000 SELF-HELP / Personal Growth / General", "SEL016000 SELF-HELP / Happiness"],
+    },
+    "default": {
+        "categories": ["Books > Self-Help > Personal Transformation", "Books > Health, Fitness & Dieting"],
+        "bisac": ["SEL023000 SELF-HELP / Personal Growth / General", "HEA000000 HEALTH & FITNESS / General"],
+    },
+}
+
+def _get_kdp_categories(book_type: str) -> dict:
+    for key in _KDP_CATEGORIES:
+        if key.lower() in (book_type or "").lower():
+            return _KDP_CATEGORIES[key]
+    return _KDP_CATEGORIES["default"]
+
+
 @app.post("/package", dependencies=[_AUTH])
 async def generate_package(req: PackageRequest):
     tone_note = f"Tone/voice of the book: {req.tone}" if req.tone else ""
     persona_note = f"Target reader persona: {req.reader_persona}" if req.reader_persona else ""
     custom_note = f"\nCUSTOM RESTRICTIONS (MANDATORY — apply to every field):\n{req.custom_instructions}" if req.custom_instructions else ""
     stamp = now_stamp()
+    _cats = _get_kdp_categories(req.book_type)
+    _cat_hint = (
+        f"\nREAL AMAZON CATEGORIES — use these exact browse paths (or close variants):\n"
+        + "\n".join(f"  • {c}" for c in _cats["categories"])
+        + f"\nREAL BISAC CODES — use these (adjust subject if needed):\n"
+        + "\n".join(f"  • {b}" for b in _cats["bisac"])
+    )
 
     # Determine target marketplace from language
     lang = getattr(req, 'language', 'English') or 'English'
@@ -2353,6 +2403,7 @@ Generated: {stamp}
 
 IMPORTANT: Write title, subtitle, description, tagline, and keywords in {lang}.
 Keywords must be search terms that {lang}-speaking readers actually use on {marketplace}.
+{_cat_hint}
 
 TITLE RULES — THIS IS CRITICAL, Amazon KDP REJECTS listings that violate this:
 - "title": SHORT and punchy, under 60 characters. Must NOT contain a colon
@@ -2401,6 +2452,111 @@ Return ONLY raw JSON. No markdown. ASCII-safe strings only.
 
 
 # ══════════════════════════════════════════════════════════════
+# REAL DOCX EXPORT
+# ══════════════════════════════════════════════════════════════
+
+@app.post("/export/docx", dependencies=[_AUTH])
+async def export_docx(req: dict):
+    """Generate a real .docx file from KDP book data + chapter content."""
+    import io, re as _re
+    from docx import Document
+    from docx.shared import Pt, Cm, RGBColor
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+
+    book = req.get("book", {})
+    chapters_text = req.get("chapters_text", "")
+
+    doc = Document()
+    for section in doc.sections:
+        section.top_margin    = Cm(2.5)
+        section.bottom_margin = Cm(2.5)
+        section.left_margin   = Cm(3.0)
+        section.right_margin  = Cm(2.5)
+
+    # ── Title page ────────────────────────────────────────────
+    p = doc.add_paragraph()
+    run = p.add_run(book.get("title", "Untitled"))
+    run.bold = True
+    run.font.size = Pt(28)
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    if book.get("subtitle"):
+        p2 = doc.add_paragraph()
+        p2.add_run(book["subtitle"]).font.size = Pt(16)
+        p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    if book.get("pen_name"):
+        p3 = doc.add_paragraph()
+        p3.add_run(f"by {book['pen_name']}").font.size = Pt(12)
+        p3.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    doc.add_page_break()
+
+    # ── KDP Package ───────────────────────────────────────────
+    doc.add_heading("KDP Package", level=1)
+
+    def field(label, value):
+        if not value:
+            return
+        p = doc.add_paragraph()
+        p.add_run(label + ": ").bold = True
+        p.add_run(str(value))
+
+    field("Tagline",    book.get("tagline"))
+    field("Pen Name",   (book.get("pen_name") or "") + (" — " + book["pen_name_rationale"] if book.get("pen_name_rationale") else ""))
+    field("Prezzo",     f"eBook ${book.get('price_ebook','4.99')} | Paperback ${book.get('price_paperback','12.99')} | ~{book.get('page_count_estimate','120')} pagine | {book.get('trim_size','6x9')}")
+
+    if book.get("description"):
+        doc.add_heading("Descrizione Amazon", level=2)
+        clean = _re.sub(r'<[^>]+>', ' ', book["description"]).strip()
+        doc.add_paragraph(clean)
+
+    if book.get("short_description"):
+        doc.add_heading("Descrizione Breve (mobile)", level=2)
+        doc.add_paragraph(book["short_description"])
+
+    if book.get("keywords"):
+        doc.add_heading("Keywords SEO", level=2)
+        doc.add_paragraph(" | ".join(book["keywords"]))
+
+    if book.get("categories"):
+        doc.add_heading("Categorie Amazon", level=2)
+        for cat in book["categories"]:
+            doc.add_paragraph(f"• {cat}")
+
+    if book.get("bisac"):
+        field("BISAC", " | ".join(book["bisac"]))
+
+    # ── Chapter content ───────────────────────────────────────
+    if chapters_text:
+        doc.add_page_break()
+        doc.add_heading("Contenuto del Libro", level=1)
+        for line in chapters_text.split("\n"):
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith("### "):
+                doc.add_heading(line[4:], level=3)
+            elif line.startswith("## "):
+                doc.add_heading(line[3:], level=2)
+            elif line.startswith("# "):
+                doc.add_heading(line[2:], level=1)
+            else:
+                doc.add_paragraph(line)
+
+    buf = io.BytesIO()
+    doc.save(buf)
+    buf.seek(0)
+
+    safe_name = _re.sub(r'[^a-zA-Z0-9_-]', '_', book.get("title", "book"))[:50] + ".docx"
+    return StreamingResponse(
+        buf,
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers={"Content-Disposition": f'attachment; filename="{safe_name}"'},
+    )
+
+
+# ══════════════════════════════════════════════════════════════
 # APIFY INTEGRATION
 # ══════════════════════════════════════════════════════════════
 
@@ -2423,6 +2579,21 @@ NICHE_CATEGORY_URLS = {
     "Business": "https://www.amazon.com/Best-Sellers-Books-Entrepreneurship/zgbs/books/12901",
     "Psychology": "https://www.amazon.com/Best-Sellers-Books-Psychology-Counseling/zgbs/books/25",
 }
+
+@app.get("/api/bestseller-links")
+async def bestseller_links(niche: str = "", book_type: str = ""):
+    """Return Amazon bestseller browse links for a niche + KDP category hints."""
+    links = []
+    # Match niche to category URL (fuzzy)
+    niche_lower = niche.lower()
+    for key, url in NICHE_CATEGORY_URLS.items():
+        if any(w in niche_lower for w in key.lower().split()):
+            links.append({"label": key, "url": url})
+    if not links:
+        links.append({"label": "All Books Bestsellers", "url": "https://www.amazon.com/Best-Sellers-Books/zgbs/books"})
+    kdp_cats = _get_kdp_categories(book_type)
+    return {"links": links[:3], "suggested_categories": kdp_cats["categories"], "suggested_bisac": kdp_cats["bisac"]}
+
 
 MARKET_GEO_MAP = {
     "English": "US",

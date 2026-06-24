@@ -607,7 +607,10 @@ select option{background:var(--s2)}
       <div class="t-desc" id="stDesc"></div>
     </div>
 
-    <div class="sect-label">Idee libro disponibili</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <div class="sect-label" style="margin-bottom:0">Idee libro disponibili</div>
+      <div id="bestsellerLinksRow" style="display:none;gap:6px;flex-wrap:wrap"></div>
+    </div>
     <div class="book-ideas-grid" id="bookIdeasGrid"></div>
   </div>
 
@@ -945,6 +948,7 @@ select option{background:var(--s2)}
       <div class="spin" id="pkgSpin" style="display:none"></div>
     </button>
     <button class="btn btn-green" id="exportAllBtn" style="display:none" onclick="exportCurrentDoc()">📄 Esporta .doc</button>
+    <button class="btn btn-accent" id="docxBtn" style="display:none" onclick="downloadDocx()">📄 Scarica DOCX</button>
     <button class="btn btn-ghost" id="exportTxtBtn" style="display:none" onclick="exportFullPackage()">⬇️ .txt</button>
     <button class="btn btn-ghost" onclick="goPanel('p3')">← Indietro</button>
   </div>
@@ -1354,7 +1358,6 @@ function loadState() {
 
 function saveState() {
   try {
-    // Don't save full content text (too large) — save refs only
     const toSave = {
       trends: state.trends,
       selectedTrend: state.selectedTrend,
@@ -1362,13 +1365,31 @@ function saveState() {
       customTitle: state.customTitle,
       bookType: state.bookType,
       audience: state.audience,
-      outline: state.outline ? state.outline.substring(0, 3000) : '',
+      outline: state.outline || '',   // full outline — needed for chapter resume
       genTab: state.genTab,
       customNiche: state.customNiche,
       savedAt: Date.now()
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
-  } catch(e) { console.warn('State save failed', e); }
+  } catch(e) {
+    // Quota exceeded — try without trends (large array)
+    try {
+      const slim = { ...toSave, trends: [] };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
+    } catch(_) { console.warn('State save failed even after slim', e); }
+  }
+}
+
+function rebuildChaptersFromCheckpoint() {
+  // Reconstruct allChaptersText from saved per-chapter checkpoints after a page refresh
+  const title = state.customTitle || state.selectedBook?.title || '';
+  if (!title) return;
+  const cp = loadChapterCheckpoint(title);
+  if (cp && Object.keys(cp.chapters).length) {
+    state.allChaptersText = Object.entries(cp.chapters)
+      .sort(([a],[b]) => Number(a) - Number(b))
+      .map(([,v]) => v).join('\n\n');
+  }
 }
 
 function clearState() {
@@ -2368,6 +2389,31 @@ function selectTrend(i) {
   document.getElementById('p1actions').style.display = 'flex';
   saveState(); // FIX 4
   populateStep2();
+  loadBestsellerLinks(state.trends[i]);
+}
+
+async function loadBestsellerLinks(trend) {
+  if (!BACKEND_LIVE) return;
+  const row = document.getElementById('bestsellerLinksRow');
+  if (!row) return;
+  try {
+    const niche = trend?.name || '';
+    const bookType = document.getElementById('bookTypeSelect')?.value || '';
+    const res = await fetch(`${BACKEND_URL}/api/bestseller-links?niche=${encodeURIComponent(niche)}&book_type=${encodeURIComponent(bookType)}`, {
+      headers: _backendHeaders(),
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data.links?.length) return;
+    row.innerHTML = data.links.map(l =>
+      `<a href="${escHtml(l.url)}" target="_blank" rel="noopener"
+        style="font-size:10px;padding:3px 8px;border-radius:4px;border:1px solid rgba(34,197,94,0.3);color:#22c55e;text-decoration:none;background:rgba(34,197,94,0.06);white-space:nowrap">
+        📊 ${escHtml(l.label)} Bestsellers ↗
+      </a>`
+    ).join('');
+    row.style.display = 'flex';
+  } catch(_) {}
 }
 
 // ─── STEP 2: CHOOSE BOOK ─────────────────────────────────
@@ -3085,6 +3131,8 @@ function restoreSession() {
     document.getElementById('customNicheBadge').style.display = 'block';
     document.querySelectorAll('#nichePills .pill').forEach(x => x.classList.remove('active'));
   }
+  // Rebuild chapters from per-chapter checkpoints so allChaptersText survives a refresh
+  rebuildChaptersFromCheckpoint();
 }
 
 function discardSession() {
@@ -3730,6 +3778,41 @@ function exportCurrentDoc() {
   }
 }
 
+// ── EXPORT REAL .DOCX VIA BACKEND ────────────────────────────
+async function downloadDocx() {
+  const lib = loadLibrary();
+  const book = lib[0]?.kdpData || {};
+  const chaptersText = state.allChaptersText || '';
+
+  const btn = document.getElementById('docxBtn');
+  if (btn) { btn.textContent = '⏳ Generando DOCX…'; btn.disabled = true; }
+
+  try {
+    const headers = _backendHeaders();
+    const res = await fetch(BACKEND_URL + '/export/docx', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ book, chapters_text: chaptersText }),
+      signal: AbortSignal.timeout(30000),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Export failed ' + res.status);
+    }
+    const blob = await res.blob();
+    const title = (book.title || 'book').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = title + '.docx';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  } catch(e) {
+    alert('Errore DOCX: ' + e.message);
+  } finally {
+    if (btn) { btn.textContent = '📄 Scarica DOCX'; btn.disabled = false; }
+  }
+}
+
 // ── ANALYZE MARKET ───────────────────────────────────────────
 async function analyzeMarket() {
   const textarea = document.getElementById('competitorTitles');
@@ -4017,7 +4100,7 @@ selectBook = function(i) {
 const _origGenPkg2 = generatePackage;
 generatePackage = async function() {
   await _origGenPkg2();
-  ['exportAllBtn','exportTxtBtn'].forEach(id => {
+  ['exportAllBtn','docxBtn','exportTxtBtn'].forEach(id => {
     const el = document.getElementById(id);
     if (el && document.getElementById('packageOut').children.length > 0)
       el.style.display = 'flex';
