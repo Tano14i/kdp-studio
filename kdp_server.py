@@ -3920,50 +3920,53 @@ class AvatarRequest(BaseModel):
 
 @app.post("/api/amazon-reviews", dependencies=[_AUTH])
 async def fetch_amazon_reviews(req: dict):
-    """Fetch real Amazon reviews for an ASIN via Apify — feeds Customer Avatar Generator."""
-    asin = req.get("asin", "").strip().upper()
+    """Fetch real Amazon reviews for one or more ASINs via Apify — feeds Customer Avatar Generator."""
+    # Support both single asin and asins array
+    raw_asins = req.get("asins") or ([req.get("asin")] if req.get("asin") else [])
+    asins = [a.strip().upper() for a in raw_asins if a and len(a.strip()) >= 8]
     marketplace = req.get("marketplace", "us")
-    max_reviews = min(int(req.get("max_reviews", 30)), 60)
+    max_per_asin = min(int(req.get("max_reviews", 50)), 100)
 
-    if not asin or len(asin) < 8:
-        raise HTTPException(status_code=400, detail="ASIN non valido")
+    if not asins:
+        raise HTTPException(status_code=400, detail="Nessun ASIN valido fornito")
     if not APIFY_TOKEN:
         raise HTTPException(status_code=503, detail="APIFY_TOKEN non configurato")
 
     tld_map = {"us": "com", "de": "de", "it": "it", "es": "es", "fr": "fr", "uk": "co.uk"}
     tld = tld_map.get(marketplace, "com")
-    product_url = f"https://www.amazon.{tld}/dp/{asin}"
 
-    # Try actors in order until one works
-    actor_configs = [
-        # automation-lab: uses asins array, minimal input
-        ("automation-lab/amazon-reviews-scraper", {"asins": [asin], "maxReviews": max_reviews}),
-        # epctex: uses startUrls
-        ("epctex/amazon-reviews-scraper", {"startUrls": [{"url": f"https://www.amazon.{tld}/dp/{asin}"}], "maxItems": max_reviews}),
-    ]
-    items = []
-    last_err = ""
-    for actor_id, actor_input in actor_configs:
-        try:
-            items = await asyncio.wait_for(run_actor(actor_id, actor_input), timeout=90.0)
-            print(f"[AmazonReviews] actor {actor_id} succeeded with {len(items)} items")
-            break
-        except Exception as e:
-            last_err = f"{actor_id}: {str(e)[:150]}"
-            print(f"[AmazonReviews] actor {actor_id} failed: {e}")
-    if not items and last_err:
-        raise HTTPException(status_code=502, detail=f"Apify error: {last_err}")
+    async def fetch_for_asin(asin: str) -> list:
+        actor_configs = [
+            ("automation-lab/amazon-reviews-scraper", {
+                "asins": [asin],
+                "maxReviews": max_per_asin,
+                "reviewsCount": max_per_asin,
+            }),
+            ("epctex/amazon-reviews-scraper", {
+                "startUrls": [{"url": f"https://www.amazon.{tld}/dp/{asin}"}],
+                "maxItems": max_per_asin,
+            }),
+        ]
+        for actor_id, actor_input in actor_configs:
+            try:
+                result = await asyncio.wait_for(run_actor(actor_id, actor_input), timeout=90.0)
+                if result:
+                    print(f"[AmazonReviews] {asin}: {actor_id} → {len(result)} items, keys={list(result[0].keys()) if result else []}")
+                    return result
+            except Exception as e:
+                print(f"[AmazonReviews] {asin}: {actor_id} failed: {e}")
+        return []
 
-    if not items:
-        raise HTTPException(status_code=404, detail="Nessuna recensione trovata per questo ASIN")
+    # Fetch all ASINs concurrently
+    all_results = await asyncio.gather(*[fetch_for_asin(a) for a in asins])
+    all_items = [item for sub in all_results for item in sub]
+
+    if not all_items:
+        raise HTTPException(status_code=404, detail=f"Nessuna recensione trovata per: {', '.join(asins)}")
 
     # Debug: log actual keys so we can fix field mapping
-    if items and isinstance(items[0], dict):
-        print(f"[AmazonReviews] {len(items)} items. First item keys: {list(items[0].keys())}")
-        print(f"[AmazonReviews] First item sample: {str(items[0])[:300]}")
-
     lines = []
-    for it in items:
+    for it in all_items:
         if not isinstance(it, dict):
             continue
         rating = it.get("rating") or it.get("stars") or it.get("ratingScore") or ""
@@ -3974,12 +3977,14 @@ async def fetch_amazon_reviews(req: dict):
                 or it.get("reviewContent") or it.get("description") or "")
         if not text:
             continue
-        star = "★" * int(rating) if isinstance(rating, (int, float)) and 1 <= int(rating) <= 5 else ""
+        try:
+            star = "★" * int(float(rating)) if rating and 1 <= float(str(rating)) <= 5 else ""
+        except (ValueError, TypeError):
+            star = ""
         lines.append(f"{star} {title}\n{text}".strip())
 
     if not lines:
-        # Return keys in error so we can diagnose
-        sample_keys = list(items[0].keys()) if items and isinstance(items[0], dict) else []
+        sample_keys = list(all_items[0].keys()) if all_items and isinstance(all_items[0], dict) else []
         raise HTTPException(
             status_code=404,
             detail=f"Nessun testo recensione estratto. Campi disponibili: {sample_keys}"
@@ -3988,7 +3993,7 @@ async def fetch_amazon_reviews(req: dict):
     return {
         "reviews_text": "\n\n".join(lines),
         "count": len(lines),
-        "asin": asin,
+        "asins": asins,
         "marketplace": marketplace,
     }
 

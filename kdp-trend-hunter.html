@@ -933,12 +933,13 @@ select option{background:var(--s2)}
       <span id="avatarSectionArrow" style="color:var(--muted);font-size:14px;transition:transform 0.2s">▼</span>
     </div>
     <div id="avatarSection" style="display:none;padding:16px 18px">
-      <!-- ASIN auto-import -->
+      <!-- ASIN auto-import (multi) -->
       <div style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:12px 14px;margin-bottom:14px">
-        <div style="font-size:11px;font-weight:700;color:#fbbf24;margin-bottom:8px">📥 Importa recensioni da Amazon</div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <input id="avatarAsin" type="text" placeholder="ASIN (es: B0H1849YHB)" maxlength="12"
-            style="flex:1;min-width:130px;font-size:12px;padding:8px 10px;background:rgba(255,255,255,0.05);border:1px solid rgba(251,191,36,0.3);border-radius:8px;color:#e2e8f0;outline:none" />
+        <div style="font-size:11px;font-weight:700;color:#fbbf24;margin-bottom:8px">📥 Importa recensioni da Amazon (più ASIN = più dati)</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px">
+          <input id="avatarAsin" type="text" placeholder="ASIN competitor (es: B0H1849YHB)" maxlength="12"
+            style="flex:1;min-width:130px;font-size:12px;padding:8px 10px;background:rgba(255,255,255,0.05);border:1px solid rgba(251,191,36,0.3);border-radius:8px;color:#e2e8f0;outline:none"
+            onkeydown="if(event.key==='Enter'){addAvatarAsin();}" />
           <select id="avatarMarketplace" style="font-size:12px;padding:8px 10px;background:rgba(15,15,35,0.9);border:1px solid rgba(251,191,36,0.3);border-radius:8px;color:#e2e8f0">
             <option value="it">🇮🇹 .it</option>
             <option value="us">🇺🇸 .com</option>
@@ -947,12 +948,15 @@ select option{background:var(--s2)}
             <option value="fr">🇫🇷 .fr</option>
             <option value="uk">🇬🇧 .co.uk</option>
           </select>
-          <button class="btn" onclick="fetchAvatarReviews()" id="avatarFetchBtn"
-            style="background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.4);color:#fbbf24;font-size:12px;padding:8px 13px;white-space:nowrap">
-            <span id="avatarFetchTxt">🔗 Scarica Recensioni</span>
-            <div class="spin" id="avatarFetchSpin" style="display:none;border-top-color:#fbbf24"></div>
-          </button>
+          <button class="btn" onclick="addAvatarAsin()"
+            style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);color:#fbbf24;font-size:13px;padding:8px 12px;font-weight:700">＋</button>
         </div>
+        <div id="avatarAsinChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;min-height:0"></div>
+        <button class="btn" onclick="fetchAvatarReviews()" id="avatarFetchBtn"
+          style="background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.4);color:#fbbf24;font-size:12px;padding:8px 13px;white-space:nowrap;width:100%">
+          <span id="avatarFetchTxt">🔗 Scarica Recensioni</span>
+          <div class="spin" id="avatarFetchSpin" style="display:none;border-top-color:#fbbf24"></div>
+        </button>
         <div id="avatarFetchStatus" style="font-size:11px;color:var(--muted);margin-top:6px"></div>
       </div>
       <div style="font-size:10px;color:var(--muted);margin-bottom:8px">Oppure incolla manualmente:</div>
@@ -6423,10 +6427,46 @@ async function analyzeNicheOpportunity() {
 }
 
 // ── CUSTOMER AVATAR GENERATOR ──────────────────────────────────
-async function fetchAvatarReviews() {
-  const asin = (document.getElementById('avatarAsin')?.value || '').trim().toUpperCase();
-  const marketplace = document.getElementById('avatarMarketplace')?.value || 'it';
+const _avatarAsins = [];
+
+function addAvatarAsin() {
+  const input = document.getElementById('avatarAsin');
+  const asin = (input?.value || '').trim().toUpperCase();
   if (!asin || asin.length < 8) { alert('Inserisci un ASIN valido (es: B0H1849YHB)'); return; }
+  if (_avatarAsins.includes(asin)) { input.value = ''; return; }
+  if (_avatarAsins.length >= 5) { alert('Massimo 5 ASIN per volta'); return; }
+  _avatarAsins.push(asin);
+  input.value = '';
+  renderAsinChips();
+}
+
+function removeAvatarAsin(asin) {
+  const i = _avatarAsins.indexOf(asin);
+  if (i >= 0) _avatarAsins.splice(i, 1);
+  renderAsinChips();
+}
+
+function renderAsinChips() {
+  const el = document.getElementById('avatarAsinChips');
+  if (!el) return;
+  el.innerHTML = _avatarAsins.map(a =>
+    `<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 8px;border-radius:20px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.3);color:#fbbf24">
+      ${escHtml(a)}
+      <span onclick="removeAvatarAsin('${a}')" style="cursor:pointer;opacity:0.7;font-size:13px;line-height:1">×</span>
+    </span>`
+  ).join('');
+}
+
+async function fetchAvatarReviews() {
+  // Also auto-add whatever is in the input field
+  const inputVal = (document.getElementById('avatarAsin')?.value || '').trim().toUpperCase();
+  if (inputVal.length >= 8 && !_avatarAsins.includes(inputVal)) {
+    _avatarAsins.push(inputVal);
+    document.getElementById('avatarAsin').value = '';
+    renderAsinChips();
+  }
+  const marketplace = document.getElementById('avatarMarketplace')?.value || 'it';
+  if (!_avatarAsins.length) { alert('Aggiungi almeno un ASIN con il tasto ＋'); return; }
 
   const btn = document.getElementById('avatarFetchBtn');
   const spin = document.getElementById('avatarFetchSpin');
@@ -6435,14 +6475,16 @@ async function fetchAvatarReviews() {
 
   btn.disabled = true;
   spin.style.display = 'inline-block';
-  txt.textContent = 'Scaricando...';
-  status.textContent = '⏳ Contatto Amazon via Apify — può richiedere 30-60 secondi...';
+  txt.textContent = `Scaricando ${_avatarAsins.length} ASIN...`;
+  status.textContent = `⏳ Contatto Amazon via Apify per ${_avatarAsins.length} competitor — 30-90 sec...`;
   status.style.color = 'var(--muted)';
 
   try {
-    const data = await callBackend('/api/amazon-reviews', { asin, marketplace, max_reviews: 40 });
-    document.getElementById('avatarReviews').value = data.reviews_text;
-    status.textContent = `✅ ${data.count} recensioni importate da Amazon.${marketplace === 'us' ? 'com' : '.' + marketplace} — premi "Genera Avatar"`;
+    const data = await callBackend('/api/amazon-reviews', { asins: _avatarAsins, marketplace, max_reviews: 50 });
+    const existing = (document.getElementById('avatarReviews').value || '').trim();
+    document.getElementById('avatarReviews').value = existing ? existing + '\n\n' + data.reviews_text : data.reviews_text;
+    const tld = marketplace === 'us' ? 'com' : marketplace;
+    status.textContent = `✅ ${data.count} recensioni importate da ${_avatarAsins.length} ASIN — premi "Genera Avatar"`;
     status.style.color = '#4ade80';
   } catch (e) {
     status.textContent = `❌ ${e.message || 'Errore fetch recensioni'}`;
