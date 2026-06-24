@@ -878,7 +878,7 @@ async def call_claude(prompt: str, max_tokens: int = 4000, allow_truncated: bool
             raise
 
 def parse_json_safe(text: str) -> dict:
-    import re
+    import re, logging as _log
     text = text.replace('\u2018',"'").replace('\u2019',"'")
     text = text.replace('\u201c','"').replace('\u201d','"')
     text = text.replace('\u2014','-').replace('\u2013','-')
@@ -889,12 +889,15 @@ def parse_json_safe(text: str) -> dict:
     try:
         return json.loads(j)
     except json.JSONDecodeError as e:
-        # "Extra data" means valid JSON followed by trailing text \u2014 truncate at e.pos
+        # "Extra data": valid JSON followed by trailing text \u2014 truncate at e.pos
         if e.pos and e.pos > 0:
             try:
-                return json.loads(j[:e.pos])
+                result = json.loads(j[:e.pos])
+                _log.warning("parse_json_safe: truncated trailing data at pos %d", e.pos)
+                return result
             except json.JSONDecodeError:
                 pass
+        _log.warning("parse_json_safe: applying regex repair (trailing comma / control chars)")
         j = re.sub(r',\s*([\]}])', r'\1', j)
         j = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', j)
         return json.loads(j)

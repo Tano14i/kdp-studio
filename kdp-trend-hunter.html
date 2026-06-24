@@ -349,6 +349,10 @@ select option{background:var(--s2)}
       <button onclick="toggleNotebook()" style="font-size:16px;background:none;border:none;color:var(--muted);cursor:pointer;padding:4px 8px">✕</button>
     </div>
   </div>
+  <div id="nbRestoreRow" style="display:none;padding:10px 16px;border-bottom:1px solid var(--border);background:rgba(59,130,246,0.06)">
+    <div style="font-size:11px;color:#93c5fd;margin-bottom:6px" id="nbRestoreLabel">Sessione salvata disponibile</div>
+    <button onclick="restoreSession();toggleNotebook()" style="font-size:11px;padding:4px 12px;border-radius:5px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:#93c5fd;cursor:pointer">↩ Riprendi sessione</button>
+  </div>
   <div id="notebookEntries" style="overflow-y:auto;flex:1;padding:16px"></div>
 </div>
 
@@ -708,8 +712,12 @@ select option{background:var(--s2)}
     <button class="btn btn-ghost" onclick="goPanel('p1')">← Indietro</button>
     <button class="btn btn-ghost" id="competitorBtn" style="display:none" onclick="checkCompetitors()">🔍 Check Amazon</button>
     <button class="btn btn-ghost" id="titleVariantsBtn" style="display:none" onclick="generateTitleVariants()">✏️ Title Generator</button>
-    <button class="btn btn-accent" id="p2NextBtn" onclick="goPanel('p3')" disabled>Genera Contenuto →</button>
+    <button class="btn btn-accent" id="p2NextBtn" onclick="goPanel('p3')" disabled
+      title="Seleziona prima un libro dalla lista generata qui sopra">Genera Contenuto →</button>
     <span id="amazonKwBadge2" style="display:none;font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);color:#22c55e;margin-left:6px"></span>
+  </div>
+  <div id="p2NextHint" style="font-size:11px;color:var(--muted);text-align:right;margin-top:6px">
+    ☝️ Genera prima le idee libro, poi seleziona un titolo per continuare.
   </div>
 
   <!-- Competitor panel -->
@@ -2382,6 +2390,8 @@ function populateStep2() {
 
   state.selectedBook = null;
   document.getElementById('p2NextBtn').disabled = true;
+  const _hint = document.getElementById('p2NextHint');
+  if (_hint) _hint.style.display = 'block';
 
   // Fetch Google Trends sparklines for the book keywords (non-blocking)
   if (BACKEND_LIVE) {
@@ -2425,6 +2435,8 @@ function selectBook(i) {
   state.selectedBook = state.selectedTrend.books[i];
   document.querySelectorAll('.book-idea').forEach((c,j) => c.classList.toggle('selected', j === i));
   document.getElementById('p2NextBtn').disabled = false;
+  const hint = document.getElementById('p2NextHint');
+  if (hint) hint.style.display = 'none';
   saveState(); // FIX 4
 }
 
@@ -3392,7 +3404,20 @@ function toggleNotebook() {
   if (!panel) return;
   const isOpen = panel.style.display === 'flex';
   panel.style.display = isOpen ? 'none' : 'flex';
-  if (!isOpen) renderNotebook();
+  if (!isOpen) {
+    renderNotebook();
+    // Show restore row if there's a saved session with content
+    const saved = loadState();
+    const row = document.getElementById('nbRestoreRow');
+    const lbl = document.getElementById('nbRestoreLabel');
+    if (row && saved && (saved.trends?.length || saved.selectedBook)) {
+      const name = saved.selectedBook?.title || saved.selectedTrend?.name || '';
+      if (lbl && name) lbl.textContent = `Sessione salvata: "${name}"`;
+      row.style.display = 'block';
+    } else if (row) {
+      row.style.display = 'none';
+    }
+  }
 }
 
 function renderNotebook() {
