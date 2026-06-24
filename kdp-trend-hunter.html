@@ -1429,8 +1429,34 @@ select option{background:var(--s2)}
         <button class="mkt-pub-action-btn" data-action="influencers" onclick="switchPubAction('influencers')">🌟 Scopri influencer</button>
       </div>
 
-      <!-- Post -->
+      <!-- Post via Blotato -->
       <div id="pub-action-post">
+
+        <!-- Blotato API key row -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+          <div style="flex:1;min-width:220px">
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px">
+              🔑 Blotato API Key
+              <a href="https://my.blotato.com/settings/api" target="_blank" rel="noopener" style="color:#3b82f6;margin-left:4px;font-size:10px">ottieni →</a>
+            </label>
+            <input id="blotatoApiKey" type="password" placeholder="bt_live_…" oninput="saveBlotatoKey()" style="font-size:12px">
+          </div>
+          <button onclick="fetchBlotatoAccounts()" style="margin-top:18px;padding:8px 16px;border-radius:8px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.4);color:#3b82f6;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap">
+            <span id="blotatoLoadTxt">📡 Carica account</span>
+            <div class="spin" id="blotatoLoadSpin" style="display:none;width:11px;height:11px;border-color:#3b82f6;border-top-color:transparent"></div>
+          </button>
+        </div>
+
+        <!-- Connected accounts chips -->
+        <div id="blotatoAccounts" style="display:none;margin-bottom:16px">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Account collegati — seleziona dove pubblicare:</div>
+          <div id="blotatoAccountChips" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        </div>
+        <div id="blotatoNoAccounts" style="display:none;font-size:12px;color:#f59e0b;margin-bottom:16px;padding:10px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:8px">
+          ⚠️ Nessun account trovato. Collega i tuoi profili social su <a href="https://my.blotato.com" target="_blank" rel="noopener" style="color:#3b82f6">my.blotato.com</a>.
+        </div>
+
+        <!-- Caption + image -->
         <div style="display:grid;gap:12px;max-width:600px;margin-bottom:16px">
           <div>
             <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Caption (modificabile)</label>
@@ -1440,34 +1466,27 @@ select option{background:var(--s2)}
             <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">URL immagine (opzionale)</label>
             <input id="pubImageUrl" type="text" placeholder="https://…">
           </div>
+
+          <!-- Scheduling -->
           <div>
-            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Piattaforme</label>
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px">Pubblicazione</label>
             <div style="display:flex;gap:6px;flex-wrap:wrap">
-              <label class="mkt-pill-label"><input type="checkbox" value="instagram" checked class="pubPlatform"> Instagram</label>
-              <label class="mkt-pill-label"><input type="checkbox" value="facebook" checked class="pubPlatform"> Facebook</label>
-              <label class="mkt-pill-label"><input type="checkbox" value="pinterest" class="pubPlatform"> Pinterest</label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
+                <input type="radio" name="pubTiming" value="now" checked onchange="togglePubSchedule(this)"> Adesso
+              </label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
+                <input type="radio" name="pubTiming" value="slot" onchange="togglePubSchedule(this)"> Prossimo slot libero
+              </label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
+                <input type="radio" name="pubTiming" value="scheduled" onchange="togglePubSchedule(this)"> Data/ora
+              </label>
             </div>
+            <input id="pubScheduleTime" type="datetime-local" style="display:none;margin-top:8px;font-size:12px">
           </div>
-          <details style="border:1px solid var(--border);border-radius:8px;padding:10px">
-            <summary style="font-size:11px;font-weight:600;cursor:pointer;color:var(--muted)">🔑 API Keys piattaforme (salvate in locale)</summary>
-            <div style="margin-top:10px;display:grid;gap:8px">
-              <div>
-                <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px">Facebook Token</label>
-                <input id="pubFbToken" type="password" placeholder="EAABxx…" oninput="saveSocialKeys()">
-              </div>
-              <div>
-                <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px">Instagram Token</label>
-                <input id="pubIgToken" type="password" placeholder="IGQVJxx…" oninput="saveSocialKeys()">
-              </div>
-              <div>
-                <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px">Pinterest</label>
-                <div style="font-size:11px;color:#22c55e;padding:6px 0">✅ Nessun token richiesto — apre Pinterest pre-compilato</div>
-              </div>
-            </div>
-          </details>
         </div>
-        <button class="btn btn-accent" onclick="publishSocial()">
-          <span id="pubBtnTxt">📤 Pubblica ora</span>
+
+        <button class="btn btn-accent" onclick="publishViablotato()">
+          <span id="pubBtnTxt">📤 Pubblica via Blotato</span>
           <div class="spin" id="pubSpin" style="display:none;width:12px;height:12px"></div>
         </button>
         <div id="pubOut" style="margin-top:14px"></div>
@@ -5976,6 +5995,9 @@ function initMarketing() {
   // Pre-populate influencer niche
   const infNiche = document.getElementById('pubInfluencerNiche');
   if (infNiche && !infNiche.value) infNiche.value = t?.name || '';
+
+  // Load saved Blotato key
+  loadBlotatoKey();
 }
 
 // ── KEYWORD IDEAS ─────────────────────────────────────────────
@@ -6369,39 +6391,104 @@ function renderVideoScript(out, script, platform, duration) {
 
 // ── SOCIAL KEYS ───────────────────────────────────────────────
 const SOCIAL_KEYS_KEY = 'kdp_social_keys';
+const BLOTATO_KEY_LS = 'kdp_blotato_key';
 
-function saveSocialKeys() {
-  const keys = {
-    facebook: document.getElementById('pubFbToken')?.value || '',
-    instagram: document.getElementById('pubIgToken')?.value || '',
-    pinterest: document.getElementById('pubPinToken')?.value || '',
-  };
-  localStorage.setItem(SOCIAL_KEYS_KEY, JSON.stringify(keys));
+// kept for legacy compatibility
+function saveSocialKeys() {}
+function loadSocialKeys() {}
+
+// ── BLOTATO KEY ───────────────────────────────────────────────
+function saveBlotatoKey() {
+  const k = document.getElementById('blotatoApiKey')?.value || '';
+  localStorage.setItem(BLOTATO_KEY_LS, k);
+}
+function loadBlotatoKey() {
+  const k = localStorage.getItem(BLOTATO_KEY_LS) || '';
+  const el = document.getElementById('blotatoApiKey');
+  if (el && k) el.value = k;
 }
 
-function loadSocialKeys() {
+// ── BLOTATO ACCOUNTS ─────────────────────────────────────────
+let _blotatoAccounts = [];
+let _blotatoSelectedIds = new Set();
+
+const _PLATFORM_ICONS = {
+  twitter:'𝕏', facebook:'f', instagram:'📷', linkedin:'in',
+  tiktok:'♪', pinterest:'P', threads:'@', bluesky:'🦋', youtube:'▶'
+};
+
+async function fetchBlotatoAccounts() {
+  const apiKey = document.getElementById('blotatoApiKey')?.value?.trim() || '';
+  if (!apiKey) { alert('Inserisci prima la tua Blotato API Key.'); return; }
+
+  const loadTxt = document.getElementById('blotatoLoadTxt');
+  const loadSpin = document.getElementById('blotatoLoadSpin');
+  if (loadTxt) loadTxt.style.display = 'none';
+  if (loadSpin) loadSpin.style.display = 'inline-block';
+
   try {
-    const saved = JSON.parse(localStorage.getItem(SOCIAL_KEYS_KEY) || '{}');
-    if (document.getElementById('pubFbToken')) document.getElementById('pubFbToken').value = saved.facebook || '';
-    if (document.getElementById('pubIgToken')) document.getElementById('pubIgToken').value = saved.instagram || '';
-    if (document.getElementById('pubPinToken')) document.getElementById('pubPinToken').value = saved.pinterest || '';
-  } catch(_) {}
+    const res = await callBackend('/api/blotato/accounts', { apiKey });
+    const accounts = res.accounts || res.data || res || [];
+    _blotatoAccounts = Array.isArray(accounts) ? accounts : [];
+    _blotatoSelectedIds = new Set(_blotatoAccounts.map(a => a.id));
+    renderBlotatoAccountChips();
+  } catch(e) {
+    alert('Errore Blotato: ' + e.message);
+  } finally {
+    if (loadTxt) loadTxt.style.display = '';
+    if (loadSpin) loadSpin.style.display = 'none';
+  }
 }
 
-// ── PUBLISH ───────────────────────────────────────────────────
-async function publishSocial() {
+function renderBlotatoAccountChips() {
+  const wrap = document.getElementById('blotatoAccounts');
+  const noWrap = document.getElementById('blotatoNoAccounts');
+  const chips = document.getElementById('blotatoAccountChips');
+  if (!_blotatoAccounts.length) {
+    if (wrap) wrap.style.display = 'none';
+    if (noWrap) noWrap.style.display = 'block';
+    return;
+  }
+  if (noWrap) noWrap.style.display = 'none';
+  if (wrap) wrap.style.display = 'block';
+  if (!chips) return;
+  chips.innerHTML = _blotatoAccounts.map(acc => {
+    const icon = _PLATFORM_ICONS[acc.platform] || '🌐';
+    const sel = _blotatoSelectedIds.has(acc.id);
+    return `<div id="bchip_${acc.id}" onclick="toggleBlotatoAccount('${acc.id}')" style="display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.15s;${sel ? 'background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.6);color:#818cf8' : 'background:var(--card);border:1px solid var(--border);color:var(--muted)'}">
+      <span>${icon}</span>
+      <span>${escHtml(acc.displayName || acc.username || acc.platform)}</span>
+      ${sel ? '<span style="font-size:10px">✓</span>' : ''}
+    </div>`;
+  }).join('');
+}
+
+function toggleBlotatoAccount(id) {
+  if (_blotatoSelectedIds.has(id)) _blotatoSelectedIds.delete(id);
+  else _blotatoSelectedIds.add(id);
+  renderBlotatoAccountChips();
+}
+
+function togglePubSchedule(radio) {
+  const dt = document.getElementById('pubScheduleTime');
+  if (dt) dt.style.display = radio.value === 'scheduled' ? 'block' : 'none';
+}
+
+// ── PUBLISH VIA BLOTATO ───────────────────────────────────────
+async function publishViablotato() {
+  const apiKey = document.getElementById('blotatoApiKey')?.value?.trim() || '';
   const caption = document.getElementById('pubCaption')?.value?.trim() || '';
   const imageUrl = document.getElementById('pubImageUrl')?.value?.trim() || '';
-  const platforms = [...document.querySelectorAll('.pubPlatform:checked')].map(c => c.value);
+  const timing = document.querySelector('input[name="pubTiming"]:checked')?.value || 'now';
+  const scheduledTime = timing === 'scheduled'
+    ? (document.getElementById('pubScheduleTime')?.value
+        ? new Date(document.getElementById('pubScheduleTime').value).toISOString() : null)
+    : null;
 
+  if (!apiKey) { alert('Inserisci la tua Blotato API Key e carica gli account prima di pubblicare.'); return; }
   if (!caption) { alert('Inserisci una caption prima di pubblicare.'); return; }
-  if (!platforms.length) { alert('Seleziona almeno una piattaforma.'); return; }
-
-  const socialKeys = {
-    facebook: document.getElementById('pubFbToken')?.value || '',
-    instagram: document.getElementById('pubIgToken')?.value || '',
-    pinterest: document.getElementById('pubPinToken')?.value || '',
-  };
+  const selected = _blotatoAccounts.filter(a => _blotatoSelectedIds.has(a.id));
+  if (!selected.length) { alert('Seleziona almeno un account da cui pubblicare.'); return; }
 
   const btn = document.getElementById('pubBtnTxt');
   const spin = document.getElementById('pubSpin');
@@ -6410,39 +6497,38 @@ async function publishSocial() {
   if (spin) spin.style.display = 'block';
   if (out) out.innerHTML = '';
 
+  const posts = selected.map(acc => {
+    const post = { accountId: acc.id, platform: acc.platform, text: caption };
+    if (imageUrl) post.mediaUrls = [imageUrl];
+    if (timing === 'slot') post.useNextFreeSlot = true;
+    if (timing === 'scheduled' && scheduledTime) post.scheduledTime = scheduledTime;
+    // Pinterest requires boardId from subaccounts
+    if (acc.platform === 'pinterest' && acc.subaccounts?.length) post.boardId = acc.subaccounts[0].id;
+    // LinkedIn page (optional)
+    if (acc.platform === 'linkedin' && acc.subaccounts?.length) post.pageId = acc.subaccounts[0].id;
+    // Facebook page (required)
+    if (acc.platform === 'facebook' && acc.subaccounts?.length) post.pageId = acc.subaccounts[0].id;
+    return post;
+  });
+
   try {
-    const res = await callBackend('/api/apify/social-post', {
-      action: 'post',
-      caption,
-      platforms,
-      imageUrl,
-      socialKeys,
-    });
-    const items = res.data || [];
-    if (!items.length) {
-      if (out) out.innerHTML = `<div class="err">⚠️ Nessuna risposta dal server — riprova.</div>`;
-      return;
-    }
-    const pubCopyTexts = {};
-    if (out) out.innerHTML = items.map((it, idx) => {
-      const ok = it.success || it.status === 'ok' || it.status === 'success';
-      if (it.copyText) pubCopyTexts[idx] = it.copyText;
-      const copyBtn = it.copyText
-        ? `<button id="pubCopy${idx}" onclick="navigator.clipboard.writeText(window.pubCopyTexts[${idx}]).then(()=>{document.getElementById('pubCopy${idx}').textContent='✓ Copiato!';setTimeout(()=>{document.getElementById('pubCopy${idx}').textContent='📋 Copia caption'},1500)})" style="font-size:10px;padding:2px 7px;border-radius:4px;border:1px solid var(--border);background:var(--card);cursor:pointer">📋 Copia caption</button>` : '';
-      const linkLabel = it.platform === 'pinterest' ? 'Apri Pin Builder →' : 'Apri post →';
+    const res = await callBackend('/api/blotato/post', { apiKey, posts });
+    const results = res.results || [];
+    if (out) out.innerHTML = results.map(r => {
+      const ok = r.success;
+      const icon = _PLATFORM_ICONS[r.platform] || '🌐';
+      const label = timing === 'slot' ? 'in coda' : timing === 'scheduled' ? `pianificato` : 'pubblicato';
       return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px;flex-wrap:wrap">
         <span style="color:${ok ? '#22c55e' : '#ef4444'}">${ok ? '✅' : '❌'}</span>
-        <span>${escHtml(it.platform || it.channel || '')}</span>
-        <span style="color:var(--muted)">${escHtml(it.message || it.error || '')}</span>
-        ${copyBtn}
-        ${it.postUrl ? `<a href="${escHtml(it.postUrl)}" target="_blank" rel="noopener" style="color:#3b82f6;font-size:11px;text-decoration:none">${linkLabel}</a>` : ''}
+        <span>${icon} ${escHtml(r.platform || '')}</span>
+        <span style="color:var(--muted)">${ok ? label : escHtml(r.error || 'errore')}</span>
+        ${r.postUrl ? `<a href="${escHtml(r.postUrl)}" target="_blank" rel="noopener" style="color:#3b82f6;font-size:11px">Apri post →</a>` : ''}
       </div>`;
     }).join('');
-    window.pubCopyTexts = pubCopyTexts;
   } catch(e) {
     if (out) out.innerHTML = `<div class="err">⚠️ ${escHtml(e.message)}</div>`;
   } finally {
-    if (btn) btn.textContent = '📤 Pubblica ora';
+    if (btn) btn.textContent = '📤 Pubblica via Blotato';
     if (spin) spin.style.display = 'none';
   }
 }

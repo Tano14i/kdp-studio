@@ -3858,36 +3858,72 @@ async def apify_video_ugc(req: dict):
 
 @app.post("/api/apify/social-post", dependencies=[_AUTH])
 async def apify_social_post(req: dict):
-    """Publish social content. Pinterest: real API. Others: not yet supported."""
+    """Legacy endpoint — kept for backward compat, returns Pinterest link only."""
     caption = req.get("caption", "")
     platforms = req.get("platforms", [])
-    social_keys = req.get("socialKeys", {})
-    image_url = req.get("imageUrl", "")
-
     results = []
-
-    async with httpx.AsyncClient(timeout=30) as client:
-        for platform in platforms:
-            if platform == "pinterest":
-                # Pinterest API requires Business approval; Save URL fails in mobile app.
-                # Best UX: user copies caption, opens Pin Builder directly.
-                results.append({
-                    "platform": "pinterest",
-                    "success": True,
-                    "message": "Caption pronta — copia il testo e incollalo su Pinterest",
-                    "postUrl": "https://www.pinterest.com/pin-builder/",
-                    "copyText": caption,
-                })
-
-            else:
-                # Instagram/Facebook require complex OAuth setup — honest message
-                results.append({
-                    "platform": platform,
-                    "success": False,
-                    "message": f"Pubblicazione diretta su {platform.capitalize()} non ancora supportata — copia la caption e pubblica manualmente."
-                })
-
+    for platform in platforms:
+        if platform == "pinterest":
+            results.append({"platform": "pinterest", "success": True,
+                            "message": "Caption pronta — copia il testo e incollalo su Pinterest",
+                            "postUrl": "https://www.pinterest.com/pin-builder/", "copyText": caption})
+        else:
+            results.append({"platform": platform, "success": False,
+                            "message": f"Usa il nuovo tab Blotato per pubblicare su {platform.capitalize()}."})
     return {"data": results}
+
+
+_BLOTATO_BASE = "https://backend.blotato.com"
+
+
+@app.post("/api/blotato/accounts", dependencies=[_AUTH])
+async def blotato_accounts(req: dict):
+    """Return the Blotato user's connected social accounts."""
+    api_key = req.get("apiKey", "").strip()
+    if not api_key:
+        raise HTTPException(status_code=400, detail="Blotato API key mancante")
+    async with httpx.AsyncClient(timeout=20) as client:
+        r = await client.get(
+            f"{_BLOTATO_BASE}/v2/users/me/accounts",
+            headers={"Authorization": f"Bearer {api_key}"},
+        )
+        if r.status_code == 401:
+            raise HTTPException(status_code=401, detail="API key Blotato non valida — controlla su my.blotato.com/settings/api")
+        if r.status_code != 200:
+            raise HTTPException(status_code=r.status_code, detail=r.text[:300])
+        return r.json()
+
+
+@app.post("/api/blotato/post", dependencies=[_AUTH])
+async def blotato_post(req: dict):
+    """Publish one or more posts via Blotato (one call per account)."""
+    api_key = req.get("apiKey", "").strip()
+    if not api_key:
+        raise HTTPException(status_code=400, detail="Blotato API key mancante")
+    posts = req.get("posts", [])
+    if not posts:
+        raise HTTPException(status_code=400, detail="Nessun post specificato")
+
+    _RESERVED = {"apiKey"}
+    results = []
+    async with httpx.AsyncClient(timeout=60) as client:
+        for post in posts:
+            payload = {k: v for k, v in post.items() if k not in _RESERVED}
+            try:
+                r = await client.post(
+                    f"{_BLOTATO_BASE}/v2/posts",
+                    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                    json=payload,
+                )
+                if r.status_code in (200, 201):
+                    body = r.json() if r.content else {}
+                    results.append({"success": True, "platform": post.get("platform"), **body})
+                else:
+                    results.append({"success": False, "platform": post.get("platform"), "error": r.text[:300]})
+            except Exception as e:
+                results.append({"success": False, "platform": post.get("platform"), "error": str(e)})
+
+    return {"results": results}
 
 
 @app.post("/api/apify/influencers", dependencies=[_AUTH])
