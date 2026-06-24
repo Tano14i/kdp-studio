@@ -2984,13 +2984,19 @@ function renderAsinIntel(d) {
   if (!out || !d) return;
 
   if (d.error_no_data) {
+    const errDetail = d.apify_error
+      ? `<div style="margin-top:8px;font-size:11px;color:#f87171;background:rgba(239,68,68,0.08);border-radius:6px;padding:8px 10px;font-family:monospace">${escHtml(d.apify_error)}</div>`
+      : '';
+    const noToken = !d.apify_error;
     out.innerHTML = `<div style="border-top:1px solid rgba(167,139,250,0.15);padding:14px 0">
       <div style="background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.25);border-radius:10px;padding:14px 16px">
-        <div style="font-size:13px;font-weight:700;color:#fb923c;margin-bottom:6px">⚠️ Dati live non disponibili</div>
+        <div style="font-size:13px;font-weight:700;color:#fb923c;margin-bottom:6px">⚠️ ${noToken ? 'APIFY_TOKEN non trovato' : 'Apify actor fallito'}</div>
         <div style="font-size:12px;color:var(--muted);line-height:1.6">
-          Per analizzare un ASIN reale è necessario <strong style="color:var(--text)">Apify</strong> — senza di esso Claude non ha accesso ai dati del prodotto e inventa risultati casuali.<br><br>
-          <strong style="color:#fb923c">Configura <code>APIFY_TOKEN</code> nelle variabili Railway</strong> per sbloccare l'analisi ASIN con dati reali (titolo, BSR, recensioni, categorie).
+          ${noToken
+            ? 'Aggiungi <code>APIFY_TOKEN</code> nelle variabili Railway — senza di esso l\'analisi ASIN non può recuperare dati reali.'
+            : 'L\'actor Amazon Crawler ha restituito un errore. Controlla i log su <strong style="color:var(--text)">railway.app → Console</strong> oppure su <strong style="color:var(--text)">apify.com → Actor Runs</strong>.'}
         </div>
+        ${errDetail}
       </div>
     </div>`;
     return;

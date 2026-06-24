@@ -3124,6 +3124,7 @@ async def asin_reverse(req: dict):
     # Step 1: Try Apify to get real product data
     tld_map = {"us": "com", "de": "de", "it": "it", "es": "es", "fr": "fr"}
     product_data: dict = {}
+    apify_error_msg: str | None = None
     if APIFY_TOKEN:
         tld = tld_map.get(marketplace, "com")
         product_url = f"https://www.amazon.{tld}/dp/{asin}"
@@ -3139,6 +3140,7 @@ async def asin_reverse(req: dict):
                 ),
                 timeout=90.0,
             )
+            print(f"[AsinReverse] actor returned {len(items) if items else 0} items. Keys: {list(items[0].keys()) if items else []}")
             if items and isinstance(items[0], dict):
                 it = items[0]
                 bsr_raw = it.get("bestsellersRank") or it.get("bsr") or it.get("bestSellersRank")
@@ -3159,6 +3161,7 @@ async def asin_reverse(req: dict):
                     "bullets": it.get("bullets") or [],
                 }
         except Exception as e:
+            apify_error_msg = str(e)[:300]
             print(f"[AsinReverse/Apify] {e}")
 
     context = f"ASIN: {asin}\nMarketplace: amazon.{tld_map.get(marketplace, 'com')}\n"
@@ -3190,6 +3193,7 @@ async def asin_reverse(req: dict):
             "niche_for_validator": None,
             "apify_used": False,
             "error_no_data": True,
+            "apify_error": apify_error_msg,
         }
 
     prompt = (
