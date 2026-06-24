@@ -2595,6 +2595,71 @@ async def bestseller_links(niche: str = "", book_type: str = ""):
     return {"links": links[:3], "suggested_categories": kdp_cats["categories"], "suggested_bisac": kdp_cats["bisac"]}
 
 
+@app.post("/api/similar-niches", dependencies=[_AUTH])
+async def similar_niches(req: dict):
+    """Return 4 adjacent KDP niches related to the selected one."""
+    niche = (req.get("niche") or "").strip()
+    if not niche:
+        raise HTTPException(status_code=400, detail="niche required")
+    prompt = (
+        f'KDP niche research expert. Given the niche "{niche}", suggest exactly 4 adjacent/related niches that:\n'
+        "- Appeal to a similar reader (overlapping pain points or interests)\n"
+        "- Are distinct enough to be a separate book opportunity on Amazon\n"
+        "- Have real search volume and KDP bestsellers\n\n"
+        "Respond ONLY with a valid JSON array of 4 short niche names (2-5 words each):\n"
+        '["Niche A", "Niche B", "Niche C", "Niche D"]'
+    )
+    try:
+        text = await call_claude(prompt, max_tokens=200)
+        parsed = parse_json_safe(text)
+        if isinstance(parsed, list):
+            return {"niches": [str(n) for n in parsed[:5]]}
+        return {"niches": []}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/compare-outlines", dependencies=[_AUTH])
+async def compare_outlines(req: dict):
+    """Generate 3 parallel outline variants for side-by-side comparison."""
+    trend = req.get("trend", "")
+    book_type = req.get("book_type", "") or "self-help"
+    title = req.get("title", "") or trend
+    audience = req.get("audience", "general adult audience")
+    custom_instructions = req.get("custom_instructions", "")
+    _ci = f"\nCUSTOM RESTRICTIONS (mandatory): {custom_instructions}" if custom_instructions else ""
+
+    styles = [
+        ("🌊 Narrative Arc", "journey: Problem → Awareness → Transformation → Mastery — chapters build progressively on each other"),
+        ("🔧 Modular/Reference", "self-contained modules — each chapter is complete and usable independently, tool-heavy"),
+        ("⚡ 30-Day Challenge", "progressive daily/weekly actions — each chapter ends with a concrete exercise or challenge"),
+    ]
+
+    async def gen_one(style_name: str, style_desc: str) -> str:
+        p = (
+            f"Create a concise {book_type} book outline.\n"
+            f'Title: "{title}"\n'
+            f"Target audience: {audience}\n"
+            f"Structure style: {style_desc}{_ci}\n\n"
+            f"Format your response exactly like this:\n"
+            f"## Style: {style_name}\n"
+            "**Premise** (1 sentence): ...\n"
+            "**Chapters:**\n"
+            "1. Chapter Title — one-line description\n"
+            "2. Chapter Title — one-line description\n"
+            "(7-10 chapters total)\n"
+            "**Conclusion:** one line\n\n"
+            "Be specific and concrete. No placeholder text."
+        )
+        return await call_claude(p, max_tokens=800)
+
+    try:
+        results = await asyncio.gather(*[gen_one(s[0], s[1]) for s in styles])
+        return {"variants": [{"style": styles[i][0], "outline": r} for i, r in enumerate(results)]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 MARKET_GEO_MAP = {
     "English": "US",
     "Italiano": "IT",

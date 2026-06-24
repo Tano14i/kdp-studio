@@ -587,6 +587,15 @@ select option{background:var(--s2)}
     <div id="trendingNowOut" style="margin-top:10px"></div>
   </div>
 
+  <div id="adjacentNichesRow" style="display:none;margin-top:14px;padding:14px 16px;background:rgba(59,130,246,0.04);border:1px solid rgba(59,130,246,0.2);border-radius:10px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted)">🧭 Nicchie adiacenti</div>
+      <div class="spin" id="adjNicheSpin" style="display:none;border-top-color:#3b82f6"></div>
+      <span style="font-size:10px;color:var(--muted);font-weight:400">— stesso pubblico, altra opportunità KDP da esplorare</span>
+    </div>
+    <div id="adjacentNichePills" class="pill-row"></div>
+  </div>
+
   <div class="action-row" id="p1actions" style="display:none">
     <button class="btn btn-accent" onclick="goPanel('p2')">Continua →</button>
   </div>
@@ -704,6 +713,18 @@ select option{background:var(--s2)}
     </div>
     <div class="field" style="margin:12px 0 0 0">
       <label style="display:flex;align-items:center;gap:6px">⚠️ Istruzioni personalizzate <span style="font-size:10px;color:var(--muted);font-weight:400">(restrizioni, termini da evitare, stile specifico)</span></label>
+      <div id="instructionPresetPills" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px">
+        <button class="pill sm" onclick="applyInstructionPreset(this,'Evita parolacce, linguaggio volgare e toni aggressivi. Usa sempre un registro rispettoso e professionale.')">🚫 No parolacce</button>
+        <button class="pill sm" onclick="applyInstructionPreset(this,'Usa un tono scientifico e basato su evidenze. Cita studi o ricerche quando pertinente. Evita affermazioni non supportate.')">🔬 Scientifico</button>
+        <button class="pill sm" onclick="applyInstructionPreset(this,'Stile minimalista: frasi brevi, nessun cliché motivazionale, zero filler. Ogni frase deve aggiungere valore concreto.')">✂️ Minimalista</button>
+        <button class="pill sm" onclick="applyInstructionPreset(this,'Includi esempi pratici e storie reali in ogni capitolo. Il lettore deve poter visualizzare concretamente ogni concetto.')">💡 Esempi concreti</button>
+        <button class="pill sm" onclick="applyInstructionPreset(this,'Approccio trauma-informed: nessuna pressione sul lettore, riconosci le difficoltà, usa linguaggio inclusivo e non giudicante.')">🌿 Trauma-informed</button>
+        <button class="pill sm" onclick="applyInstructionPreset(this,'Evita qualsiasi riferimento a brand specifici, nomi di prodotti commerciali o personaggi con copyright. Usa termini generici.')">©️ No brand</button>
+        <button class="pill sm" onclick="applyInstructionPreset(this,'Usa il tono diretto dei podcast business americani: energico, orientato all\'azione, senza divagazioni filosofiche.')">🎙️ Business</button>
+        <button class="pill sm" onclick="applyInstructionPreset(this,'Scrivi per adulti con ADHD: paragrafi brevi (max 3 righe), usa bullet points, grassetti e riepiloghi visivi a fine capitolo.')">🧠 ADHD-friendly</button>
+        <button class="pill sm" onclick="applyInstructionPreset(this,'Tono da coach certificato: empatico ma diretto, usa domande potenti, includi riflessioni e journaling prompt in ogni sezione.')">🏆 Coaching</button>
+        <button class="pill sm" onclick="applyInstructionPreset(this,'Stile accademico divulgativo: terminologia corretta ma accessibile, struttura argomentativa chiara, evita banalizzazioni.')">📚 Divulgativo</button>
+      </div>
       <textarea id="customInstructions" rows="3" placeholder="es: Non usare mai i termini 'D&D', 'Dungeons & Dragons', 'Hasbro' — usa alternative come 'gioco di ruolo fantasy', 'GDR', 'roleplay da tavolo'. Evita riferimenti a brand specifici o personaggi con copyright." style="font-size:12px;resize:vertical"></textarea>
     </div>
     <div style="margin-top:12px;padding:10px 14px;background:rgba(232,121,249,0.06);border-radius:8px;font-size:11px;color:#a78bfa;line-height:1.5">
@@ -923,6 +944,10 @@ select option{background:var(--s2)}
     <button class="btn btn-accent" id="genBtn" onclick="generateContent()">
       <span id="genBtnTxt">⚡ Genera</span>
       <div class="spin" id="genSpin" style="display:none"></div>
+    </button>
+    <button class="btn btn-ghost" id="compareOutlinesBtn" onclick="compareOutlines()" style="display:flex">
+      <span id="compareOutlinesBtnTxt">⚖️ Confronta 3 Strutture</span>
+      <div class="spin" id="compareOutlinesSpin" style="display:none"></div>
     </button>
     <button class="btn btn-ghost" onclick="goPanel('p2')">← Indietro</button>
     <span id="amazonKwBadge3" style="display:none;font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);color:#22c55e"></span>
@@ -1622,9 +1647,10 @@ function setGenTab(t) {
     b.classList.toggle('active', b.dataset.t === t);
   });
   document.getElementById('chapterSelector').style.display = t === 'chapter' ? 'block' : 'none';
-  // show chapter count selector for all-chapters
   const allChNote = document.getElementById('allChapNote');
   if (allChNote) allChNote.style.display = t === 'allchapters' ? 'block' : 'none';
+  const cmpBtn = document.getElementById('compareOutlinesBtn');
+  if (cmpBtn) cmpBtn.style.display = t === 'outline' ? 'flex' : 'none';
 }
 
 // ─── API CALL ─────────────────────────────────────────────
@@ -2390,6 +2416,7 @@ function selectTrend(i) {
   saveState(); // FIX 4
   populateStep2();
   loadBestsellerLinks(state.trends[i]);
+  loadSimilarNiches(state.trends[i]);
 }
 
 async function loadBestsellerLinks(trend) {
@@ -2414,6 +2441,125 @@ async function loadBestsellerLinks(trend) {
     ).join('');
     row.style.display = 'flex';
   } catch(_) {}
+}
+
+async function loadSimilarNiches(trend) {
+  if (!BACKEND_LIVE) return;
+  const row = document.getElementById('adjacentNichesRow');
+  const pills = document.getElementById('adjacentNichePills');
+  const spin = document.getElementById('adjNicheSpin');
+  if (!row || !pills) return;
+  const niche = trend?.name || '';
+  if (!niche) return;
+  row.style.display = 'block';
+  if (spin) spin.style.display = 'inline-block';
+  pills.innerHTML = '<span style="font-size:11px;color:var(--muted)">Carico nicchie simili…</span>';
+  try {
+    const data = await callBackend('/api/similar-niches', { niche });
+    const niches = data.niches || [];
+    if (!niches.length) { row.style.display = 'none'; return; }
+    pills.innerHTML = niches.map(n =>
+      `<button class="pill sm" onclick="applyAdjacentNiche('${n.replace(/'/g,"\\'")}')" title="Usa come nicchia personalizzata">🧭 ${escHtml(n)}</button>`
+    ).join('');
+  } catch(_) { row.style.display = 'none'; }
+  finally { if (spin) spin.style.display = 'none'; }
+}
+
+function applyAdjacentNiche(name) {
+  state.customNiche = name;
+  document.querySelectorAll('#nichePills .pill').forEach(x => x.classList.remove('active'));
+  document.getElementById('nicheCustomInput').value = name;
+  document.getElementById('customNicheTag').textContent = '🧭 ' + name;
+  document.getElementById('customNicheBadge').style.display = 'block';
+  // Scroll to top to show badge
+  document.getElementById('p1').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function applyInstructionPreset(btn, text) {
+  const ta = document.getElementById('customInstructions');
+  if (!ta) return;
+  const alreadyActive = ta.value === text;
+  document.querySelectorAll('#instructionPresetPills .pill').forEach(p => p.classList.remove('active'));
+  if (alreadyActive) {
+    ta.value = '';
+  } else {
+    ta.value = text;
+    btn.classList.add('active');
+  }
+}
+
+async function compareOutlines() {
+  if (!state.selectedBook && !state.selectedTrend) {
+    alert('Seleziona prima un libro al passo 2.');
+    return;
+  }
+  const btn = document.getElementById('compareOutlinesBtn');
+  const spin = document.getElementById('compareOutlinesSpin');
+  const btnTxt = document.getElementById('compareOutlinesBtnTxt');
+  if (btn) btn.disabled = true;
+  if (spin) spin.style.display = 'inline-block';
+  if (btnTxt) btnTxt.textContent = 'Generando 3 varianti…';
+  try {
+    const data = await callBackend('/api/compare-outlines', {
+      trend: state.selectedTrend?.name || '',
+      book_type: document.getElementById('bookTypeSelect')?.value || state.selectedBook?.type || '',
+      title: document.getElementById('customTitle')?.value.trim() || state.selectedBook?.title || '',
+      audience: document.getElementById('audience')?.value || '',
+      custom_instructions: document.getElementById('customInstructions')?.value.trim() || ''
+    }, 120000);
+    renderOutlineComparison(data.variants || []);
+  } catch(e) {
+    alert('Errore confronto outline: ' + e.message);
+  } finally {
+    if (btn) btn.disabled = false;
+    if (spin) spin.style.display = 'none';
+    if (btnTxt) btnTxt.textContent = '⚖️ Confronta 3 Strutture';
+  }
+}
+
+function renderOutlineComparison(variants) {
+  if (!variants.length) return;
+  window._outlineVariants = variants;
+  const old = document.getElementById('outlineCompareModal');
+  if (old) old.remove();
+  const modal = document.createElement('div');
+  modal.id = 'outlineCompareModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:600;display:flex;flex-direction:column;padding:20px;gap:16px;overflow-y:auto';
+  const cols = variants.map((v, i) =>
+    `<div style="flex:1;min-width:260px;background:#111;border:1px solid #333;border-radius:12px;overflow:hidden;display:flex;flex-direction:column">
+      <div style="padding:12px 16px;background:#181818;border-bottom:1px solid #242424;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+        <div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700">${escHtml(v.style)}</div>
+        <button onclick="useOutlineVariant(${i})" style="padding:5px 14px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:Syne,sans-serif;white-space:nowrap">Usa questo</button>
+      </div>
+      <div style="padding:14px 16px;font-size:12px;line-height:1.7;color:#ccc;overflow-y:auto;max-height:55vh;flex:1;white-space:pre-wrap">${escHtml(v.outline)}</div>
+    </div>`
+  ).join('');
+  modal.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:12px;flex-wrap:wrap">
+      <div style="font-family:Syne,sans-serif;font-size:18px;font-weight:800">⚖️ Confronta 3 Strutture Outline</div>
+      <button onclick="document.getElementById('outlineCompareModal').remove()" style="background:#181818;border:1px solid #333;border-radius:6px;color:#666;cursor:pointer;padding:6px 12px;font-size:13px;font-family:Inter,sans-serif">✕ Chiudi</button>
+    </div>
+    <div style="font-size:12px;color:var(--muted)">Scegli la struttura migliore per il tuo libro, poi premi <strong style="color:var(--text)">Usa questo</strong> per impostarla come outline base.</div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">${cols}</div>`;
+  document.body.appendChild(modal);
+}
+
+function useOutlineVariant(i) {
+  const v = (window._outlineVariants || [])[i];
+  if (!v) return;
+  state.outline = v.outline;
+  saveState();
+  document.getElementById('outlineCompareModal')?.remove();
+  const outId = 'outline_selected_' + Math.random().toString(36).slice(2);
+  document.getElementById('contentOut').innerHTML = `
+    <div class="content-block">
+      <div class="cb-header">
+        <div class="cb-title"><span class="cb-badge" style="background:#3b82f622;color:#3b82f6">📋 Outline — ${escHtml(v.style)}</span></div>
+        <button class="copy-btn" onclick="copyContent('${outId}')">Copia</button>
+      </div>
+      <div class="cb-body" id="${outId}" style="white-space:pre-wrap;font-size:13px;line-height:1.7">${escHtml(v.outline)}</div>
+    </div>`;
+  document.getElementById('p3actions').style.display = 'flex';
 }
 
 // ─── STEP 2: CHOOSE BOOK ─────────────────────────────────
@@ -2913,6 +3059,12 @@ function renderPackage(k) {
   const canvaSection = cc.main_prompt ? `<div class="content-block" style="border-color:#e879f922">
     <div class="cb-header" style="background:rgba(232,121,249,0.04)">
       <div class="cb-title"><span class="cb-badge" style="background:#e879f922;color:#e879f9">🎨 Canva AI — Cover Generator</span></div>
+    </div>
+    <div style="padding:10px 18px;border-bottom:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:600;letter-spacing:0.06em;flex-shrink:0">Apri in Canva →</span>
+      ${cc.style ? `<a href="https://www.canva.com/templates/?query=${encodeURIComponent(cc.style + ' book cover')}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:5px 12px;border-radius:20px;background:rgba(232,121,249,0.1);border:1px solid rgba(232,121,249,0.3);color:#e879f9;text-decoration:none">🎨 ${escHtml(cc.style)} template ↗</a>` : ''}
+      <a href="https://www.canva.com/templates/?query=book+cover+1800x2700" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:5px 12px;border-radius:20px;background:rgba(232,121,249,0.06);border:1px solid rgba(232,121,249,0.2);color:#e879f9;text-decoration:none">📚 Book Cover templates ↗</a>
+      <a href="https://www.canva.com/create/book-covers/" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:5px 12px;border-radius:20px;background:rgba(232,121,249,0.06);border:1px solid rgba(232,121,249,0.2);color:#e879f9;text-decoration:none">✨ Crea da zero ↗</a>
     </div>
 
     <div style="padding:16px 18px;border-bottom:1px solid var(--border)">
@@ -4066,8 +4218,8 @@ async function generateCoverBrief(variantIdx) {
         </div>` : ''}
 
         ${(res.canva_search||[]).length ? `<div style="margin-bottom:10px">
-          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;font-weight:600;margin-bottom:4px">Canva — cerca questi template</div>
-          <div style="display:flex;gap:5px;flex-wrap:wrap">${res.canva_search.map(s=>`<span style="font-size:10px;padding:2px 8px;border-radius:10px;background:var(--s1);border:1px solid var(--border2)">${escHtml(s)}</span>`).join('')}</div>
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;font-weight:600;margin-bottom:4px">🎨 Canva — apri template</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap">${res.canva_search.map(s=>`<a href="https://www.canva.com/templates/?query=${encodeURIComponent(s + ' book cover')}" target="_blank" rel="noopener" style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.25);color:#60a5fa;text-decoration:none">${escHtml(s)} ↗</a>`).join('')}</div>
         </div>` : ''}
 
         ${res.midjourney_prompt ? `<div style="margin-bottom:6px">
