@@ -3916,7 +3916,7 @@ async def blotato_post(req: dict):
     results = []
     async with httpx.AsyncClient(timeout=60) as client:
         for post in posts:
-            payload = {k: v for k, v in post.items() if k not in _RESERVED}
+            payload = {"post": {k: v for k, v in post.items() if k not in _RESERVED}}
             try:
                 r = await client.post(
                     f"{_BLOTATO_BASE}/v2/posts",
