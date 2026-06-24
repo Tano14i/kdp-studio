@@ -2670,6 +2670,83 @@ MARKET_GEO_MAP = {
 }
 
 
+@app.post("/api/review-mining", dependencies=[_AUTH])
+async def review_mining(req: dict):
+    """Analyze pasted Amazon reviews → love/hate + differentiation opportunities."""
+    reviews = (req.get("reviews") or "").strip()
+    niche = req.get("niche", "")
+    book_title = req.get("book_title", "")
+
+    if len(reviews) < 80:
+        raise HTTPException(status_code=400, detail="Incolla almeno 5-6 recensioni per un'analisi utile")
+
+    title_note = f' (il mio libro: "{book_title}")' if book_title else ""
+    prompt = (
+        f'Amazon KDP market intelligence expert. Analyze these reader reviews for the "{niche}" niche{title_note}.\n\n'
+        f"REVIEWS:\n{reviews[:4000]}\n\n"
+        "Detect the language of the reviews and respond in that same language.\n"
+        "Return ONLY valid JSON:\n"
+        "{\n"
+        '  "loves": ["3-5 things readers consistently PRAISE in the best books of this niche"],\n'
+        '  "hates": ["3-5 recurring COMPLAINTS — what\'s missing or done poorly"],\n'
+        '  "emotional_patterns": ["2-3 emotional phrases or words readers repeat — useful for copywriting"],\n'
+        '  "differentiation_opportunities": ["3 concrete angles to stand out based on unmet needs"],\n'
+        '  "ideal_book_description": "One sentence: what readers are ACTUALLY looking for, in their own words",\n'
+        '  "warning_signals": ["1-2 red flags you must avoid or risk 1-star reviews"],\n'
+        '  "sentiment_ratio": "X% positive / Y% negative / Z% mixed"\n'
+        "}"
+    )
+    try:
+        text = await call_claude(prompt, max_tokens=1500)
+        return parse_json_safe(text)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/price-optimizer", dependencies=[_AUTH])
+async def price_optimizer(req: dict):
+    """AI price recommendation for KDP ebook + paperback."""
+    niche = req.get("niche", "")
+    book_type = req.get("book_type", "")
+    page_count = req.get("page_count", 120)
+    competitor_prices = req.get("competitor_prices", [])
+    current_price = req.get("current_price", 9.99)
+    market = req.get("market", "US")
+
+    comp_str = (
+        f"Competitor paperback prices observed: {', '.join(f'${p}' for p in competitor_prices[:10])}"
+        if competitor_prices else "No competitor prices provided."
+    )
+    prompt = (
+        f"Amazon KDP pricing strategist. Recommend optimal prices for this book.\n\n"
+        f"- Niche: {niche}\n"
+        f"- Type: {book_type}\n"
+        f"- Pages: {page_count}\n"
+        f"- Market: Amazon {market}\n"
+        f"- Current price considered: ${current_price}\n"
+        f"- {comp_str}\n\n"
+        "Consider KDP royalty tiers (35% under $2.99, 60% $2.99–$9.99), niche price sensitivity, "
+        "competitive landscape, and value perception.\n\n"
+        "Return ONLY valid JSON:\n"
+        "{\n"
+        '  "ebook_recommended": 4.99,\n'
+        '  "ebook_rationale": "1 sentence why",\n'
+        '  "paperback_recommended": 12.99,\n'
+        '  "paperback_rationale": "1 sentence why",\n'
+        '  "price_strategy": "penetration|competitive|premium",\n'
+        '  "strategy_description": "2 sentences explaining the chosen strategy",\n'
+        '  "launch_pricing": "Specific advice: start at $X for launch week, then move to $Y",\n'
+        '  "risk_higher": "1 sentence: what happens if you price $1-2 more",\n'
+        '  "risk_lower": "1 sentence: race-to-bottom risk or opportunity"\n'
+        "}"
+    )
+    try:
+        text = await call_claude(prompt, max_tokens=800)
+        return parse_json_safe(text)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 async def run_actor(actor_id: str, input_data: dict, timeout_sec: int = 120) -> list:
     """Launch an Apify actor synchronously and return the dataset items."""
     if not APIFY_TOKEN:

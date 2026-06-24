@@ -891,6 +891,37 @@ select option{background:var(--s2)}
         </div>
       </div>
       <div id="royaltyResult" style="background:var(--s2);border-radius:10px;padding:16px"></div>
+      <div style="margin-top:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <button class="btn" id="priceOptimizerBtn" onclick="runPriceOptimizer()" style="background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.35);color:#4ade80;font-size:12px;padding:8px 14px">
+          <span id="priceOptimizerBtnTxt">💡 Ottimizza Prezzo con AI</span>
+          <div class="spin" id="priceOptimizerSpin" style="display:none;border-top-color:#4ade80"></div>
+        </button>
+        <span style="font-size:10px;color:var(--muted)">Claude analizza nicchia e competitor → suggerisce prezzo ottimale</span>
+      </div>
+      <div id="priceOptimizerOut" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <!-- ===== REVIEW MINING — Competitive Intelligence ===== -->
+  <div style="margin-top:16px;background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.2);border-radius:12px;overflow:hidden">
+    <div style="padding:14px 18px;border-bottom:1px solid rgba(239,68,68,0.15);display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleSection('reviewMiningSection')">
+      <div>
+        <div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:#f87171">🔎 Review Mining</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">Incolla recensioni competitor → Claude estrae cosa amano/odiano + angoli di differenziazione</div>
+      </div>
+      <span id="reviewMiningSectionArrow" style="color:var(--muted);font-size:14px;transition:transform 0.2s">▼</span>
+    </div>
+    <div id="reviewMiningSection" style="display:none;padding:16px 18px">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.6">
+        Vai su Amazon, apri 3-5 libri competitor nella tua nicchia, copia 10-15 recensioni (mix 1⭐ e 5⭐) e incollale qui.
+        Claude estrae pattern ricorrenti, lamentele e opportunità di differenziazione che i competitor non coprono.
+      </div>
+      <textarea id="reviewMiningInput" rows="7" placeholder="★★★★★ Questo libro mi ha cambiato la vita quotidiana. Finalmente qualcosa di pratico e non solo teorico...&#10;★★★☆☆ Buon contenuto ma troppo ripetitivo. Avrei voluto più esercizi pratici...&#10;★☆☆☆☆ Troppo superficiale, non approfondisce nulla di concreto..." style="font-size:12px;margin-bottom:10px"></textarea>
+      <button class="btn" id="reviewMiningBtn" onclick="runReviewMining()" style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.35);color:#f87171;font-size:13px">
+        <span id="reviewMiningBtnTxt">🔎 Analizza Recensioni</span>
+        <div class="spin" id="reviewMiningSpin" style="display:none;border-top-color:#f87171"></div>
+      </button>
+      <div id="reviewMiningOut" style="margin-top:14px"></div>
     </div>
   </div>
 
@@ -979,6 +1010,23 @@ select option{background:var(--s2)}
   </div>
 
   <div id="packageOut"></div>
+
+  <!-- LAUNCH CHECKLIST -->
+  <div style="margin-top:28px;background:rgba(34,197,94,0.04);border:1px solid rgba(34,197,94,0.2);border-radius:12px;overflow:hidden">
+    <div style="padding:14px 18px;border-bottom:1px solid rgba(34,197,94,0.15);display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleSection('launchChecklistSection')">
+      <div>
+        <div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:#4ade80">🚀 Launch Checklist KDP</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">Tutto quello che devi fare prima di cliccare "Publish" — spunta ogni step</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="checklistProgress" style="font-size:11px;color:#4ade80;font-weight:600"></span>
+        <span id="launchChecklistSectionArrow" style="color:var(--muted);font-size:14px;transition:transform 0.2s">▼</span>
+      </div>
+    </div>
+    <div id="launchChecklistSection" style="display:none" onload="renderLaunchChecklist()">
+      <div id="launchChecklistBody" style="padding:16px 18px"></div>
+    </div>
+  </div>
 </div>
 
 <!-- ============ PANEL 5: MY BOOKS LIBRARY ============ -->
@@ -2560,6 +2608,236 @@ function useOutlineVariant(i) {
       <div class="cb-body" id="${outId}" style="white-space:pre-wrap;font-size:13px;line-height:1.7">${escHtml(v.outline)}</div>
     </div>`;
   document.getElementById('p3actions').style.display = 'flex';
+}
+
+// ─── REVIEW MINING ───────────────────────────────────────
+async function runReviewMining() {
+  const reviews = document.getElementById('reviewMiningInput')?.value.trim();
+  if (!reviews || reviews.length < 80) {
+    alert('Incolla almeno 5-6 recensioni (il testo deve essere sufficientemente lungo per un\'analisi utile).');
+    return;
+  }
+  const btn = document.getElementById('reviewMiningBtn');
+  const spin = document.getElementById('reviewMiningSpin');
+  const btnTxt = document.getElementById('reviewMiningBtnTxt');
+  const out = document.getElementById('reviewMiningOut');
+  if (btn) btn.disabled = true;
+  if (spin) spin.style.display = 'inline-block';
+  if (btnTxt) btnTxt.textContent = 'Analizzando…';
+  out.innerHTML = '<div style="font-size:11px;color:var(--muted)">Claude sta leggendo le recensioni…</div>';
+  try {
+    const data = await callBackend('/api/review-mining', {
+      reviews,
+      niche: state.selectedTrend?.name || state.customNiche || '',
+      book_title: state.selectedBook?.title || ''
+    });
+    renderReviewMining(data);
+  } catch(e) {
+    out.innerHTML = `<div class="err" style="font-size:12px">⚠️ ${escHtml(e.message)}</div>`;
+  } finally {
+    if (btn) btn.disabled = false;
+    if (spin) spin.style.display = 'none';
+    if (btnTxt) btnTxt.textContent = '🔎 Analizza Recensioni';
+  }
+}
+
+function renderReviewMining(d) {
+  const out = document.getElementById('reviewMiningOut');
+  if (!d || (!d.loves && !d.hates)) {
+    out.innerHTML = '<div style="font-size:11px;color:var(--muted)">Nessun dato estratto. Prova con più recensioni.</div>';
+    return;
+  }
+  const pill = (txt, color) => `<span style="font-size:11px;padding:3px 10px;border-radius:20px;background:${color}18;border:1px solid ${color}44;color:${color};line-height:1.8;display:inline-block;margin:2px 3px 2px 0">${escHtml(txt)}</span>`;
+  const list = (items, icon, color) => (items||[]).map(i => `<li style="margin-bottom:6px;font-size:12px;line-height:1.6">${icon} ${escHtml(i)}</li>`).join('');
+
+  out.innerHTML = `
+  <div style="background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0">
+      <div style="padding:14px 16px;border-right:1px solid var(--border)">
+        <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#4ade80;margin-bottom:8px">💚 Cosa AMANO</div>
+        <ul style="list-style:none;padding:0;margin:0">${list(d.loves,'✓','#4ade80')}</ul>
+      </div>
+      <div style="padding:14px 16px">
+        <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#f87171;margin-bottom:8px">🔴 Cosa ODIANO / Manca</div>
+        <ul style="list-style:none;padding:0;margin:0">${list(d.hates,'✕','#f87171')}</ul>
+      </div>
+    </div>
+    ${(d.differentiation_opportunities||[]).length ? `
+    <div style="padding:14px 16px;border-top:1px solid var(--border)">
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#60a5fa;margin-bottom:8px">🎯 Angoli di Differenziazione</div>
+      <ul style="list-style:none;padding:0;margin:0">${list(d.differentiation_opportunities,'→','#60a5fa')}</ul>
+    </div>` : ''}
+    ${d.ideal_book_description ? `
+    <div style="padding:12px 16px;border-top:1px solid var(--border);background:rgba(255,140,66,0.04)">
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">💬 Cosa cercano davvero i lettori</div>
+      <div style="font-size:12px;color:var(--accent2);font-style:italic;line-height:1.6">"${escHtml(d.ideal_book_description)}"</div>
+    </div>` : ''}
+    ${(d.warning_signals||[]).length ? `
+    <div style="padding:12px 16px;border-top:1px solid var(--border);background:rgba(239,68,68,0.04)">
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#f87171;margin-bottom:6px">⚠️ Warning — evita assolutamente</div>
+      ${d.warning_signals.map(w => `<div style="font-size:12px;color:#fca5a5;margin-bottom:4px">⚠ ${escHtml(w)}</div>`).join('')}
+    </div>` : ''}
+    ${(d.emotional_patterns||[]).length ? `
+    <div style="padding:12px 16px;border-top:1px solid var(--border)">
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">🗣️ Pattern linguistici (usa nel copy)</div>
+      <div>${d.emotional_patterns.map(p => pill(p,'#a78bfa')).join('')}</div>
+    </div>` : ''}
+    ${d.sentiment_ratio ? `
+    <div style="padding:8px 16px;border-top:1px solid var(--border);font-size:10px;color:var(--muted)">${escHtml(d.sentiment_ratio)}</div>` : ''}
+  </div>`;
+}
+
+// ─── PRICE OPTIMIZER ─────────────────────────────────────
+async function runPriceOptimizer() {
+  const btn = document.getElementById('priceOptimizerBtn');
+  const spin = document.getElementById('priceOptimizerSpin');
+  const btnTxt = document.getElementById('priceOptimizerBtnTxt');
+  const out = document.getElementById('priceOptimizerOut');
+  if (btn) btn.disabled = true;
+  if (spin) spin.style.display = 'inline-block';
+  if (btnTxt) btnTxt.textContent = 'Analizzando…';
+  out.innerHTML = '<div style="font-size:11px;color:var(--muted)">Claude analizza nicchia e strategia di prezzo…</div>';
+
+  const currentPrice = parseFloat(document.getElementById('rcPrice')?.value) || 9.99;
+  const pages = parseInt(document.getElementById('rcPages')?.value) || 120;
+  const market = document.getElementById('rcMarket')?.value === 'eu' ? 'EU' : 'US';
+
+  try {
+    const data = await callBackend('/api/price-optimizer', {
+      niche: state.selectedTrend?.name || state.customNiche || '',
+      book_type: state.selectedBook?.type || state.bookType || '',
+      page_count: pages,
+      current_price: currentPrice,
+      market
+    });
+    renderPriceOptimizer(data);
+  } catch(e) {
+    out.innerHTML = `<div class="err" style="font-size:12px">⚠️ ${escHtml(e.message)}</div>`;
+  } finally {
+    if (btn) btn.disabled = false;
+    if (spin) spin.style.display = 'none';
+    if (btnTxt) btnTxt.textContent = '💡 Ottimizza Prezzo con AI';
+  }
+}
+
+function renderPriceOptimizer(d) {
+  const out = document.getElementById('priceOptimizerOut');
+  if (!d || !d.ebook_recommended) { out.innerHTML = ''; return; }
+  const stratColor = { penetration: '#22c55e', competitive: '#3b82f6', premium: '#a78bfa' }[d.price_strategy] || '#ff8c42';
+  out.innerHTML = `
+  <div style="background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden">
+    <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;gap:16px;flex-wrap:wrap">
+      <div style="text-align:center;flex:1;min-width:80px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">eBook</div>
+        <div style="font-size:22px;font-weight:700;font-family:Syne,sans-serif;color:#4ade80">$${escHtml(String(d.ebook_recommended))}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:3px;line-height:1.4">${escHtml(d.ebook_rationale || '')}</div>
+      </div>
+      <div style="width:1px;background:var(--border);flex-shrink:0"></div>
+      <div style="text-align:center;flex:1;min-width:80px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Paperback</div>
+        <div style="font-size:22px;font-weight:700;font-family:Syne,sans-serif;color:#60a5fa">$${escHtml(String(d.paperback_recommended))}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:3px;line-height:1.4">${escHtml(d.paperback_rationale || '')}</div>
+      </div>
+      <div style="width:1px;background:var(--border);flex-shrink:0"></div>
+      <div style="text-align:center;flex:1;min-width:80px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Strategia</div>
+        <div style="font-size:13px;font-weight:700;font-family:Syne,sans-serif;color:${stratColor};text-transform:uppercase">${escHtml(d.price_strategy || '')}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:3px;line-height:1.4">${escHtml(d.strategy_description || '')}</div>
+      </div>
+    </div>
+    ${d.launch_pricing ? `<div style="padding:10px 16px;border-bottom:1px solid var(--border);font-size:12px;color:var(--accent2);line-height:1.5">🚀 <strong>Lancio:</strong> ${escHtml(d.launch_pricing)}</div>` : ''}
+    <div style="padding:10px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      ${d.risk_higher ? `<div style="font-size:11px;color:var(--muted);line-height:1.5">↑ Più caro: ${escHtml(d.risk_higher)}</div>` : ''}
+      ${d.risk_lower ? `<div style="font-size:11px;color:var(--muted);line-height:1.5">↓ Più economico: ${escHtml(d.risk_lower)}</div>` : ''}
+    </div>
+  </div>`;
+  // Apply recommended prices to royalty calculator
+  const priceEl = document.getElementById('rcPrice');
+  if (priceEl) { priceEl.value = d.paperback_recommended; calcRoyalty(); }
+}
+
+// ─── LAUNCH CHECKLIST ────────────────────────────────────
+const _LAUNCH_CHECKLIST = [
+  { cat: '📁 File & Formattazione', color: '#3b82f6', items: [
+    'Interior PDF/DOC senza errori di formattazione o font mancanti',
+    'Margini corretti: spine 0.75", outer 0.5", top/bottom 0.75" (6×9)',
+    'Font incorporati (embedded) nel PDF — no font system-only',
+    'Pagine: almeno 24, massimo 828 per formato 6×9',
+    'Nessuna pagina bianca inaspettata a fine libro',
+  ]},
+  { cat: '🎨 Copertina', color: '#e879f9', items: [
+    'Cover JPG o TIFF, risoluzione ≥ 300 DPI',
+    'Dimensioni: 1800 × 2700 px per 6×9 a 300dpi',
+    'Testo del titolo leggibile anche a thumbnail 80×120px',
+    'Margini "live area" rispettati — nessun testo vicino ai bordi',
+  ]},
+  { cat: '🏷️ Metadata KDP', color: '#ff8c42', items: [
+    'Titolo + sottotitolo ≤ 200 caratteri totali',
+    '7 keywords compilate (non ripetere parole già nel titolo)',
+    '2 categorie Amazon selezionate correttamente (BISAC)',
+    'Descrizione 400-600 parole con HTML (<b>, <br>)',
+    'Pen name e Author Central page configurati',
+  ]},
+  { cat: '💰 Pricing & Distribuzione', color: '#22c55e', items: [
+    'Prezzo ebook nel range 60% royalty ($2.99 – $9.99)',
+    'Distribuzione Espansa abilitata (se non KDP Select)',
+    'KDP Select valutato: 90 giorni esclusiva vs. distribuzione larga',
+  ]},
+  { cat: '🚀 Lancio — Prima Settimana', color: '#f87171', items: [
+    '5+ ARC reviewers contattati almeno 2 settimane prima',
+    'A+ Content creato su Author Central (gratis, +10-30% conversioni)',
+    'Prezzo lancio pianificato ($0.99 / free se KDP Select Promo)',
+    'Annuncio lancio su social/newsletter programmato',
+    'BookFunnel o equivalente configurato per ARC delivery',
+  ]},
+  { cat: '📊 Post-Lancio', color: '#a78bfa', items: [
+    'Amazon PPC Campaign impostata (keyword targeting manuale)',
+    'Primo check BSR a 24-48 ore dal lancio',
+    'Calendario revisioni contenuto pianificato (ogni 6-12 mesi)',
+  ]},
+];
+
+let _checklistState = {};
+
+function renderLaunchChecklist() {
+  const body = document.getElementById('launchChecklistBody');
+  if (!body || body.children.length) return; // already rendered
+  body.innerHTML = _LAUNCH_CHECKLIST.map((cat, ci) => `
+    <div style="margin-bottom:20px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${cat.color};margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid ${cat.color}22">${cat.cat}</div>
+      ${cat.items.map((item, ii) => {
+        const id = `cl_${ci}_${ii}`;
+        return `<div id="${id}_row" style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;cursor:pointer;border-radius:6px;transition:background 0.12s" onclick="toggleChecklistItem('${id}')">
+          <div id="${id}_box" style="width:18px;height:18px;border-radius:4px;border:1px solid #444;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all 0.12s"></div>
+          <div id="${id}_txt" style="font-size:12px;line-height:1.5;color:var(--muted)">${escHtml(item)}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  `).join('');
+  updateChecklistProgress();
+}
+
+function toggleChecklistItem(id) {
+  _checklistState[id] = !_checklistState[id];
+  const box = document.getElementById(id + '_box');
+  const txt = document.getElementById(id + '_txt');
+  if (box) {
+    box.style.background = _checklistState[id] ? '#22c55e' : '';
+    box.style.borderColor = _checklistState[id] ? '#22c55e' : '#444';
+    box.textContent = _checklistState[id] ? '✓' : '';
+    box.style.color = '#000';
+  }
+  if (txt) txt.style.color = _checklistState[id] ? 'var(--muted2)' : 'var(--muted)';
+  if (_checklistState[id] && txt) txt.style.textDecoration = 'line-through';
+  else if (txt) txt.style.textDecoration = '';
+  updateChecklistProgress();
+}
+
+function updateChecklistProgress() {
+  const total = _LAUNCH_CHECKLIST.reduce((n, c) => n + c.items.length, 0);
+  const done = Object.values(_checklistState).filter(Boolean).length;
+  const el = document.getElementById('checklistProgress');
+  if (el) el.textContent = `${done}/${total}`;
 }
 
 // ─── STEP 2: CHOOSE BOOK ─────────────────────────────────
@@ -4870,6 +5148,7 @@ function toggleSection(sectionId) {
   el.style.display = open ? 'none' : 'block';
   if (arrow) arrow.style.transform = open ? '' : 'rotate(180deg)';
   if (!open && sectionId === 'royaltySection') calcRoyalty();
+  if (!open && sectionId === 'launchChecklistSection') renderLaunchChecklist();
 }
 
 // ── MODI PER VINCERE — Niche Opportunity Analysis ──────────────
