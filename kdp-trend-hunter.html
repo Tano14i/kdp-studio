@@ -387,6 +387,35 @@ select option{background:var(--s2)}
     <p>Seleziona piattaforme e nicchia — Claude analizza cosa sta esplodendo e genera idee di libri pronte.</p>
   </div>
 
+  <!-- ASIN INTEL — entry via competitor -->
+  <div style="margin-bottom:18px;background:rgba(167,139,250,0.04);border:1px solid rgba(167,139,250,0.2);border-radius:12px;overflow:hidden">
+    <div onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.querySelector('.asin-arrow').style.transform=this.nextElementSibling.style.display==='block'?'rotate(180deg)':''" style="padding:10px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:12px;font-weight:700;color:#a78bfa">🔍 ASIN Intel</span>
+        <span style="font-size:10px;color:var(--muted)">Parti da un competitor — incolla un ASIN e scopri nicchia reale, keyword, gap</span>
+      </div>
+      <span class="asin-arrow" style="color:var(--muted);font-size:12px;transition:transform 0.2s">▼</span>
+    </div>
+    <div style="display:none;padding:12px 16px;border-top:1px solid rgba(167,139,250,0.15)">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
+        <input id="asinInput" type="text" placeholder="es. B0XXXXXXXX" maxlength="12"
+          style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--text);font-size:12px;font-family:monospace;width:140px;letter-spacing:0.05em">
+        <select id="asinMarketSelect" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 10px;color:var(--text);font-size:12px">
+          <option value="us">🇺🇸 .com</option>
+          <option value="de">🇩🇪 .de</option>
+          <option value="it">🇮🇹 .it</option>
+          <option value="es">🇪🇸 .es</option>
+          <option value="fr">🇫🇷 .fr</option>
+        </select>
+        <button class="btn btn-ghost" id="asinReverseBtn" onclick="runAsinReverse()" style="padding:7px 14px;font-size:12px">
+          <span id="asinReverseTxt">Analizza ASIN</span>
+          <div class="spin" id="asinReverseSpin" style="display:none"></div>
+        </button>
+      </div>
+      <div id="asinIntelOut"></div>
+    </div>
+  </div>
+
   <div class="filter-row">
     <div>
       <div class="sect-label">Piattaforme</div>
@@ -585,6 +614,18 @@ select option{background:var(--s2)}
       </button>
     </div>
     <div id="trendingNowOut" style="margin-top:10px"></div>
+  </div>
+
+  <!-- MULTI-NICHE COMPARATOR BAR -->
+  <div id="nicheCompBar" style="display:none;margin-top:14px;background:rgba(255,140,66,0.06);border:1px solid rgba(255,140,66,0.25);border-radius:10px;padding:10px 14px">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent2);white-space:nowrap">📊 Confronta:</span>
+      <div id="compPills" style="display:flex;gap:6px;flex-wrap:wrap;flex:1"></div>
+      <button class="btn btn-accent" id="compareNichesBtn" onclick="runNicheComparison()" style="padding:6px 14px;font-size:12px;white-space:nowrap">
+        <span id="compareNichesTxt">Confronta →</span>
+        <div class="spin" id="compareNichesSpin" style="display:none"></div>
+      </button>
+    </div>
   </div>
 
   <div id="adjacentNichesRow" style="display:none;margin-top:14px;padding:14px 16px;background:rgba(59,130,246,0.04);border:1px solid rgba(59,130,246,0.2);border-radius:10px">
@@ -2015,7 +2056,10 @@ function renderTrends() {
       </div>` : ''}
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
         <div class="heat-row" style="margin-top:0">${Array.from({length:5},(_,j)=>`<div class="hdot${j<t.heat?' on':''}"></div>`).join('')}</div>
-        <button onclick="event.stopPropagation();verifyTrend(${i})" style="font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid rgba(59,130,246,0.4);background:rgba(59,130,246,0.08);color:#93c5fd;cursor:pointer;white-space:nowrap" id="vbtn_${i}">🔍 Verifica</button>
+        <div style="display:flex;gap:5px">
+          <button onclick="event.stopPropagation();toggleNicheComparison('${t.name.replace(/'/g,"\\'")}')" id="compbtn_${i}" style="font-size:11px;padding:4px 8px;border-radius:6px;border:1px solid rgba(255,140,66,0.4);background:rgba(255,140,66,0.06);color:var(--accent2);cursor:pointer">＋</button>
+          <button onclick="event.stopPropagation();verifyTrend(${i})" style="font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid rgba(59,130,246,0.4);background:rgba(59,130,246,0.08);color:#93c5fd;cursor:pointer;white-space:nowrap" id="vbtn_${i}">🔍 Verifica</button>
+        </div>
       </div>
       <div id="verify_${i}" style="display:none;margin-top:10px;padding:10px;background:rgba(0,0,0,0.3);border-radius:8px;border:1px solid rgba(255,255,255,0.06)"></div>
     </div>`).join('');
@@ -2650,10 +2694,256 @@ function renderNicheValidator(d, niche) {
     </div>` : ''}
 
     <!-- Keyword gems -->
-    ${gems ? `<div style="padding:0 16px 14px;display:flex;align-items:center;flex-wrap:wrap;gap:5px">
+    ${gems ? `<div style="padding:0 16px 10px;display:flex;align-items:center;flex-wrap:wrap;gap:5px">
       <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-right:3px">Keyword gems:</span>
       ${gems}
     </div>` : ''}
+
+    <!-- Launch timing -->
+    ${d.launch_urgency ? (() => {
+      const urgCfg = {
+        NOW:   { color:'#ef4444', bg:'rgba(239,68,68,0.08)',   border:'rgba(239,68,68,0.2)',   label:'🔥 PUBBLICA ORA', note:'il trend è caldo — ogni settimana conta' },
+        SOON:  { color:'#f59e0b', bg:'rgba(245,158,11,0.08)',  border:'rgba(245,158,11,0.2)',  label:'⚡ PRESTO (1-2 mesi)', note:'finestra aperta, non aspettare troppo' },
+        WAIT:  { color:'#3b82f6', bg:'rgba(59,130,246,0.08)',  border:'rgba(59,130,246,0.2)',  label:'⏳ ASPETTA (3-6 mesi)', note:'nicchia stabile, punta alla qualità' },
+        AVOID: { color:'#888',    bg:'rgba(120,120,120,0.06)', border:'rgba(120,120,120,0.15)', label:'🚫 EVITA', note:'trend in calo o mercato saturo' },
+      };
+      const u = urgCfg[d.launch_urgency] || urgCfg.WAIT;
+      const trendIcon = { Rising:'↑', Stable:'→', Declining:'↓', Seasonal:'◌' }[d.trend_direction] || '→';
+      const trendColor = { Rising:'#22c55e', Stable:'#f59e0b', Declining:'#ef4444', Seasonal:'#a78bfa' }[d.trend_direction] || '#888';
+      return `<div style="margin:0 16px 14px;padding:9px 12px;background:${u.bg};border:1px solid ${u.border};border-radius:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="font-size:11px;font-weight:700;color:${u.color}">${u.label}</span>
+        <span style="font-size:10px;color:var(--muted)">${escHtml(u.note)}</span>
+        <span style="margin-left:auto;font-size:12px;font-weight:700;color:${trendColor}">${trendIcon} ${escHtml(d.trend_direction||'')}</span>
+        ${d.timing_advice ? `<span style="width:100%;font-size:11px;color:var(--text)">${escHtml(d.timing_advice)}</span>` : ''}
+      </div>`;
+    })() : ''}
+  </div>`;
+}
+
+// ─── MULTI-NICHE COMPARATOR ───────────────────────────────────
+function toggleNicheComparison(name) {
+  const bar = document.getElementById('nicheCompBar');
+  const pills = document.getElementById('compPills');
+  if (!bar || !pills) return;
+
+  const idx = state.comparisonNiches.indexOf(name);
+  if (idx >= 0) {
+    state.comparisonNiches.splice(idx, 1);
+  } else {
+    if (state.comparisonNiches.length >= 5) { alert('Massimo 5 nicchie da confrontare.'); return; }
+    state.comparisonNiches.push(name);
+  }
+
+  // Update all "＋" buttons
+  document.querySelectorAll('[id^=compbtn_]').forEach(btn => {
+    const i = parseInt(btn.id.replace('compbtn_',''));
+    const t = state.trends[i];
+    if (!t) return;
+    const active = state.comparisonNiches.includes(t.name);
+    btn.style.background = active ? 'rgba(255,140,66,0.25)' : 'rgba(255,140,66,0.06)';
+    btn.style.borderColor = active ? 'rgba(255,140,66,0.7)' : 'rgba(255,140,66,0.4)';
+    btn.textContent = active ? '✓' : '＋';
+  });
+
+  if (!state.comparisonNiches.length) { bar.style.display = 'none'; return; }
+  bar.style.display = 'block';
+  pills.innerHTML = state.comparisonNiches.map(n =>
+    `<span style="font-size:11px;padding:3px 9px;border-radius:12px;background:rgba(255,140,66,0.12);border:1px solid rgba(255,140,66,0.3);color:var(--accent2);display:flex;align-items:center;gap:5px">
+      ${escHtml(n)}
+      <button onclick="event.stopPropagation();toggleNicheComparison('${n.replace(/'/g,"\\'")}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;padding:0;line-height:1">×</button>
+    </span>`
+  ).join('');
+}
+
+async function runNicheComparison() {
+  const niches = state.comparisonNiches;
+  if (niches.length < 2) { alert('Seleziona almeno 2 nicchie con il pulsante ＋ sulle cards.'); return; }
+
+  const btn = document.getElementById('compareNichesBtn');
+  const txt = document.getElementById('compareNichesTxt');
+  const spin = document.getElementById('compareNichesSpin');
+  btn.disabled = true;
+  txt.textContent = `Analizzando ${niches.length}…`;
+  spin.style.display = 'block';
+
+  const mkt = document.getElementById('marketSelect')?.value || '';
+  const mktCode = { 'English':'us','German philosophy and culture':'de','Mediterranean and Italian culture':'it' }[mkt] || 'us';
+
+  try {
+    const results = await Promise.all(
+      niches.map(n => callBackend('/api/niche-validator', { niche: n, marketplace: mktCode })
+        .then(d => ({ niche: n, ...d }))
+        .catch(() => ({ niche: n, error: true }))
+      )
+    );
+    txt.textContent = 'Confronta →';
+    spin.style.display = 'none';
+    btn.disabled = false;
+    renderNicheComparison(results);
+  } catch(e) {
+    txt.textContent = 'Confronta →';
+    spin.style.display = 'none';
+    btn.disabled = false;
+    alert('Errore confronto: ' + e.message);
+  }
+}
+
+function renderNicheComparison(results) {
+  const existing = document.getElementById('nicheCompModal');
+  if (existing) existing.remove();
+
+  const verdictColors = { GO:'#22c55e', CAUTIOUS:'#f59e0b', 'NO-GO':'#ef4444' };
+  const urgColors = { NOW:'#ef4444', SOON:'#f59e0b', WAIT:'#3b82f6', AVOID:'#888' };
+
+  // Sort by profitability_score desc
+  const sorted = [...results].filter(r => !r.error).sort((a,b) => (b.profitability_score||0) - (a.profitability_score||0));
+  const winner = sorted[0];
+
+  function scoreCell(val, reverse) {
+    if (val == null) return '<td style="text-align:center;color:var(--muted);font-size:11px">—</td>';
+    const color = reverse
+      ? (val <= 3 ? '#22c55e' : val <= 6 ? '#f59e0b' : '#ef4444')
+      : (val >= 7 ? '#22c55e' : val >= 5 ? '#f59e0b' : '#ef4444');
+    return `<td style="text-align:center;font-size:14px;font-weight:700;color:${color}">${val}</td>`;
+  }
+
+  const rows = results.map(r => {
+    if (r.error) return `<tr><td style="font-weight:600">${escHtml(r.niche)}</td><td colspan="6" style="color:var(--muted);font-size:11px">⚠️ Analisi non disponibile</td></tr>`;
+    const isWinner = r.niche === winner?.niche;
+    const vc = verdictColors[r.verdict] || '#888';
+    return `<tr style="${isWinner ? 'background:rgba(34,197,94,0.06)' : ''}">
+      <td style="font-weight:600;padding:10px 12px">
+        ${isWinner ? '🏆 ' : ''}<span style="color:${isWinner?'#22c55e':'var(--text)'}">${escHtml(r.niche)}</span>
+        ${r.best_angle ? `<div style="font-size:10px;color:var(--muted);margin-top:2px;font-weight:400">${escHtml(r.best_angle)}</div>` : ''}
+      </td>
+      ${scoreCell(r.demand_score, false)}
+      ${scoreCell(r.competition_score, true)}
+      ${scoreCell(r.entry_difficulty, true)}
+      ${scoreCell(r.profitability_score, false)}
+      <td style="text-align:center"><span style="font-size:11px;font-weight:700;color:${vc}">${r.verdict||'—'}</span></td>
+      <td style="font-size:10px;color:var(--muted);padding:0 8px">
+        ${r.revenue_estimate ? escHtml(r.revenue_estimate) : ''}
+        ${r.launch_urgency ? `<br><span style="color:${urgColors[r.launch_urgency]||'#888'};font-weight:600">${r.launch_urgency}</span>` : ''}
+      </td>
+    </tr>`;
+  }).join('');
+
+  const modal = document.createElement('div');
+  modal.id = 'nicheCompModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)';
+  modal.innerHTML = `<div style="background:var(--bg);border:1px solid var(--border);border-radius:16px;width:100%;max-width:860px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-family:Syne,sans-serif;font-size:15px;font-weight:700">📊 Confronto Nicchie — ${results.length} analizzate</div>
+        ${winner ? `<div style="font-size:11px;color:#22c55e;margin-top:2px">🏆 Winner: <strong>${escHtml(winner.niche)}</strong> (redditività ${winner.profitability_score}/10)</div>` : ''}
+      </div>
+      <button onclick="document.getElementById('nicheCompModal').remove()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:22px;line-height:1">×</button>
+    </div>
+    <div style="overflow-y:auto;padding:16px 20px">
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border)">
+            <th style="text-align:left;padding:8px 12px;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:0.06em">Nicchia</th>
+            <th style="text-align:center;color:var(--muted);font-size:10px;text-transform:uppercase">Domanda</th>
+            <th style="text-align:center;color:var(--muted);font-size:10px;text-transform:uppercase">Compet.</th>
+            <th style="text-align:center;color:var(--muted);font-size:10px;text-transform:uppercase">Difficoltà</th>
+            <th style="text-align:center;color:var(--muted);font-size:10px;text-transform:uppercase">Redditività</th>
+            <th style="text-align:center;color:var(--muted);font-size:10px;text-transform:uppercase">Verdict</th>
+            <th style="color:var(--muted);font-size:10px;text-transform:uppercase">Revenue / Timing</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      ${winner?.verdict_reason ? `<div style="margin-top:14px;padding:12px 14px;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2);border-radius:8px;font-size:12px;color:var(--text)"><strong style="color:#22c55e">🏆 Perché ${escHtml(winner.niche)}:</strong> ${escHtml(winner.verdict_reason)}</div>` : ''}
+      <div style="margin-top:12px;text-align:center">
+        <button class="btn btn-accent" onclick="applyAdjacentNiche('${(winner?.niche||'').replace(/'/g,"\\'")}');document.getElementById('nicheCompModal').remove()" style="padding:9px 20px">
+          Usa "${escHtml(winner?.niche||'')}" come nicchia →
+        </button>
+      </div>
+    </div>
+  </div>`;
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+  document.body.appendChild(modal);
+}
+
+// ─── ASIN REVERSE ENGINEER ────────────────────────────────────
+async function runAsinReverse() {
+  const asin = (document.getElementById('asinInput')?.value || '').trim().toUpperCase();
+  const mkt = document.getElementById('asinMarketSelect')?.value || 'us';
+  if (!asin || asin.length < 8) { alert('Inserisci un ASIN valido (es. B0XXXXXXXX).'); return; }
+
+  const btn = document.getElementById('asinReverseBtn');
+  const out = document.getElementById('asinIntelOut');
+  btn.disabled = true;
+  document.getElementById('asinReverseTxt').textContent = 'Analizzando…';
+  document.getElementById('asinReverseSpin').style.display = 'block';
+  out.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:5px 0">Reverse engineering in corso…</div>';
+
+  try {
+    const data = await callBackend('/api/asin-reverse', { asin, marketplace: mkt });
+    btn.disabled = false;
+    document.getElementById('asinReverseTxt').textContent = 'Analizza ASIN';
+    document.getElementById('asinReverseSpin').style.display = 'none';
+    renderAsinIntel(data);
+  } catch(e) {
+    btn.disabled = false;
+    document.getElementById('asinReverseTxt').textContent = 'Analizza ASIN';
+    document.getElementById('asinReverseSpin').style.display = 'none';
+    out.innerHTML = `<div style="font-size:11px;color:var(--accent)">⚠️ ${escHtml(e.message)}</div>`;
+  }
+}
+
+function renderAsinIntel(d) {
+  const out = document.getElementById('asinIntelOut');
+  if (!out || !d) return;
+
+  const kws = (d.primary_keywords || []).map(k =>
+    `<span style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.2);color:#a78bfa;cursor:pointer"
+      onclick="applyAdjacentNiche('${k.replace(/'/g,"\\'")}');document.getElementById('asinIntelOut').closest('[style*=display]').querySelector('span.asin-arrow') && void 0"
+      title="Clicca per usare come nicchia">${escHtml(k)}</span>`
+  ).join('');
+
+  const strengths = (d.strengths || []).map(s =>
+    `<li style="font-size:11px;color:var(--muted);margin-bottom:3px">${escHtml(s)}</li>`
+  ).join('');
+
+  out.innerHTML = `<div style="border-top:1px solid rgba(167,139,250,0.15);padding-top:12px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div>
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:4px">Nicchia reale</div>
+        <div style="font-size:12px;font-weight:600;color:#a78bfa">${escHtml(d.real_niche||'')}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">${escHtml(d.positioning_angle||'')}</div>
+      </div>
+      <div>
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:4px">Profilo lettore</div>
+        <div style="font-size:11px;color:var(--text)">${escHtml(d.reader_profile||'')}</div>
+        ${d.estimated_monthly_sales ? `<div style="font-size:10px;color:#22c55e;margin-top:2px">${escHtml(d.estimated_monthly_sales)}</div>` : ''}
+      </div>
+    </div>
+
+    <div style="margin-bottom:8px">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:5px">Keywords primarie (clicca per usare)</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">${kws}</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div style="padding:8px 10px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:6px">
+        <div style="font-size:9px;font-weight:700;color:#ef4444;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">Gap competitivo</div>
+        <div style="font-size:11px;color:var(--text)">${escHtml(d.competitive_gap||'')}</div>
+      </div>
+      <div style="padding:8px 10px;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);border-radius:6px">
+        <div style="font-size:9px;font-weight:700;color:#22c55e;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">Il tuo angolo di attacco</div>
+        <div style="font-size:11px;color:var(--text)">${escHtml(d.attack_angle||'')}</div>
+      </div>
+    </div>
+
+    ${d.title_formula ? `<div style="margin-bottom:8px;font-size:11px;color:var(--muted)"><strong style="color:var(--text)">Formula titolo:</strong> ${escHtml(d.title_formula)}</div>` : ''}
+    ${strengths ? `<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:4px">Punti di forza (devi eguagliare o superare)</div><ul style="padding-left:14px;margin:0 0 8px">${strengths}</ul>` : ''}
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      ${d.use_as_niche ? `<button class="btn btn-ghost" onclick="applyAdjacentNiche('${(d.use_as_niche||'').replace(/'/g,"\\'")}');document.getElementById('asinIntelOut').closest('div[style*=display]').style.display='none'" style="font-size:12px;padding:7px 14px">Usa "${escHtml(d.use_as_niche)}" come nicchia →</button>` : ''}
+      ${!d.live_data ? '<span style="font-size:10px;color:var(--muted);align-self:center">⚠️ Dati live non disponibili — analisi da ASIN</span>' : '<span style="font-size:10px;color:#22c55e;align-self:center">✓ Dati live Apify</span>'}
+    </div>
   </div>`;
 }
 

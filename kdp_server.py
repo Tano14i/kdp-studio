@@ -3092,15 +3092,116 @@ async def niche_validator(req: dict):
         '  "ideal_price": "$X.XX ebook / $X.XX paperback",\n'
         '  "top_opportunities": ["specific opportunity 1", "opportunity 2", "opportunity 3"],\n'
         '  "key_risks": ["risk 1", "risk 2"],\n'
-        '  "keyword_gems": ["high-potential keyword 1", "keyword 2", "keyword 3", "keyword 4"]\n'
+        '  "keyword_gems": ["high-potential keyword 1", "keyword 2", "keyword 3", "keyword 4"],\n'
+        '  "trend_direction": "Rising",\n'
+        '  "launch_urgency": "SOON",\n'
+        '  "launch_window_weeks": 6,\n'
+        '  "timing_advice": "1 sentence: when to publish and why"\n'
         "}\n"
-        'verdict must be exactly one of: "GO", "CAUTIOUS", "NO-GO"'
+        'verdict must be exactly one of: "GO", "CAUTIOUS", "NO-GO". '
+        'trend_direction: "Rising"|"Stable"|"Declining"|"Seasonal". '
+        'launch_urgency: "NOW" (publish within 2 weeks)|"SOON" (1-2 months)|"WAIT" (3-6 months, build quality)|"AVOID" (declining/saturated).'
     )
     try:
-        text = await call_claude(prompt, max_tokens=1200)
+        text = await call_claude(prompt, max_tokens=1400)
         result = parse_json_safe(text)
         result["apify_data_used"] = bool(books_data)
         result["book_count_scraped"] = len(books_data)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/asin-reverse", dependencies=[_AUTH])
+async def asin_reverse(req: dict):
+    """Reverse-engineer a competitor ASIN: extract real niche, keywords, gaps, attack angle."""
+    from urllib.parse import quote as url_quote
+    asin = (req.get("asin") or "").strip().upper()
+    marketplace = req.get("marketplace", "us")
+    if not asin or len(asin) < 8:
+        raise HTTPException(status_code=400, detail="ASIN non valido — deve essere tipo B0XXXXXXXX")
+
+    # Step 1: Try Apify to get real product data
+    product_data: dict = {}
+    if APIFY_TOKEN:
+        tld_map = {"us": "com", "de": "de", "it": "it", "es": "es", "fr": "fr"}
+        tld = tld_map.get(marketplace, "com")
+        product_url = f"https://www.amazon.{tld}/dp/{asin}"
+        try:
+            items = await asyncio.wait_for(
+                run_actor(
+                    "epctex/amazon-crawler",
+                    {
+                        "startUrls": [{"url": product_url}],
+                        "maxItems": 1,
+                        "proxyConfiguration": {"useApifyProxy": True},
+                    },
+                ),
+                timeout=90.0,
+            )
+            if items and isinstance(items[0], dict):
+                it = items[0]
+                bsr_raw = it.get("bestsellersRank") or it.get("bsr") or it.get("bestSellersRank")
+                bsr = None
+                if isinstance(bsr_raw, list) and bsr_raw:
+                    first = bsr_raw[0]
+                    bsr = first.get("rank") if isinstance(first, dict) else first
+                elif isinstance(bsr_raw, (int, float)):
+                    bsr = int(bsr_raw)
+                product_data = {
+                    "title": it.get("title") or it.get("name", ""),
+                    "description": str(it.get("description") or it.get("about") or "")[:600],
+                    "bsr": bsr,
+                    "reviews": it.get("reviewsCount") or it.get("reviews") or 0,
+                    "rating": it.get("stars") or it.get("rating") or 0,
+                    "price": it.get("price") or it.get("buyingPrice") or 0,
+                    "categories": it.get("breadCrumbs") or it.get("categories") or [],
+                    "bullets": it.get("bullets") or [],
+                }
+        except Exception as e:
+            print(f"[AsinReverse/Apify] {e}")
+
+    context = f"ASIN: {asin}\nMarketplace: amazon.{tld_map.get(marketplace, 'com')}\n"
+    if product_data.get("title"):
+        context += f"Title: {product_data['title']}\n"
+    if product_data.get("bsr"):
+        context += f"BSR: #{product_data['bsr']:,}\n"
+    if product_data.get("reviews"):
+        context += f"Reviews: {product_data['reviews']} (rating: {product_data.get('rating',0)}★)\n"
+    if product_data.get("price"):
+        context += f"Price: ${product_data['price']}\n"
+    if product_data.get("categories"):
+        cats = [str(c) for c in product_data["categories"][:4]]
+        context += f"Categories: {' > '.join(cats)}\n"
+    if product_data.get("description"):
+        context += f"Description: {product_data['description']}\n"
+    if not product_data:
+        context += "(No live data available — analysis based on ASIN structure only)\n"
+
+    prompt = (
+        "You are a KDP competitive intelligence analyst. Reverse-engineer this Amazon book "
+        "to extract its niche strategy, keyword footprint, and competitive gaps.\n\n"
+        f"{context}\n"
+        "IMPORTANT: Detect the language from the title/description and write ALL text in that same language.\n\n"
+        "Return ONLY valid JSON:\n"
+        "{\n"
+        '  "real_niche": "precise niche (more specific than genre — e.g. not \'self-help\' but \'mindfulness for burned-out moms\')",\n'
+        '  "primary_keywords": ["kw1", "kw2", "kw3", "kw4", "kw5"],\n'
+        '  "positioning_angle": "1 sentence: how this book frames its value proposition",\n'
+        '  "reader_profile": "1 sentence: who exactly buys this (age, situation, pain point)",\n'
+        '  "estimated_monthly_sales": "~X copies/month based on BSR",\n'
+        '  "competitive_gap": "What this book fails to address that readers would still want",\n'
+        '  "attack_angle": "Exactly how to position a competing book to win — specific angle, title direction, format difference",\n'
+        '  "title_formula": "The underlying title formula (e.g. \'[Number] Ways to [Outcome] for [Audience]\')",\n'
+        '  "strengths": ["what this book does well that you must match or beat"],\n'
+        '  "use_as_niche": "clean niche keyword you can immediately use as a KDP niche input"\n'
+        "}"
+    )
+    try:
+        text = await call_claude(prompt, max_tokens=1000)
+        result = parse_json_safe(text)
+        result["asin"] = asin
+        result["live_data"] = bool(product_data)
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
