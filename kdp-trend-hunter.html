@@ -2392,6 +2392,11 @@ function populateStep2() {
   document.getElementById('p2NextBtn').disabled = true;
   const _hint = document.getElementById('p2NextHint');
   if (_hint) _hint.style.display = 'block';
+  // Hide action buttons until a book is picked
+  ['competitorBtn','titleVariantsBtn'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
 
   // Fetch Google Trends sparklines for the book keywords (non-blocking)
   if (BACKEND_LIVE) {
