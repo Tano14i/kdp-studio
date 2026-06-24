@@ -3066,24 +3066,30 @@ async def niche_validator(req: dict):
             lines.append(line)
         books_str = "\nTop books found on Amazon for this niche:\n" + "\n".join(lines)
 
+    currency = "€" if marketplace in ("it", "de", "es", "fr") else "$"
     mkt_labels = {
         "us": "Amazon.com (US)", "de": "Amazon.de (Germany)",
         "it": "Amazon.it (Italy)", "es": "Amazon.es (Spain)", "fr": "Amazon.fr (France)",
     }
     mkt_label = mkt_labels.get(marketplace, "Amazon.com")
+    mkt_domain = {"us": "Amazon.com", "de": "Amazon.de", "it": "Amazon.it", "es": "Amazon.es", "fr": "Amazon.fr"}.get(marketplace, "Amazon.com")
 
     prompt = (
         "You are a senior KDP niche analyst. Evaluate this niche for profitable self-publishing.\n\n"
         f"NICHE: {niche}\n"
         f"MARKETPLACE: {mkt_label}\n"
+        f"CURRENCY: {currency}\n"
         f"{kw_str}\n"
         f"{books_str}\n\n"
+        f"CRITICAL RULES:\n"
+        f"- ALWAYS refer to the marketplace as '{mkt_domain}' — NEVER write 'Amazon.com' if the marketplace is not US\n"
+        f"- Use '{currency}' for ALL prices, revenues, and estimates — NEVER use '$' if marketplace is not US\n"
+        "- Detect the language from the niche keyword and write ALL text fields in that language.\n\n"
         "Scoring guide:\n"
         "- demand_score: reader search activity + purchase intent (1=nobody, 10=massive)\n"
         "- competition_score: market saturation (1=wide open, 10=impossible to enter)\n"
         "- entry_difficulty: reviews/quality threshold to rank on page 1 (1=easy 5 reviews, 10=need 500+)\n"
         "- profitability_score: overall opportunity = (demand - competition - difficulty) composite (1-10)\n\n"
-        "IMPORTANT: Detect the language from the niche keyword and write ALL text fields in that language.\n\n"
         "Return ONLY valid JSON:\n"
         "{\n"
         '  "demand_score": 7,\n'
@@ -3093,10 +3099,10 @@ async def niche_validator(req: dict):
         '  "verdict": "GO",\n'
         '  "verdict_reason": "2 clear sentences on whether to enter this niche and exactly why",\n'
         '  "market_size": "Estimated ~X books, top-20 avg Y reviews",\n'
-        '  "revenue_estimate": "$X-$Y/month for a well-optimized top-20 book",\n'
-        '  "review_threshold": "~X reviews to appear on page 1",\n'
-        '  "best_angle": "The single most underserved sub-angle or reader segment",\n'
-        '  "ideal_price": "$X.XX ebook / $X.XX paperback",\n'
+        f'  "revenue_estimate": "{currency}X-{currency}Y/month for a well-optimized top-20 book",\n'
+        f'  "review_threshold": "~X reviews to appear on page 1",\n'
+        f'  "best_angle": "The single most underserved sub-angle or reader segment",\n'
+        f'  "ideal_price": "{currency}X.XX ebook / {currency}X.XX paperback",\n'
         '  "top_opportunities": ["specific opportunity 1", "opportunity 2", "opportunity 3"],\n'
         '  "key_risks": ["risk 1", "risk 2"],\n'
         '  "keyword_gems": ["high-potential keyword 1", "keyword 2", "keyword 3", "keyword 4"],\n'
