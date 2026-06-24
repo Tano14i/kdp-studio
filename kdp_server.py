@@ -3952,20 +3952,33 @@ async def fetch_amazon_reviews(req: dict):
     if not items:
         raise HTTPException(status_code=404, detail="Nessuna recensione trovata per questo ASIN")
 
+    # Debug: log actual keys so we can fix field mapping
+    if items and isinstance(items[0], dict):
+        print(f"[AmazonReviews] {len(items)} items. First item keys: {list(items[0].keys())}")
+        print(f"[AmazonReviews] First item sample: {str(items[0])[:300]}")
+
     lines = []
     for it in items:
         if not isinstance(it, dict):
             continue
-        rating = it.get("rating") or it.get("stars") or ""
-        title = it.get("title") or it.get("reviewTitle") or ""
-        text = it.get("text") or it.get("reviewText") or it.get("body") or ""
+        rating = it.get("rating") or it.get("stars") or it.get("ratingScore") or ""
+        title = (it.get("title") or it.get("reviewTitle") or it.get("reviewHeadline")
+                 or it.get("headline") or "")
+        text = (it.get("text") or it.get("reviewText") or it.get("body")
+                or it.get("reviewBody") or it.get("content") or it.get("review")
+                or it.get("reviewContent") or it.get("description") or "")
         if not text:
             continue
-        star = "★" * int(rating) if isinstance(rating, (int, float)) and 1 <= rating <= 5 else ""
+        star = "★" * int(rating) if isinstance(rating, (int, float)) and 1 <= int(rating) <= 5 else ""
         lines.append(f"{star} {title}\n{text}".strip())
 
     if not lines:
-        raise HTTPException(status_code=404, detail="Nessun testo recensione estratto — l'actor ha restituito dati senza campo testo")
+        # Return keys in error so we can diagnose
+        sample_keys = list(items[0].keys()) if items and isinstance(items[0], dict) else []
+        raise HTTPException(
+            status_code=404,
+            detail=f"Nessun testo recensione estratto. Campi disponibili: {sample_keys}"
+        )
 
     return {
         "reviews_text": "\n\n".join(lines),
