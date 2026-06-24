@@ -3003,7 +3003,7 @@ async def niche_validator(req: dict):
         try:
             items = await asyncio.wait_for(
                 run_actor(
-                    "junglee/amazon-product-scraper",
+                    "junglee/amazon-crawler",
                     {
                         "startUrls": [{"url": search_url}],
                         "maxItems": 20,
@@ -3131,7 +3131,7 @@ async def asin_reverse(req: dict):
         try:
             items = await asyncio.wait_for(
                 run_actor(
-                    "junglee/amazon-product-scraper",
+                    "junglee/amazon-crawler",
                     {
                         "startUrls": [{"url": product_url}],
                         "maxItems": 1,
@@ -4052,7 +4052,7 @@ async def competition_map(req: dict):
         search_url = f"https://www.amazon.{tld}/s?k={url_quote(niche)}&rh=n%3A283155"
         try:
             items = await asyncio.wait_for(
-                run_actor("junglee/amazon-product-scraper", {
+                run_actor("junglee/amazon-crawler", {
                     "startUrls": [{"url": search_url}],
                     "maxItems": 10,
                     "proxyConfiguration": {"useApifyProxy": True},
