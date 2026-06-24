@@ -3932,14 +3932,14 @@ async def fetch_amazon_reviews(req: dict):
 
     tld_map = {"us": "com", "de": "de", "it": "it", "es": "es", "fr": "fr", "uk": "co.uk"}
     tld = tld_map.get(marketplace, "com")
-    product_url = f"https://www.amazon.{tld}/product-reviews/{asin}/?reviewerType=all_reviews&sortBy=recent"
+    product_url = f"https://www.amazon.{tld}/dp/{asin}"
 
     try:
         items = await asyncio.wait_for(
             run_actor(
-                "junglee/amazon-reviews-scraper",
+                "automation-lab/amazon-reviews-scraper",
                 {
-                    "productUrls": [{"url": product_url}],
+                    "startUrls": [{"url": product_url}],
                     "maxReviews": max_reviews,
                     "proxyConfiguration": {"useApifyProxy": True},
                 },
