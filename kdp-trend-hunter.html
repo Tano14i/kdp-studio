@@ -933,9 +933,29 @@ select option{background:var(--s2)}
       <span id="avatarSectionArrow" style="color:var(--muted);font-size:14px;transition:transform 0.2s">▼</span>
     </div>
     <div id="avatarSection" style="display:none;padding:16px 18px">
-      <div style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.6">
-        Vai su Amazon, apri 3-5 libri competitor, copia le recensioni (anche solo le prime 10 per libro) e incollale qui. Claude estrae i profili psicografici reali dei tuoi acquirenti.
+      <!-- ASIN auto-import -->
+      <div style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:12px 14px;margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;color:#fbbf24;margin-bottom:8px">📥 Importa recensioni da Amazon</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input id="avatarAsin" type="text" placeholder="ASIN (es: B0H1849YHB)" maxlength="12"
+            style="flex:1;min-width:130px;font-size:12px;padding:8px 10px;background:rgba(255,255,255,0.05);border:1px solid rgba(251,191,36,0.3);border-radius:8px;color:#e2e8f0;outline:none" />
+          <select id="avatarMarketplace" style="font-size:12px;padding:8px 10px;background:rgba(15,15,35,0.9);border:1px solid rgba(251,191,36,0.3);border-radius:8px;color:#e2e8f0">
+            <option value="it">🇮🇹 .it</option>
+            <option value="us">🇺🇸 .com</option>
+            <option value="de">🇩🇪 .de</option>
+            <option value="es">🇪🇸 .es</option>
+            <option value="fr">🇫🇷 .fr</option>
+            <option value="uk">🇬🇧 .co.uk</option>
+          </select>
+          <button class="btn" onclick="fetchAvatarReviews()" id="avatarFetchBtn"
+            style="background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.4);color:#fbbf24;font-size:12px;padding:8px 13px;white-space:nowrap">
+            <span id="avatarFetchTxt">🔗 Scarica Recensioni</span>
+            <div class="spin" id="avatarFetchSpin" style="display:none;border-top-color:#fbbf24"></div>
+          </button>
+        </div>
+        <div id="avatarFetchStatus" style="font-size:11px;color:var(--muted);margin-top:6px"></div>
       </div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:8px">Oppure incolla manualmente:</div>
       <textarea id="avatarReviews" rows="6" placeholder="Incolla qui le recensioni dei libri competitor (minimo 5-6 recensioni per risultati accurati):&#10;&#10;★★★★★ Questo libro ha cambiato il mio approccio alla vita quotidiana...&#10;★★★☆☆ Buon contenuto ma troppo teorico, avrei voluto più esercizi pratici...&#10;★★★★★ Finalmente qualcosa che parla a chi come me si sente sopraffatto..." style="font-size:12px;margin-bottom:10px"></textarea>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
         <button class="btn" onclick="generateAvatar()" style="background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.4);color:#fbbf24;font-size:13px">
@@ -6403,6 +6423,37 @@ async function analyzeNicheOpportunity() {
 }
 
 // ── CUSTOMER AVATAR GENERATOR ──────────────────────────────────
+async function fetchAvatarReviews() {
+  const asin = (document.getElementById('avatarAsin')?.value || '').trim().toUpperCase();
+  const marketplace = document.getElementById('avatarMarketplace')?.value || 'it';
+  if (!asin || asin.length < 8) { alert('Inserisci un ASIN valido (es: B0H1849YHB)'); return; }
+
+  const btn = document.getElementById('avatarFetchBtn');
+  const spin = document.getElementById('avatarFetchSpin');
+  const txt = document.getElementById('avatarFetchTxt');
+  const status = document.getElementById('avatarFetchStatus');
+
+  btn.disabled = true;
+  spin.style.display = 'inline-block';
+  txt.textContent = 'Scaricando...';
+  status.textContent = '⏳ Contatto Amazon via Apify — può richiedere 30-60 secondi...';
+  status.style.color = 'var(--muted)';
+
+  try {
+    const data = await callBackend('/api/amazon-reviews', { asin, marketplace, max_reviews: 40 });
+    document.getElementById('avatarReviews').value = data.reviews_text;
+    status.textContent = `✅ ${data.count} recensioni importate da Amazon.${marketplace === 'us' ? 'com' : '.' + marketplace} — premi "Genera Avatar"`;
+    status.style.color = '#4ade80';
+  } catch (e) {
+    status.textContent = `❌ ${e.message || 'Errore fetch recensioni'}`;
+    status.style.color = '#f87171';
+  } finally {
+    btn.disabled = false;
+    spin.style.display = 'none';
+    txt.textContent = '🔗 Scarica Recensioni';
+  }
+}
+
 async function generateAvatar() {
   const reviews = (document.getElementById('avatarReviews')?.value || '').trim();
   if (!reviews || reviews.length < 100) { alert('Incolla almeno qualche recensione (min ~100 caratteri) per risultati accurati.'); return; }

@@ -3912,6 +3912,63 @@ class AvatarRequest(BaseModel):
     niche: Optional[str] = ""
     audience: Optional[str] = ""
 
+@app.post("/api/amazon-reviews", dependencies=[_AUTH])
+async def fetch_amazon_reviews(req: dict):
+    """Fetch real Amazon reviews for an ASIN via Apify — feeds Customer Avatar Generator."""
+    asin = req.get("asin", "").strip().upper()
+    marketplace = req.get("marketplace", "us")
+    max_reviews = min(int(req.get("max_reviews", 30)), 60)
+
+    if not asin or len(asin) < 8:
+        raise HTTPException(status_code=400, detail="ASIN non valido")
+    if not APIFY_TOKEN:
+        raise HTTPException(status_code=503, detail="APIFY_TOKEN non configurato")
+
+    tld_map = {"us": "com", "de": "de", "it": "it", "es": "es", "fr": "fr", "uk": "co.uk"}
+    tld = tld_map.get(marketplace, "com")
+    product_url = f"https://www.amazon.{tld}/product-reviews/{asin}/?reviewerType=all_reviews&sortBy=recent"
+
+    try:
+        items = await asyncio.wait_for(
+            run_actor(
+                "junglee/amazon-reviews-scraper",
+                {
+                    "startUrls": [{"url": product_url}],
+                    "maxReviews": max_reviews,
+                    "proxyConfiguration": {"useApifyProxy": True},
+                },
+            ),
+            timeout=90.0,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Apify error: {str(e)[:200]}")
+
+    if not items:
+        raise HTTPException(status_code=404, detail="Nessuna recensione trovata per questo ASIN")
+
+    lines = []
+    for it in items:
+        if not isinstance(it, dict):
+            continue
+        rating = it.get("rating") or it.get("stars") or ""
+        title = it.get("title") or it.get("reviewTitle") or ""
+        text = it.get("text") or it.get("reviewText") or it.get("body") or ""
+        if not text:
+            continue
+        star = "★" * int(rating) if isinstance(rating, (int, float)) and 1 <= rating <= 5 else ""
+        lines.append(f"{star} {title}\n{text}".strip())
+
+    if not lines:
+        raise HTTPException(status_code=404, detail="Nessun testo recensione estratto — l'actor ha restituito dati senza campo testo")
+
+    return {
+        "reviews_text": "\n\n".join(lines),
+        "count": len(lines),
+        "asin": asin,
+        "marketplace": marketplace,
+    }
+
+
 @app.post("/api/avatar", dependencies=[_AUTH])
 async def generate_avatar(req: AvatarRequest):
     """Generate 2 customer avatars from competitor reviews using Claude."""
