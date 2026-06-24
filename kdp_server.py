@@ -3916,13 +3916,24 @@ async def blotato_post(req: dict):
     results = []
     async with httpx.AsyncClient(timeout=60) as client:
         for post in posts:
-            _CONTENT_KEYS = {"text", "mediaUrls"}
-            _TARGET_KEYS  = {"accountId", "platform", "boardId", "pageId",
-                              "privacyLevel", "privacyStatus", "title",
-                              "scheduledTime", "useNextFreeSlot"}
-            content = {k: v for k, v in post.items() if k in _CONTENT_KEYS}
-            target  = {k: v for k, v in post.items() if k in _TARGET_KEYS}
-            payload = {"post": {"content": content, "target": target}}
+            platform   = post.get("platform", "")
+            media_urls = post.get("mediaUrls", [])
+            content: dict = {"platform": platform, "text": post.get("text", ""), "mediaUrls": media_urls}
+            # targetType mirrors platform name (Blotato enum)
+            target: dict = {"targetType": platform}
+            if post.get("boardId"):      target["boardId"]      = post["boardId"]
+            if post.get("pageId"):       target["pageId"]       = post["pageId"]
+            if post.get("privacyLevel"): target["privacyLevel"] = post["privacyLevel"]
+            if post.get("privacyStatus"):target["privacyStatus"]= post["privacyStatus"]
+            if post.get("title"):        content["title"]       = post["title"]
+            post_obj: dict = {
+                "accountId": post.get("accountId", ""),
+                "content": content,
+                "target": target,
+            }
+            if post.get("scheduledTime"):    post_obj["scheduledTime"]    = post["scheduledTime"]
+            if post.get("useNextFreeSlot"):  post_obj["useNextFreeSlot"]  = post["useNextFreeSlot"]
+            payload = {"post": post_obj}
             try:
                 r = await client.post(
                     f"{_BLOTATO_BASE}/v2/posts",
