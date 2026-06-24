@@ -387,6 +387,18 @@ select option{background:var(--s2)}
     <p>Seleziona piattaforme e nicchia — Claude analizza cosa sta esplodendo e genera idee di libri pronte.</p>
   </div>
 
+  <!-- NICHE PORTFOLIO -->
+  <div id="nichePortfolioSection" style="display:none;margin-bottom:18px;background:rgba(34,197,94,0.03);border:1px solid rgba(34,197,94,0.2);border-radius:12px;overflow:hidden">
+    <div style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:12px;font-weight:700;color:#22c55e">📁 Portfolio Nicchie</span>
+        <span id="portfolioBadge" style="font-size:10px;padding:1px 7px;border-radius:10px;background:rgba(34,197,94,0.15);color:#22c55e;border:1px solid rgba(34,197,94,0.3)">0</span>
+      </div>
+      <button onclick="clearNichePortfolio()" style="font-size:10px;color:var(--muted);background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:5px">🗑 Svuota tutto</button>
+    </div>
+    <div id="portfolioEntries" style="padding:0 16px 14px;display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+
   <!-- ASIN INTEL — entry via competitor -->
   <div style="margin-bottom:18px;background:rgba(167,139,250,0.04);border:1px solid rgba(167,139,250,0.2);border-radius:12px;overflow:hidden">
     <div onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.querySelector('.asin-arrow').style.transform=this.nextElementSibling.style.display==='block'?'rotate(180deg)':''" style="padding:10px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between">
@@ -639,6 +651,8 @@ select option{background:var(--s2)}
 
   <!-- NICHE VALIDATOR -->
   <div id="nicheValidatorRow" style="display:none;margin-top:14px"></div>
+  <div id="nicheCompMapOut" style="display:none;margin-top:10px"></div>
+  <div id="nicheKeywordFunnelOut" style="display:none;margin-top:10px"></div>
 
   <div class="action-row" id="p1actions" style="display:none">
     <button class="btn btn-accent" onclick="goPanel('p2')">Continua →</button>
@@ -1544,7 +1558,11 @@ const state = {
   discoveryMode: 'niche',  // 'niche' | 'global'
   amazonKeywords: [],
   customerAvatar: null,
+  comparisonNiches: [],
 };
+
+// Load portfolio on start
+(function() { try { renderNichePortfolio(); } catch(e) {} })();
 
 // ─── PANEL NAV ───────────────────────────────────────────
 function goPanel(id) {
@@ -2613,6 +2631,15 @@ function renderNicheValidator(d, niche) {
   const row = document.getElementById('nicheValidatorRow');
   if (!row || !d) return;
 
+  window._lastValidatedNiche = niche;
+  window._lastValidatorData = d;
+
+  // Reset downstream panels when a new niche is validated
+  const compMapOut = document.getElementById('nicheCompMapOut');
+  const kfOut = document.getElementById('nicheKeywordFunnelOut');
+  if (compMapOut) { compMapOut.style.display = 'none'; compMapOut.innerHTML = ''; }
+  if (kfOut) { kfOut.style.display = 'none'; kfOut.innerHTML = ''; }
+
   const verdictConfig = {
     'GO':       { bg:'rgba(34,197,94,0.08)',  border:'rgba(34,197,94,0.3)',  color:'#22c55e', icon:'✅', label:'GO' },
     'CAUTIOUS': { bg:'rgba(245,158,11,0.08)', border:'rgba(245,158,11,0.3)', color:'#f59e0b', icon:'⚠️', label:'CAUTIOUS' },
@@ -2717,6 +2744,13 @@ function renderNicheValidator(d, niche) {
         ${d.timing_advice ? `<span style="width:100%;font-size:11px;color:var(--text)">${escHtml(d.timing_advice)}</span>` : ''}
       </div>`;
     })() : ''}
+
+    <!-- Action bar -->
+    <div style="padding:10px 16px 14px;display:flex;gap:7px;flex-wrap:wrap;border-top:1px solid var(--border);margin-top:4px">
+      <button onclick="saveNicheToPortfolio()" style="font-size:11px;padding:5px 12px;border-radius:7px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#22c55e;cursor:pointer">💾 Salva in Portfolio</button>
+      <button onclick="runCompetitionMap()" style="font-size:11px;padding:5px 12px;border-radius:7px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);color:#f87171;cursor:pointer">🗺️ Mappa Competitor</button>
+      <button onclick="runKeywordFunnel()" style="font-size:11px;padding:5px 12px;border-radius:7px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.25);color:#60a5fa;cursor:pointer">🔑 Keyword Funnel</button>
+    </div>
   </div>`;
 }
 
@@ -2944,6 +2978,198 @@ function renderAsinIntel(d) {
       ${d.use_as_niche ? `<button class="btn btn-ghost" onclick="applyAdjacentNiche('${(d.use_as_niche||'').replace(/'/g,"\\'")}');document.getElementById('asinIntelOut').closest('div[style*=display]').style.display='none'" style="font-size:12px;padding:7px 14px">Usa "${escHtml(d.use_as_niche)}" come nicchia →</button>` : ''}
       ${!d.live_data ? '<span style="font-size:10px;color:var(--muted);align-self:center">⚠️ Dati live non disponibili — analisi da ASIN</span>' : '<span style="font-size:10px;color:#22c55e;align-self:center">✓ Dati live Apify</span>'}
     </div>
+  </div>`;
+}
+
+// ─── NICHE PORTFOLIO ─────────────────────────────────────────
+function loadNichePortfolio() {
+  try { return JSON.parse(localStorage.getItem('kdp_niche_portfolio') || '[]'); } catch { return []; }
+}
+
+function saveNicheToPortfolio() {
+  const niche = window._lastValidatedNiche;
+  const data = window._lastValidatorData;
+  if (!niche || !data) return;
+  const portfolio = loadNichePortfolio();
+  const existing = portfolio.findIndex(e => e.name === niche);
+  const entry = { name: niche, data, savedAt: new Date().toLocaleDateString('it-IT') };
+  if (existing >= 0) portfolio[existing] = entry;
+  else portfolio.unshift(entry);
+  localStorage.setItem('kdp_niche_portfolio', JSON.stringify(portfolio.slice(0, 20)));
+  renderNichePortfolio();
+}
+
+function removeNicheFromPortfolio(idx) {
+  const portfolio = loadNichePortfolio();
+  portfolio.splice(idx, 1);
+  localStorage.setItem('kdp_niche_portfolio', JSON.stringify(portfolio));
+  renderNichePortfolio();
+}
+
+function clearNichePortfolio() {
+  if (!confirm('Svuotare tutto il portfolio nicchie?')) return;
+  localStorage.removeItem('kdp_niche_portfolio');
+  renderNichePortfolio();
+}
+
+function renderNichePortfolio() {
+  const section = document.getElementById('nichePortfolioSection');
+  const entries = document.getElementById('portfolioEntries');
+  const badge = document.getElementById('portfolioBadge');
+  if (!section || !entries) return;
+  const portfolio = loadNichePortfolio();
+  if (badge) badge.textContent = portfolio.length;
+  if (!portfolio.length) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  const verdictIcon = { GO: '✅', CAUTIOUS: '⚠️', 'NO-GO': '❌' };
+  const urgIcon = { NOW: '🔥', SOON: '⚡', WAIT: '⏳', AVOID: '🚫' };
+  entries.innerHTML = portfolio.map((e, i) => {
+    const d = e.data || {};
+    const vi = verdictIcon[d.verdict] || '?';
+    const ui = urgIcon[d.launch_urgency] || '';
+    const sc = d.profitability_score >= 7 ? '#22c55e' : d.profitability_score >= 5 ? '#f59e0b' : '#ef4444';
+    return `<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:14px;flex-shrink:0">${vi}</span>
+      <div style="flex:1;min-width:100px">
+        <div style="font-size:12px;font-weight:600;color:var(--text)">${escHtml(e.name)}</div>
+        <div style="font-size:10px;color:var(--muted)">${e.savedAt || ''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;flex-shrink:0;flex-wrap:wrap">
+        ${d.profitability_score ? `<span style="font-size:15px;font-weight:800;color:${sc}">${d.profitability_score}<span style="font-size:9px">/10</span></span>` : ''}
+        ${ui ? `<span style="font-size:13px">${ui}</span>` : ''}
+        <button onclick="applyAdjacentNiche('${e.name.replace(/'/g,"\\'")}');setTimeout(()=>window.scrollTo({top:document.getElementById('nicheValidatorRow').offsetTop-20,behavior:'smooth'}),200)" style="font-size:10px;padding:4px 9px;border-radius:6px;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.3);color:#a78bfa;cursor:pointer">↻ Rivalida</button>
+        <button onclick="applyAdjacentNiche('${e.name.replace(/'/g,"\\'")}');goPanel('p2')" style="font-size:10px;padding:4px 9px;border-radius:6px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#22c55e;cursor:pointer">→ Usa</button>
+        <button onclick="removeNicheFromPortfolio(${i})" style="font-size:10px;padding:4px 7px;border-radius:6px;background:none;border:1px solid var(--border);color:var(--muted);cursor:pointer">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── COMPETITION MAP ─────────────────────────────────────────
+async function runCompetitionMap() {
+  const niche = window._lastValidatedNiche;
+  if (!niche) return;
+  const out = document.getElementById('nicheCompMapOut');
+  if (!out) return;
+  out.style.display = 'block';
+  out.innerHTML = `<div style="background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:8px">
+    <div class="spin" style="border-top-color:#ef4444"></div>
+    <span style="font-size:11px;color:var(--muted)">Analisi top competitor in corso…</span>
+  </div>`;
+  try {
+    const mkt = document.getElementById('marketSelect')?.value || '';
+    const mktCode = { 'English':'us','German philosophy and culture':'de','Mediterranean and Italian culture':'it' }[mkt] || 'us';
+    const data = await callBackend('/api/competition-map', { niche, marketplace: mktCode });
+    renderCompetitionMap(data, niche);
+  } catch(e) {
+    out.innerHTML = `<div style="padding:10px 14px;font-size:11px;color:var(--muted);background:var(--s1);border:1px solid var(--border);border-radius:10px">⚠️ ${escHtml(e.message)}</div>`;
+  }
+}
+
+function renderCompetitionMap(d, niche) {
+  const out = document.getElementById('nicheCompMapOut');
+  if (!out || !d) return;
+  const books = d.books || [];
+  out.innerHTML = `<div style="background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.2);border-radius:12px;overflow:hidden">
+    <div style="padding:10px 16px;border-bottom:1px solid rgba(239,68,68,0.15);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
+      <span style="font-size:12px;font-weight:700;color:#f87171">🗺️ Mappa Competitor — ${escHtml(niche)}</span>
+      ${d.apify_used ? '<span style="font-size:9px;padding:2px 7px;border-radius:10px;background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2)">📊 Dati live Apify</span>' : '<span style="font-size:9px;color:var(--muted)">🤖 Stima Claude</span>'}
+    </div>
+    <div style="padding:12px 16px;display:flex;flex-direction:column;gap:6px">
+      ${books.map((b, i) => `
+        <div style="padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:8px">
+          <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">${i+1}. ${escHtml(b.title || '')}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            ${b.reviews_est ? `<span style="font-size:9px;color:var(--muted)">⭐ ${escHtml(String(b.reviews_est))}</span>` : ''}
+            ${b.price_est ? `<span style="font-size:9px;color:var(--muted)">💰 ${escHtml(String(b.price_est))}</span>` : ''}
+            ${b.weakness ? `<span style="font-size:10px;color:#f59e0b">⚡ ${escHtml(b.weakness)}</span>` : ''}
+          </div>
+          ${b.reader_complaint ? `<div style="font-size:9px;color:var(--muted);margin-top:2px;font-style:italic">"${escHtml(b.reader_complaint)}"</div>` : ''}
+        </div>`).join('')}
+    </div>
+    ${d.collective_gap ? `<div style="margin:0 16px 10px;padding:10px 13px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:8px">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#22c55e;margin-bottom:4px">🎯 Gap Collettivo</div>
+      <div style="font-size:12px;line-height:1.5;color:var(--text)">${escHtml(d.collective_gap)}</div>
+    </div>` : ''}
+    ${d.white_space_angle ? `<div style="margin:0 16px 10px;padding:10px 13px;background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.25);border-radius:8px">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#a78bfa;margin-bottom:4px">✨ White Space Angle</div>
+      <div style="font-size:12px;line-height:1.5;color:var(--text)">${escHtml(d.white_space_angle)}</div>
+    </div>` : ''}
+    ${d.attack_strategy ? `<div style="margin:0 16px 10px;padding:10px 13px;background:rgba(255,140,66,0.08);border:1px solid rgba(255,140,66,0.25);border-radius:8px">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#ff8c42;margin-bottom:4px">⚔️ Attack Strategy</div>
+      <div style="font-size:12px;line-height:1.5;color:var(--text)">${escHtml(d.attack_strategy)}</div>
+    </div>` : ''}
+    ${d.best_title_formula ? `<div style="margin:0 16px 14px;padding:9px 12px;background:var(--s2);border-radius:6px;border-left:3px solid rgba(255,140,66,0.5)">
+      <div style="font-size:9px;font-weight:700;color:var(--muted);margin-bottom:3px">FORMULA TITOLO VINCENTE</div>
+      <div style="font-size:11px;color:var(--text);font-style:italic">${escHtml(d.best_title_formula)}</div>
+    </div>` : ''}
+  </div>`;
+}
+
+// ─── KEYWORD FUNNEL ──────────────────────────────────────────
+async function runKeywordFunnel() {
+  const niche = window._lastValidatedNiche;
+  if (!niche) return;
+  const out = document.getElementById('nicheKeywordFunnelOut');
+  if (!out) return;
+  out.style.display = 'block';
+  out.innerHTML = `<div style="background:rgba(59,130,246,0.04);border:1px solid rgba(59,130,246,0.2);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:8px">
+    <div class="spin" style="border-top-color:#3b82f6"></div>
+    <span style="font-size:11px;color:var(--muted)">Raccolta e classificazione keyword in corso…</span>
+  </div>`;
+  try {
+    const mkt = document.getElementById('marketSelect')?.value || '';
+    const mktCode = { 'English':'us','German philosophy and culture':'de','Mediterranean and Italian culture':'it' }[mkt] || 'us';
+    const data = await callBackend('/api/keyword-funnel', { niche, marketplace: mktCode });
+    renderKeywordFunnel(data, niche);
+  } catch(e) {
+    out.innerHTML = `<div style="padding:10px 14px;font-size:11px;color:var(--muted);background:var(--s1);border:1px solid var(--border);border-radius:10px">⚠️ ${escHtml(e.message)}</div>`;
+  }
+}
+
+function renderKeywordFunnel(d, niche) {
+  const out = document.getElementById('nicheKeywordFunnelOut');
+  if (!out || !d) return;
+  function kwRow(kw, color, bg) {
+    return `<div style="padding:7px 10px;background:${bg};border-radius:6px;margin-bottom:5px">
+      <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+        <span style="font-size:11px;font-weight:600;color:${color}">${escHtml(kw.kw || '')}</span>
+        ${kw.monthly_est ? `<span style="font-size:9px;color:var(--muted)">~${escHtml(kw.monthly_est)}/mo</span>` : ''}
+        <span style="font-size:9px;padding:1px 6px;border-radius:8px;background:${color}20;color:${color};border:1px solid ${color}40">${escHtml(kw.difficulty || '')}</span>
+      </div>
+      ${kw.why ? `<div style="font-size:9px;color:var(--muted);margin-top:2px">${escHtml(kw.why)}</div>` : ''}
+    </div>`;
+  }
+  out.innerHTML = `<div style="background:rgba(59,130,246,0.04);border:1px solid rgba(59,130,246,0.2);border-radius:12px;overflow:hidden">
+    <div style="padding:10px 16px;border-bottom:1px solid rgba(59,130,246,0.15)">
+      <span style="font-size:12px;font-weight:700;color:#60a5fa">🔑 Keyword Funnel — ${escHtml(niche)}</span>
+    </div>
+    <div style="padding:12px 16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+      <div>
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#ef4444;margin-bottom:8px">🔴 HEAD — Alta competizione</div>
+        ${(d.head||[]).map(k => kwRow(k,'#ef4444','rgba(239,68,68,0.06)')).join('')}
+      </div>
+      <div>
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#f59e0b;margin-bottom:8px">🟡 BODY — Media competizione</div>
+        ${(d.body||[]).map(k => kwRow(k,'#f59e0b','rgba(245,158,11,0.06)')).join('')}
+      </div>
+      <div>
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#22c55e;margin-bottom:8px">🟢 LONG-TAIL — Easy wins</div>
+        ${(d.longtail||[]).map(k => kwRow(k,'#22c55e','rgba(34,197,94,0.06)')).join('')}
+      </div>
+    </div>
+    ${d.title_formula || d.subtitle_formula ? `<div style="margin:0 16px 10px;padding:10px 13px;background:var(--s2);border-radius:8px;border-left:3px solid rgba(59,130,246,0.5)">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:5px">FORMULA VINCENTE PER KDP</div>
+      ${d.title_formula ? `<div style="font-size:11px;color:var(--text);margin-bottom:4px">📌 <strong>Titolo:</strong> ${escHtml(d.title_formula)}</div>` : ''}
+      ${d.subtitle_formula ? `<div style="font-size:11px;color:var(--text)">📝 <strong>Sottotitolo:</strong> ${escHtml(d.subtitle_formula)}</div>` : ''}
+    </div>` : ''}
+    ${d.backend_keywords?.length ? `<div style="margin:0 16px 14px;padding:9px 12px;background:rgba(96,165,250,0.06);border:1px solid rgba(59,130,246,0.2);border-radius:6px">
+      <div style="font-size:9px;font-weight:700;color:var(--muted);margin-bottom:5px">7 KEYWORD BACKEND KDP (clicca per copiare)</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">
+        ${(d.backend_keywords||[]).map(k => `<span onclick="navigator.clipboard.writeText('${k.replace(/'/g,"\\'")}').then(()=>this.style.background='rgba(34,197,94,0.2)')" style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);color:#60a5fa;cursor:pointer;transition:background 0.2s">${escHtml(k)}</span>`).join('')}
+      </div>
+      ${d.insight ? `<div style="font-size:10px;color:var(--muted);margin-top:6px;font-style:italic">💡 ${escHtml(d.insight)}</div>` : ''}
+    </div>` : ''}
   </div>`;
 }
 

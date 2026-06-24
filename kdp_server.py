@@ -4013,6 +4013,162 @@ Apply the 3-question framework and return JSON:
 
 
 # ══════════════════════════════════════════════════════════════
+# COMPETITION MAP — top 5 collective gap analysis
+# ══════════════════════════════════════════════════════════════
+
+@app.post("/api/competition-map", dependencies=[_AUTH])
+async def competition_map(req: dict):
+    niche = (req.get("niche") or "").strip()
+    marketplace = req.get("marketplace", "us")
+    if not niche:
+        raise HTTPException(status_code=400, detail="Niche required")
+
+    tld_map = {"us": "com", "de": "de", "it": "it", "es": "es", "fr": "fr", "uk": "co.uk"}
+    tld = tld_map.get(marketplace, "com")
+
+    books_data: list[dict] = []
+    apify_used = False
+
+    if APIFY_TOKEN:
+        from urllib.parse import quote as url_quote
+        search_url = f"https://www.amazon.{tld}/s?k={url_quote(niche)}&rh=n%3A283155"
+        try:
+            items = await asyncio.wait_for(
+                run_actor("epctex/amazon-crawler", {
+                    "startUrls": [{"url": search_url}],
+                    "maxItems": 10,
+                    "proxyConfiguration": {"useApifyProxy": True},
+                }),
+                timeout=90.0,
+            )
+            for item in (items or []):
+                title = item.get("title") or item.get("name") or ""
+                reviews = item.get("reviewsCount") or item.get("numberOfReviews") or 0
+                price = item.get("price") or item.get("price_string") or ""
+                bsr_raw = (item.get("bestsellersRank") or item.get("bsr")
+                           or item.get("bestSellersRank") or [])
+                bsr_val = None
+                if isinstance(bsr_raw, list) and bsr_raw:
+                    first = bsr_raw[0]
+                    bsr_val = first.get("rank") or first.get("position") if isinstance(first, dict) else first
+                elif isinstance(bsr_raw, int):
+                    bsr_val = bsr_raw
+                if title:
+                    books_data.append({"title": title, "reviews": reviews,
+                                       "bsr": bsr_val, "price": str(price)})
+            apify_used = bool(books_data)
+        except Exception:
+            pass
+
+    books_list = "\n".join(
+        f"- \"{b['title']}\" (reviews: {b.get('reviews','?')}, BSR: {b.get('bsr','?')})"
+        for b in books_data[:8]
+    ) if books_data else "No live data — use your knowledge of this niche."
+
+    prompt = f"""You are an Amazon KDP competitive intelligence expert.
+Niche: {niche} | Marketplace: amazon.{tld}
+
+Top books in this niche:
+{books_list}
+
+Analyze the competitive landscape and return JSON:
+{{
+  "books": [
+    {{
+      "title": "book title (use real titles if data available, otherwise estimate)",
+      "reviews_est": "number or range",
+      "price_est": "$X.XX or range",
+      "weakness": "specific weakness or gap THIS book has",
+      "reader_complaint": "what readers actually complain about"
+    }}
+  ],
+  "collective_gap": "What ALL these books fail to do — the shared blind spot that no one has solved",
+  "white_space_angle": "The specific book angle that doesn't exist yet but readers clearly want",
+  "attack_strategy": "Concrete 2-sentence strategy to win against these books",
+  "best_title_formula": "Title pattern that would dominate: example + explanation of the formula"
+}}
+
+Return exactly 5 books. Detect language from the niche and write all text in that language.
+Output ONLY valid JSON."""
+
+    raw = await call_claude(prompt, max_tokens=1400)
+    data = parse_json_safe(raw)
+    data["apify_used"] = apify_used
+    return data
+
+
+# ══════════════════════════════════════════════════════════════
+# KEYWORD FUNNEL — head / body / long-tail tiers
+# ══════════════════════════════════════════════════════════════
+
+@app.post("/api/keyword-funnel", dependencies=[_AUTH])
+async def keyword_funnel(req: dict):
+    niche = (req.get("niche") or "").strip()
+    marketplace = req.get("marketplace", "us")
+    if not niche:
+        raise HTTPException(status_code=400, detail="Niche required")
+
+    lang_map = {"us": "en", "de": "de", "it": "it", "es": "es", "fr": "fr"}
+    lang = lang_map.get(marketplace, "en")
+
+    all_suggestions: set[str] = set()
+    queries = [niche, f"{niche} book", f"{niche} for", f"{niche} guide", f"best {niche}"]
+
+    async def fetch_one(q: str) -> list[str]:
+        try:
+            return await asyncio.wait_for(fetch_google_autocomplete(q, lang), timeout=8.0)
+        except Exception:
+            return []
+
+    results = await asyncio.gather(*[fetch_one(q) for q in queries], return_exceptions=True)
+    for r in results:
+        if isinstance(r, list):
+            all_suggestions.update(r)
+
+    try:
+        amazon_sugg = await asyncio.wait_for(fetch_amazon_autocomplete(niche), timeout=8.0)
+        all_suggestions.update(amazon_sugg)
+    except Exception:
+        pass
+
+    sugg_text = "\n".join(f"- {s}" for s in sorted(all_suggestions)[:50])
+
+    prompt = f"""You are an Amazon KDP keyword strategy expert.
+Niche: {niche} | Marketplace: {marketplace}
+
+Autocomplete suggestions gathered:
+{sugg_text if sugg_text else 'No live suggestions — use your knowledge.'}
+
+Classify and expand keywords, return JSON:
+{{
+  "head": [
+    {{"kw": "keyword", "difficulty": "High", "why": "why hard to rank", "monthly_est": "rough volume"}}
+  ],
+  "body": [
+    {{"kw": "keyword", "difficulty": "Medium", "why": "why achievable", "monthly_est": "..."}}
+  ],
+  "longtail": [
+    {{"kw": "keyword", "difficulty": "Low", "why": "easy win reason", "monthly_est": "..."}}
+  ],
+  "title_formula": "Recommended title using a body keyword — show a real example",
+  "subtitle_formula": "Recommended subtitle weaving 1-2 longtail keywords — real example",
+  "backend_keywords": ["kw1", "kw2", "kw3", "kw4", "kw5", "kw6", "kw7"],
+  "insight": "One key strategic insight about keywords in this niche"
+}}
+
+Rules:
+- head: 2-3 items, 1-2 word terms, everyone targets them
+- body: 3-5 items, 2-3 word phrases, your title/subtitle sweet spot
+- longtail: 4-6 items, 3-5 word phrases, easy-ranking gems
+- backend_keywords: exactly 7 items for KDP backend keyword boxes
+- ALL text in the language matching the niche input
+Output ONLY valid JSON."""
+
+    raw = await call_claude(prompt, max_tokens=1000)
+    return parse_json_safe(raw)
+
+
+# ══════════════════════════════════════════════════════════════
 # ENTRY POINT
 # ══════════════════════════════════════════════════════════════
 if __name__ == "__main__":
