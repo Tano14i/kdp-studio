@@ -3112,6 +3112,19 @@ async def niche_validator(req: dict):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/api/debug/env")
+async def debug_env():
+    """Show which env vars are present (keys only, no values) — for diagnosing Railway config."""
+    import os
+    apify_vars = {k: ("SET (non-empty)" if v else "SET (empty)") for k, v in os.environ.items() if "APIFY" in k.upper()}
+    token_present = bool(APIFY_TOKEN)
+    return {
+        "APIFY_TOKEN_loaded": token_present,
+        "apify_related_vars": apify_vars,
+        "all_env_keys": sorted(os.environ.keys()),
+    }
+
+
 @app.post("/api/asin-reverse", dependencies=[_AUTH])
 async def asin_reverse(req: dict):
     """Reverse-engineer a competitor ASIN: extract real niche, keywords, gaps, attack angle."""
