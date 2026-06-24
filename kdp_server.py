@@ -1336,7 +1336,7 @@ async def fetch_tiktok_trending(limit: int = 20) -> list[dict]:
         return []
 
 
-@app.get("/discover")
+@app.get("/discover", dependencies=[_AUTH])
 async def discover_unbiased(market_language: str = "English"):
     """
     Zero-bias discovery: fetch raw global signals from Reddit + Google Trends,

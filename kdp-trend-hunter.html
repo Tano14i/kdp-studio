@@ -1623,17 +1623,30 @@ async function callClaude(prompt, maxTokens = 4000) {
   return text;
 }
 
-async function callBackend(endpoint, body) {
-  const headers = { 'Content-Type': 'application/json' };
-  const apiKey = localStorage.getItem('kdp_api_key') || '';
-  if (apiKey) headers['X-API-Key'] = apiKey;
-  const res = await fetch(BACKEND_URL + endpoint, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(body)
-  });
+function _backendHeaders() {
+  const h = { 'Content-Type': 'application/json' };
+  const k = localStorage.getItem('kdp_api_key') || '';
+  if (k) h['X-API-Key'] = k;
+  return h;
+}
+
+async function callBackend(endpoint, body, timeoutMs = 120000) {
+  let res;
+  try {
+    res = await fetch(BACKEND_URL + endpoint, {
+      method: 'POST',
+      headers: _backendHeaders(),
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+  } catch(e) {
+    if (e.name === 'TimeoutError' || e.name === 'AbortError')
+      throw new Error('Timeout — il server impiega troppo. Riprova tra qualche secondo.');
+    throw e;
+  }
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
+    if (res.status === 401) throw new Error('API Key non valida — controlla ⚙️ Impostazioni.');
     throw new Error(err.detail || `Backend error ${res.status}`);
   }
   return res.json();
@@ -2025,12 +2038,24 @@ async function discoverGlobal() {
     </div>`;
 
   try {
-    const res = await fetch(BACKEND_URL + '/discover?market_language=' + encodeURIComponent(getMarketLang()), { method: 'GET' });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || 'Backend error ' + res.status);
+    let _discRes;
+    try {
+      _discRes = await fetch(BACKEND_URL + '/discover?market_language=' + encodeURIComponent(getMarketLang()), {
+        method: 'GET',
+        headers: _backendHeaders(),
+        signal: AbortSignal.timeout(120000),
+      });
+    } catch(e) {
+      if (e.name === 'TimeoutError' || e.name === 'AbortError')
+        throw new Error('Timeout — il server impiega troppo. Riprova tra qualche secondo.');
+      throw e;
     }
-    const data = await res.json();
+    if (!_discRes.ok) {
+      const err = await _discRes.json().catch(() => ({}));
+      if (_discRes.status === 401) throw new Error('API Key non valida — controlla ⚙️ Impostazioni.');
+      throw new Error(err.detail || 'Backend error ' + _discRes.status);
+    }
+    const data = await _discRes.json();
     renderOpportunities(data);
     saveTrackerSnapshot(data.opportunities || []);
   } catch(e) {
