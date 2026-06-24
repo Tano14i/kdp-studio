@@ -3961,16 +3961,18 @@ async def blotato_pinterest_boards(req: dict):
     if not account_id:
         raise HTTPException(status_code=400, detail="accountId mancante")
     headers = {"Authorization": f"Bearer {api_key}"}
+    # Blotato uses blotato-api-key header + specific path for Pinterest boards
+    headers_with_key = {"blotato-api-key": api_key, "Authorization": f"Bearer {api_key}"}
     candidates = [
-        f"{_BLOTATO_BASE}/v2/users/me/accounts/{account_id}/pinterest-boards",
-        f"{_BLOTATO_BASE}/v2/accounts/{account_id}/pinterest-boards",
-        f"{_BLOTATO_BASE}/v2/pinterest/boards?accountId={account_id}",
-        f"{_BLOTATO_BASE}/v2/pinterest-boards?accountId={account_id}",
+        (f"{_BLOTATO_BASE}/v2/social/pinterest/boards?accountId={account_id}", headers_with_key),
+        (f"{_BLOTATO_BASE}/v2/social/pinterest/boards?accountId={account_id}", headers),
+        (f"{_BLOTATO_BASE}/v2/users/me/accounts/{account_id}/pinterest-boards", headers),
+        (f"{_BLOTATO_BASE}/v2/users/me/accounts/{account_id}/boards", headers),
     ]
     async with httpx.AsyncClient(timeout=20) as client:
         last_status, last_body = 404, ""
-        for url in candidates:
-            r = await client.get(url, headers=headers)
+        for url, hdrs in candidates:
+            r = await client.get(url, headers=hdrs)
             print(f"[Pinterest boards] {url} → {r.status_code} {r.text[:200]}")
             if r.status_code == 200:
                 body = r.json()
