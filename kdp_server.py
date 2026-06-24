@@ -13,7 +13,7 @@ Endpoints:
   POST /package           ← multilingual KDP package
 """
 
-import os, asyncio, json, random
+import os, asyncio, json, random, re as _re
 from datetime import datetime
 from typing import Optional, List
 from fastapi import FastAPI, HTTPException, Depends, Request
@@ -614,6 +614,13 @@ async def fetch_multi_autocomplete(niche: str, lang_code: str = "en") -> dict:
                 if s not in yt_seen:
                     yt_seen.add(s); yt_all.append(s)
 
+    current_year = datetime.now().year
+    def _stale(kw: str) -> bool:
+        years = [int(m) for m in _re.findall(r'\b(20\d{2})\b', kw)]
+        return any(y <= current_year - 2 for y in years)
+
+    google_all = [k for k in google_all if not _stale(k)]
+    yt_all = [k for k in yt_all if not _stale(k)]
     return {"google": google_all[:25], "youtube": yt_all[:15]}
 
 # ══════════════════════════════════════════════════════════════
