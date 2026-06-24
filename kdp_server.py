@@ -3953,30 +3953,33 @@ async def blotato_post(req: dict):
 
 @app.post("/api/blotato/pinterest-boards", dependencies=[_AUTH])
 async def blotato_pinterest_boards(req: dict):
-    """Return Pinterest boards for a given Blotato accountId."""
+    """Return Pinterest boards for a given Blotato accountId — tries multiple endpoints."""
     api_key = req.get("apiKey", "").strip()
     account_id = req.get("accountId", "").strip()
     if not api_key:
         raise HTTPException(status_code=400, detail="Blotato API key mancante")
     if not account_id:
         raise HTTPException(status_code=400, detail="accountId mancante")
+    headers = {"Authorization": f"Bearer {api_key}"}
+    candidates = [
+        f"{_BLOTATO_BASE}/v2/users/me/accounts/{account_id}/pinterest-boards",
+        f"{_BLOTATO_BASE}/v2/accounts/{account_id}/pinterest-boards",
+        f"{_BLOTATO_BASE}/v2/pinterest/boards?accountId={account_id}",
+        f"{_BLOTATO_BASE}/v2/pinterest-boards?accountId={account_id}",
+    ]
     async with httpx.AsyncClient(timeout=20) as client:
-        r = await client.get(
-            f"{_BLOTATO_BASE}/v2/users/me/accounts/{account_id}/pinterest-boards",
-            headers={"Authorization": f"Bearer {api_key}"},
-        )
-        if r.status_code == 404:
-            # fallback: some Blotato versions use query param
-            r = await client.get(
-                f"{_BLOTATO_BASE}/v2/pinterest-boards",
-                headers={"Authorization": f"Bearer {api_key}"},
-                params={"accountId": account_id},
-            )
-        if r.status_code == 401:
-            raise HTTPException(status_code=401, detail="API key Blotato non valida")
-        if r.status_code != 200:
-            raise HTTPException(status_code=r.status_code, detail=r.text[:300])
-        return r.json()
+        last_status, last_body = 404, ""
+        for url in candidates:
+            r = await client.get(url, headers=headers)
+            print(f"[Pinterest boards] {url} → {r.status_code} {r.text[:200]}")
+            if r.status_code == 200:
+                body = r.json()
+                boards = body if isinstance(body, list) else (
+                    body.get("boards") or body.get("data") or body.get("items") or []
+                )
+                return {"boards": boards, "_raw": body}
+            last_status, last_body = r.status_code, r.text
+        raise HTTPException(status_code=last_status, detail=f"Impossibile caricare le bacheche Pinterest: {last_body[:300]}")
 
 
 @app.post("/api/apify/influencers", dependencies=[_AUTH])

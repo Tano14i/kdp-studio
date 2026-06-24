@@ -6533,6 +6533,9 @@ async function publishViablotato() {
   if (!selected.length) { alert('Seleziona almeno un account da cui pubblicare.'); return; }
   const hasPinterest = selected.some(a => a.platform === 'pinterest');
   if (hasPinterest && !imageUrl) { alert('Pinterest richiede un URL immagine — inseriscilo nel campo "URL immagine".'); return; }
+  if (hasPinterest && !document.getElementById('pinterestBoardSelect')?.value) {
+    alert('Seleziona una bacheca Pinterest dal selettore che appare sotto gli account.'); return;
+  }
 
   const btn = document.getElementById('pubBtnTxt');
   const spin = document.getElementById('pubSpin');
