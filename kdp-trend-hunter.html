@@ -46,7 +46,7 @@ header{
 .app-name{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;letter-spacing:-0.02em;background:linear-gradient(90deg,#4ade80,#22d3ee 45%,#818cf8);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
 .app-tag{color:var(--muted);font-size:11px;margin-left:auto}
 
-/* STEPS NAV */
+/* STEPS NAV — horizontal mobile default */
 .steps-nav{display:flex;gap:5px;padding:9px 20px;overflow-x:auto;scrollbar-width:none;position:sticky;top:57px;z-index:90;background:rgba(4,4,14,0.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(74,222,128,0.07);align-items:center;}
 .steps-nav::-webkit-scrollbar{display:none}
 .step-tab{padding:7px 15px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border:1px solid transparent;background:none;border-radius:20px;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:all 0.18s;font-family:'Inter',sans-serif;}
@@ -56,10 +56,23 @@ header{
 .step-num{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;border:1px solid currentColor;}
 .step-tab.done .step-num{background:var(--accent);border-color:var(--accent);color:#000}
 .step-tab.active .step-num{background:rgba(0,0,0,0.25);border-color:rgba(0,0,0,0.2);color:#030a06}
+/* SIDEBAR NAV — desktop override */
+@media(min-width:900px){
+  .steps-nav{flex-direction:column;width:192px;flex-shrink:0;height:calc(100vh - 57px);overflow-y:auto;overflow-x:hidden;padding:20px 10px;border-right:1px solid rgba(74,222,128,0.08);border-bottom:none;gap:3px;align-items:stretch;background:rgba(4,4,14,0.95);}
+  .step-tab{border-radius:10px;justify-content:flex-start;padding:10px 13px;font-size:12px;width:100%;white-space:normal;line-height:1.3;}
+  .step-tab.active{border-radius:10px;}
+  .sidebar-divider{display:block;height:1px;background:rgba(74,222,128,0.08);margin:8px 6px;}
+  .panel{padding:28px 32px 80px;max-width:820px;}
+}
+
+/* APP SHELL — sidebar layout */
+.app-shell{display:flex;align-items:flex-start;min-height:calc(100vh - 57px)}
+.app-content{flex:1;min-width:0;overflow:hidden}
 
 /* PANELS */
 .panel{display:none;padding:32px 28px 60px;max-width:900px;margin:0 auto}
-.panel.active{display:block}
+.panel.active{display:block;animation:panelIn 0.22s cubic-bezier(0.22,1,0.36,1);}
+@keyframes panelIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
 
 /* SECTION LABEL */
 .sect-label{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
@@ -112,11 +125,11 @@ select option{background:var(--s2)}
 .trend-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
 @media(max-width:640px){.trend-grid{grid-template-columns:1fr}}
 .trend-card{
-  background:var(--s1);border:2px solid var(--border);border-radius:12px;
-  padding:18px;cursor:pointer;transition:all 0.15s;position:relative;
+  background:rgba(9,9,24,0.6);backdrop-filter:blur(8px);border:1px solid rgba(74,222,128,0.08);border-radius:14px;
+  padding:18px;cursor:pointer;transition:all 0.18s cubic-bezier(0.34,1.56,0.64,1);position:relative;
 }
-.trend-card:hover{border-color:rgba(74,222,128,0.4);background:var(--s2);transform:translateY(-3px);box-shadow:0 10px 36px rgba(0,0,0,0.35),0 0 0 1px rgba(74,222,128,0.1);}
-.trend-card.selected{border-color:rgba(74,222,128,0.6);background:rgba(74,222,128,0.04);box-shadow:0 0 28px rgba(74,222,128,0.12);}
+.trend-card:hover{border-color:rgba(74,222,128,0.4);background:rgba(16,15,40,0.8);transform:translateY(-4px) scale(1.01);box-shadow:0 12px 40px rgba(0,0,0,0.4),0 0 0 1px rgba(74,222,128,0.12),0 0 24px rgba(74,222,128,0.06);}
+.trend-card.selected{border-color:rgba(74,222,128,0.6);background:rgba(74,222,128,0.04);box-shadow:0 0 32px rgba(74,222,128,0.18),0 0 0 1px rgba(74,222,128,0.15);}
 .t-platform{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
 .t-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;letter-spacing:-0.02em;margin-bottom:6px;line-height:1.3}
 .t-desc{font-size:12px;color:var(--muted);line-height:1.5}
@@ -142,9 +155,13 @@ select option{background:var(--s2)}
 
 /* CONTENT OUTPUT */
 .content-block{
-  background:var(--s1);border:1px solid var(--border);border-radius:12px;
+  background:rgba(9,9,24,0.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(74,222,128,0.1);border-radius:14px;
+  box-shadow:0 4px 24px rgba(0,0,0,0.25),inset 0 1px 0 rgba(74,222,128,0.04);
   margin-bottom:16px;overflow:hidden;
+  transition:box-shadow 0.2s;
 }
+.content-block:hover{box-shadow:0 8px 32px rgba(0,0,0,0.35),0 0 0 1px rgba(74,222,128,0.08),inset 0 1px 0 rgba(74,222,128,0.06);}
 .cb-header{
   padding:14px 18px;border-bottom:1px solid var(--border);
   display:flex;align-items:center;justify-content:space-between;
@@ -181,7 +198,7 @@ select option{background:var(--s2)}
 
 /* LOADING */
 .loader{text-align:center;padding:50px 20px}
-.loader .spin-lg{width:32px;height:32px;border:3px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:rot 0.7s linear infinite;margin:0 auto 16px;}
+.loader .spin-lg{width:36px;height:36px;border:3px solid rgba(74,222,128,0.15);border-top-color:var(--accent);border-radius:50%;animation:rot 0.7s linear infinite;margin:0 auto 16px;box-shadow:0 0 16px rgba(74,222,128,0.2);}
 .loader p{font-size:13px;color:var(--muted)}
 .loader .step-msg{font-size:11px;color:var(--muted2);margin-top:6px}
 
@@ -195,13 +212,14 @@ select option{background:var(--s2)}
 .action-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
 
 /* HERO */
-.panel-hero{margin-bottom:28px}
-.panel-hero h2{font-family:'Syne',sans-serif;font-size:clamp(22px,4vw,32px);font-weight:800;letter-spacing:-0.03em;line-height:1.1;margin-bottom:8px}
+.panel-hero{margin-bottom:32px;padding-bottom:28px;border-bottom:1px solid rgba(74,222,128,0.07);position:relative;overflow:hidden;}
+.panel-hero::before{content:'';position:absolute;top:-60px;right:-80px;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(74,222,128,0.07) 0%,transparent 65%);pointer-events:none;}
+.panel-hero h2{font-family:'Syne',sans-serif;font-size:clamp(26px,4vw,38px);font-weight:800;letter-spacing:-0.03em;line-height:1.1;margin-bottom:10px}
 .panel-hero h2 span{background:linear-gradient(135deg,#4ade80 0%,#22d3ee 50%,#818cf8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .panel-hero p{font-size:13px;color:var(--muted);line-height:1.6;max-width:520px}
 
 /* FILTER ROW */
-.filter-row{display:flex;flex-direction:column;gap:16px;background:linear-gradient(135deg,var(--s1) 0%,rgba(74,222,128,0.03) 100%);border:1px solid rgba(74,222,128,0.1);border-radius:12px;padding:20px;margin-bottom:24px}
+.filter-row{display:flex;flex-direction:column;gap:16px;background:rgba(9,9,24,0.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(74,222,128,0.12);border-radius:16px;padding:22px;margin-bottom:24px;box-shadow:0 8px 32px rgba(0,0,0,0.18),inset 0 1px 0 rgba(74,222,128,0.05);}
 
 /* STEP 3 tabs */
 .gen-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
@@ -289,6 +307,32 @@ select option{background:var(--s2)}
 
 /* GLASS CARD */
 .glass-card{background:rgba(255,255,255,0.02);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(74,222,128,0.1);border-radius:14px;}
+
+/* SKELETON SHIMMER */
+.skeleton{background:linear-gradient(90deg,var(--s1) 25%,var(--s2) 50%,var(--s1) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;}
+@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+
+/* NEON SECTION LABEL */
+.sect-neon{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);text-shadow:0 0 12px rgba(74,222,128,0.5);margin-bottom:10px}
+
+/* BUTTON ENHANCEMENTS */
+.btn{transition:all 0.15s cubic-bezier(0.34,1.56,0.64,1);}
+.btn:not(:disabled):active{transform:scale(0.96)!important}
+.btn-accent:not(:disabled):hover{transform:translateY(-2px) scale(1.01);}
+.btn-cta:not(:disabled):hover{transform:translateY(-2px) scale(1.01);}
+
+/* TREND CARD enhancement */
+.trend-card{transition:all 0.18s cubic-bezier(0.34,1.56,0.64,1);}
+
+/* SIDEBAR LOGO GROUP */
+.sidebar-label{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(107,114,128,0.6);padding:4px 13px;margin-top:8px;}
+.sidebar-divider{display:none}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(74,222,128,0.15);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(74,222,128,0.3)}
 </style>
 </head>
 <body>
@@ -357,15 +401,18 @@ select option{background:var(--s2)}
   <div id="notebookEntries" style="overflow-y:auto;flex:1;padding:16px"></div>
 </div>
 
+<div class="app-shell">
 <nav class="steps-nav" id="stepsNav">
   <button class="step-tab active" data-panel="p1" onclick="goPanel('p1')">🔭 Discovery</button>
   <button class="step-tab" data-panel="p2" onclick="goPanel('p2')">📖 Libro</button>
   <button class="step-tab" data-panel="p3" onclick="goPanel('p3')">✍️ Scrivi</button>
   <button class="step-tab" data-panel="p4" onclick="goPanel('p4')">📦 Package</button>
-  <button class="step-tab" data-panel="p5" onclick="goPanel('p5')" style="margin-left:auto">📚 Libreria</button>
+  <div class="sidebar-divider"></div>
+  <button class="step-tab" data-panel="p5" onclick="goPanel('p5')">📚 Libreria</button>
   <button class="step-tab" data-panel="p6" onclick="goPanel('p6')">📊 Tracking</button>
   <button class="step-tab" data-panel="p7" onclick="goPanel('p7')">📣 Marketing</button>
 </nav>
+<div class="app-content">
 
 <!-- ============ PANEL 1: TREND DISCOVERY ============ -->
 <div class="panel active" id="p1">
@@ -1426,7 +1473,9 @@ select option{background:var(--s2)}
       </div>
     </div>
   </div>
-</div>
+</div><!-- /p7 -->
+</div><!-- /app-content -->
+</div><!-- /app-shell -->
 
 <script>
 // ─── CONFIG ──────────────────────────────────────────────
