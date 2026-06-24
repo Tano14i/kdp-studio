@@ -3939,7 +3939,8 @@ async def fetch_amazon_reviews(req: dict):
             run_actor(
                 "automation-lab/amazon-reviews-scraper",
                 {
-                    "startUrls": [{"url": product_url}],
+                    "asins": [asin],
+                    "marketplace": tld,
                     "maxReviews": max_reviews,
                     "proxyConfiguration": {"useApifyProxy": True},
                 },
