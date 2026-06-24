@@ -3175,8 +3175,22 @@ async def asin_reverse(req: dict):
         context += f"Categories: {' > '.join(cats)}\n"
     if product_data.get("description"):
         context += f"Description: {product_data['description']}\n"
+    # Without real product data Claude hallucinate — block early and return a clear error
     if not product_data:
-        context += "(No live data available — analysis based on ASIN structure only)\n"
+        return {
+            "real_niche": None,
+            "primary_keywords": [],
+            "positioning_angle": None,
+            "reader_profile": None,
+            "estimated_monthly_sales": None,
+            "competitive_gap": None,
+            "attack_angle": None,
+            "title_formula": None,
+            "strengths": [],
+            "niche_for_validator": None,
+            "apify_used": False,
+            "error_no_data": True,
+        }
 
     prompt = (
         "You are a KDP competitive intelligence analyst. Reverse-engineer this Amazon book "

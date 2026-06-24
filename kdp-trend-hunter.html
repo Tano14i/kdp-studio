@@ -2983,6 +2983,19 @@ function renderAsinIntel(d) {
   const out = document.getElementById('asinIntelOut');
   if (!out || !d) return;
 
+  if (d.error_no_data) {
+    out.innerHTML = `<div style="border-top:1px solid rgba(167,139,250,0.15);padding:14px 0">
+      <div style="background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.25);border-radius:10px;padding:14px 16px">
+        <div style="font-size:13px;font-weight:700;color:#fb923c;margin-bottom:6px">⚠️ Dati live non disponibili</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6">
+          Per analizzare un ASIN reale è necessario <strong style="color:var(--text)">Apify</strong> — senza di esso Claude non ha accesso ai dati del prodotto e inventa risultati casuali.<br><br>
+          <strong style="color:#fb923c">Configura <code>APIFY_TOKEN</code> nelle variabili Railway</strong> per sbloccare l'analisi ASIN con dati reali (titolo, BSR, recensioni, categorie).
+        </div>
+      </div>
+    </div>`;
+    return;
+  }
+
   const kws = (d.primary_keywords || []).map(k =>
     `<span style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.2);color:#a78bfa;cursor:pointer"
       onclick="applyAdjacentNiche('${k.replace(/'/g,"\\'")}');document.getElementById('asinIntelOut').closest('[style*=display]').querySelector('span.asin-arrow') && void 0"
