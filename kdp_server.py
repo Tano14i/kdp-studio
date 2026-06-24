@@ -2975,6 +2975,137 @@ async def arc_sequence(req: dict):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/api/niche-validator", dependencies=[_AUTH])
+async def niche_validator(req: dict):
+    """Full KDP niche profitability validation: demand, competition density, scores, go/no-go."""
+    from urllib.parse import quote as url_quote
+    niche = (req.get("niche") or "").strip()
+    marketplace = req.get("marketplace", "us")
+    if not niche:
+        raise HTTPException(status_code=400, detail="Nicchia richiesta")
+
+    # Step 1: Amazon keyword autocomplete — demand signal (fast, free)
+    amazon_keywords: list[str] = []
+    try:
+        amazon_keywords = await _amazon_autocomplete(niche)
+    except Exception:
+        pass
+
+    # Step 2: Apify Amazon book search — real BSR/review data (optional)
+    books_data: list[dict] = []
+    if APIFY_TOKEN:
+        tld_map = {"us": "com", "de": "de", "it": "it", "es": "es", "fr": "fr"}
+        tld = tld_map.get(marketplace, "com")
+        search_url = (
+            f"https://www.amazon.{tld}/s?k={url_quote(niche)}"
+            f"&rh=n%3A283155&s=relevanceexprank"
+        )
+        try:
+            items = await asyncio.wait_for(
+                run_actor(
+                    "epctex/amazon-crawler",
+                    {
+                        "startUrls": [{"url": search_url}],
+                        "maxItems": 20,
+                        "proxyConfiguration": {"useApifyProxy": True},
+                    },
+                ),
+                timeout=100.0,
+            )
+            for item in items:
+                if not isinstance(item, dict):
+                    continue
+                title = item.get("title") or item.get("name", "")
+                if not title:
+                    continue
+                # BSR can be nested in various structures
+                bsr_raw = (
+                    item.get("bestsellersRank")
+                    or item.get("bsr")
+                    or item.get("bestSellersRank")
+                )
+                bsr = None
+                if isinstance(bsr_raw, list) and bsr_raw:
+                    first = bsr_raw[0]
+                    bsr = first.get("rank") if isinstance(first, dict) else first
+                elif isinstance(bsr_raw, (int, float)):
+                    bsr = int(bsr_raw)
+                books_data.append({
+                    "title": str(title)[:80],
+                    "bsr": bsr,
+                    "reviews": item.get("reviewsCount") or item.get("reviews") or 0,
+                    "price": item.get("price") or item.get("buyingPrice") or 0,
+                    "rating": item.get("stars") or item.get("rating") or 0,
+                })
+        except Exception as e:
+            print(f"[NicheValidator/Apify] {e}")
+
+    # Step 3: Build context strings for Claude
+    kw_str = (
+        f"Amazon autocomplete keywords: {', '.join(amazon_keywords[:12])}"
+        if amazon_keywords else ""
+    )
+    books_str = ""
+    if books_data:
+        lines = []
+        for b in books_data[:15]:
+            line = f"• {b['title']}"
+            if b["bsr"]:
+                line += f" | BSR #{b['bsr']:,}"
+            if b["reviews"]:
+                line += f" | {b['reviews']} reviews"
+            if b["price"]:
+                line += f" | ${b['price']}"
+            lines.append(line)
+        books_str = "\nTop books found on Amazon for this niche:\n" + "\n".join(lines)
+
+    mkt_labels = {
+        "us": "Amazon.com (US)", "de": "Amazon.de (Germany)",
+        "it": "Amazon.it (Italy)", "es": "Amazon.es (Spain)", "fr": "Amazon.fr (France)",
+    }
+    mkt_label = mkt_labels.get(marketplace, "Amazon.com")
+
+    prompt = (
+        "You are a senior KDP niche analyst. Evaluate this niche for profitable self-publishing.\n\n"
+        f"NICHE: {niche}\n"
+        f"MARKETPLACE: {mkt_label}\n"
+        f"{kw_str}\n"
+        f"{books_str}\n\n"
+        "Scoring guide:\n"
+        "- demand_score: reader search activity + purchase intent (1=nobody, 10=massive)\n"
+        "- competition_score: market saturation (1=wide open, 10=impossible to enter)\n"
+        "- entry_difficulty: reviews/quality threshold to rank on page 1 (1=easy 5 reviews, 10=need 500+)\n"
+        "- profitability_score: overall opportunity = (demand - competition - difficulty) composite (1-10)\n\n"
+        "IMPORTANT: Detect the language from the niche keyword and write ALL text fields in that language.\n\n"
+        "Return ONLY valid JSON:\n"
+        "{\n"
+        '  "demand_score": 7,\n'
+        '  "competition_score": 5,\n'
+        '  "entry_difficulty": 4,\n'
+        '  "profitability_score": 8,\n'
+        '  "verdict": "GO",\n'
+        '  "verdict_reason": "2 clear sentences on whether to enter this niche and exactly why",\n'
+        '  "market_size": "Estimated ~X books, top-20 avg Y reviews",\n'
+        '  "revenue_estimate": "$X-$Y/month for a well-optimized top-20 book",\n'
+        '  "review_threshold": "~X reviews to appear on page 1",\n'
+        '  "best_angle": "The single most underserved sub-angle or reader segment",\n'
+        '  "ideal_price": "$X.XX ebook / $X.XX paperback",\n'
+        '  "top_opportunities": ["specific opportunity 1", "opportunity 2", "opportunity 3"],\n'
+        '  "key_risks": ["risk 1", "risk 2"],\n'
+        '  "keyword_gems": ["high-potential keyword 1", "keyword 2", "keyword 3", "keyword 4"]\n'
+        "}\n"
+        'verdict must be exactly one of: "GO", "CAUTIOUS", "NO-GO"'
+    )
+    try:
+        text = await call_claude(prompt, max_tokens=1200)
+        result = parse_json_safe(text)
+        result["apify_data_used"] = bool(books_data)
+        result["book_count_scraped"] = len(books_data)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 async def run_actor(actor_id: str, input_data: dict, timeout_sec: int = 120) -> list:
     """Launch an Apify actor synchronously and return the dataset items."""
     if not APIFY_TOKEN:

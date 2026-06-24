@@ -596,6 +596,9 @@ select option{background:var(--s2)}
     <div id="adjacentNichePills" class="pill-row"></div>
   </div>
 
+  <!-- NICHE VALIDATOR -->
+  <div id="nicheValidatorRow" style="display:none;margin-top:14px"></div>
+
   <div class="action-row" id="p1actions" style="display:none">
     <button class="btn btn-accent" onclick="goPanel('p2')">Continua →</button>
   </div>
@@ -2478,6 +2481,7 @@ function selectTrend(i) {
   populateStep2();
   loadBestsellerLinks(state.trends[i]);
   loadSimilarNiches(state.trends[i]);
+  runNicheValidator(state.trends[i].name);
 }
 
 async function loadBestsellerLinks(trend) {
@@ -2532,8 +2536,125 @@ function applyAdjacentNiche(name) {
   document.getElementById('nicheCustomInput').value = name;
   document.getElementById('customNicheTag').textContent = '🧭 ' + name;
   document.getElementById('customNicheBadge').style.display = 'block';
-  // Scroll to top to show badge
   document.getElementById('p1').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  runNicheValidator(name);
+}
+
+async function runNicheValidator(niche) {
+  if (!BACKEND_LIVE || !niche) return;
+  const row = document.getElementById('nicheValidatorRow');
+  if (!row) return;
+
+  row.style.display = 'block';
+  row.innerHTML = `<div style="background:rgba(255,140,66,0.04);border:1px solid rgba(255,140,66,0.2);border-radius:12px;padding:14px 18px">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="spin" style="border-top-color:#ff8c42"></div>
+      <span style="font-size:11px;color:var(--muted)">Analisi profittabilità nicchia in corso…</span>
+    </div>
+  </div>`;
+
+  try {
+    const mkt = document.getElementById('marketSelect')?.value || '';
+    const mktCode = { 'English':'us','German philosophy and culture':'de','Mediterranean and Italian culture':'it' }[mkt] || 'us';
+    const data = await callBackend('/api/niche-validator', { niche, marketplace: mktCode });
+    renderNicheValidator(data, niche);
+  } catch(e) {
+    row.innerHTML = `<div style="padding:10px 14px;font-size:11px;color:var(--muted);background:var(--s1);border:1px solid var(--border);border-radius:10px">
+      ⚠️ Validator non disponibile: ${escHtml(e.message)}
+    </div>`;
+  }
+}
+
+function renderNicheValidator(d, niche) {
+  const row = document.getElementById('nicheValidatorRow');
+  if (!row || !d) return;
+
+  const verdictConfig = {
+    'GO':       { bg:'rgba(34,197,94,0.08)',  border:'rgba(34,197,94,0.3)',  color:'#22c55e', icon:'✅', label:'GO' },
+    'CAUTIOUS': { bg:'rgba(245,158,11,0.08)', border:'rgba(245,158,11,0.3)', color:'#f59e0b', icon:'⚠️', label:'CAUTIOUS' },
+    'NO-GO':    { bg:'rgba(239,68,68,0.08)',  border:'rgba(239,68,68,0.3)',  color:'#ef4444', icon:'❌', label:'NO-GO' },
+  };
+  const vc = verdictConfig[d.verdict] || verdictConfig['CAUTIOUS'];
+
+  function scoreBar(val, color, reverse) {
+    const pct = Math.round((val / 10) * 100);
+    const barColor = reverse
+      ? (val <= 3 ? '#22c55e' : val <= 6 ? '#f59e0b' : '#ef4444')
+      : color;
+    return `<div style="height:4px;background:var(--border);border-radius:2px;margin-top:5px;overflow:hidden">
+      <div style="height:100%;width:${pct}%;background:${barColor};border-radius:2px;transition:width 0.6s ease"></div>
+    </div>`;
+  }
+
+  function scoreCard(label, val, color, reverse, note) {
+    const numColor = reverse
+      ? (val <= 3 ? '#22c55e' : val <= 6 ? '#f59e0b' : '#ef4444')
+      : (val >= 7 ? '#22c55e' : val >= 5 ? '#f59e0b' : '#ef4444');
+    return `<div style="text-align:center;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;min-width:80px">
+      <div style="font-size:22px;font-weight:800;color:${numColor};line-height:1">${val}<span style="font-size:12px;color:var(--muted)">/10</span></div>
+      ${scoreBar(val, color, reverse)}
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-top:5px">${label}</div>
+      ${note ? `<div style="font-size:9px;color:var(--muted2);margin-top:2px">${note}</div>` : ''}
+    </div>`;
+  }
+
+  const opportunities = (d.top_opportunities || []).map(o =>
+    `<li style="font-size:11px;color:var(--text);margin-bottom:3px;line-height:1.5">${escHtml(o)}</li>`
+  ).join('');
+  const risks = (d.key_risks || []).map(r =>
+    `<li style="font-size:11px;color:var(--muted);margin-bottom:3px;line-height:1.5">${escHtml(r)}</li>`
+  ).join('');
+  const gems = (d.keyword_gems || []).map(k =>
+    `<span style="font-size:10px;padding:2px 8px;border-radius:12px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);color:#3b82f6">${escHtml(k)}</span>`
+  ).join('');
+
+  const dataSourceBadge = d.apify_data_used
+    ? `<span style="font-size:9px;padding:2px 7px;border-radius:10px;background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2)">📊 ${d.book_count_scraped} libri analizzati via Apify</span>`
+    : `<span style="font-size:9px;padding:2px 7px;border-radius:10px;background:rgba(167,139,250,0.1);color:#a78bfa;border:1px solid rgba(167,139,250,0.2)">🤖 Analisi Claude</span>`;
+
+  row.innerHTML = `<div style="background:${vc.bg};border:1px solid ${vc.border};border-radius:12px;overflow:hidden">
+    <!-- Header -->
+    <div style="padding:12px 16px;border-bottom:1px solid ${vc.border};display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">${vc.icon}</span>
+        <div>
+          <div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:${vc.color}">${vc.label} — ${escHtml(niche)}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:1px">${escHtml(d.verdict_reason || '')}</div>
+        </div>
+      </div>
+      ${dataSourceBadge}
+    </div>
+
+    <!-- Score grid -->
+    <div style="padding:12px 16px;display:flex;gap:10px;flex-wrap:wrap">
+      ${scoreCard('Domanda', d.demand_score, '#22c55e', false, 'più alto = meglio')}
+      ${scoreCard('Competizione', d.competition_score, '#ef4444', true, 'più basso = meglio')}
+      ${scoreCard('Difficoltà entrata', d.entry_difficulty, '#f59e0b', true, 'più basso = meglio')}
+      ${scoreCard('Redditività', d.profitability_score, '#ff8c42', false, 'score composito')}
+      <div style="flex:1;min-width:180px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+        ${d.revenue_estimate ? `<div style="font-size:12px;font-weight:700;color:var(--text)">${escHtml(d.revenue_estimate)}</div><div style="font-size:9px;color:var(--muted);margin-bottom:6px">revenue stimato / mese</div>` : ''}
+        ${d.review_threshold ? `<div style="font-size:11px;color:var(--text)"><strong>Soglia reviews:</strong> ${escHtml(d.review_threshold)}</div>` : ''}
+        ${d.ideal_price ? `<div style="font-size:11px;color:var(--muted)">${escHtml(d.ideal_price)}</div>` : ''}
+      </div>
+    </div>
+
+    <!-- Best angle -->
+    ${d.best_angle ? `<div style="padding:0 16px 10px;font-size:11px;color:var(--text)">
+      <strong style="color:${vc.color}">Miglior angolo non sfruttato:</strong> ${escHtml(d.best_angle)}
+    </div>` : ''}
+
+    <!-- Opportunities + Risks -->
+    ${(opportunities || risks) ? `<div style="padding:0 16px 12px;display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      ${opportunities ? `<div><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#22c55e;margin-bottom:5px">✓ Opportunità</div><ul style="padding-left:12px;margin:0">${opportunities}</ul></div>` : ''}
+      ${risks ? `<div><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#ef4444;margin-bottom:5px">⚠ Rischi</div><ul style="padding-left:12px;margin:0">${risks}</ul></div>` : ''}
+    </div>` : ''}
+
+    <!-- Keyword gems -->
+    ${gems ? `<div style="padding:0 16px 14px;display:flex;align-items:center;flex-wrap:wrap;gap:5px">
+      <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-right:3px">Keyword gems:</span>
+      ${gems}
+    </div>` : ''}
+  </div>`;
 }
 
 function applyInstructionPreset(btn, text) {
