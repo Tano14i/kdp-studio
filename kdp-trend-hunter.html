@@ -1073,6 +1073,20 @@ select option{background:var(--s2)}
     <button onclick="goPanel('p2')" style="margin-left:auto;font-size:10px;background:none;border:1px solid var(--border2);border-radius:4px;color:var(--muted);cursor:pointer;padding:2px 8px">✏️ Modifica</button>
   </div>
 
+  <!-- ♻️ RECUPERO CHECKPOINT BANNER -->
+  <div id="recoveryBanner" style="display:none;background:rgba(255,140,66,0.08);border:1px solid rgba(255,140,66,0.35);border-radius:12px;padding:14px 18px;margin-bottom:16px">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div>
+        <div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:#ff8c42;margin-bottom:4px">♻️ Lavoro precedente trovato</div>
+        <div id="recoveryBannerInfo" style="font-size:12px;color:var(--muted);line-height:1.5"></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+        <button onclick="recoverCheckpointChapters()" style="font-size:12px;padding:8px 16px;border-radius:8px;background:rgba(255,140,66,0.2);border:1px solid rgba(255,140,66,0.5);color:#ff8c42;cursor:pointer;font-weight:700">📂 Recupera Capitoli</button>
+        <button onclick="document.getElementById('recoveryBanner').style.display='none'" style="font-size:11px;padding:6px 10px;border-radius:8px;background:none;border:1px solid var(--border2);color:var(--muted);cursor:pointer">Ignora</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Auto-generate all chapters button — prominent, separate from tabs -->
   <div id="autoGenBanner" style="display:none;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:none;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
     <div>
@@ -1649,7 +1663,7 @@ function goPanel(id) {
   });
   window.scrollTo(0, 0);
   // Update voice summary bar when entering step 3
-  if (id === 'p3') updateVoiceSummary();
+  if (id === 'p3') { updateVoiceSummary(); checkAndShowRecoveryBanner(); }
   if (id === 'p6') renderTracker();
   if (id === 'p7') initMarketing();
 }
@@ -4649,9 +4663,91 @@ function saveChapterCheckpoint(bookTitle, chapterNum, total, content) {
     existing.bookTitle = bookTitle;
     existing.total = total;
     existing.lastSaved = Date.now();
+    existing.niche = state.selectedTrend?.name || '';
     existing.chapters[chapterNum] = content;
     localStorage.setItem(CHKPT_KEY, JSON.stringify(existing));
   } catch(e) { console.warn('Checkpoint save failed', e); }
+}
+
+function checkAndShowRecoveryBanner() {
+  try {
+    const raw = localStorage.getItem(CHKPT_KEY);
+    if (!raw) return;
+    const cp = JSON.parse(raw);
+    const saved = Object.keys(cp.chapters || {}).length;
+    if (!saved) return;
+    const banner = document.getElementById('recoveryBanner');
+    const info = document.getElementById('recoveryBannerInfo');
+    if (!banner || !info) return;
+    const ago = cp.lastSaved ? Math.round((Date.now() - cp.lastSaved) / 60000) : null;
+    const agoStr = ago !== null ? (ago < 60 ? `${ago} min fa` : `${Math.round(ago/60)}h fa`) : '';
+    info.innerHTML = `<strong style="color:var(--text)">${escHtml(cp.bookTitle || 'Libro senza titolo')}</strong> — ${saved} di ${cp.total || '?'} capitoli salvati${agoStr ? ' · ' + agoStr : ''}${cp.niche ? '<br>Nicchia: ' + escHtml(cp.niche) : ''}`;
+    banner.style.display = 'block';
+  } catch(e) {}
+}
+
+function recoverCheckpointChapters() {
+  try {
+    const raw = localStorage.getItem(CHKPT_KEY);
+    if (!raw) return;
+    const cp = JSON.parse(raw);
+    const chapters = cp.chapters || {};
+    const nums = Object.keys(chapters).map(Number).sort((a,b) => a-b);
+    if (!nums.length) { alert('Nessun capitolo salvato nel checkpoint.'); return; }
+
+    // Create a results area in p3
+    let container = document.getElementById('recoveryResults');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'recoveryResults';
+      container.style.marginTop = '16px';
+      document.getElementById('recoveryBanner').after(container);
+    }
+
+    const total = cp.total || nums.length;
+    container.innerHTML = `
+      <div style="background:rgba(255,140,66,0.06);border:1px solid rgba(255,140,66,0.25);border-radius:12px;padding:16px 20px;margin-bottom:8px">
+        <div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;color:#ff8c42;margin-bottom:4px">📚 ${escHtml(cp.bookTitle || 'Libro recuperato')}</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px">${nums.length} capitoli recuperati dal checkpoint · ${nums.length < total ? `<span style="color:#f59e0b">Mancano i capitoli ${getMissingNums(nums, total).join(', ')}</span>` : '<span style="color:#4ade80">Completo ✓</span>'}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+          ${nums.map(n => `<div onclick="document.getElementById('recBlock_${n}')?.scrollIntoView({behavior:'smooth',block:'start'})" style="width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,140,66,0.5);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#ff8c42;cursor:pointer">${n}</div>`).join('')}
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button onclick="copyAllRecovered()" style="font-size:12px;padding:7px 14px;border-radius:8px;background:rgba(74,222,128,0.12);border:1px solid rgba(74,222,128,0.35);color:#4ade80;cursor:pointer;font-weight:600">📋 Copia Tutto</button>
+          <button onclick="if(confirm('Cancella checkpoint salvato?')){clearChapterCheckpoint();document.getElementById('recoveryResults').remove();document.getElementById('recoveryBanner').style.display='none';}" style="font-size:11px;padding:6px 10px;border-radius:8px;background:none;border:1px solid var(--border2);color:var(--muted);cursor:pointer">🗑 Cancella checkpoint</button>
+        </div>
+      </div>
+      ${nums.map(n => {
+        const rid = 'recCh_' + n;
+        return `<div id="recBlock_${n}" class="content-block" style="margin:10px 0">
+          <div class="cb-header">
+            <div class="cb-title"><span class="cb-badge" style="background:rgba(255,140,66,0.15);color:#ff8c42">Cap. ${n}</span></div>
+            <div style="display:flex;gap:6px">
+              <button class="copy-btn" id="editBtn_${rid}" onclick="runEditorPass('${rid}','Capitolo ${n}','chapter')">✏️ Revisiona</button>
+              <button class="copy-btn" onclick="copyContent('${rid}')">Copia</button>
+            </div>
+          </div>
+          <div class="cb-body" id="${rid}">${escHtml(chapters[n])}</div>
+          <div id="editorOut_${rid}"></div>
+        </div>`;
+      }).join('')}`;
+
+    document.getElementById('recoveryBanner').style.display = 'none';
+    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch(e) { alert('Errore nel recupero: ' + e.message); }
+}
+
+function getMissingNums(present, total) {
+  const all = Array.from({length: total}, (_,i) => i+1);
+  return all.filter(n => !present.includes(n));
+}
+
+function copyAllRecovered() {
+  const raw = localStorage.getItem(CHKPT_KEY);
+  if (!raw) return;
+  const cp = JSON.parse(raw);
+  const text = Object.keys(cp.chapters).sort((a,b)=>Number(a)-Number(b)).map(n => cp.chapters[n]).join('\n\n---\n\n');
+  navigator.clipboard.writeText(text).then(() => alert(`✅ ${Object.keys(cp.chapters).length} capitoli copiati negli appunti!`)).catch(() => alert('Copia fallita — usa i pulsanti Copia singoli'));
 }
 
 function loadChapterCheckpoint(bookTitle) {
