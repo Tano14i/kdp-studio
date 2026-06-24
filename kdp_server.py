@@ -3926,6 +3926,34 @@ async def blotato_post(req: dict):
     return {"results": results}
 
 
+@app.post("/api/blotato/pinterest-boards", dependencies=[_AUTH])
+async def blotato_pinterest_boards(req: dict):
+    """Return Pinterest boards for a given Blotato accountId."""
+    api_key = req.get("apiKey", "").strip()
+    account_id = req.get("accountId", "").strip()
+    if not api_key:
+        raise HTTPException(status_code=400, detail="Blotato API key mancante")
+    if not account_id:
+        raise HTTPException(status_code=400, detail="accountId mancante")
+    async with httpx.AsyncClient(timeout=20) as client:
+        r = await client.get(
+            f"{_BLOTATO_BASE}/v2/users/me/accounts/{account_id}/pinterest-boards",
+            headers={"Authorization": f"Bearer {api_key}"},
+        )
+        if r.status_code == 404:
+            # fallback: some Blotato versions use query param
+            r = await client.get(
+                f"{_BLOTATO_BASE}/v2/pinterest-boards",
+                headers={"Authorization": f"Bearer {api_key}"},
+                params={"accountId": account_id},
+            )
+        if r.status_code == 401:
+            raise HTTPException(status_code=401, detail="API key Blotato non valida")
+        if r.status_code != 200:
+            raise HTTPException(status_code=r.status_code, detail=r.text[:300])
+        return r.json()
+
+
 @app.post("/api/apify/influencers", dependencies=[_AUTH])
 async def apify_influencers(req: dict):
     """Find influencers by niche (easyapi/find-my-influencers)."""

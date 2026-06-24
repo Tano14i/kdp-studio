@@ -1451,6 +1451,13 @@ select option{background:var(--s2)}
         <div id="blotatoAccounts" style="display:none;margin-bottom:16px">
           <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Account collegati — seleziona dove pubblicare:</div>
           <div id="blotatoAccountChips" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+          <!-- Pinterest board selector — shown only when Pinterest is selected -->
+          <div id="pinterestBoardRow" style="display:none;margin-top:12px;display:none;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="font-size:11px;color:#e1306c;font-weight:600">📌 Bacheca Pinterest:</span>
+            <select id="pinterestBoardSelect" style="font-size:12px;min-width:180px">
+              <option value="">— caricamento bacheche… —</option>
+            </select>
+          </div>
         </div>
         <div id="blotatoNoAccounts" style="display:none;font-size:12px;color:#f59e0b;margin-bottom:16px;padding:10px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:8px">
           ⚠️ Nessun account trovato. Collega i tuoi profili social su <a href="https://my.blotato.com" target="_blank" rel="noopener" style="color:#3b82f6">my.blotato.com</a>.
@@ -6467,6 +6474,37 @@ function toggleBlotatoAccount(id) {
   if (_blotatoSelectedIds.has(id)) _blotatoSelectedIds.delete(id);
   else _blotatoSelectedIds.add(id);
   renderBlotatoAccountChips();
+  // Show/load Pinterest boards if a Pinterest account is now selected
+  const pinAcc = _blotatoAccounts.find(a => a.platform === 'pinterest' && _blotatoSelectedIds.has(a.id));
+  const row = document.getElementById('pinterestBoardRow');
+  if (pinAcc) {
+    if (row) row.style.display = 'flex';
+    loadPinterestBoards(pinAcc.id);
+  } else {
+    if (row) row.style.display = 'none';
+  }
+}
+
+let _pinterestBoardsLoaded = null; // accountId last loaded
+
+async function loadPinterestBoards(accountId) {
+  if (_pinterestBoardsLoaded === accountId) return; // already loaded
+  const sel = document.getElementById('pinterestBoardSelect');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">— caricamento… —</option>';
+  const apiKey = document.getElementById('blotatoApiKey')?.value?.trim() || '';
+  try {
+    const res = await callBackend('/api/blotato/pinterest-boards', { apiKey, accountId });
+    const boards = res.boards || res.data || res || [];
+    if (!boards.length) {
+      sel.innerHTML = '<option value="">Nessuna bacheca trovata</option>';
+      return;
+    }
+    sel.innerHTML = boards.map(b => `<option value="${escHtml(b.id)}">${escHtml(b.name)}</option>`).join('');
+    _pinterestBoardsLoaded = accountId;
+  } catch(e) {
+    sel.innerHTML = `<option value="">Errore: ${escHtml(e.message)}</option>`;
+  }
 }
 
 function togglePubSchedule(radio) {
@@ -6502,8 +6540,12 @@ async function publishViablotato() {
     if (imageUrl) post.mediaUrls = [imageUrl];
     if (timing === 'slot') post.useNextFreeSlot = true;
     if (timing === 'scheduled' && scheduledTime) post.scheduledTime = scheduledTime;
-    // Pinterest requires boardId from subaccounts
-    if (acc.platform === 'pinterest' && acc.subaccounts?.length) post.boardId = acc.subaccounts[0].id;
+    // Pinterest requires boardId — use user-selected board
+    if (acc.platform === 'pinterest') {
+      const selBoard = document.getElementById('pinterestBoardSelect')?.value;
+      if (selBoard) post.boardId = selBoard;
+      else if (acc.subaccounts?.length) post.boardId = acc.subaccounts[0].id;
+    }
     // LinkedIn page (optional)
     if (acc.platform === 'linkedin' && acc.subaccounts?.length) post.pageId = acc.subaccounts[0].id;
     // Facebook page (required)
