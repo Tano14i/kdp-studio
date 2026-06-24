@@ -1006,6 +1006,18 @@ select option{background:var(--s2)}
     <button class="btn btn-green" id="exportAllBtn" style="display:none" onclick="exportCurrentDoc()">📄 Esporta .doc</button>
     <button class="btn btn-accent" id="docxBtn" style="display:none" onclick="downloadDocx()">📄 Scarica DOCX</button>
     <button class="btn btn-ghost" id="exportTxtBtn" style="display:none" onclick="exportFullPackage()">⬇️ .txt</button>
+    <button class="btn btn-ghost" id="seriePlanBtn" style="display:none" onclick="planSeries()">📚 Pianifica Serie</button>
+    <div id="translateRow" style="display:none;align-items:center;gap:6px">
+      <select id="translateLangSelect" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text);font-size:12px;cursor:pointer">
+        <option value="de">🇩🇪 Tedesco</option>
+        <option value="es">🇪🇸 Spagnolo</option>
+        <option value="fr">🇫🇷 Francese</option>
+        <option value="it">🇮🇹 Italiano</option>
+        <option value="pt">🇵🇹 Portoghese</option>
+        <option value="nl">🇳🇱 Olandese</option>
+      </select>
+      <button class="btn btn-ghost" onclick="translatePackage()">🌍 Traduci</button>
+    </div>
     <button class="btn btn-ghost" onclick="goPanel('p3')">← Indietro</button>
   </div>
 
@@ -3129,9 +3141,13 @@ Write in warm second-person voice. Make it practical and immediately useful.`;
       chapDiv.innerHTML = `
         <div class="cb-header">
           <div class="cb-title"><span class="cb-badge" style="background:#ff8c4222;color:#ff8c42">Capitolo ${n}</span></div>
-          <button class="copy-btn" onclick="copyContent('${rid}')">Copia</button>
+          <div style="display:flex;gap:6px">
+            <button class="copy-btn" id="editBtn_${rid}" onclick="runEditorPass('${rid}','Capitolo ${n}','chapter')">✏️ Revisiona</button>
+            <button class="copy-btn" onclick="copyContent('${rid}')">Copia</button>
+          </div>
         </div>
-        <div class="cb-body" id="${rid}">${escHtml(text)}</div>`;
+        <div class="cb-body" id="${rid}">${escHtml(text)}</div>
+        <div id="editorOut_${rid}"></div>`;
       document.getElementById('chapResults').appendChild(chapDiv);
       if (dot) { dot.style.background = 'rgba(34,197,94,0.2)'; dot.style.borderColor = 'var(--green)'; dot.style.color = 'var(--green)'; }
     } catch(e) {
@@ -3169,17 +3185,19 @@ function renderContent(text, label, tab) {
   const id = 'cb_' + Date.now();
 
   const html = `
-    <div class="content-block" style="animation: fadeIn 0.3s ease">
+    <div class="content-block" style="animation: fadeIn 0.3s ease" id="wrap_${id}">
       <div class="cb-header">
         <div class="cb-title">
           <span class="cb-badge" style="background:${color}22;color:${color}">${escHtml(label)}</span>
         </div>
         <div style="display:flex;gap:6px">
           <button class="copy-btn" onclick="addToNotebook('${escHtml(label)}', document.getElementById('${id}').textContent, '${color}')">+ Notebook</button>
+          <button class="copy-btn" id="editBtn_${id}" onclick="runEditorPass('${id}','${escHtml(label)}','${tab}')">✏️ Revisiona</button>
           <button class="copy-btn" onclick="copyContent('${id}')">Copia</button>
         </div>
       </div>
       <div class="cb-body" id="${id}">${escHtml(text)}</div>
+      <div id="editorOut_${id}"></div>
     </div>`;
 
   document.getElementById('contentOut').innerHTML = html;
@@ -3258,6 +3276,7 @@ Return ONLY raw JSON. No markdown. No backticks. ASCII-safe strings only.
 
 function renderPackage(k) {
   if (!k) return;
+  window._lastPackage = k;
 
   function cb(label, content, mono=false, color='#3b82f6') {
     const id = 'pkg_' + Math.random().toString(36).slice(2);
@@ -3428,6 +3447,192 @@ function renderPackage(k) {
   });
 }
 
+// ─── AI EDITOR PASS ──────────────────────────────────────────
+async function runEditorPass(contentId, label, tab) {
+  const contentEl = document.getElementById(contentId);
+  const outEl = document.getElementById('editorOut_' + contentId);
+  const btn = document.getElementById('editBtn_' + contentId);
+  if (!contentEl || !outEl) return;
+
+  const content = contentEl.textContent.trim();
+  if (content.length < 100) { alert('Contenuto troppo breve per una revisione.'); return; }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Revisione…';
+  outEl.innerHTML = `<div style="padding:10px 18px;font-size:12px;color:var(--muted)">Analisi editoriale in corso…</div>`;
+
+  try {
+    const data = await callBackend('/api/editor-pass', { content, label, tab });
+    btn.textContent = '✏️ Revisiona';
+    btn.disabled = false;
+    renderEditorSuggestions(outEl, data);
+  } catch(e) {
+    btn.textContent = '✏️ Revisiona';
+    btn.disabled = false;
+    outEl.innerHTML = `<div style="padding:8px 18px;font-size:12px;color:var(--accent)">⚠️ ${escHtml(e.message)}</div>`;
+  }
+}
+
+function renderEditorSuggestions(outEl, d) {
+  if (!d) return;
+  const issueColors = {
+    'Clarity':'#3b82f6', 'Rhythm':'#a78bfa', 'Repetition':'#f59e0b',
+    'Weak verb':'#ff8c42', 'Passive voice':'#fb923c', 'Structure':'#22c55e', 'Engagement':'#e879f9'
+  };
+  const scoreColor = d.overall_score >= 8 ? '#22c55e' : d.overall_score >= 6 ? '#f59e0b' : '#ef4444';
+  const suggestions = (d.suggestions || []).map(s => {
+    const col = issueColors[s.issue] || '#888';
+    return `<div style="padding:10px 14px;border-left:3px solid ${col};background:${col}11;border-radius:0 6px 6px 0;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <span style="font-size:10px;font-weight:700;background:${col}22;color:${col};padding:2px 7px;border-radius:4px">${escHtml(s.issue)}</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:3px">❌ <em>${escHtml(s.original || '')}</em></div>
+      <div style="font-size:11px;color:var(--text);margin-bottom:3px">✅ ${escHtml(s.suggestion || '')}</div>
+      <div style="font-size:10px;color:var(--muted)">${escHtml(s.reason || '')}</div>
+    </div>`;
+  }).join('');
+
+  outEl.innerHTML = `<div style="border-top:1px solid var(--border);padding:12px 18px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <div style="font-size:11px;font-weight:700;color:var(--text)">✏️ Revisione Editoriale</div>
+      <div style="font-size:12px;font-weight:700;color:${scoreColor}">${d.overall_score}/10</div>
+      <button onclick="this.closest('[id^=editorOut]').innerHTML=''" style="margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px">×</button>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.6">${escHtml(d.overall_notes || '')}</div>
+    ${suggestions}
+  </div>`;
+}
+
+// ─── SERIE PLANNER ────────────────────────────────────────────
+async function planSeries() {
+  const pkg = window._lastPackage;
+  if (!pkg) { alert('Genera prima il KDP Package.'); return; }
+
+  const btn = document.getElementById('seriePlanBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Pianificando…';
+
+  try {
+    const data = await callBackend('/api/serie-planner', {
+      title: pkg.title || '',
+      niche: state.selectedTrend?.name || '',
+      book_type: state.bookType || state.selectedBook?.type || '',
+      description: pkg.short_description || pkg.tagline || ''
+    });
+    btn.textContent = '📚 Pianifica Serie';
+    btn.disabled = false;
+    renderSeriePlan(data);
+  } catch(e) {
+    btn.textContent = '📚 Pianifica Serie';
+    btn.disabled = false;
+    alert('Errore: ' + e.message);
+  }
+}
+
+function renderSeriePlan(d) {
+  if (!d || !d.books) return;
+  const existing = document.getElementById('seriePlanOut');
+  if (existing) existing.remove();
+
+  const booksHtml = (d.books || []).map(b => `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;flex:1;min-width:200px">
+      <div style="font-size:10px;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">Libro ${b.number}</div>
+      <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;line-height:1.3">${escHtml(b.title || '')}</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.4">${escHtml(b.subtitle || '')}</div>
+      <div style="font-size:11px;color:var(--text);margin-bottom:5px"><strong>Angolo:</strong> ${escHtml(b.angle || '')}</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:5px"><strong>Perché comprarlo:</strong> ${escHtml(b.why_buy || '')}</div>
+      <div style="font-size:11px;color:var(--muted)"><strong>Differenziatore:</strong> ${escHtml(b.differentiator || '')}</div>
+    </div>`).join('');
+
+  const div = document.createElement('div');
+  div.id = 'seriePlanOut';
+  div.style.marginTop = '24px';
+  div.innerHTML = `<div style="background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.25);border-radius:12px;overflow:hidden">
+    <div style="padding:14px 18px;border-bottom:1px solid rgba(167,139,250,0.2);display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:#a78bfa">📚 ${escHtml(d.series_name || 'Serie Pianificata')}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px">${escHtml(d.series_hook || '')}</div>
+      </div>
+      <button onclick="document.getElementById('seriePlanOut').remove()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px">×</button>
+    </div>
+    <div style="padding:14px 18px;display:flex;gap:12px;flex-wrap:wrap">${booksHtml}</div>
+  </div>`;
+
+  document.getElementById('packageOut').after(div);
+  div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ─── TRADUZIONE KDP PACKAGE ───────────────────────────────────
+async function translatePackage() {
+  const pkg = window._lastPackage;
+  if (!pkg) { alert('Genera prima il KDP Package.'); return; }
+
+  const lang = document.getElementById('translateLangSelect').value;
+  const langNames = { de:'Tedesco', es:'Spagnolo', fr:'Francese', it:'Italiano', pt:'Portoghese', nl:'Olandese' };
+  const btn = document.querySelector('#translateRow button');
+  btn.disabled = true;
+  btn.textContent = '⏳ Traducendo…';
+
+  try {
+    const data = await callBackend('/api/translate-package', {
+      language: lang,
+      title: pkg.title || '',
+      subtitle: pkg.subtitle || '',
+      description: pkg.short_description || '',
+      keywords: pkg.keywords || []
+    });
+    btn.textContent = '🌍 Traduci';
+    btn.disabled = false;
+    renderTranslation(data, lang, langNames[lang] || lang.toUpperCase());
+  } catch(e) {
+    btn.textContent = '🌍 Traduci';
+    btn.disabled = false;
+    alert('Errore traduzione: ' + e.message);
+  }
+}
+
+function renderTranslation(d, lang, langLabel) {
+  if (!d) return;
+  const existing = document.getElementById('translateOut');
+  if (existing) existing.remove();
+
+  const flagMap = { de:'🇩🇪', es:'🇪🇸', fr:'🇫🇷', it:'🇮🇹', pt:'🇵🇹', nl:'🇳🇱' };
+  const flag = flagMap[lang] || '🌍';
+
+  function row(label, value, mono) {
+    const id = 'tr_' + Math.random().toString(36).slice(2);
+    return `<div style="border-bottom:1px solid var(--border);padding:10px 18px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+        <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted)">${label}</span>
+        <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('${id}').textContent)">Copia</button>
+      </div>
+      <div id="${id}" style="font-size:12px;line-height:1.6;color:var(--text);${mono?'font-family:monospace':''}">${escHtml(value)}</div>
+    </div>`;
+  }
+
+  const kwText = (d.keywords || []).join('\n');
+
+  const div = document.createElement('div');
+  div.id = 'translateOut';
+  div.style.marginTop = '24px';
+  div.innerHTML = `<div style="background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.2);border-radius:12px;overflow:hidden">
+    <div style="padding:14px 18px;border-bottom:1px solid rgba(59,130,246,0.15);display:flex;align-items:center;justify-content:space-between">
+      <div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:#3b82f6">${flag} Traduzione ${langLabel}</div>
+      <button onclick="document.getElementById('translateOut').remove()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px">×</button>
+    </div>
+    ${row('Titolo', d.title || '')}
+    ${row('Sottotitolo', d.subtitle || '')}
+    ${row('Descrizione', d.description || '')}
+    ${row('Keywords (7)', kwText, true)}
+    <div style="padding:10px 18px;font-size:11px;color:var(--muted);line-height:1.6">
+      <strong style="color:var(--text)">Note SEO:</strong> ${escHtml(d.seo_notes || '')}
+    </div>
+  </div>`;
+
+  document.getElementById('packageOut').after(div);
+  div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
 // ── BOOK LIBRARY ─────────────────────────────────────────────
 const LIBRARY_KEY = 'kdp_studio_library_v1';
 
@@ -3523,7 +3728,14 @@ function restoreBook(idx) {
   if (!b || !b.kdpData) return;
   goPanel('p4');
   renderPackage(b.kdpData);
-  document.getElementById('exportAllBtn').style.display = 'flex';
+  ['exportAllBtn'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'flex';
+  });
+  const sb = document.getElementById('seriePlanBtn');
+  if (sb) sb.style.display = 'flex';
+  const tr = document.getElementById('translateRow');
+  if (tr) tr.style.display = 'flex';
 }
 
 // ── Mark steps done when navigating forward
@@ -4530,11 +4742,16 @@ selectBook = function(i) {
 const _origGenPkg2 = generatePackage;
 generatePackage = async function() {
   await _origGenPkg2();
-  ['exportAllBtn','docxBtn','exportTxtBtn'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el && document.getElementById('packageOut').children.length > 0)
-      el.style.display = 'flex';
-  });
+  if (document.getElementById('packageOut').children.length > 0) {
+    ['exportAllBtn','docxBtn','exportTxtBtn'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'flex';
+    });
+    const sb = document.getElementById('seriePlanBtn');
+    if (sb) sb.style.display = 'flex';
+    const tr = document.getElementById('translateRow');
+    if (tr) tr.style.display = 'flex';
+  }
   saveState();
 };
 

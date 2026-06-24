@@ -2747,6 +2747,139 @@ async def price_optimizer(req: dict):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/api/editor-pass", dependencies=[_AUTH])
+async def editor_pass(req: dict):
+    """AI editorial review of a content block for clarity, rhythm, style."""
+    content = (req.get("content") or "").strip()
+    label = req.get("label", "contenuto")
+    tab = req.get("tab", "full")
+    if len(content) < 100:
+        raise HTTPException(status_code=400, detail="Contenuto troppo breve per una revisione utile")
+
+    type_hints = {
+        "outline": "book outline / chapter structure",
+        "full": "full book chapter or section",
+        "chapter": "individual chapter",
+        "intro": "book introduction",
+    }
+    content_type = type_hints.get(tab, "book content")
+
+    prompt = (
+        f"You are a professional editor specializing in self-help and non-fiction books. "
+        f"Review this {content_type} excerpt and provide actionable editorial suggestions.\n\n"
+        f"SECTION: {label}\n\n"
+        f"CONTENT:\n{content[:4000]}\n\n"
+        "Analyze for: clarity of ideas, sentence rhythm and flow, repetitive words/phrases, "
+        "weak verbs, passive voice overuse, structural issues, engagement level.\n\n"
+        "IMPORTANT: Detect the language of the content and write ALL suggestions in that same language.\n\n"
+        "Return ONLY valid JSON:\n"
+        "{\n"
+        '  "overall_score": 7,\n'
+        '  "overall_notes": "2-3 sentence summary of the writing quality and main improvement area",\n'
+        '  "suggestions": [\n'
+        '    {\n'
+        '      "issue": "Clarity|Rhythm|Repetition|Weak verb|Passive voice|Structure|Engagement",\n'
+        '      "original": "exact phrase or sentence from text (max 15 words)",\n'
+        '      "suggestion": "improved version",\n'
+        '      "reason": "1 sentence why"\n'
+        '    }\n'
+        '  ]\n'
+        "}\n"
+        "Provide 3-6 specific, actionable suggestions. Reference exact phrases from the text."
+    )
+    try:
+        text = await call_claude(prompt, max_tokens=1200)
+        return parse_json_safe(text)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/serie-planner", dependencies=[_AUTH])
+async def serie_planner(req: dict):
+    """Plan a 3-book series continuation from a KDP package."""
+    title = req.get("title", "")
+    niche = req.get("niche", "")
+    book_type = req.get("book_type", "")
+    description = (req.get("description") or "")[:800]
+
+    prompt = (
+        f"You are an Amazon KDP series strategist. Given the first book, plan 3 follow-up books "
+        f"that expand the niche, deepen the audience relationship, and maximize reader LTV.\n\n"
+        f"- Book 1 title: {title}\n"
+        f"- Niche: {niche}\n"
+        f"- Type: {book_type}\n"
+        f"- Description: {description or 'N/A'}\n\n"
+        "IMPORTANT: Detect the language from the title/description and write ALL output in that same language.\n\n"
+        "Think: What is the natural 'next step' for a reader who loved Book 1? "
+        "What deeper problem or adjacent goal can you address in Books 2, 3, 4?\n\n"
+        "Return ONLY valid JSON:\n"
+        "{\n"
+        '  "series_name": "Series collection name",\n'
+        '  "series_hook": "One-line series value proposition for readers",\n'
+        '  "books": [\n'
+        '    {\n'
+        '      "number": 2,\n'
+        '      "title": "Full title",\n'
+        '      "subtitle": "Subtitle",\n'
+        '      "angle": "Core angle/promise of this book in one sentence",\n'
+        '      "why_buy": "Why a reader of Book 1 would want this next",\n'
+        '      "differentiator": "What makes this distinct from Book 1"\n'
+        '    }\n'
+        '  ]\n'
+        "}\n"
+        "Plan exactly 3 follow-up books (numbers 2, 3, 4). Each must feel essential, not filler."
+    )
+    try:
+        text = await call_claude(prompt, max_tokens=1500)
+        return parse_json_safe(text)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/translate-package", dependencies=[_AUTH])
+async def translate_package(req: dict):
+    """Translate and localize a KDP package to a target language/market."""
+    language = req.get("language", "de")
+    title = req.get("title", "")
+    subtitle = req.get("subtitle", "")
+    description = (req.get("description") or "")[:2000]
+    keywords = req.get("keywords", [])
+
+    lang_names = {
+        "de": "German", "it": "Italian", "es": "Spanish",
+        "fr": "French", "pt": "Portuguese", "nl": "Dutch",
+    }
+    lang_name = lang_names.get(language, language.upper())
+    kw_str = ", ".join(keywords[:7]) if isinstance(keywords, list) else str(keywords)
+
+    prompt = (
+        f"You are a KDP localization expert for the Amazon {lang_name} marketplace.\n\n"
+        f"Translate AND LOCALIZE (not just word-for-word translate) this KDP package:\n\n"
+        f"TITLE: {title}\n"
+        f"SUBTITLE: {subtitle}\n"
+        f"DESCRIPTION:\n{description}\n"
+        f"KEYWORDS: {kw_str}\n\n"
+        f"Requirements:\n"
+        f"1. Title/subtitle: natural {lang_name}, keep the marketing punch\n"
+        f"2. Description: adapt idioms and tone for {lang_name} readers — culturally appropriate, not literal\n"
+        f"3. Keywords: use actual search terms {lang_name} readers type on Amazon, NOT direct word translations\n"
+        f"4. Note any key localization choices\n\n"
+        "Return ONLY valid JSON:\n"
+        "{\n"
+        '  "title": "localized title",\n'
+        '  "subtitle": "localized subtitle",\n'
+        '  "description": "full localized description",\n'
+        '  "keywords": ["kw1","kw2","kw3","kw4","kw5","kw6","kw7"],\n'
+        '  "seo_notes": "2-3 sentences on localization choices and market-specific keywords"\n'
+        "}"
+    )
+    try:
+        text = await call_claude(prompt, max_tokens=2000)
+        return parse_json_safe(text)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 async def run_actor(actor_id: str, input_data: dict, timeout_sec: int = 120) -> list:
     """Launch an Apify actor synchronously and return the dataset items."""
     if not APIFY_TOKEN:
