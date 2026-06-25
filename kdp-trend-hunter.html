@@ -7124,7 +7124,8 @@ async function fetchAvatarReviews() {
     const existing = (document.getElementById('avatarReviews').value || '').trim();
     document.getElementById('avatarReviews').value = existing ? existing + '\n\n' + data.reviews_text : data.reviews_text;
     const tld = marketplace === 'us' ? 'com' : marketplace;
-    status.textContent = `✅ ${data.count} recensioni importate da ${_avatarAsins.length} ASIN — premi "Genera Avatar"`;
+    const enrichNote = data.enriched ? ' (arricchite con Amazon.com)' : '';
+    status.textContent = `✅ ${data.count} recensioni importate da ${_avatarAsins.length} ASIN${enrichNote} — premi "Genera Avatar"`;
     status.style.color = '#4ade80';
   } catch (e) {
     status.textContent = `❌ ${e.message || 'Errore fetch recensioni'}`;

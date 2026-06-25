@@ -4259,16 +4259,19 @@ async def fetch_amazon_reviews(req: dict):
 
     tld_map = {"us": "com", "de": "de", "it": "it", "es": "es", "fr": "fr", "uk": "co.uk"}
     tld = tld_map.get(marketplace, "com")
+    country_code_map = {"us": "US", "de": "DE", "it": "IT", "es": "ES", "fr": "FR", "uk": "GB"}
+    country_code = country_code_map.get(marketplace, "US")
 
-    async def fetch_for_asin(asin: str) -> list:
+    async def fetch_for_asin(asin: str, fetch_tld: str = tld, fetch_country: str = country_code) -> list:
         actor_configs = [
             ("automation-lab/amazon-reviews-scraper", {
                 "asins": [asin],
                 "maxReviews": max_per_asin,
                 "reviewsCount": max_per_asin,
+                "countryCode": fetch_country,
             }),
             ("epctex/amazon-reviews-scraper", {
-                "startUrls": [{"url": f"https://www.amazon.{tld}/dp/{asin}"}],
+                "startUrls": [{"url": f"https://www.amazon.{fetch_tld}/dp/{asin}"}],
                 "maxItems": max_per_asin,
             }),
         ]
@@ -4276,15 +4279,35 @@ async def fetch_amazon_reviews(req: dict):
             try:
                 result = await asyncio.wait_for(run_actor(actor_id, actor_input), timeout=90.0)
                 if result:
-                    print(f"[AmazonReviews] {asin}: {actor_id} → {len(result)} items, keys={list(result[0].keys()) if result else []}")
+                    print(f"[AmazonReviews] {asin} ({fetch_tld}): {actor_id} → {len(result)} items")
                     return result
             except Exception as e:
-                print(f"[AmazonReviews] {asin}: {actor_id} failed: {e}")
+                print(f"[AmazonReviews] {asin} ({fetch_tld}): {actor_id} failed: {e}")
         return []
 
-    # Fetch all ASINs concurrently
+    # Fetch all ASINs concurrently for the target marketplace
     all_results = await asyncio.gather(*[fetch_for_asin(a) for a in asins])
     all_items = [item for sub in all_results for item in sub]
+
+    # If non-US marketplace returns fewer than 15 reviews, enrich with Amazon.com
+    enriched = False
+    if tld != "com" and len(all_items) < 15:
+        print(f"[AmazonReviews] Only {len(all_items)} items from .{tld}, enriching from .com")
+        com_results = await asyncio.gather(*[fetch_for_asin(a, fetch_tld="com", fetch_country="US") for a in asins])
+        com_items = [item for sub in com_results for item in sub]
+        # Deduplicate: skip .com items whose first 80 chars of text already appear in local results
+        def _review_text(it):
+            return (it.get("text") or it.get("reviewText") or it.get("body")
+                    or it.get("reviewBody") or it.get("content") or it.get("review")
+                    or it.get("reviewContent") or it.get("description") or "")
+        existing_fingerprints = {_review_text(it)[:80] for it in all_items if _review_text(it)}
+        for it in com_items:
+            fp = _review_text(it)[:80]
+            if fp and fp not in existing_fingerprints:
+                all_items.append(it)
+                existing_fingerprints.add(fp)
+        enriched = len(com_items) > 0
+        print(f"[AmazonReviews] After enrichment: {len(all_items)} total items")
 
     if not all_items:
         raise HTTPException(status_code=404, detail=f"Nessuna recensione trovata per: {', '.join(asins)}")
@@ -4320,6 +4343,7 @@ async def fetch_amazon_reviews(req: dict):
         "count": len(lines),
         "asins": asins,
         "marketplace": marketplace,
+        "enriched": enriched,
     }
 
 
