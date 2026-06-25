@@ -521,6 +521,7 @@ class GenerateRequest(BaseModel):
     reader_persona: Optional[str] = ""
     custom_instructions: Optional[str] = ""
     amazon_keywords: Optional[List[str]] = []
+    niche_analysis: Optional[dict] = None   # best_angle, opportunities, keyword_gems, etc.
 
 class AllChaptersRequest(BaseModel):
     trend_name: str
@@ -536,6 +537,7 @@ class AllChaptersRequest(BaseModel):
     reader_persona: Optional[str] = ""
     custom_instructions: Optional[str] = ""
     amazon_keywords: Optional[List[str]] = []
+    niche_analysis: Optional[dict] = None
     start_from: Optional[int] = 1  # resume support: skip chapters before this number
 
 class PackageRequest(BaseModel):
@@ -1936,6 +1938,27 @@ Unique elements: {book_tmpl["unique_elements"]}"""
             f"Weave them naturally into chapter titles, section headings, and the first/last paragraph of each chapter "
             f"(never stuff them unnaturally): {', '.join(req.amazon_keywords[:12])}\n"
         )
+
+    niche_ctx = ""
+    if req.niche_analysis:
+        na = req.niche_analysis
+        parts = []
+        if na.get("best_angle"):
+            parts.append(f"UNEXPLOITED ANGLE (use this as the core POV of the book): {na['best_angle']}")
+        if na.get("opportunities"):
+            opps = na["opportunities"] if isinstance(na["opportunities"], list) else []
+            if opps:
+                parts.append("OPPORTUNITIES TO EXPLOIT:\n" + "\n".join(f"  - {o}" for o in opps[:4]))
+        if na.get("keyword_gems"):
+            gems = na["keyword_gems"] if isinstance(na["keyword_gems"], list) else []
+            if gems:
+                parts.append(f"HIGH-VALUE KEYWORDS (integrate naturally): {', '.join(str(g) for g in gems[:6])}")
+        if na.get("risks"):
+            risks = na["risks"] if isinstance(na["risks"], list) else []
+            if risks:
+                parts.append("RISKS TO AVOID/ADDRESS: " + "; ".join(str(r) for r in risks[:2]))
+        if parts:
+            niche_ctx = "\nNICHE INTELLIGENCE (apply this to sharpen focus and differentiation):\n" + "\n".join(parts) + "\n"
     length_map = {"short": "800-1000", "medium": "1200-1600", "long": "2000-2500"}
     word_count = length_map.get(req.chapter_length or "medium", "1200-1600")
 
@@ -1943,7 +1966,7 @@ Unique elements: {book_tmpl["unique_elements"]}"""
         prompt = f"""You are a bestselling KDP author. Create a detailed book outline.
 
 {book_ctx}
-{kw_ctx}
+{kw_ctx}{niche_ctx}
 {book_format_ctx}
 
 {voice_ctx}
@@ -1966,7 +1989,7 @@ All 10 chapters. No extra text."""
         prompt = f"""You are a bestselling KDP author. Write Chapter {n}.
 
 {book_ctx}
-{kw_ctx}
+{kw_ctx}{niche_ctx}
 {f"Outline:{chr(10)}{req.outline[:600]}" if req.outline else ""}
 
 {book_format_ctx}
@@ -2086,10 +2109,23 @@ async def generate_all_chapters(req: AllChaptersRequest):
                 reader_persona=req.reader_persona or "",
                 custom_instructions=req.custom_instructions or ""
             )
+            na_ctx = ""
+            if req.niche_analysis:
+                na = req.niche_analysis
+                angle = na.get("best_angle", "")
+                opps = na.get("opportunities", [])
+                gems = na.get("keyword_gems", [])
+                na_parts = []
+                if angle: na_parts.append(f"CORE ANGLE: {angle}")
+                if opps:  na_parts.append("OPPORTUNITIES: " + "; ".join(str(o) for o in opps[:3]))
+                if gems:  na_parts.append(f"POWER KEYWORDS: {', '.join(str(g) for g in gems[:5])}")
+                if na_parts:
+                    na_ctx = "\nNICHE INTELLIGENCE:\n" + "\n".join(na_parts) + "\n"
+
             prompt = f"""You are a bestselling KDP author. Write Chapter {n} of {total}.
 
 {book_ctx}
-{kw_ctx}
+{kw_ctx}{na_ctx}
 Chapter title: {title}
 Outline reference:
 {outline_snippet}
@@ -4309,8 +4345,11 @@ Analyze the competitive landscape and return JSON:
 Return exactly 5 books. Detect language from the niche and write all text in that language.
 Output ONLY valid JSON."""
 
-    raw = await call_claude(prompt, max_tokens=1400)
-    data = parse_json_safe(raw)
+    try:
+        raw = await call_claude(prompt, max_tokens=2200, allow_truncated=True)
+        data = parse_json_safe(raw)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"competition-map Claude error: {e}")
     data["apify_used"] = apify_used
     return data
 

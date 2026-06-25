@@ -3883,6 +3883,7 @@ Write in warm, second-person voice.`;
         outline: state.outline ? state.outline.substring(0, 600) : '',
         ...voiceParams,
         amazon_keywords: state.amazonKeywords || [],
+        niche_analysis: window._lastValidatorData || null,
       });
       text = res.content;
     } else {
@@ -5027,6 +5028,7 @@ async function generateAllAuto() {
           outline: state.outline,
           ...autoVoiceParams,
           amazon_keywords: state.amazonKeywords || [],
+          niche_analysis: window._lastValidatorData || null,
           start_from: startFrom,
         })
       });
