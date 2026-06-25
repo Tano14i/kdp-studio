@@ -354,13 +354,13 @@ select option{background:var(--s2)}
     <span id="backendLabel" style="font-size:11px;color:var(--muted)">Checking backend…</span>
   </div>
   <span class="app-tag">🌿 Trend → ✍️ Book → 🚀 Publish</span>
-  <button onclick="toggleApiKeyPanel()" title="Impostazioni API Key" style="margin-left:auto;background:none;border:1px solid var(--border2);border-radius:6px;color:var(--muted);padding:4px 8px;font-size:13px;cursor:pointer">⚙️</button>
+  <button onclick="toggleApiKeyPanel()" title="Impostazioni & Sync" style="margin-left:auto;background:none;border:1px solid var(--border2);border-radius:6px;color:var(--muted);padding:4px 8px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:4px">⚙️ <span id="headerSyncDot" style="width:6px;height:6px;border-radius:50%;background:var(--muted);display:inline-block" title=""></span></button>
 </header>
 
-<!-- API KEY SETTINGS PANEL -->
+<!-- API KEY + SYNC SETTINGS PANEL -->
 <div id="apiKeyPanel" style="display:none;position:fixed;top:52px;right:12px;z-index:500;
   background:var(--s1);border:1px solid var(--border2);border-radius:10px;padding:16px;
-  width:320px;box-shadow:0 8px 32px rgba(0,0,0,0.5)">
+  width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.5)">
   <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text)">⚙️ Impostazioni Backend</div>
   <div style="font-size:11px;color:var(--muted);margin-bottom:8px">
     API Key richiesta dal server (opzionale). Salvata solo in locale.
@@ -372,6 +372,34 @@ select option{background:var(--s2)}
     <button onclick="toggleApiKeyVisibility()" style="background:none;border:1px solid var(--border2);border-radius:6px;padding:4px 7px;color:var(--muted);cursor:pointer;font-size:12px" id="apiKeyEye">👁</button>
   </div>
   <div style="margin-top:8px;font-size:11px;color:#22c55e" id="apiKeySavedMsg" style="display:none">✓ Salvata</div>
+
+  <!-- CLOUD SYNC -->
+  <div style="margin-top:16px;border-top:1px solid var(--border2);padding-top:14px">
+    <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px">
+      ☁️ Sync Multi-Dispositivo
+      <span id="syncDot" style="width:7px;height:7px;border-radius:50%;background:var(--muted);flex-shrink:0" title=""></span>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5">
+      Usa lo stesso codice su PC, laptop e telefono per continuare il lavoro ovunque.
+    </div>
+
+    <div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Il tuo codice</div>
+    <div style="display:flex;gap:6px;align-items:center;margin-bottom:12px">
+      <code id="syncKeyCode" style="font-size:17px;font-weight:900;letter-spacing:.15em;color:var(--accent2);background:var(--s2);padding:6px 12px;border-radius:7px;border:1px solid var(--border2);min-width:90px;text-align:center">—</code>
+      <button onclick="copySyncKey()" style="font-size:11px;padding:5px 9px;border-radius:6px;background:var(--s2);border:1px solid var(--border2);color:var(--muted);cursor:pointer" title="Copia codice">📋</button>
+      <button onclick="generateSyncKey(true)" style="font-size:11px;padding:5px 9px;border-radius:6px;background:var(--s2);border:1px solid var(--border2);color:var(--muted);cursor:pointer" title="Genera nuovo codice">↻</button>
+    </div>
+
+    <div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Connetti un altro dispositivo</div>
+    <div style="display:flex;gap:6px">
+      <input id="syncCodeInput" type="text" placeholder="Inserisci codice…" maxlength="8"
+        style="flex:1;padding:6px 8px;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border-radius:6px;border:1px solid var(--border2);background:var(--s2);color:var(--text)"
+        oninput="this.value=this.value.toUpperCase()"
+        onkeydown="if(event.key==='Enter')connectSyncCode()">
+      <button onclick="connectSyncCode()" style="font-size:11px;padding:6px 11px;border-radius:6px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:#93c5fd;cursor:pointer;font-weight:600;white-space:nowrap">Connetti</button>
+    </div>
+    <div id="syncStatusMsg" style="font-size:11px;margin-top:7px;min-height:16px"></div>
+  </div>
 </div>
 
 <!-- NOTEBOOK FLOATING BUTTON -->
@@ -1635,6 +1663,11 @@ function saveState() {
       savedAt: Date.now()
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+    // Debounced cloud push
+    if (typeof _syncKey !== 'undefined' && _syncKey) {
+      clearTimeout(_syncTimer);
+      _syncTimer = setTimeout(() => pushSync(false), 3000);
+    }
   } catch(e) {
     // Quota exceeded — try without trends (large array)
     try {
@@ -5530,6 +5563,13 @@ const _pkgBtn = document.getElementById('pkgBtn');
 window.addEventListener('DOMContentLoaded', () => {
   checkBackend().then(live => {
     console.log('[KDP Studio] Backend live:', live);
+    if (live) {
+      // Init sync after backend confirmed live
+      _updateSyncKeyDisplay(_syncKey);
+      initSync().catch(() => {});
+      // If no sync key yet, generate one silently
+      if (!_syncKey) generateSyncKey(false).catch(() => {});
+    }
   });
 
   const saved = loadState();
@@ -6505,6 +6545,198 @@ function renderVideoScript(out, script, platform, duration) {
 
 // ── SOCIAL KEYS ───────────────────────────────────────────────
 const SOCIAL_KEYS_KEY = 'kdp_social_keys';
+// ══════════════════════════════════════════════════════════════
+// CLOUD SYNC
+// ══════════════════════════════════════════════════════════════
+const SYNC_KEY_LS = 'kdp_sync_key';
+let _syncKey = localStorage.getItem(SYNC_KEY_LS) || null;
+let _syncTimer = null;
+let _syncPushedAt = 0;
+
+function _setSyncStatus(state, msg) {
+  // state: 'idle' | 'pushing' | 'ok' | 'error' | 'connecting'
+  const colors = { idle: 'var(--muted)', pushing: '#f59e0b', ok: '#22c55e', error: '#ef4444', connecting: '#f59e0b' };
+  const c = colors[state] || colors.idle;
+  const dot = document.getElementById('syncDot');
+  const hdot = document.getElementById('headerSyncDot');
+  const msgEl = document.getElementById('syncStatusMsg');
+  if (dot) { dot.style.background = c; dot.title = msg || ''; }
+  if (hdot) { hdot.style.background = c; hdot.title = msg || ''; }
+  if (msgEl) { msgEl.textContent = msg || ''; msgEl.style.color = c; }
+}
+
+function _updateSyncKeyDisplay(key) {
+  const el = document.getElementById('syncKeyCode');
+  if (el) el.textContent = key || '—';
+}
+
+async function pushSync(force) {
+  if (!_syncKey) return;
+  if (!BACKEND_LIVE) return;
+  const now = Date.now();
+  if (!force && now - _syncPushedAt < 2000) return;
+  _setSyncStatus('pushing', 'Salvataggio in cloud…');
+  try {
+    const toSync = {
+      selectedTrend: state.selectedTrend,
+      selectedBook: state.selectedBook,
+      customTitle: state.customTitle,
+      bookType: state.bookType,
+      audience: state.audience,
+      outline: state.outline || '',
+      genTab: state.genTab,
+      customNiche: state.customNiche,
+      amazonKeywords: state.amazonKeywords || [],
+      customerAvatar: state.customerAvatar || null,
+      lastValidatorData: window._lastValidatorData || null,
+      lastValidatedNiche: window._lastValidatedNiche || null,
+      currentPanel: _currentPanel || 'p1',
+      savedAt: now,
+    };
+    const headers = _backendHeaders();
+    const res = await fetch(BACKEND_URL + '/api/sync', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ key: _syncKey, state: toSync }),
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    _syncPushedAt = now;
+    const mins = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    _setSyncStatus('ok', `✓ Cloud sync — ${mins}`);
+  } catch(e) {
+    _setSyncStatus('error', 'Sync fallita — riprova');
+  }
+}
+
+async function pullSync(key) {
+  if (!key || !BACKEND_LIVE) return null;
+  try {
+    const headers = _backendHeaders();
+    const res = await fetch(BACKEND_URL + '/api/sync/' + encodeURIComponent(key), {
+      headers,
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'HTTP ' + res.status);
+    }
+    return await res.json();
+  } catch(e) {
+    throw e;
+  }
+}
+
+function applySyncState(remoteState) {
+  if (!remoteState) return;
+  // Merge remote into local state
+  if (remoteState.selectedTrend)  state.selectedTrend = remoteState.selectedTrend;
+  if (remoteState.selectedBook)   state.selectedBook = remoteState.selectedBook;
+  if (remoteState.customTitle)    state.customTitle = remoteState.customTitle;
+  if (remoteState.bookType)       state.bookType = remoteState.bookType;
+  if (remoteState.audience)       state.audience = remoteState.audience;
+  if (remoteState.outline)        state.outline = remoteState.outline;
+  if (remoteState.genTab)         state.genTab = remoteState.genTab;
+  if (remoteState.customNiche)    state.customNiche = remoteState.customNiche;
+  if (remoteState.amazonKeywords) state.amazonKeywords = remoteState.amazonKeywords;
+  if (remoteState.customerAvatar) state.customerAvatar = remoteState.customerAvatar;
+  if (remoteState.lastValidatorData) {
+    window._lastValidatorData  = remoteState.lastValidatorData;
+    window._lastValidatedNiche = remoteState.lastValidatedNiche || '';
+  }
+  // Re-render UI
+  try { if (window._lastValidatorData) renderNicheValidator(window._lastValidatorData, window._lastValidatedNiche || ''); } catch(e) {}
+  try { if (state.customerAvatar) renderAvatarResult(state.customerAvatar); } catch(e) {}
+  if (state.amazonKeywords?.length) {
+    const bt = `🛒 ${state.amazonKeywords.length} keyword Amazon attive`;
+    ['amazonKwBadge2','amazonKwBadge3'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.textContent = bt; el.style.display = 'inline-flex'; }
+    });
+  }
+  // Navigate to saved panel
+  const panel = remoteState.currentPanel;
+  if (panel && panel !== 'p1') {
+    if (state.selectedBook && state.selectedTrend) { try { renderTrends(); } catch(e) {} }
+    setTimeout(() => goPanel(panel), 200);
+  }
+  saveState();
+}
+
+async function generateSyncKey(force) {
+  if (!force && _syncKey) return;
+  _setSyncStatus('pushing', 'Generando codice…');
+  const newKey = Math.random().toString(36).slice(2, 8).toUpperCase();
+  _syncKey = newKey;
+  localStorage.setItem(SYNC_KEY_LS, newKey);
+  _updateSyncKeyDisplay(newKey);
+  await pushSync(true);
+}
+
+async function connectSyncCode() {
+  const inp = document.getElementById('syncCodeInput');
+  const code = (inp?.value || '').trim().toUpperCase();
+  if (code.length < 4) {
+    _setSyncStatus('error', 'Codice troppo corto (min 4 caratteri)');
+    return;
+  }
+  _setSyncStatus('connecting', 'Connessione in corso…');
+  try {
+    const result = await pullSync(code);
+    if (!result?.state) throw new Error('Stato vuoto');
+    _syncKey = code;
+    localStorage.setItem(SYNC_KEY_LS, code);
+    _updateSyncKeyDisplay(code);
+    if (inp) inp.value = '';
+    const ago = result.saved_at ? Math.round((Date.now()/1000 - result.saved_at) / 60) : null;
+    const agoStr = ago !== null ? ` (${ago < 1 ? 'pochi secondi' : ago + ' min'} fa)` : '';
+    _setSyncStatus('ok', `✓ Connesso${agoStr} — sessione ripristinata`);
+    applySyncState(result.state);
+  } catch(e) {
+    _setSyncStatus('error', 'Codice non trovato o scaduto: ' + e.message);
+  }
+}
+
+function copySyncKey() {
+  if (!_syncKey) return;
+  navigator.clipboard.writeText(_syncKey).then(() => {
+    _setSyncStatus('ok', '✓ Codice copiato!');
+    setTimeout(() => _setSyncStatus(_syncKey ? 'ok' : 'idle', _syncKey ? 'Sync attivo' : ''), 2000);
+  });
+}
+
+async function initSync() {
+  if (!_syncKey) return;
+  _updateSyncKeyDisplay(_syncKey);
+  if (!BACKEND_LIVE) { _setSyncStatus('idle', 'Backend offline — sync non disponibile'); return; }
+  // Pull from cloud; apply if newer than local
+  try {
+    _setSyncStatus('connecting', 'Controllo aggiornamenti cloud…');
+    const result = await pullSync(_syncKey);
+    const remoteSavedAt = (result?.state?.savedAt || 0);
+    const localSavedAt  = (_saved?.savedAt || 0);
+    if (remoteSavedAt > localSavedAt + 5000) {
+      // Remote is meaningfully newer — apply it
+      const ago = Math.round((Date.now() - remoteSavedAt) / 60000);
+      const agoStr = ago < 1 ? 'pochi secondi fa' : `${ago} min fa`;
+      _setSyncStatus('ok', `✓ Sessione cloud ripristinata (${agoStr})`);
+      applySyncState(result.state);
+    } else {
+      _setSyncStatus('ok', 'Sync attivo');
+      // Push local state to cloud (in case local is newer)
+      setTimeout(() => pushSync(true), 1000);
+    }
+  } catch(e) {
+    if (e.message && e.message.includes('404')) {
+      // Key not found on server (e.g. server restarted) — re-push local state
+      _setSyncStatus('pushing', 'Ripristino codice sul cloud…');
+      await pushSync(true);
+    } else {
+      _setSyncStatus('error', 'Sync non disponibile');
+    }
+  }
+}
+
 const BLOTATO_KEY_LS = 'kdp_blotato_key';
 
 // kept for legacy compatibility

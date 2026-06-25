@@ -13,7 +13,7 @@ Endpoints:
   POST /package           ← multilingual KDP package
 """
 
-import os, asyncio, json, random, re as _re
+import os, asyncio, json, random, re as _re, uuid as _uuid, time as _time
 from datetime import datetime
 from typing import Optional, List
 from fastapi import FastAPI, HTTPException, Depends, Request
@@ -950,6 +950,47 @@ async def serve_frontend():
         if os.path.exists(html_path):
             return FileResponse(html_path, media_type="text/html")
     return {"message": "KDP Studio API running. Frontend not found — place kdp-trend-hunter.html in same folder."}
+
+
+# ── CLOUD SYNC ───────────────────────────────────────────────
+_SYNC_STORE: dict = {}   # key -> {state, saved_at}
+_SYNC_TTL = 30 * 86400  # 30 days
+
+class SyncPushBody(BaseModel):
+    key: Optional[str] = None
+    state: dict
+
+@app.post("/api/sync", dependencies=[_AUTH])
+async def sync_push(body: SyncPushBody):
+    key = (body.key or "").strip().upper()
+    if not key:
+        key = _uuid.uuid4().hex[:6].upper()
+    if len(key) < 4 or len(key) > 16 or not key.isalnum():
+        raise HTTPException(400, "Sync key must be 4-16 alphanumeric chars")
+    state_bytes = json.dumps(body.state, ensure_ascii=False).encode()
+    if len(state_bytes) > 768_000:
+        raise HTTPException(413, "State too large — max 768 KB")
+    _SYNC_STORE[key] = {"state": body.state, "saved_at": _time.time()}
+    # Prune stale entries
+    cutoff = _time.time() - _SYNC_TTL
+    stale = [k for k, v in _SYNC_STORE.items() if v["saved_at"] < cutoff]
+    for k in stale:
+        del _SYNC_STORE[k]
+    if len(_SYNC_STORE) > 2000:
+        oldest = sorted(_SYNC_STORE.items(), key=lambda x: x[1]["saved_at"])[:200]
+        for k, _ in oldest:
+            del _SYNC_STORE[k]
+    return {"key": key, "saved_at": _SYNC_STORE[key]["saved_at"]}
+
+@app.get("/api/sync/{key}", dependencies=[_AUTH])
+async def sync_pull(key: str):
+    key = key.strip().upper()
+    if len(key) < 4 or len(key) > 16 or not key.isalnum():
+        raise HTTPException(400, "Formato codice non valido")
+    entry = _SYNC_STORE.get(key)
+    if not entry:
+        raise HTTPException(404, "Codice non trovato o scaduto (max 30 giorni)")
+    return {"key": key, "state": entry["state"], "saved_at": entry["saved_at"]}
 
 
 @app.get("/health")
