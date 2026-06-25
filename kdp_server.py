@@ -2049,6 +2049,160 @@ Follow voice guidelines throughout. Make every chapter feel distinct."""
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/generate-stream", dependencies=[_AUTH])
+async def generate_content_stream(req: GenerateRequest):
+    """Streaming version of /generate — sends NDJSON chunks to avoid proxy timeouts."""
+    book_ctx = (
+        f'Book: "{req.book_title}" - {req.book_subtitle}\n'
+        f'Type: {req.book_type}\n'
+        f'Trend: "{req.trend_name}"\n'
+        f'Audience: {req.audience}'
+    )
+    book_tmpl = get_book_template(req.book_type)
+    book_format_ctx = (
+        f"BOOK FORMAT RULES (follow precisely for {req.book_type}):\n"
+        f"Structure: {book_tmpl['structure']}\n"
+        f"Chapter instruction: {book_tmpl['chapter_instruction']}\n"
+        f"Length note: {book_tmpl['length_note']}\n"
+        f"Unique elements: {book_tmpl['unique_elements']}"
+    )
+    voice_ctx = build_voice_ctx(
+        tone=req.tone,
+        language=req.language or "English",
+        cultural_inspiration=req.cultural_inspiration or "",
+        chapter_length=req.chapter_length or "medium",
+        reader_persona=req.reader_persona or "",
+        custom_instructions=req.custom_instructions or ""
+    )
+    kw_ctx = ""
+    if req.amazon_keywords:
+        kw_ctx = (
+            f"\nKDP KEYWORD OPTIMIZATION — These are real Amazon search terms buyers use. "
+            f"Weave them naturally into chapter titles, section headings, and the first/last paragraph of each chapter "
+            f"(never stuff them unnaturally): {', '.join(req.amazon_keywords[:12])}\n"
+        )
+    niche_ctx = ""
+    if req.niche_analysis:
+        na = req.niche_analysis
+        parts = []
+        if na.get("best_angle"):
+            parts.append(f"UNEXPLOITED ANGLE (use this as the core POV of the book): {na['best_angle']}")
+        if na.get("opportunities"):
+            opps = na["opportunities"] if isinstance(na["opportunities"], list) else []
+            if opps:
+                parts.append("OPPORTUNITIES TO EXPLOIT:\n" + "\n".join(f"  - {o}" for o in opps[:4]))
+        if na.get("keyword_gems"):
+            gems = na["keyword_gems"] if isinstance(na["keyword_gems"], list) else []
+            if gems:
+                parts.append(f"HIGH-VALUE KEYWORDS (integrate naturally): {', '.join(str(g) for g in gems[:6])}")
+        if na.get("risks"):
+            risks = na["risks"] if isinstance(na["risks"], list) else []
+            if risks:
+                parts.append("RISKS TO AVOID/ADDRESS: " + "; ".join(str(r) for r in risks[:2]))
+        if parts:
+            niche_ctx = "\nNICHE INTELLIGENCE (apply this to sharpen focus and differentiation):\n" + "\n".join(parts) + "\n"
+
+    length_map = {"short": "800-1000", "medium": "1200-1600", "long": "2000-2500"}
+    word_count = length_map.get(req.chapter_length or "medium", "1200-1600")
+
+    if req.tab == "outline":
+        prompt = f"""You are a bestselling KDP author. Create a detailed book outline.
+
+{book_ctx}
+{kw_ctx}{niche_ctx}
+{book_format_ctx}
+
+{voice_ctx}
+
+Write a professional outline with 10 chapters structured for a {req.book_type}.
+For each chapter: chapter number, punchy title, and 4 subsection titles.
+
+Format:
+Chapter 1: Title
+  1.1 Subsection
+  1.2 Subsection
+  1.3 Subsection
+  1.4 Subsection
+
+All 10 chapters. No extra text."""
+        max_tok = 3000
+
+    elif req.tab in ("chapter", "allchapters"):
+        n = req.chapter_num or 1
+        prompt = f"""You are a bestselling KDP author. Write Chapter {n}.
+
+{book_ctx}
+{kw_ctx}{niche_ctx}
+{f"Outline:{chr(10)}{req.outline[:600]}" if req.outline else ""}
+
+{book_format_ctx}
+
+{voice_ctx}
+
+Write CHAPTER {n} completely following the book format rules above.
+- Chapter title as header
+- Follow the opening style specified above EXACTLY
+- Follow the chapter instruction for {req.book_type} precisely
+- Target: {word_count} words
+
+Make it feel like no other chapter in any other book."""
+        max_tok = 8000
+
+    elif req.tab == "intro":
+        prompt = f"""You are a bestselling KDP author. Write the Introduction AND Conclusion.
+
+{book_ctx}
+{kw_ctx}
+{voice_ctx}
+
+INTRODUCTION ({word_count} words):
+- Follow the opening style specified above
+- Why this book exists and who it is for
+- What the reader will gain
+- How to use the book
+
+CONCLUSION (600-800 words):
+- Recap the transformation arc
+- Motivational, specific closing
+- Next steps / call to action"""
+        max_tok = 6000
+
+    elif req.tab == "full":
+        prompt = f"""You are a bestselling KDP author. Write a complete {req.book_type}.
+
+{book_ctx}
+{kw_ctx}
+{voice_ctx}
+
+Write the FULL book:
+- Introduction (400-500 words)
+- 6 complete chapters ({word_count} words each) with content, prompts, exercises
+- Conclusion (300-400 words)
+
+Follow voice guidelines throughout. Make every chapter feel distinct."""
+        max_tok = 8000
+    else:
+        raise HTTPException(status_code=400, detail=f"Unknown tab: {req.tab}")
+
+    tab_val = req.tab
+    ch_num = req.chapter_num
+
+    async def token_stream():
+        try:
+            async with claude_async.messages.stream(
+                model="claude-sonnet-4-6",
+                max_tokens=max_tok,
+                messages=[{"role": "user", "content": prompt}]
+            ) as stream:
+                async for text_chunk in stream.text_stream:
+                    yield json.dumps({"chunk": text_chunk}, ensure_ascii=False) + "\n"
+            yield json.dumps({"done": True, "tab": tab_val, "chapter_num": ch_num}, ensure_ascii=False) + "\n"
+        except Exception as e:
+            yield json.dumps({"error": str(e)}, ensure_ascii=False) + "\n"
+
+    return StreamingResponse(token_stream(), media_type="application/x-ndjson")
+
+
 @app.post("/generate-all", dependencies=[_AUTH])
 async def generate_all_chapters(req: AllChaptersRequest):
     import re as _re

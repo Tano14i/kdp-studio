@@ -1945,6 +1945,62 @@ async function callBackend(endpoint, body, timeoutMs = 120000) {
   return res.json();
 }
 
+async function callBackendStream(endpoint, body) {
+  const headers = _backendHeaders();
+  let res;
+  try {
+    res = await fetch(BACKEND_URL + endpoint, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    });
+  } catch(e) {
+    throw new Error('Errore di rete — controlla la connessione.');
+  }
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    if (res.status === 401) throw new Error('API Key non valida — controlla ⚙️ Impostazioni.');
+    throw new Error(err.detail || `Backend error ${res.status}`);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buf = '';
+  let fullText = '';
+
+  const streamId = 'gs_' + Date.now();
+  const contentOut = document.getElementById('contentOut');
+  contentOut.innerHTML = `<div class="content-block" style="padding:20px 24px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+      <div class="spin-sm"></div>
+      <span style="font-size:13px;color:var(--muted)">Generando…</span>
+    </div>
+    <div id="${streamId}" style="white-space:pre-wrap;font-size:14px;line-height:1.7;color:var(--text);max-height:520px;overflow-y:auto"></div>
+  </div>`;
+  const liveEl = document.getElementById(streamId);
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    const lines = buf.split('\n');
+    buf = lines.pop();
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      let obj;
+      try { obj = JSON.parse(line); } catch { continue; }
+      if (obj.error) throw new Error(obj.error);
+      if (obj.chunk) {
+        fullText += obj.chunk;
+        liveEl.textContent = fullText;
+        liveEl.scrollTop = liveEl.scrollHeight;
+      }
+      if (obj.done) break;
+    }
+  }
+  return fullText;
+}
+
 // ─── BACKEND HEALTH CHECK ─────────────────────────────────
 async function checkBackend() {
   // Fast check: just ping /health with short timeout
@@ -3872,7 +3928,7 @@ Write in warm, second-person voice.`;
         reader_persona: document.getElementById('readerPersona')?.value || '',
         custom_instructions: document.getElementById('customInstructions')?.value.trim() || ''
       };
-      const res = await callBackend('/generate', {
+      text = await callBackendStream('/generate-stream', {
         trend_name: trend,
         book_title: title,
         book_subtitle: subtitle,
@@ -3885,7 +3941,6 @@ Write in warm, second-person voice.`;
         amazon_keywords: state.amazonKeywords || [],
         niche_analysis: window._lastValidatorData || null,
       });
-      text = res.content;
     } else {
       text = await callClaude(prompt, maxTok);
     }
