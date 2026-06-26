@@ -450,6 +450,7 @@ select option{background:var(--s2)}
   <button class="step-tab" data-panel="p7" onclick="goPanel('p7')">📣 Marketing</button>
   <div class="sidebar-divider"></div>
   <button class="step-tab" data-panel="p8" onclick="goPanel('p8')">📓 Low Content</button>
+  <button class="step-tab" data-panel="p9" onclick="goPanel('p9')">⚖️ Compliance</button>
 </nav>
 <div class="app-content">
 
@@ -1802,6 +1803,68 @@ select option{background:var(--s2)}
   </div>
 </div><!-- /p8 -->
 
+<!-- ============ PANEL 9: KDP COMPLIANCE ============ -->
+<div class="panel" id="p9">
+  <div class="panel-hero">
+    <h2>⚖️ <span>Compliance</span> KDP</h2>
+    <p>Termini & condizioni di Amazon KDP integrati: controlla titoli, keyword e descrizioni prima di pubblicare ed evita rifiuti o sospensioni dell'account.</p>
+  </div>
+
+  <!-- AI disclosure banner -->
+  <div style="background:linear-gradient(135deg,rgba(249,115,22,0.1),rgba(251,146,60,0.06));border:1px solid rgba(249,115,22,0.35);border-radius:10px;padding:14px 16px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start">
+    <span style="font-size:22px;line-height:1">🤖</span>
+    <div style="font-size:12.5px;line-height:1.6">
+      <strong style="color:var(--cta2)">Obbligo di dichiarazione contenuti AI.</strong>
+      Tutto ciò che generi con KDP Studio (testi, immagini, traduzioni) è <b>AI-generated</b> secondo Amazon.
+      Quando pubblichi o modifichi un libro su KDP <b>devi dichiararlo</b> nel passaggio "AI Content" del workflow.
+      Il contenuto solo "assistito" (brainstorming, correzione grammaticale su testo scritto da te) non va dichiarato.
+      Mancata dichiarazione = rimozione del libro, blocco dei diritti d'autore in sospeso, fino alla sospensione dell'account.
+    </div>
+  </div>
+
+  <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto">
+    <button class="mkt-tab active" data-cp="cp-check" onclick="switchCpTab('cp-check')">✅ Check Listing</button>
+    <button class="mkt-tab" data-cp="cp-rules" onclick="switchCpTab('cp-rules')">📋 Regole KDP</button>
+  </div>
+
+  <!-- TAB: CHECKER -->
+  <div class="mkt-panel active" id="cp-check">
+    <div style="display:grid;gap:14px">
+      <div style="font-size:12px;color:var(--muted);line-height:1.6">Incolla i metadati del tuo listing — il checker verifica le regole KDP più comuni (keyword stuffing, parole vietate, limiti caratteri, claim promozionali). <button onclick="cpFillFromPackage()" style="background:none;border:1px solid var(--border2);border-radius:6px;color:var(--accent);cursor:pointer;padding:3px 10px;font-size:11px;margin-left:4px">⤵ Importa dal Package generato</button></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Titolo</label>
+          <input id="cpTitle" type="text" placeholder="Titolo del libro" style="width:100%">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Sottotitolo</label>
+          <input id="cpSubtitle" type="text" placeholder="Sottotitolo (opzionale)" style="width:100%">
+        </div>
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">7 Keyword (una per riga o separate da virgola)</label>
+        <textarea id="cpKeywords" rows="4" placeholder="keyword 1&#10;keyword 2&#10;…" style="width:100%;resize:vertical;font-size:12px"></textarea>
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Descrizione</label>
+        <textarea id="cpDescription" rows="5" placeholder="Descrizione Amazon…" style="width:100%;resize:vertical;font-size:12px"></textarea>
+      </div>
+      <button class="btn btn-accent" onclick="runComplianceCheck()" style="align-self:flex-start">✅ Verifica Compliance</button>
+      <div id="cpResults" style="display:none;display:grid;gap:8px"></div>
+    </div>
+  </div>
+
+  <!-- TAB: RULES REFERENCE -->
+  <div class="mkt-panel" id="cp-rules">
+    <div id="cpRulesBody" style="display:grid;gap:10px"></div>
+    <div style="font-size:11px;color:var(--muted);margin-top:16px;line-height:1.6;border-top:1px solid var(--border);padding-top:12px">
+      Sintesi operativa basata sulle policy ufficiali Amazon KDP (Content Guidelines, Metadata Guidelines, Guide to Kindle Content Quality, AI Content policy). Per il testo legale completo e sempre aggiornato consulta
+      <a href="https://kdp.amazon.com/help" target="_blank" rel="noopener" style="color:var(--accent)">kdp.amazon.com/help</a>.
+      In caso di conflitto, fa fede la versione ufficiale Amazon.
+    </div>
+  </div>
+</div><!-- /p9 -->
+
 </div><!-- /app-content -->
 </div><!-- /app-shell -->
 
@@ -1964,6 +2027,7 @@ function goPanel(id) {
   if (id === 'p6') renderTracker();
   if (id === 'p7') initMarketing();
   if (id === 'p8') initLowContent();
+  if (id === 'p9') initCompliance();
   saveState();
 }
 
@@ -4571,8 +4635,10 @@ function renderPackage(k) {
   const lenOk = combinedLen <= 200;
   const titleWarningsHtml = (k.title_warnings && k.title_warnings.length) ? `<div style="margin:8px 18px;padding:8px 12px;border-radius:6px;background:rgba(255,140,66,0.1);border:1px solid rgba(255,140,66,0.3);font-size:11px;color:#ff8c42">⚠️ ${k.title_warnings.map(escHtml).join(' · ')}</div>` : '';
   const lenBadgeHtml = `<div style="margin:8px 18px;font-size:11px;color:${lenOk ? '#22c55e' : '#ef4444'}">${lenOk ? '✓' : '⚠️'} Titolo + sottotitolo: ${combinedLen}/200 caratteri${lenOk ? '' : ' — supera il limite Amazon, modifica prima di pubblicare'}</div>`;
+  const aiDisclosureHtml = `<div style="margin:8px 18px;padding:9px 12px;border-radius:6px;background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.32);font-size:11px;color:#fb923c;line-height:1.5">🤖 <b>Contenuto AI-generated</b> — dichiaralo nel workflow KDP al momento della pubblicazione. <span onclick="goPanel('p9');setTimeout(cpFillFromPackage,150)" style="text-decoration:underline;cursor:pointer">Verifica compliance →</span></div>`;
 
   document.getElementById('packageOut').innerHTML = [
+    aiDisclosureHtml,
     cb('🎯 Tagline', k.tagline || '', false, '#ff4500'),
     cb('📖 Titolo KDP', k.title || '', false, '#ff8c42'),
     cb('📌 Sottotitolo KDP', k.subtitle || '', false, '#ff8c42'),
@@ -8255,6 +8321,11 @@ Product: ${type}
 Target audience: ${audience || 'general'}
 Features: ${features || 'standard format'}
 
+KDP COMPLIANCE — the listing MUST comply with Amazon KDP policies:
+- Title = only the real book title, NO repeated generic keywords (journal, notebook, gift, planner), NO placeholders, NO prices, NO "free"/"bestseller"/"#1"/promo claims, NO other authors' or brand names. Title+subtitle ≤ 200 chars.
+- Keywords must accurately describe the book; NO misleading/unrelated terms, NO competitor names, NO "free"/"bestseller"/"on sale"/"Kindle Unlimited"/"%"; prefer 2-3 word phrases; don't repeat title words.
+- Description must match the real content; NO fake reviews, NO external links/URLs, NO requests for reviews, NO bonus-content references not inside the book.
+
 Generate ALL of the following:
 
 ## TITOLO PRINCIPALE (max 200 caratteri)
@@ -8292,6 +8363,205 @@ Write everything in ${lang}. Be specific, benefit-focused, and optimized for Ama
   } finally {
     btn.disabled = false; spin.style.display = 'none'; txt.textContent = '✨ Genera KDP Listing';
   }
+}
+
+// ════════════════════════════════════════════════════════════════
+// KDP COMPLIANCE MODULE
+// Sintesi delle policy ufficiali Amazon KDP: Content Guidelines,
+// Metadata Guidelines, Guide to Kindle Content Quality, AI Content.
+// ════════════════════════════════════════════════════════════════
+
+// Termini promozionali / vietati nei metadati Amazon
+const _CP_BANNED_TERMS = [
+  'free','gratis','bestseller','best seller','best-seller','#1','number one','n.1',
+  'on sale','sale','sconto','offerta','new','novità','limited time','kindle unlimited',
+  'as seen on','migliore in assoluto','garantito','100%'
+];
+// Parole generiche che NON vanno ripetute/stuffate nel titolo
+const _CP_GENERIC_TITLE = ['journal','notebook','diary','diario','gift','gifts','regalo','book','books','libro','planner','agenda','log','tracker','coloring','workbook'];
+// Placeholder vietati come titolo
+const _CP_PLACEHOLDERS = ['n/a','na','none','null','blank','unknown','not applicable','tbd','untitled'];
+
+const _CP_RULES = [
+  { icon:'📑', title:'Metadati — Titolo & Sottotitolo', items:[
+    'Il titolo deve essere SOLO il vero titolo del libro come appare in copertina.',
+    'Vietato ripetere keyword generiche (journal, notebook, gift, planner…) per il SEO.',
+    'Vietati placeholder: n/a, none, null, blank, unknown, not applicable.',
+    'Vietato il solo uso di punteggiatura (es. "!!!!").',
+    'Niente prezzi, "free/gratis", "bestseller", "#1", claim promozionali o nomi di altri autori/brand.',
+    'Limite Amazon: titolo + sottotitolo combinati ≤ 200 caratteri.'
+  ]},
+  { icon:'🔍', title:'Keyword (7 backend)', items:[
+    'Devono descrivere accuratamente il contenuto reale del libro.',
+    'Vietate keyword fuorvianti, non pertinenti o che manipolano la ricerca.',
+    'Vietati nomi di altri autori, titoli altrui, marchi registrati.',
+    'Vietati termini: "free", "bestseller", "on sale", "new", "Kindle Unlimited", "%", prezzi.',
+    'Non ripetere parole già presenti nel titolo/sottotitolo (è ridondante).',
+    'Meglio frasi di 2-3 parole con intento d\'acquisto.'
+  ]},
+  { icon:'📝', title:'Descrizione', items:[
+    'Deve rappresentare accuratamente il contenuto reale — niente claim ingannevoli.',
+    'Vietate recensioni/testimonianze false o citazioni inventate.',
+    'Vietati link esterni / URL e richieste di lasciare recensioni.',
+    'Niente riferimenti a contenuti bonus o altri libri non inclusi nel volume.'
+  ]},
+  { icon:'🚫', title:'Contenuto proibito', items:[
+    'Contenuto offensivo: incitamento all\'odio, pornografia, sfruttamento di minori, apologia di terrorismo.',
+    'Contenuto illegale o che viola diritti: copyright, marchi, plagio, riproduzioni non autorizzate.',
+    'Pubblico dominio: puoi pubblicarlo solo aggiungendo valore reale (annotazioni, illustrazioni, traduzione, formattazione curata). Vietato il "public domain spam".',
+    'Contenuto ingannevole/deludente: l\'interno non corrisponde a titolo, descrizione o copertina.'
+  ]},
+  { icon:'⭐', title:'Qualità (Guide to Kindle Content Quality)', items:[
+    'Niente errori di battitura, formattazione rotta, immagini di bassa qualità o link non funzionanti.',
+    'Niente contenuto duplicato o liberamente disponibile altrove senza valore aggiunto.',
+    'La formattazione non deve confondere il lettore né gonfiare artificialmente pagine/vendite.',
+    'Per raccolte di più storie usa "Collection/Compilation/Series" e ordine sequenziale.'
+  ]},
+  { icon:'🤖', title:'Contenuto AI — Dichiarazione obbligatoria', items:[
+    'AI-generated = testo, immagini o traduzioni create da uno strumento AI (anche se poi modificate).',
+    'Va dichiarato nel workflow KDP al momento di pubblicazione o modifica.',
+    'AI-assisted (brainstorming, grammatica su testo tuo) NON va dichiarato.',
+    'Limite anti-spam: massimo 3 nuovi titoli al giorno per account.',
+    'Vietato contenuto AI plagiato, di bassa qualità o pubblicato in massa per manipolare il ranking.'
+  ]},
+  { icon:'⚠️', title:'Conseguenze delle violazioni', items:[
+    'Rimozione del singolo libro o warning sul contenuto.',
+    'Blocco delle royalty in sospeso sul titolo rimosso.',
+    'Un titolo rimosso può restare "flaggato" e difficile da ripubblicare.',
+    'Violazioni ripetute o gravi: sospensione o chiusura definitiva dell\'account KDP.'
+  ]},
+];
+
+// Match banned terms as whole words (avoids "new"→"newborn", "sale"→"wholesale").
+// Terms with non-word chars (#1, 100%, n.1) fall back to substring matching.
+function _cpFindBanned(text) {
+  const t = text.toLowerCase();
+  return _CP_BANNED_TERMS.filter(b => {
+    if (/[^a-z\s]/.test(b)) return t.includes(b);
+    const re = new RegExp('\\b' + b.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+    return re.test(t);
+  });
+}
+
+let _cpInited = false;
+function initCompliance() {
+  if (_cpInited) return;
+  _cpInited = true;
+  const body = document.getElementById('cpRulesBody');
+  if (body) body.innerHTML = _CP_RULES.map(r => `
+    <details style="background:var(--s1);border:1px solid var(--border2);border-radius:10px;padding:0 14px" open>
+      <summary style="cursor:pointer;padding:13px 0;font-size:13px;font-weight:600;list-style:none;display:flex;align-items:center;gap:8px">
+        <span style="font-size:18px">${r.icon}</span>${r.title}
+      </summary>
+      <ul style="margin:0 0 14px 0;padding-left:20px;display:grid;gap:6px">
+        ${r.items.map(i => `<li style="font-size:12px;line-height:1.55;color:var(--text)">${i}</li>`).join('')}
+      </ul>
+    </details>`).join('');
+}
+
+function switchCpTab(tab) {
+  document.querySelectorAll('.mkt-tab[data-cp]').forEach(t => t.classList.toggle('active', t.dataset.cp === tab));
+  document.querySelectorAll('#p9 .mkt-panel').forEach(p => p.classList.toggle('active', p.id === tab));
+}
+
+function cpFillFromPackage() {
+  const k = window._lastPackage || (state && state.package) || null;
+  if (!k) { alert('Genera prima un KDP Package nel pannello Package.'); return; }
+  document.getElementById('cpTitle').value = k.title || '';
+  document.getElementById('cpSubtitle').value = k.subtitle || '';
+  document.getElementById('cpKeywords').value = (k.keywords || []).join('\n');
+  const desc = (k.description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  document.getElementById('cpDescription').value = desc;
+  runComplianceCheck();
+}
+
+function _cpBadge(level, label, detail) {
+  const c = level === 'fail' ? '#f87171' : level === 'warn' ? '#fbbf24' : '#4ade80';
+  const bg = level === 'fail' ? 'rgba(248,113,113,0.08)' : level === 'warn' ? 'rgba(251,191,36,0.08)' : 'rgba(74,222,128,0.07)';
+  const ic = level === 'fail' ? '✕' : level === 'warn' ? '!' : '✓';
+  return `<div style="display:flex;gap:10px;align-items:flex-start;background:${bg};border:1px solid ${c}33;border-radius:8px;padding:10px 12px">
+    <span style="width:18px;height:18px;border-radius:50%;background:${c};color:#04040e;font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">${ic}</span>
+    <div style="font-size:12px;line-height:1.5"><strong style="color:${c}">${label}</strong>${detail ? `<br><span style="color:var(--muted)">${detail}</span>` : ''}</div>
+  </div>`;
+}
+
+function runComplianceCheck() {
+  const title = (document.getElementById('cpTitle').value || '').trim();
+  const subtitle = (document.getElementById('cpSubtitle').value || '').trim();
+  const kwRaw = (document.getElementById('cpKeywords').value || '').trim();
+  const desc = (document.getElementById('cpDescription').value || '').trim();
+  const keywords = kwRaw.split(/[\n,]+/).map(k => k.trim()).filter(Boolean);
+  const out = [];
+  const lc = s => s.toLowerCase();
+
+  // ── TITLE ──
+  if (!title) {
+    out.push(_cpBadge('fail', 'Titolo mancante', 'Inserisci il titolo del libro.'));
+  } else {
+    const tl = lc(title);
+    if (_CP_PLACEHOLDERS.includes(tl)) out.push(_cpBadge('fail', 'Titolo placeholder vietato', `"${title}" non è ammesso come titolo.`));
+    else if (/^[\s\p{P}]+$/u.test(title)) out.push(_cpBadge('fail', 'Titolo solo punteggiatura', 'Amazon rifiuta titoli composti solo da simboli.'));
+    else {
+      // keyword stuffing: generic word repeated
+      const words = tl.split(/\s+/);
+      const genericHits = _CP_GENERIC_TITLE.filter(g => words.filter(w => w.replace(/[^\p{L}]/gu,'') === g).length >= 2);
+      if (genericHits.length) out.push(_cpBadge('fail', 'Keyword stuffing nel titolo', `Parola generica ripetuta: "${genericHits.join('", "')}". Rimuovi le ripetizioni.`));
+      const bannedT = _cpFindBanned(title);
+      if (bannedT.length) out.push(_cpBadge('fail', 'Termini promozionali nel titolo', `Vietati: "${bannedT.join('", "')}".`));
+      if (!genericHits.length && !bannedT.length) out.push(_cpBadge('pass', 'Titolo conforme', `${title.length} caratteri.`));
+    }
+  }
+
+  // ── TITLE + SUBTITLE LENGTH ──
+  const combined = (title + ' ' + subtitle).trim().length;
+  if (combined > 200) out.push(_cpBadge('fail', 'Limite 200 caratteri superato', `Titolo + sottotitolo = ${combined} caratteri (max 200).`));
+  else if (combined > 0) out.push(_cpBadge('pass', 'Lunghezza titolo+sottotitolo OK', `${combined}/200 caratteri.`));
+
+  if (subtitle) {
+    const bannedS = _cpFindBanned(subtitle);
+    if (bannedS.length) out.push(_cpBadge('fail', 'Termini promozionali nel sottotitolo', `Vietati: "${bannedS.join('", "')}".`));
+  }
+
+  // ── KEYWORDS ──
+  if (!keywords.length) {
+    out.push(_cpBadge('warn', 'Nessuna keyword', 'Aggiungi fino a 7 keyword backend.'));
+  } else {
+    if (keywords.length > 7) out.push(_cpBadge('warn', 'Troppe keyword', `${keywords.length} inserite — Amazon ne usa 7.`));
+    const titleWords = new Set(lc(title + ' ' + subtitle).split(/\s+/).filter(w => w.length > 2));
+    const banned = [], repeated = [], longKw = [];
+    keywords.forEach(k => {
+      _cpFindBanned(k).forEach(b => { if (!banned.includes(b)) banned.push(b); });
+      const kw = lc(k).split(/\s+/);
+      if (kw.some(w => titleWords.has(w))) repeated.push(k);
+      if (kw.length > 4) longKw.push(k);
+    });
+    if (banned.length) out.push(_cpBadge('fail', 'Termini vietati nelle keyword', `"${banned.join('", "')}" — rimuovili o rischi il rifiuto.`));
+    if (repeated.length) out.push(_cpBadge('warn', 'Keyword ridondanti col titolo', `Già nel titolo: "${repeated.join('", "')}". Sostituiscile con sinonimi.`));
+    if (longKw.length) out.push(_cpBadge('warn', 'Keyword troppo lunghe', `Meglio 2-3 parole: "${longKw.join('", "')}".`));
+    if (!banned.length && !repeated.length && !longKw.length) out.push(_cpBadge('pass', 'Keyword conformi', `${keywords.length} keyword senza problemi rilevati.`));
+  }
+
+  // ── DESCRIPTION ──
+  if (desc) {
+    if (/https?:\/\/|www\.|\.com\b|\.it\b/i.test(desc)) out.push(_cpBadge('fail', 'Link/URL nella descrizione', 'Amazon vieta URL e link esterni nella descrizione.'));
+    if (/(lascia|scrivi|metti).{0,15}recensione|leave.{0,10}review|please review/i.test(desc)) out.push(_cpBadge('fail', 'Richiesta di recensioni', 'Vietato chiedere recensioni nella descrizione.'));
+    const bannedD = _cpFindBanned(desc);
+    if (bannedD.includes('bestseller') || bannedD.includes('best seller')) out.push(_cpBadge('warn', 'Claim "bestseller" nella descrizione', 'Usa "bestseller" solo se ufficialmente verificato da Amazon.'));
+    if (desc.length < 150) out.push(_cpBadge('warn', 'Descrizione molto corta', `${desc.length} caratteri — punta a 400-600 parole per convertire.`));
+  }
+
+  // ── AI DISCLOSURE (always) ──
+  out.push(_cpBadge('warn', 'Ricorda la dichiarazione AI', 'Il contenuto generato da KDP Studio è AI-generated: dichiaralo nel workflow KDP al momento della pubblicazione.'));
+
+  const fails = out.filter(o => o.includes('>✕</span>')).length;
+  const summary = fails
+    ? _cpBadge('fail', `${fails} problemi bloccanti da correggere`, 'Risolvili prima di pubblicare per evitare il rifiuto.')
+    : _cpBadge('pass', 'Nessun problema bloccante', 'Controlla comunque gli avvisi gialli qui sotto.');
+
+  const res = document.getElementById('cpResults');
+  res.style.display = 'grid';
+  res.innerHTML = summary + out.join('');
+  res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 </script>
 </body>

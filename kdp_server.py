@@ -485,6 +485,33 @@ MARKET_LANG_CONFIG = {
     "Portuguese": {"amazon": "Amazon.com.br", "subreddits": ["brasil","portugal","empreendedorismo","desabafos"]},
 }
 
+# ──────────────────────────────────────────────────────────────
+# KDP COMPLIANCE — derived from Amazon KDP Content Guidelines,
+# Metadata Guidelines, Quality Guidelines & AI Content policy.
+# Injected into every metadata/listing-generation prompt so output
+# is compliant by design. Reference: kdp.amazon.com/help (Content
+# Guidelines, Metadata Guidelines, Guide to Kindle Content Quality).
+# ──────────────────────────────────────────────────────────────
+KDP_COMPLIANCE_RULES = """KDP COMPLIANCE RULES — output MUST comply with Amazon KDP policies:
+TITLE/SUBTITLE: Use ONLY the real book title — never stuff generic keywords
+  (journal, notebook, gift, books, planner, diary) repeatedly. No placeholder
+  words (n/a, none, null, blank, unknown). No prices, no "free", no
+  "bestseller", no "#1", no promotional claims, no other authors'/brands' names.
+KEYWORDS: Must accurately describe the book. NO misleading or unrelated terms,
+  NO competitor or other-author names, NO trademarked brands, NO "free",
+  "bestseller", "best seller", "on sale", "new", "Kindle Unlimited", "%".
+  Prefer 2-3 word buyer-intent phrases. No keyword repetition from the title.
+DESCRIPTION: Must accurately represent the book's actual content — no
+  misleading claims, no fake reviews/testimonials, no external links/URLs,
+  no requests for reviews, no references to other books/bonus content not
+  inside the book.
+CONTENT: Must be original and non-infringing — no plagiarism, no public-domain
+  text resold without substantial added value, no trademark/copyright
+  violation, no offensive/illegal content.
+AI DISCLOSURE: This content is AI-generated. Amazon requires the publisher to
+  declare AI-generated text/images/translations in the KDP publishing workflow.
+Stay strictly within these rules for every field you produce."""
+
 class TrendRequest(BaseModel):
     platforms: list[str]
     niche: str
@@ -2491,6 +2518,8 @@ PROVEN SCHEMAS to apply (use different ones for variety):
 7. [Keyword]: La Guida Completa / Il Blueprint / I Segreti
 8. Contrarian or Authority angle title
 
+{KDP_COMPLIANCE_RULES}
+
 EVALUATION — score each title 1-10 on:
 - chiarezza: does a browser instantly understand what it's about?
 - memorabilita: easy to say, remember, and search?
@@ -2670,6 +2699,8 @@ IMPORTANT: Write title, subtitle, description, tagline, and keywords in {lang}.
 Keywords must be search terms that {lang}-speaking readers actually use on {marketplace}.
 {_cat_hint}
 
+{KDP_COMPLIANCE_RULES}
+
 TITLE RULES — THIS IS CRITICAL, Amazon KDP REJECTS listings that violate this:
 - "title": SHORT and punchy, under 60 characters. Must NOT contain a colon
   followed by a second long subtitle baked into it (e.g. do not write
@@ -2710,6 +2741,8 @@ Return ONLY raw JSON. No markdown. ASCII-safe strings only.
         kdp["subtitle"] = subtitle
         if warnings:
             kdp["title_warnings"] = warnings
+        # KDP requires declaring AI-generated content at publish time.
+        kdp["ai_disclosure_required"] = True
         result["kdp"] = kdp
         return result
     except Exception as e:
