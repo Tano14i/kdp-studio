@@ -2244,6 +2244,33 @@ Follow voice guidelines throughout. Make every chapter feel distinct."""
     return StreamingResponse(token_stream(), media_type="application/x-ndjson")
 
 
+class RawStreamRequest(BaseModel):
+    prompt: str
+    max_tokens: Optional[int] = 1500
+    tab: Optional[str] = "custom"
+
+@app.post("/api/raw-stream", dependencies=[_AUTH])
+async def raw_stream(req: RawStreamRequest):
+    """Generic streaming endpoint — accepts a fully-formed prompt, returns NDJSON chunks."""
+    if not req.prompt or len(req.prompt.strip()) < 10:
+        raise HTTPException(status_code=400, detail="Prompt troppo corto")
+
+    async def token_stream():
+        try:
+            async with claude_async.messages.stream(
+                model="claude-sonnet-4-6",
+                max_tokens=max(200, min(req.max_tokens or 1500, 4000)),
+                messages=[{"role": "user", "content": req.prompt}]
+            ) as stream:
+                async for text_chunk in stream.text_stream:
+                    yield json.dumps({"chunk": text_chunk}, ensure_ascii=False) + "\n"
+            yield json.dumps({"done": True, "tab": req.tab}, ensure_ascii=False) + "\n"
+        except Exception as e:
+            yield json.dumps({"error": str(e)}, ensure_ascii=False) + "\n"
+
+    return StreamingResponse(token_stream(), media_type="application/x-ndjson")
+
+
 @app.post("/generate-all", dependencies=[_AUTH])
 async def generate_all_chapters(req: AllChaptersRequest):
     import re as _re

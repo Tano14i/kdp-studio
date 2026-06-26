@@ -448,6 +448,8 @@ select option{background:var(--s2)}
   <button class="step-tab" data-panel="p5" onclick="goPanel('p5')">📚 Libreria</button>
   <button class="step-tab" data-panel="p6" onclick="goPanel('p6')">📊 Tracking</button>
   <button class="step-tab" data-panel="p7" onclick="goPanel('p7')">📣 Marketing</button>
+  <div class="sidebar-divider"></div>
+  <button class="step-tab" data-panel="p8" onclick="goPanel('p8')">📓 Low Content</button>
 </nav>
 <div class="app-content">
 
@@ -1575,6 +1577,194 @@ select option{background:var(--s2)}
     </div>
   </div>
 </div><!-- /p7 -->
+
+<div class="panel" id="p8">
+  <div class="panel-hero">
+    <h2>📓 <span>Low Content</span></h2>
+    <p>Ricerca nicchia, genera pagine interne pronte per KDP e crea il listing ottimizzato.</p>
+  </div>
+
+  <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto">
+    <button class="mkt-tab active" data-lc="lc-ricerca" onclick="switchLcTab('lc-ricerca')">🔍 Ricerca</button>
+    <button class="mkt-tab" data-lc="lc-interior" onclick="switchLcTab('lc-interior')">📄 Interior</button>
+    <button class="mkt-tab" data-lc="lc-copy" onclick="switchLcTab('lc-copy')">📝 KDP Copy</button>
+  </div>
+
+  <!-- TAB: RICERCA -->
+  <div class="mkt-panel active" id="lc-ricerca">
+    <div style="display:grid;gap:14px">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <span style="font-size:12px;color:var(--muted)">Tipo:</span>
+        <label class="mkt-pill-label"><input type="radio" name="lcTypeR" value="journal" checked> 📔 Journal</label>
+        <label class="mkt-pill-label"><input type="radio" name="lcTypeR" value="planner"> 📅 Planner</label>
+        <label class="mkt-pill-label"><input type="radio" name="lcTypeR" value="tracker"> 📊 Tracker</label>
+        <label class="mkt-pill-label"><input type="radio" name="lcTypeR" value="activity"> 🎨 Activity</label>
+        <label class="mkt-pill-label"><input type="radio" name="lcTypeR" value="notebook"> ✏️ Notebook</label>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div style="flex:2;min-width:200px">
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Nicchia / Tema target</label>
+          <input id="lcNicheInput" type="text" placeholder="es. mindfulness per mamme, fitness per over 50, bullet journal…" style="width:100%">
+        </div>
+        <div style="flex:1;min-width:130px">
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Marketplace</label>
+          <select id="lcMarketplace" style="width:100%;padding:9px 12px;background:var(--s1);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px">
+            <option value="Amazon.com (US)">Amazon.com (US)</option>
+            <option value="Amazon.it">Amazon.it (IT)</option>
+            <option value="Amazon.de">Amazon.de (DE)</option>
+            <option value="Amazon.co.uk">Amazon.co.uk (UK)</option>
+            <option value="Amazon.fr">Amazon.fr (FR)</option>
+            <option value="Amazon.es">Amazon.es (ES)</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-accent" onclick="lcResearch()" id="lcResearchBtn" style="align-self:flex-start">
+        <div class="spin" id="lcResearchSpin" style="display:none;width:14px;height:14px"></div>
+        <span id="lcResearchTxt">🔍 Analizza Nicchia</span>
+      </button>
+      <div id="lcResearchOut" style="display:none;background:var(--s1);border:1px solid var(--border2);border-radius:10px;padding:20px;font-size:13px;line-height:1.7;white-space:pre-wrap;font-family:monospace"></div>
+    </div>
+  </div>
+
+  <!-- TAB: INTERIOR GENERATOR -->
+  <div class="mkt-panel" id="lc-interior">
+    <!-- Step 1: choose type -->
+    <div id="lcStep1">
+      <div style="font-size:13px;font-weight:600;margin-bottom:14px">Scegli il tipo di interior:</div>
+      <div id="lcTypeGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px"></div>
+    </div>
+
+    <!-- Step 2: configure -->
+    <div id="lcStep2" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+        <button onclick="lcBackToTypes()" style="background:none;border:1px solid var(--border2);border-radius:8px;color:var(--muted);cursor:pointer;padding:6px 12px;font-size:12px">← Cambia tipo</button>
+        <span id="lcSelectedTypeLabel" style="font-size:14px;font-weight:600"></span>
+      </div>
+      <div style="display:grid;gap:14px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Titolo del libro</label>
+            <input id="lcTitle" type="text" placeholder="es. My Daily Journal" style="width:100%">
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Sottotitolo (opzionale)</label>
+            <input id="lcSubtitle" type="text" placeholder="es. 365 Days of Reflection" style="width:100%">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+          <div>
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Autore</label>
+            <input id="lcAuthor" type="text" placeholder="Nome Cognome" style="width:100%">
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Formato KDP</label>
+            <select id="lcSize" style="width:100%;padding:9px 12px;background:var(--s1);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px">
+              <option value="6x9">6" × 9" (più comune)</option>
+              <option value="85x11">8.5" × 11" (grande)</option>
+              <option value="5x8">5" × 8" (tascabile)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Pagine contenuto</label>
+            <select id="lcPages" style="width:100%;padding:9px 12px;background:var(--s1);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px">
+              <option value="50">50 pagine</option>
+              <option value="100" selected>100 pagine</option>
+              <option value="150">150 pagine</option>
+              <option value="200">200 pagine</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Colore accento</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input id="lcColor" type="color" value="#4ade80" style="width:40px;height:36px;border:1px solid var(--border2);border-radius:6px;cursor:pointer;background:none;padding:2px">
+              <span style="font-size:11px;color:var(--muted)">per titoli e dettagli</span>
+            </div>
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Spaziatura righe</label>
+            <select id="lcSpacing" style="width:100%;padding:9px 12px;background:var(--s1);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px">
+              <option value="standard">Standard (24 righe/pag)</option>
+              <option value="comfortable" selected>Comoda (20 righe/pag)</option>
+              <option value="wide">Ampia (16 righe/pag)</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:20px;flex-wrap:wrap">
+          <label style="display:flex;gap:6px;align-items:center;font-size:12px;cursor:pointer"><input type="checkbox" id="lcTitlePage" checked> Pagina titolo</label>
+          <label style="display:flex;gap:6px;align-items:center;font-size:12px;cursor:pointer"><input type="checkbox" id="lcPageNums" checked> Numeri di pagina</label>
+          <label style="display:flex;gap:6px;align-items:center;font-size:12px;cursor:pointer"><input type="checkbox" id="lcCopyright"> Pagina copyright</label>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <button class="btn btn-accent" onclick="generateInterior()" id="lcGenBtn">
+            <div class="spin" id="lcGenSpin" style="display:none;width:14px;height:14px"></div>
+            <span id="lcGenTxt">📄 Genera Interior PDF</span>
+          </button>
+          <button class="btn btn-ghost" onclick="previewInterior()">👁 Preview</button>
+        </div>
+        <div id="lcGenStatus" style="font-size:12px;color:var(--muted);line-height:1.5"></div>
+      </div>
+
+      <!-- Preview frame -->
+      <div id="lcPreviewWrap" style="display:none;margin-top:16px;border:1px solid var(--border2);border-radius:10px;overflow:hidden">
+        <div style="padding:8px 14px;background:var(--s1);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;align-items:center">
+          <span>Preview — pagina campione</span>
+          <button onclick="document.getElementById('lcPreviewWrap').style.display='none'" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1">×</button>
+        </div>
+        <div id="lcPreviewFrame" style="height:420px;overflow:auto;background:#e5e5e5;display:flex;justify-content:center;align-items:flex-start;padding:16px">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: KDP COPY -->
+  <div class="mkt-panel" id="lc-copy">
+    <div style="display:grid;gap:14px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Tipo di prodotto</label>
+          <input id="lcCopyType" type="text" placeholder="es. Gratitude Journal, Fitness Planner, Habit Tracker…" style="width:100%">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Target audience</label>
+          <input id="lcCopyAudience" type="text" placeholder="es. donne 25-45, appassionati di yoga, mamme…" style="width:100%">
+        </div>
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Caratteristiche principali</label>
+        <input id="lcCopyFeatures" type="text" placeholder="es. 120 pagine, 6×9, prompts giornalieri, spazio per disegni…" style="width:100%">
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+        <div style="flex:1;min-width:120px">
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Lingua output</label>
+          <select id="lcCopyLang" style="width:100%;padding:9px 12px;background:var(--s1);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px">
+            <option value="Italian">Italiano</option>
+            <option value="English">English</option>
+            <option value="German">Deutsch</option>
+            <option value="French">Français</option>
+            <option value="Spanish">Español</option>
+          </select>
+        </div>
+        <div style="flex:1;min-width:120px">
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Marketplace</label>
+          <select id="lcCopyMarket" style="width:100%;padding:9px 12px;background:var(--s1);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px">
+            <option value="Amazon.it">Amazon.it</option>
+            <option value="Amazon.com">Amazon.com</option>
+            <option value="Amazon.de">Amazon.de</option>
+            <option value="Amazon.co.uk">Amazon.co.uk</option>
+          </select>
+        </div>
+        <button class="btn btn-accent" onclick="lcGenerateCopy()" id="lcCopyBtn">
+          <div class="spin" id="lcCopySpin" style="display:none;width:14px;height:14px"></div>
+          <span id="lcCopyTxt">✨ Genera KDP Listing</span>
+        </button>
+      </div>
+      <div id="lcCopyOut" style="display:none;background:var(--s1);border:1px solid var(--border2);border-radius:10px;padding:20px;font-size:13px;line-height:1.7;white-space:pre-wrap"></div>
+    </div>
+  </div>
+</div><!-- /p8 -->
+
 </div><!-- /app-content -->
 </div><!-- /app-shell -->
 
@@ -1736,6 +1926,7 @@ function goPanel(id) {
   if (id === 'p3') { updateVoiceSummary(); checkAndShowRecoveryBanner(); }
   if (id === 'p6') renderTracker();
   if (id === 'p7') initMarketing();
+  if (id === 'p8') initLowContent();
   saveState();
 }
 
@@ -7301,6 +7492,544 @@ function calcRoyalty() {
     </div>
     <div style="font-size:10px;color:var(--muted2);margin-top:8px;font-style:italic">Stime indicative — vendite reali dipendono da categoria, stagionalità, marketing. Fonte: KDP pricing guidelines.</div>
   `;
+}
+
+// ═══════════════════════════════════════════════════════
+// LOW CONTENT MODULE
+// ═══════════════════════════════════════════════════════
+
+const _LC_TYPES = [
+  {key:'lined',    icon:'📔', name:'Lined Journal',    cat:'Journal',  desc:'Pagine a righe con header data'},
+  {key:'dot',      icon:'⚪', name:'Dot Grid',          cat:'Journal',  desc:'Griglia a punti stile Leuchtturm'},
+  {key:'blank',    icon:'◻️', name:'Blank Pages',       cat:'Journal',  desc:'Pagine bianche con bordo sottile'},
+  {key:'cornell',  icon:'📐', name:'Cornell Notes',     cat:'Journal',  desc:'Colonna cue + note + summary'},
+  {key:'gratitude',icon:'🙏', name:'Gratitude Journal', cat:'Journal',  desc:'Prompts giornalieri gratitudine'},
+  {key:'booklog',  icon:'📚', name:'Book Log',          cat:'Journal',  desc:'Tracker letture con rating e note'},
+  {key:'daily',    icon:'📅', name:'Daily Planner',     cat:'Planner',  desc:'Orario, priorità, note, gratitudine'},
+  {key:'weekly',   icon:'📆', name:'Weekly Planner',    cat:'Planner',  desc:'Vista settimanale con obiettivi'},
+  {key:'monthly',  icon:'🗓️', name:'Monthly Calendar',  cat:'Planner',  desc:'Calendario mensile con note'},
+  {key:'habit',    icon:'✅', name:'Habit Tracker',     cat:'Tracker',  desc:'31 giorni × 10 abitudini'},
+  {key:'workout',  icon:'💪', name:'Workout Log',       cat:'Tracker',  desc:'Esercizi, serie, reps e peso'},
+  {key:'meal',     icon:'🥗', name:'Meal Log',          cat:'Tracker',  desc:'Colazione, pranzo, cena + acqua'},
+  {key:'finance',  icon:'💰', name:'Finance Tracker',   cat:'Tracker',  desc:'Entrate, uscite, saldo mensile'},
+  {key:'password', icon:'🔐', name:'Password Log',      cat:'Altro',    desc:'Sito, username, password, note'},
+  {key:'guest',    icon:'✍️', name:'Guest Book',        cat:'Altro',    desc:'Nome, messaggio, data ospiti'},
+  {key:'sudoku',   icon:'🧩', name:'Sudoku',            cat:'Attività', desc:'Griglia 9×9 con difficoltà'},
+  {key:'wordsearch',icon:'🔤',name:'Word Search',       cat:'Attività', desc:'Griglia lettere + lista parole'},
+];
+
+let _lcSelectedType = null;
+let _lcInited = false;
+
+function initLowContent() {
+  if (_lcInited) return;
+  _lcInited = true;
+  renderLcTypeGrid();
+}
+
+function switchLcTab(tab) {
+  document.querySelectorAll('.mkt-tab[data-lc]').forEach(t => {
+    t.classList.toggle('active', t.dataset.lc === tab);
+  });
+  document.querySelectorAll('#p8 .mkt-panel').forEach(p => {
+    p.classList.toggle('active', p.id === tab);
+  });
+}
+
+function renderLcTypeGrid() {
+  const grid = document.getElementById('lcTypeGrid');
+  if (!grid) return;
+  const cats = [...new Set(_LC_TYPES.map(t => t.cat))];
+  let html = '';
+  cats.forEach(cat => {
+    html += `<div style="grid-column:1/-1;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:10px;padding-bottom:4px;border-bottom:1px solid var(--border)">${cat}</div>`;
+    _LC_TYPES.filter(t => t.cat === cat).forEach(t => {
+      html += `<button onclick="selectLcType('${t.key}')" style="background:var(--s1);border:1px solid var(--border2);border-radius:10px;padding:12px 10px;text-align:left;cursor:pointer;transition:border-color 0.15s;display:flex;flex-direction:column;gap:5px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)'">
+        <span style="font-size:22px">${t.icon}</span>
+        <span style="font-size:12px;font-weight:600;color:var(--text)">${t.name}</span>
+        <span style="font-size:10px;color:var(--muted);line-height:1.35">${t.desc}</span>
+      </button>`;
+    });
+  });
+  grid.innerHTML = html;
+}
+
+function selectLcType(key) {
+  _lcSelectedType = _LC_TYPES.find(t => t.key === key);
+  if (!_lcSelectedType) return;
+  document.getElementById('lcStep1').style.display = 'none';
+  document.getElementById('lcStep2').style.display = 'block';
+  document.getElementById('lcPreviewWrap').style.display = 'none';
+  document.getElementById('lcSelectedTypeLabel').textContent = _lcSelectedType.icon + ' ' + _lcSelectedType.name;
+}
+
+function lcBackToTypes() {
+  document.getElementById('lcStep1').style.display = 'block';
+  document.getElementById('lcStep2').style.display = 'none';
+  _lcSelectedType = null;
+}
+
+function getLcConfig() {
+  return {
+    type: _lcSelectedType?.key || 'lined',
+    title: document.getElementById('lcTitle')?.value?.trim() || 'My Journal',
+    subtitle: document.getElementById('lcSubtitle')?.value?.trim() || '',
+    author: document.getElementById('lcAuthor')?.value?.trim() || '',
+    size: document.getElementById('lcSize')?.value || '6x9',
+    pages: parseInt(document.getElementById('lcPages')?.value || '100'),
+    color: document.getElementById('lcColor')?.value || '#4ade80',
+    spacing: document.getElementById('lcSpacing')?.value || 'comfortable',
+    titlePage: document.getElementById('lcTitlePage')?.checked !== false,
+    pageNumbers: document.getElementById('lcPageNums')?.checked !== false,
+    copyright: document.getElementById('lcCopyright')?.checked || false,
+  };
+}
+
+async function generateInterior() {
+  const btn = document.getElementById('lcGenBtn');
+  const spin = document.getElementById('lcGenSpin');
+  const txt = document.getElementById('lcGenTxt');
+  const status = document.getElementById('lcGenStatus');
+  const cfg = getLcConfig();
+  btn.disabled = true; spin.style.display = 'inline-block'; txt.textContent = 'Generando…';
+  status.textContent = `Preparando ${cfg.pages} pagine…`; status.style.color = 'var(--muted)';
+  try {
+    await new Promise(r => setTimeout(r, 30));
+    const html = buildInteriorHTML(cfg);
+    const blob = new Blob([html], {type: 'text/html'});
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    setTimeout(() => URL.revokeObjectURL(url), 120000);
+    const sizeLabel = {6: '6×9"', 8: '8.5×11"', 5: '5×8"'}[parseInt(cfg.size)] || cfg.size;
+    status.textContent = `✅ Interior pronto nel nuovo tab! Per salvare come PDF: File → Stampa → "Salva come PDF". Imposta carta personalizzata ${cfg.size === '85x11' ? '8.5×11"' : cfg.size === '5x8' ? '5×8"' : '6×9"'}, scala 100%, margini nessuno (già inclusi nel layout).`;
+    status.style.color = 'var(--accent)';
+  } catch(e) {
+    status.textContent = '❌ Errore: ' + e.message; status.style.color = '#f87171';
+  } finally {
+    btn.disabled = false; spin.style.display = 'none'; txt.textContent = '📄 Genera Interior PDF';
+  }
+}
+
+function previewInterior() {
+  const cfg = getLcConfig();
+  const previewCfg = {...cfg, pages: 1, titlePage: false, copyright: false};
+  const html = buildInteriorHTML(previewCfg);
+  const blob = new Blob([html], {type: 'text/html'});
+  const url = URL.createObjectURL(blob);
+  const frame = document.getElementById('lcPreviewFrame');
+  frame.innerHTML = `<iframe src="${url}" style="width:6in;height:8.5in;border:none;background:white;box-shadow:0 4px 24px rgba(0,0,0,0.3);transform:scale(0.55);transform-origin:top center;flex-shrink:0"></iframe>`;
+  document.getElementById('lcPreviewWrap').style.display = 'block';
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+// ─── INTERIOR HTML BUILDER ────────────────────────────────────────
+
+function _esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function _nLn(n) { return Array(parseInt(n)).fill('<div class="ln"></div>').join(''); }
+
+function buildInteriorHTML(cfg) {
+  const szMap = {
+    '6x9':   {w:'6in',  h:'9in',  ch:'8in'},
+    '85x11': {w:'8.5in',h:'11in', ch:'10in'},
+    '5x8':   {w:'5in',  h:'8in',  ch:'7in'},
+  };
+  const sz = szMap[cfg.size] || szMap['6x9'];
+  let body = '';
+  if (cfg.titlePage) body += _lcTitlePage(cfg);
+  for (let i = 1; i <= cfg.pages; i++) body += _lcPage(cfg, i, cfg.pages);
+  if (cfg.copyright) body += _lcCopyrightPage(cfg);
+
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${_esc(cfg.title)}</title><style>
+@page{size:${sz.w} ${sz.h};margin:0.5in 0.5in 0.5in 0.75in}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#fff;color:#111}
+body{font-family:Georgia,'Times New Roman',serif}
+.page{height:${sz.ch};position:relative;page-break-after:always;display:flex;flex-direction:column;overflow:hidden}
+.page:last-child{page-break-after:avoid}
+.ph{min-height:0.38in;display:flex;align-items:flex-end;gap:8px;padding-bottom:4px;border-bottom:2px solid ${cfg.color};margin-bottom:0.14in;flex-shrink:0}
+.ph-lbl{font-size:9px;color:#555;white-space:nowrap;font-family:Arial,sans-serif;font-weight:600}
+.ph-ln{flex:1;border-bottom:1px solid #bbb;align-self:flex-end;margin-bottom:3px}
+.ph-ln.s{max-width:1.2in}
+.lines{flex:1;display:flex;flex-direction:column;justify-content:space-around;padding:0.06in 0}
+.ln{border-bottom:1px solid #d0d0d0}
+.pf{flex-shrink:0;height:0.24in;display:flex;align-items:center;justify-content:center;font-size:8px;color:#aaa;font-family:Arial,sans-serif}
+.sec{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:${cfg.color};margin-bottom:0.07in;margin-top:0.04in;font-family:Arial,sans-serif}
+.dot-bg{flex:1;background-image:radial-gradient(circle,rgba(0,0,0,0.22) 0.55px,transparent 0.55px);background-size:0.197in 0.197in}
+.fld{display:flex;align-items:flex-end;gap:6px;margin-bottom:0.09in}
+.fld-lbl{font-size:9px;color:#555;white-space:nowrap;font-family:Arial,sans-serif}
+.fld-ln{flex:1;border-bottom:1px solid #bbb;height:0.22in}
+.fld-ln.s{max-width:1.2in}
+.tbl{width:100%;border-collapse:collapse;font-size:9px;font-family:Arial,sans-serif}
+.tbl th{background:#f4f4f4;border:1px solid #ccc;padding:4px 6px;font-size:8px;text-align:left;color:#444;font-weight:700}
+.tbl td{border:1px solid #e0e0e0;padding:0.07in 5px;height:0.27in}
+.title-pg{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:0.18in}
+.title-pg h1{font-size:1.9rem;color:${cfg.color};line-height:1.2}
+.title-pg h2{font-size:1.05rem;color:#555;font-weight:normal;font-style:italic}
+.title-pg .by{font-size:0.85rem;color:#888;margin-top:0.4in}
+.dec{position:absolute;width:0.38in;height:0.38in;opacity:0.35}
+.dec.tl{top:0;left:0;border-top:2px solid ${cfg.color};border-left:2px solid ${cfg.color}}
+.dec.tr{top:0;right:0;border-top:2px solid ${cfg.color};border-right:2px solid ${cfg.color}}
+.dec.bl{bottom:0.24in;left:0;border-bottom:2px solid ${cfg.color};border-left:2px solid ${cfg.color}}
+.dec.br{bottom:0.24in;right:0;border-bottom:2px solid ${cfg.color};border-right:2px solid ${cfg.color}}
+.s-cell{border:0.5px solid #bbb;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:13px;font-family:Arial,sans-serif}
+.s-cell.tr{border-right:2.5px solid #333}.s-cell.tb{border-bottom:2.5px solid #333}
+.ws-cell{border:0.5px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:10px;font-family:'Courier New',monospace;font-weight:700;aspect-ratio:1}
+</style></head><body>${body}</body></html>`;
+}
+
+function _lcPage(cfg, pgNum, total) {
+  const ft = cfg.pageNumbers ? `<div class="pf">${pgNum}</div>` : '';
+  const dc = `<div class="dec tl"></div><div class="dec tr"></div><div class="dec bl"></div><div class="dec br"></div>`;
+  const lc = {standard:24,comfortable:20,wide:16}[cfg.spacing]||20;
+  switch(cfg.type) {
+    case 'lined':
+      return `<div class="page">${dc}<div class="ph"><span class="ph-lbl">Date:</span><span class="ph-ln"></span></div><div class="lines">${_nLn(lc)}</div>${ft}</div>`;
+    case 'dot':
+      return `<div class="page">${dc}<div class="dot-bg"></div>${ft}</div>`;
+    case 'blank':
+      return `<div class="page">${dc}<div style="flex:1;border:1px solid #f0f0f0;margin:0.05in 0"></div>${ft}</div>`;
+    case 'cornell':
+      return `<div class="page">${dc}
+        <div class="ph"><span class="ph-lbl">Topic:</span><span class="ph-ln"></span><span class="ph-lbl" style="margin-left:0.1in">Date:</span><span class="ph-ln s"></span></div>
+        <div style="flex:1;display:flex;gap:0;min-height:0;overflow:hidden">
+          <div style="width:28%;border-right:1.5px solid ${cfg.color};padding-right:0.1in;display:flex;flex-direction:column">
+            <div class="sec">Cue / Keywords</div>
+            <div class="lines" style="flex:1">${_nLn(Math.floor(lc*0.85))}</div>
+          </div>
+          <div style="flex:1;padding-left:0.12in;display:flex;flex-direction:column">
+            <div class="sec">Notes</div>
+            <div class="lines" style="flex:1">${_nLn(lc)}</div>
+          </div>
+        </div>
+        <div style="border-top:1.5px solid ${cfg.color};padding-top:0.09in;flex-shrink:0;height:1.4in">
+          <div class="sec">Summary</div>${_nLn(4)}
+        </div>${ft}</div>`;
+    case 'gratitude':
+      return `<div class="page">${dc}
+        <div class="ph"><span class="ph-lbl" style="font-size:11px;font-weight:700">GRATITUDE JOURNAL</span><span class="ph-ln"></span><span class="ph-lbl">Date:</span><span class="ph-ln s"></span></div>
+        <div class="sec">Today I am grateful for...</div>
+        <div class="fld"><span style="font-size:11px;font-weight:700;color:${cfg.color};margin-right:6px">1.</span><span class="fld-ln"></span></div>
+        <div class="fld"><span style="font-size:11px;font-weight:700;color:${cfg.color};margin-right:6px">2.</span><span class="fld-ln"></span></div>
+        <div class="fld"><span style="font-size:11px;font-weight:700;color:${cfg.color};margin-right:6px">3.</span><span class="fld-ln"></span></div>
+        <div class="sec" style="margin-top:0.1in">What made me smile today?</div>${_nLn(3)}
+        <div class="sec" style="margin-top:0.1in">Today's affirmation:</div>${_nLn(2)}
+        <div class="sec" style="margin-top:0.1in">One thing I'll do better tomorrow:</div>${_nLn(2)}
+        <div class="sec" style="margin-top:0.1in">Daily highlight:</div>${_nLn(2)}
+        ${ft}</div>`;
+    case 'booklog':
+      return `<div class="page">${dc}
+        <div class="ph"><span class="ph-lbl" style="font-size:12px;font-weight:700">📚 BOOK LOG</span></div>
+        <div class="fld"><span class="fld-lbl">Title:</span><span class="fld-ln"></span></div>
+        <div style="display:flex;gap:0.15in"><div class="fld" style="flex:2"><span class="fld-lbl">Author:</span><span class="fld-ln"></span></div><div class="fld" style="flex:1"><span class="fld-lbl">Genre:</span><span class="fld-ln"></span></div></div>
+        <div style="display:flex;gap:0.12in"><div class="fld"><span class="fld-lbl">Pages:</span><span class="fld-ln s"></span></div><div class="fld"><span class="fld-lbl">Started:</span><span class="fld-ln s"></span></div><div class="fld"><span class="fld-lbl">Finished:</span><span class="fld-ln s"></span></div></div>
+        <div style="display:flex;gap:4px;align-items:center;margin:0.07in 0"><span style="font-size:9px;color:#555;font-family:Arial,sans-serif">Rating:</span>${Array(5).fill('<span style="font-size:20px;color:#ddd">★</span>').join('')}</div>
+        <div class="sec">Summary</div>${_nLn(4)}
+        <div class="sec" style="margin-top:0.08in">Favorite Quote</div>${_nLn(3)}
+        <div class="sec" style="margin-top:0.08in">Recommend to / Notes</div>${_nLn(3)}
+        ${ft}</div>`;
+    case 'daily': {
+      const times = [];
+      for(let h=5;h<=21;h++){const t=h>=12?(h===12?'12 PM':`${h-12} PM`):`${h} AM`;times.push(`<div style="display:flex;align-items:flex-end;gap:5px;border-bottom:1px solid #e8e8e8;padding:0.015in 0"><span style="font-size:7px;color:#888;width:0.32in;flex-shrink:0;font-family:Arial,sans-serif;text-align:right">${t}</span><div style="flex:1"></div></div>`);}
+      return `<div class="page">
+        <div class="ph"><span class="ph-lbl">Date:</span><span class="ph-ln"></span><span class="ph-lbl" style="margin-left:0.1in">Day:</span><span class="ph-ln s"></span><span style="font-size:12px;margin-left:0.1in">😴😐🙂😊🤩</span></div>
+        <div style="flex:1;display:flex;gap:0.2in;min-height:0;overflow:hidden">
+          <div style="flex:1;display:flex;flex-direction:column">
+            <div class="sec">Top Priorities</div>
+            <div class="fld"><span style="font-size:10px;font-weight:700;color:${cfg.color};margin-right:5px">1</span><span class="fld-ln"></span></div>
+            <div class="fld"><span style="font-size:10px;font-weight:700;color:${cfg.color};margin-right:5px">2</span><span class="fld-ln"></span></div>
+            <div class="fld"><span style="font-size:10px;font-weight:700;color:${cfg.color};margin-right:5px">3</span><span class="fld-ln"></span></div>
+            <div class="sec" style="margin-top:0.08in">Notes</div>
+            <div class="lines" style="flex:1">${_nLn(7)}</div>
+            <div class="sec" style="margin-top:0.06in">Gratitude</div>${_nLn(3)}
+          </div>
+          <div style="width:2in;flex-shrink:0;display:flex;flex-direction:column">
+            <div class="sec">Schedule</div>
+            ${times.join('')}
+          </div>
+        </div>${ft}</div>`;
+    }
+    case 'weekly': {
+      const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+      const cols = days.map(d=>`<div style="display:flex;flex-direction:column"><div style="font-size:9px;font-weight:700;color:${cfg.color};font-family:Arial,sans-serif;border-bottom:1.5px solid ${cfg.color};padding-bottom:2px;margin-bottom:0.05in">${d}</div><div class="lines" style="flex:1">${_nLn(7)}</div></div>`).join('');
+      return `<div class="page">
+        <div class="ph"><span class="ph-lbl" style="font-weight:700">WEEK OF:</span><span class="ph-ln"></span><span class="ph-lbl">GOALS:</span><span class="ph-ln"></span></div>
+        <div style="flex:1;display:grid;grid-template-columns:repeat(7,1fr);gap:0.1in;min-height:0">${cols}</div>
+        <div style="flex-shrink:0;margin-top:0.08in"><div class="sec">Weekly Notes</div>${_nLn(3)}</div>
+        ${ft}</div>`;
+    }
+    case 'monthly': {
+      const dhs = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div style="font-size:7px;font-weight:700;text-align:center;font-family:Arial,sans-serif;color:#555;background:#f5f5f5;padding:2px;border:0.5px solid #ddd">${d}</div>`).join('');
+      const cells = Array(35).fill(null).map((_,i)=>`<div style="border:0.5px solid #e0e0e0;padding:3px 4px;min-height:0.8in;display:flex;flex-direction:column"><span style="font-size:9px;font-weight:700;font-family:Arial,sans-serif;color:#444">${i<31?i+1:''}</span></div>`).join('');
+      return `<div class="page">
+        <div class="ph"><span class="ph-lbl" style="font-size:12px;font-weight:700">MONTH:</span><span class="ph-ln"></span><span class="ph-lbl">YEAR:</span><span class="ph-ln s"></span></div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);flex-shrink:0">${dhs}${cells}</div>
+        <div style="flex:1;margin-top:0.08in"><div class="sec">Goals & Notes</div><div class="lines" style="flex:1">${_nLn(5)}</div></div>
+        ${ft}</div>`;
+    }
+    case 'habit': {
+      const dayNums = Array.from({length:31},(_,i)=>`<div style="font-size:6px;text-align:center;font-family:Arial,sans-serif;color:#888;width:0.18in">${i+1}</div>`).join('');
+      const rows = Array(10).fill(null).map(()=>{
+        const boxes = Array(31).fill(`<div style="width:0.18in;height:0.18in;border:1px solid #ccc;border-radius:2px;flex-shrink:0"></div>`).join('');
+        return `<div style="display:flex;align-items:center;border-bottom:1px solid #eee;padding:0.03in 0;gap:0.04in"><div style="width:1.4in;border-bottom:1px solid #ccc;height:0.18in;flex-shrink:0"></div><div style="display:flex;gap:0.02in;overflow:hidden">${boxes}</div></div>`;
+      }).join('');
+      return `<div class="page">
+        <div class="ph"><span class="ph-lbl" style="font-size:12px;font-weight:700">HABIT TRACKER</span><span class="ph-lbl" style="margin-left:0.2in">Month:</span><span class="ph-ln"></span><span class="ph-lbl">Year:</span><span class="ph-ln s"></span></div>
+        <div style="display:flex;gap:0.02in;padding-left:1.44in;margin-bottom:0.04in">${dayNums}</div>
+        ${rows}
+        ${ft}</div>`;
+    }
+    case 'workout':
+      return `<div class="page">
+        <div class="ph"><span class="ph-lbl">Date:</span><span class="ph-ln s"></span><span class="ph-lbl" style="margin-left:0.1in">Type:</span><span class="ph-ln"></span><span class="ph-lbl">Duration:</span><span class="ph-ln s"></span></div>
+        <table class="tbl" style="margin-bottom:0.1in"><thead><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Notes</th></tr></thead>
+        <tbody>${Array(9).fill('<tr><td></td><td></td><td></td><td></td><td></td></tr>').join('')}</tbody></table>
+        <div class="fld"><span class="fld-lbl">Notes:</span><span class="fld-ln"></span></div>
+        <div style="display:flex;align-items:center;gap:0.1in;margin-top:0.06in;flex-shrink:0">
+          <span style="font-size:9px;color:#555;font-family:Arial,sans-serif">Energy:</span>${Array(5).fill('<div style="width:0.18in;height:0.18in;border:1px solid #aaa;border-radius:50%"></div>').join('')}
+          <span style="font-size:9px;color:#555;font-family:Arial,sans-serif;margin-left:0.2in">Water:</span>${Array(8).fill('<div style="width:0.16in;height:0.16in;border:1.5px solid #4a90d9;border-radius:3px"></div>').join('')}
+        </div>${ft}</div>`;
+    case 'meal':
+      return `<div class="page">
+        <div class="ph"><span class="ph-lbl" style="font-size:12px;font-weight:700">MEAL LOG</span><span class="ph-lbl" style="margin-left:0.15in">Date:</span><span class="ph-ln"></span></div>
+        <div class="sec">Breakfast</div>${_nLn(2)}
+        <div class="sec" style="margin-top:0.08in">Lunch</div>${_nLn(2)}
+        <div class="sec" style="margin-top:0.08in">Dinner</div>${_nLn(2)}
+        <div class="sec" style="margin-top:0.08in">Snacks</div>${_nLn(2)}
+        <div style="display:flex;align-items:center;gap:0.1in;margin:0.1in 0;flex-shrink:0">
+          <span style="font-size:9px;color:#555;font-family:Arial,sans-serif">Water (8 cups):</span>${Array(8).fill('<div style="width:0.2in;height:0.2in;border:1.5px solid #4a90d9;border-radius:3px"></div>').join('')}
+        </div>
+        <div class="sec">Notes</div>${_nLn(3)}${ft}</div>`;
+    case 'finance':
+      return `<div class="page">
+        <div class="ph"><span class="ph-lbl" style="font-size:12px;font-weight:700">FINANCE TRACKER</span><span class="ph-lbl" style="margin-left:0.15in">Month:</span><span class="ph-ln"></span><span class="ph-lbl">Year:</span><span class="ph-ln s"></span></div>
+        <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:0.18in;min-height:0">
+          <div><div class="sec">Income</div><table class="tbl"><thead><tr><th>Source</th><th>Amount</th></tr></thead><tbody>${Array(6).fill('<tr><td></td><td></td></tr>').join('')}</tbody></table><div style="font-size:9px;font-family:Arial,sans-serif;text-align:right;margin-top:3px;border-top:1px solid #aaa;padding-top:3px">Total: _________</div></div>
+          <div><div class="sec">Expenses</div><table class="tbl"><thead><tr><th>Category</th><th>Description</th><th>€</th></tr></thead><tbody>${Array(6).fill('<tr><td></td><td></td><td></td></tr>').join('')}</tbody></table><div style="font-size:9px;font-family:Arial,sans-serif;text-align:right;margin-top:3px;border-top:1px solid #aaa;padding-top:3px">Total: _________</div></div>
+        </div>
+        <div style="display:flex;gap:0.25in;padding-top:0.09in;border-top:2px solid ${cfg.color};font-size:10px;font-family:Arial,sans-serif;flex-shrink:0">
+          <span>Income: ___________</span><span>Expenses: ___________</span><strong style="color:${cfg.color}">Balance: ___________</strong>
+        </div>${ft}</div>`;
+    case 'password':
+      return `<div class="page">
+        <div class="ph"><span class="ph-lbl" style="font-size:12px;font-weight:700">🔐 PASSWORD LOG</span></div>
+        <table class="tbl" style="flex:1"><thead><tr><th>Website / App</th><th>Username / Email</th><th>Password</th><th>Notes</th></tr></thead>
+        <tbody>${Array(13).fill('<tr><td></td><td></td><td></td><td></td></tr>').join('')}</tbody></table>
+        ${ft}</div>`;
+    case 'guest': {
+      const entry = `<div style="border:1px solid #e0e0e0;border-radius:5px;padding:0.1in;flex:1;display:flex;flex-direction:column;gap:0.06in">
+        <div style="display:flex;gap:0.15in"><div class="fld" style="flex:2"><span class="fld-lbl">Name:</span><span class="fld-ln"></span></div><div class="fld" style="flex:1"><span class="fld-lbl">Date:</span><span class="fld-ln"></span></div></div>
+        <div class="sec">Message:</div><div class="lines" style="flex:1">${_nLn(5)}</div>
+        <div style="display:flex;gap:3px;align-items:center"><span style="font-size:9px;color:#888;font-family:Arial,sans-serif">Rating:</span>${Array(5).fill('<span style="font-size:14px;color:#ddd">★</span>').join('')}</div>
+      </div>`;
+      return `<div class="page" style="gap:0.1in"><div class="ph"><span class="ph-lbl" style="font-size:12px;font-weight:700">✍️ GUEST BOOK</span></div>${entry}${entry}${ft}</div>`;
+    }
+    case 'sudoku': {
+      let cells='';
+      for(let r=0;r<9;r++)for(let c=0;c<9;c++){const tr=c===2||c===5?' tr':'';const tb=r===2||r===5?' tb':'';cells+=`<div class="s-cell${tr}${tb}"></div>`;}
+      return `<div class="page" style="align-items:center;justify-content:center;gap:0.2in">
+        <div style="text-align:center"><div style="font-size:13px;font-weight:700;color:${cfg.color};font-family:Arial,sans-serif">SUDOKU #${pgNum}</div><div style="font-size:9px;color:#888;font-family:Arial,sans-serif;margin-top:3px">Difficulty: ○○○○○</div></div>
+        <div style="display:grid;grid-template-columns:repeat(9,1fr);border:2.5px solid #333;width:min(4.8in,100%)">${cells}</div>
+        ${ft}</div>`;
+    }
+    case 'wordsearch': {
+      const cols=15, rows=15, alpha='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      let cells='';
+      for(let i=0;i<rows*cols;i++) cells+=`<div class="ws-cell">${alpha[Math.floor(Math.random()*26)]}</div>`;
+      return `<div class="page">
+        <div class="ph"><span class="ph-lbl" style="font-size:12px;font-weight:700">WORD SEARCH #${pgNum}</span></div>
+        <div style="display:grid;grid-template-columns:repeat(${cols},1fr);flex:1;overflow:hidden">${cells}</div>
+        <div style="flex-shrink:0;margin-top:0.1in"><div class="sec">Word List</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.04in 0.15in">${Array(16).fill('<div class="fld" style="margin:0"><span class="fld-ln"></span></div>').join('')}</div>
+        </div>${ft}</div>`;
+    }
+    default:
+      return `<div class="page"><div class="lines">${_nLn(20)}</div>${ft}</div>`;
+  }
+}
+
+function _lcTitlePage(cfg) {
+  return `<div class="page title-pg">
+    <div class="dec tl"></div><div class="dec tr"></div><div class="dec bl"></div><div class="dec br"></div>
+    <div style="border-bottom:2px solid ${cfg.color};width:3.5in;opacity:0.4"></div>
+    <h1>${_esc(cfg.title)}</h1>
+    ${cfg.subtitle ? `<h2>${_esc(cfg.subtitle)}</h2>` : ''}
+    ${cfg.author ? `<div class="by">by ${_esc(cfg.author)}</div>` : ''}
+    <div style="border-top:2px solid ${cfg.color};width:3.5in;opacity:0.4"></div>
+  </div>`;
+}
+
+function _lcCopyrightPage(cfg) {
+  return `<div class="page" style="justify-content:flex-end;padding-bottom:0.3in;align-items:center">
+    <div style="font-size:9px;color:#777;font-family:Arial,sans-serif;text-align:center;line-height:2">
+      Copyright &copy; ${new Date().getFullYear()} ${_esc(cfg.author||'Author')}. All rights reserved.<br>
+      No part of this publication may be reproduced without written permission.<br>
+      Printed in the United States of America
+    </div>
+  </div>`;
+}
+
+// ─── STREAMING HELPER (for research + copy) ──────────────────────
+
+async function _lcStream(prompt, targetEl, maxTokens = 1800) {
+  const headers = _backendHeaders();
+  const res = await fetch(BACKEND_URL + '/api/raw-stream', {
+    method: 'POST', headers,
+    body: JSON.stringify({ prompt, max_tokens: maxTokens, tab: 'lc' })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    if (res.status === 401) throw new Error('API Key non valida — controlla ⚙️ Impostazioni.');
+    throw new Error(err.detail || `Backend error ${res.status}`);
+  }
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buf = '', full = '';
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    const lines = buf.split('\n'); buf = lines.pop();
+    for (const line of lines) {
+      let obj; try { obj = JSON.parse(line); } catch { continue; }
+      if (obj.error) throw new Error(obj.error);
+      if (obj.chunk) { full += obj.chunk; targetEl.textContent = full; }
+    }
+  }
+  return full;
+}
+
+// ─── LC RESEARCH ─────────────────────────────────────────────────
+
+async function lcResearch() {
+  const btn = document.getElementById('lcResearchBtn');
+  const spin = document.getElementById('lcResearchSpin');
+  const txt = document.getElementById('lcResearchTxt');
+  const out = document.getElementById('lcResearchOut');
+
+  const type = document.querySelector('input[name="lcTypeR"]:checked')?.value || 'journal';
+  const niche = document.getElementById('lcNicheInput')?.value?.trim() || '';
+  const market = document.getElementById('lcMarketplace')?.value || 'Amazon.com (US)';
+
+  if (!niche) {
+    out.style.display = 'block';
+    out.textContent = '⚠️ Inserisci una nicchia o tema da analizzare.';
+    return;
+  }
+
+  btn.disabled = true; spin.style.display = 'inline-block'; txt.textContent = 'Analizzando…';
+  out.style.display = 'block'; out.textContent = '⏳ Analisi in corso…';
+
+  const langMap = {'Amazon.it':'Italian','Amazon.de':'German','Amazon.fr':'French','Amazon.es':'Spanish'};
+  const lang = langMap[market] || 'English';
+
+  const prompt = `You are a KDP low content book expert. Analyze this niche for ${market}.
+
+Niche/Theme: "${niche}"
+Book type: ${type}
+
+Provide a complete analysis in ${lang} with these sections:
+
+## 1. Opportunità di Mercato
+- Livello competizione (Basso/Medio/Alto) con motivazione
+- Score domanda 1-10
+- Score opportunità 1-10
+- Stima vendite mensili possibili
+
+## 2. Top 10 Keyword Amazon
+Le parole chiave più cercate con intento acquisto (una per riga, in ordine di importanza)
+
+## 3. 5 Titoli Vincenti
+Titoli ottimizzati per la ricerca Amazon (con keyword principale nel titolo)
+
+## 4. Prezzo Consigliato
+Range prezzo ottimale e perché, con margini KDP
+
+## 5. Interior Consigliato
+Quali pagine/layout funzionano meglio per questa nicchia
+
+## 6. Cover Tips
+Stile, colori, font, immagini che convertono per questo pubblico
+
+## 7. Cosa manca alla concorrenza
+Gap da sfruttare per differenziarsi
+
+Be specific and actionable. Format with clear bullet points.`;
+
+  try {
+    await _lcStream(prompt, out, 2000);
+  } catch(e) {
+    out.textContent = '❌ ' + e.message;
+  } finally {
+    btn.disabled = false; spin.style.display = 'none'; txt.textContent = '🔍 Analizza Nicchia';
+  }
+}
+
+// ─── LC KDP COPY ─────────────────────────────────────────────────
+
+async function lcGenerateCopy() {
+  const btn = document.getElementById('lcCopyBtn');
+  const spin = document.getElementById('lcCopySpin');
+  const txt = document.getElementById('lcCopyTxt');
+  const out = document.getElementById('lcCopyOut');
+
+  const type = document.getElementById('lcCopyType')?.value?.trim() || '';
+  const audience = document.getElementById('lcCopyAudience')?.value?.trim() || '';
+  const features = document.getElementById('lcCopyFeatures')?.value?.trim() || '';
+  const lang = document.getElementById('lcCopyLang')?.value || 'Italian';
+  const market = document.getElementById('lcCopyMarket')?.value || 'Amazon.it';
+
+  if (!type) {
+    out.style.display = 'block';
+    out.textContent = '⚠️ Inserisci il tipo di prodotto.';
+    return;
+  }
+
+  btn.disabled = true; spin.style.display = 'inline-block'; txt.textContent = 'Generando…';
+  out.style.display = 'block'; out.textContent = '⏳ Generazione in corso…';
+
+  const prompt = `You are a KDP low content book listing expert. Create a complete, optimized ${market} listing in ${lang}.
+
+Product: ${type}
+Target audience: ${audience || 'general'}
+Features: ${features || 'standard format'}
+
+Generate ALL of the following:
+
+## TITOLO PRINCIPALE (max 200 caratteri)
+[keyword-rich title that would rank on Amazon]
+
+## SOTTOTITOLO (max 200 caratteri)
+[benefit-focused subtitle]
+
+## 7 KEYWORD BACKEND (Amazon backend search terms)
+[one per line, no repetition from title, buyer-intent focused]
+
+## DESCRIZIONE (400-600 parole)
+[HTML-formatted Amazon description with <b> tags for key phrases]
+Start with a hook, highlight benefits, social proof placeholder, CTA]
+
+## BULLET POINTS (5 bullet points per Amazon)
+• [Feature 1 — benefit focused]
+• [Feature 2]
+• [Feature 3]
+• [Feature 4]
+• [Feature 5]
+
+## CATEGORIA PRINCIPALE
+[best Amazon category path]
+
+## PREZZO CONSIGLIATO
+[optimal price with reasoning]
+
+Write everything in ${lang}. Be specific, benefit-focused, and optimized for Amazon's A9 algorithm.`;
+
+  try {
+    await _lcStream(prompt, out, 2000);
+  } catch(e) {
+    out.textContent = '❌ ' + e.message;
+  } finally {
+    btn.disabled = false; spin.style.display = 'none'; txt.textContent = '✨ Genera KDP Listing';
+  }
 }
 </script>
 </body>
