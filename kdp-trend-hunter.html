@@ -4585,6 +4585,14 @@ function renderPackage(k) {
         <div id="${canvaId}" style="flex:1;font-size:13px;line-height:1.7;color:var(--text)">${escHtml(cc.main_prompt)}</div>
         <button class="copy-btn" style="flex-shrink:0" onclick="copyContent('${canvaId}')">Copia</button>
       </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px">
+        <button class="btn btn-accent" id="hfCoverBtn" style="background:linear-gradient(135deg,#a855f7,#6366f1)" onclick="generateHiggsfieldCover('${canvaId}','${escHtml(k.trim_size||'6x9')}')">
+          <div class="spin" id="hfCoverSpin" style="display:none;width:14px;height:14px"></div>
+          <span id="hfCoverTxt">🚀 Genera Cover con Higgsfield</span>
+        </button>
+        <span style="font-size:10px;color:var(--muted)">Render AI reale (Seedream 4K) — richiede crediti Higgsfield Cloud</span>
+      </div>
+      <div id="hfCoverOut" style="display:none;margin-top:14px"></div>
     </div>
 
     <div style="padding:16px 18px;border-bottom:1px solid var(--border);display:flex;gap:24px;flex-wrap:wrap">
@@ -4662,6 +4670,42 @@ function renderPackage(k) {
     savedAt: Date.now(),
     kdpData: k  // full package for restore
   });
+}
+
+// ─── HIGGSFIELD COVER GENERATION ─────────────────────────────
+async function generateHiggsfieldCover(promptElId, trimSize) {
+  const btn = document.getElementById('hfCoverBtn');
+  const spin = document.getElementById('hfCoverSpin');
+  const txt = document.getElementById('hfCoverTxt');
+  const out = document.getElementById('hfCoverOut');
+  const prompt = (document.getElementById(promptElId)?.textContent || '').trim();
+  if (!prompt) { alert('Nessun prompt cover disponibile.'); return; }
+
+  btn.disabled = true; spin.style.display = 'inline-block'; txt.textContent = 'Generando… (può richiedere ~1 min)';
+  out.style.display = 'block';
+  out.innerHTML = `<div style="font-size:12px;color:var(--muted)">⏳ Higgsfield sta generando la cover (Seedream, ${trimSize})…</div>`;
+
+  try {
+    const data = await callBackend('/api/generate-cover', {
+      prompt, trim_size: trimSize, resolution: '2K'
+    }, 190000);
+    const imgs = data.images || [];
+    if (!imgs.length) throw new Error('Nessuna immagine restituita.');
+    out.innerHTML = imgs.map((url, i) => `
+      <div style="display:inline-block;margin:0 12px 12px 0;text-align:center">
+        <img src="${url}" alt="cover ${i+1}" style="max-width:240px;border-radius:8px;border:1px solid var(--border2);box-shadow:0 4px 20px rgba(0,0,0,0.4)">
+        <div style="margin-top:6px"><a href="${url}" target="_blank" rel="noopener" download style="font-size:11px;color:var(--accent);text-decoration:none">⬇ Scarica (${data.aspect_ratio||''} ${data.resolution||''})</a></div>
+      </div>`).join('') +
+      `<div style="font-size:10px;color:var(--cta2);margin-top:4px">🤖 Immagine AI-generated — da dichiarare nel workflow KDP.</div>`;
+  } catch(e) {
+    const msg = e.message || String(e);
+    const hint = /non configurato|HF_API_KEY|higgsfield-client/i.test(msg)
+      ? '<br><span style="color:var(--muted)">Imposta le credenziali Higgsfield Cloud (HF_API_KEY / HF_API_SECRET) nelle env di Railway. Si ottengono su cloud.higgsfield.ai.</span>'
+      : '';
+    out.innerHTML = `<div style="font-size:12px;color:#f87171">❌ ${escHtml(msg)}${hint}</div>`;
+  } finally {
+    btn.disabled = false; spin.style.display = 'none'; txt.textContent = '🚀 Genera Cover con Higgsfield';
+  }
 }
 
 // ─── AI EDITOR PASS ──────────────────────────────────────────

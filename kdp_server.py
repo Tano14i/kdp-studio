@@ -2750,6 +2750,86 @@ Return ONLY raw JSON. No markdown. ASCII-safe strings only.
 
 
 # ══════════════════════════════════════════════════════════════
+# HIGGSFIELD COVER GENERATION (cloud.higgsfield.ai REST API)
+# Requires HF_API_KEY + HF_API_SECRET (or HF_KEY="id:secret") set
+# in Railway env vars — NEVER commit these. Uses separate Cloud
+# credits ($1 = 16 credits) from the Supercomputer subscription.
+# ══════════════════════════════════════════════════════════════
+
+# KDP cover aspect ratios → closest Seedream-supported ratio
+_KDP_TRIM_RATIO = {
+    "6x9":   "2:3",
+    "5x8":   "2:3",
+    "8.5x11":"3:4",
+    "85x11": "3:4",
+    "7x10":  "3:4",
+}
+
+class CoverRequest(BaseModel):
+    prompt: str
+    trim_size: Optional[str] = "6x9"
+    resolution: Optional[str] = "2K"          # 1K | 2K | 4K
+    model: Optional[str] = "bytedance/seedream/v4/text-to-image"
+
+def _hf_credentials() -> bool:
+    """True if Higgsfield Cloud credentials are configured."""
+    if env("HF_KEY"):
+        return True
+    return bool(env("HF_API_KEY") and env("HF_API_SECRET"))
+
+def _hf_generate_sync(model: str, prompt: str, aspect_ratio: str, resolution: str) -> dict:
+    """Blocking call to the Higgsfield Cloud SDK. Run inside a thread."""
+    import higgsfield_client  # lazy: app still boots if the package is absent
+    return higgsfield_client.subscribe(
+        model,
+        arguments={
+            "prompt": prompt,
+            "aspect_ratio": aspect_ratio,
+            "resolution": resolution,
+        },
+    )
+
+@app.post("/api/generate-cover", dependencies=[_AUTH])
+async def generate_cover(req: CoverRequest):
+    """Generate a KDP cover background image via Higgsfield Cloud."""
+    if not req.prompt or len(req.prompt.strip()) < 10:
+        raise HTTPException(status_code=400, detail="Prompt troppo corto")
+    if not _hf_credentials():
+        raise HTTPException(
+            status_code=503,
+            detail="Higgsfield non configurato. Imposta HF_API_KEY e HF_API_SECRET "
+                   "(o HF_KEY='id:secret') nelle variabili d'ambiente Railway. "
+                   "Le credenziali Cloud si ottengono su cloud.higgsfield.ai.",
+        )
+    ratio = _KDP_TRIM_RATIO.get((req.trim_size or "6x9").lower(), "2:3")
+    res = (req.resolution or "2K").upper()
+    try:
+        result = await asyncio.wait_for(
+            asyncio.to_thread(_hf_generate_sync, req.model, req.prompt.strip(), ratio, res),
+            timeout=180,
+        )
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=504, detail="Generazione cover scaduta (oltre 180s). Riprova.")
+    except ModuleNotFoundError:
+        raise HTTPException(status_code=503, detail="Pacchetto higgsfield-client non installato sul backend.")
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Errore Higgsfield: {e}")
+
+    # SDK returns {'images': [{'url': ...}], ...}; be tolerant of shape variants.
+    images = []
+    if isinstance(result, dict):
+        raw = result.get("images") or result.get("output") or []
+        for img in raw:
+            if isinstance(img, dict) and img.get("url"):
+                images.append(img["url"])
+            elif isinstance(img, str):
+                images.append(img)
+    if not images:
+        raise HTTPException(status_code=502, detail="Higgsfield non ha restituito immagini.")
+    return {"images": images, "aspect_ratio": ratio, "resolution": res}
+
+
+# ══════════════════════════════════════════════════════════════
 # REAL DOCX EXPORT
 # ══════════════════════════════════════════════════════════════
 
