@@ -1696,6 +1696,43 @@ select option{background:var(--s2)}
           <label style="display:flex;gap:6px;align-items:center;font-size:12px;cursor:pointer"><input type="checkbox" id="lcPageNums" checked> Numeri di pagina</label>
           <label style="display:flex;gap:6px;align-items:center;font-size:12px;cursor:pointer"><input type="checkbox" id="lcCopyright"> Pagina copyright</label>
         </div>
+
+        <!-- AI Content Pre-generation Card (shown for sudoku/wordsearch/habit/mandala) -->
+        <div id="lcAiCard" style="display:none;flex-direction:column;gap:12px;background:linear-gradient(135deg,rgba(74,222,128,0.06),rgba(99,102,241,0.06));border:1px solid rgba(74,222,128,0.22);border-radius:10px;padding:14px">
+          <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em">✨ Genera Contenuto Reale</div>
+          <div id="lcAiSudokuOpts" style="display:none">
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px">Difficoltà Sudoku</label>
+            <div style="display:flex;gap:8px">
+              <label class="mkt-pill-label"><input type="radio" name="lcSudokuDiff" value="easy"> Facile</label>
+              <label class="mkt-pill-label"><input type="radio" name="lcSudokuDiff" value="medium" checked> Medio</label>
+              <label class="mkt-pill-label"><input type="radio" name="lcSudokuDiff" value="hard"> Difficile</label>
+            </div>
+          </div>
+          <div id="lcAiWordOpts" style="display:none">
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Tema Word Search (Claude genera le parole)</label>
+            <input id="lcWordTheme" type="text" placeholder="es. animals, space, food, sports, holidays…" style="width:100%">
+          </div>
+          <div id="lcAiHabitOpts" style="display:none">
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Tema Abitudini (Claude suggerisce i nomi)</label>
+            <input id="lcHabitTheme" type="text" placeholder="es. morning routine, fitness, mindfulness, study…" style="width:100%">
+          </div>
+          <div id="lcAiMandalaOpts" style="display:none">
+            <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px">Complessità Mandala</label>
+            <div style="display:flex;gap:8px">
+              <label class="mkt-pill-label"><input type="radio" name="lcMandalaCmplx" value="simple"> Semplice (8 petali)</label>
+              <label class="mkt-pill-label"><input type="radio" name="lcMandalaCmplx" value="medium" checked> Medio (12 petali)</label>
+              <label class="mkt-pill-label"><input type="radio" name="lcMandalaCmplx" value="complex"> Complesso (16 petali)</label>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-ghost" onclick="lcPreGenContent()" id="lcPreGenBtn">
+              <div class="spin" id="lcPreGenSpin" style="display:none;width:14px;height:14px"></div>
+              <span id="lcPreGenTxt">⚡ Pre-genera contenuto</span>
+            </button>
+            <div id="lcPreGenStatus" style="font-size:11px;color:var(--muted);line-height:1.5"></div>
+          </div>
+        </div>
+
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
           <button class="btn btn-accent" onclick="generateInterior()" id="lcGenBtn">
             <div class="spin" id="lcGenSpin" style="display:none;width:14px;height:14px"></div>
@@ -7516,9 +7553,11 @@ const _LC_TYPES = [
   {key:'guest',    icon:'✍️', name:'Guest Book',        cat:'Altro',    desc:'Nome, messaggio, data ospiti'},
   {key:'sudoku',   icon:'🧩', name:'Sudoku',            cat:'Attività', desc:'Griglia 9×9 con difficoltà'},
   {key:'wordsearch',icon:'🔤',name:'Word Search',       cat:'Attività', desc:'Griglia lettere + lista parole'},
+  {key:'mandala',   icon:'🌸',name:'Mandala Coloring', cat:'Attività', desc:'Mandala SVG procedurali da colorare'},
 ];
 
 let _lcSelectedType = null;
+let _lcContent = null;
 let _lcInited = false;
 
 function initLowContent() {
@@ -7557,16 +7596,31 @@ function renderLcTypeGrid() {
 function selectLcType(key) {
   _lcSelectedType = _LC_TYPES.find(t => t.key === key);
   if (!_lcSelectedType) return;
+  _lcContent = null;
   document.getElementById('lcStep1').style.display = 'none';
   document.getElementById('lcStep2').style.display = 'block';
   document.getElementById('lcPreviewWrap').style.display = 'none';
   document.getElementById('lcSelectedTypeLabel').textContent = _lcSelectedType.icon + ' ' + _lcSelectedType.name;
+
+  const aiTypes = ['sudoku','wordsearch','habit','mandala'];
+  const aiCard = document.getElementById('lcAiCard');
+  if (aiTypes.includes(key)) {
+    aiCard.style.display = 'flex';
+    document.getElementById('lcAiSudokuOpts').style.display  = key==='sudoku'    ? 'block' : 'none';
+    document.getElementById('lcAiWordOpts').style.display    = key==='wordsearch' ? 'block' : 'none';
+    document.getElementById('lcAiHabitOpts').style.display   = key==='habit'      ? 'block' : 'none';
+    document.getElementById('lcAiMandalaOpts').style.display = key==='mandala'    ? 'block' : 'none';
+    document.getElementById('lcPreGenStatus').textContent = '';
+  } else {
+    aiCard.style.display = 'none';
+  }
 }
 
 function lcBackToTypes() {
   document.getElementById('lcStep1').style.display = 'block';
   document.getElementById('lcStep2').style.display = 'none';
   _lcSelectedType = null;
+  _lcContent = null;
 }
 
 function getLcConfig() {
@@ -7767,10 +7821,14 @@ function _lcPage(cfg, pgNum, total) {
         ${ft}</div>`;
     }
     case 'habit': {
+      const habitNames = (_lcContent?.habits?.length === 10) ? _lcContent.habits : Array(10).fill(null).map((_,i)=>'');
       const dayNums = Array.from({length:31},(_,i)=>`<div style="font-size:6px;text-align:center;font-family:Arial,sans-serif;color:#888;width:0.18in">${i+1}</div>`).join('');
-      const rows = Array(10).fill(null).map(()=>{
+      const rows = habitNames.map(name=>{
+        const nameCell = name
+          ? `<div style="width:1.4in;font-size:7.5px;font-family:Arial,sans-serif;color:#333;font-weight:600;overflow:hidden;white-space:nowrap;flex-shrink:0;align-self:center">${_esc(name)}</div>`
+          : `<div style="width:1.4in;border-bottom:1px solid #ccc;height:0.18in;flex-shrink:0"></div>`;
         const boxes = Array(31).fill(`<div style="width:0.18in;height:0.18in;border:1px solid #ccc;border-radius:2px;flex-shrink:0"></div>`).join('');
-        return `<div style="display:flex;align-items:center;border-bottom:1px solid #eee;padding:0.03in 0;gap:0.04in"><div style="width:1.4in;border-bottom:1px solid #ccc;height:0.18in;flex-shrink:0"></div><div style="display:flex;gap:0.02in;overflow:hidden">${boxes}</div></div>`;
+        return `<div style="display:flex;align-items:center;border-bottom:1px solid #eee;padding:0.03in 0;gap:0.04in">${nameCell}<div style="display:flex;gap:0.02in;overflow:hidden">${boxes}</div></div>`;
       }).join('');
       return `<div class="page">
         <div class="ph"><span class="ph-lbl" style="font-size:12px;font-weight:700">HABIT TRACKER</span><span class="ph-lbl" style="margin-left:0.2in">Month:</span><span class="ph-ln"></span><span class="ph-lbl">Year:</span><span class="ph-ln s"></span></div>
@@ -7824,23 +7882,48 @@ function _lcPage(cfg, pgNum, total) {
       return `<div class="page" style="gap:0.1in"><div class="ph"><span class="ph-lbl" style="font-size:12px;font-weight:700">✍️ GUEST BOOK</span></div>${entry}${entry}${ft}</div>`;
     }
     case 'sudoku': {
+      const puzzle = _lcContent?.puzzles?.[pgNum-1]?.puzzle || null;
+      const diff   = _lcContent?.diff || 'medium';
+      const diffStars = {easy:'★★☆☆☆',medium:'★★★☆☆',hard:'★★★★☆'}[diff]||'★★★☆☆';
       let cells='';
-      for(let r=0;r<9;r++)for(let c=0;c<9;c++){const tr=c===2||c===5?' tr':'';const tb=r===2||r===5?' tb':'';cells+=`<div class="s-cell${tr}${tb}"></div>`;}
+      for(let r=0;r<9;r++) for(let c=0;c<9;c++) {
+        const tr=c===2||c===5?' tr':''; const tb=r===2||r===5?' tb':'';
+        const val = puzzle ? puzzle[r][c] : 0;
+        const cellStyle = val ? 'font-weight:700;color:#111' : 'color:#888';
+        cells+=`<div class="s-cell${tr}${tb}" style="${cellStyle}">${val||''}</div>`;
+      }
       return `<div class="page" style="align-items:center;justify-content:center;gap:0.2in">
-        <div style="text-align:center"><div style="font-size:13px;font-weight:700;color:${cfg.color};font-family:Arial,sans-serif">SUDOKU #${pgNum}</div><div style="font-size:9px;color:#888;font-family:Arial,sans-serif;margin-top:3px">Difficulty: ○○○○○</div></div>
+        <div style="text-align:center"><div style="font-size:13px;font-weight:700;color:${cfg.color};font-family:Arial,sans-serif">SUDOKU #${pgNum}</div><div style="font-size:10px;color:#888;font-family:Arial,sans-serif;margin-top:3px">${diffStars} ${diff.charAt(0).toUpperCase()+diff.slice(1)}</div></div>
         <div style="display:grid;grid-template-columns:repeat(9,1fr);border:2.5px solid #333;width:min(4.8in,100%)">${cells}</div>
         ${ft}</div>`;
     }
     case 'wordsearch': {
-      const cols=15, rows=15, alpha='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      const COLS=15, ROWS=15, alpha='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      const gridData = _lcContent?.grids?.[pgNum-1];
       let cells='';
-      for(let i=0;i<rows*cols;i++) cells+=`<div class="ws-cell">${alpha[Math.floor(Math.random()*26)]}</div>`;
+      if (gridData?.grid) {
+        for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) cells+=`<div class="ws-cell">${gridData.grid[r][c]||alpha[Math.floor(Math.random()*26)]}</div>`;
+      } else {
+        for(let i=0;i<ROWS*COLS;i++) cells+=`<div class="ws-cell">${alpha[Math.floor(Math.random()*26)]}</div>`;
+      }
+      const wordList = gridData?.placed || [];
+      const wordItems = wordList.length
+        ? wordList.map(w=>`<div style="font-size:8px;font-family:'Courier New',monospace;font-weight:700;padding:1px 0">${w}</div>`).join('')
+        : Array(16).fill('<div class="fld" style="margin:0"><span class="fld-ln"></span></div>').join('');
+      const wordCols = wordList.length ? `grid-template-columns:repeat(4,1fr)` : `grid-template-columns:repeat(4,1fr)`;
       return `<div class="page">
         <div class="ph"><span class="ph-lbl" style="font-size:12px;font-weight:700">WORD SEARCH #${pgNum}</span></div>
-        <div style="display:grid;grid-template-columns:repeat(${cols},1fr);flex:1;overflow:hidden">${cells}</div>
-        <div style="flex-shrink:0;margin-top:0.1in"><div class="sec">Word List</div>
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.04in 0.15in">${Array(16).fill('<div class="fld" style="margin:0"><span class="fld-ln"></span></div>').join('')}</div>
+        <div style="display:grid;grid-template-columns:repeat(${COLS},1fr);flex:1;overflow:hidden">${cells}</div>
+        <div style="flex-shrink:0;margin-top:0.1in"><div class="sec">Find these words:</div>
+          <div style="display:grid;${wordCols};gap:0.04in 0.1in">${wordItems}</div>
         </div>${ft}</div>`;
+    }
+    case 'mandala': {
+      const svgData = _lcContent?.mandalas?.[pgNum-1] || _genMandala(460, 12, 4);
+      return `<div class="page" style="align-items:center;justify-content:center;gap:0.15in">
+        <div style="font-size:11px;font-weight:700;color:${cfg.color};font-family:Arial,sans-serif;letter-spacing:0.06em">MANDALA #${pgNum}</div>
+        <div style="width:min(4.6in,100%);aspect-ratio:1;display:flex;align-items:center;justify-content:center">${svgData}</div>
+        ${ft}</div>`;
     }
     default:
       return `<div class="page"><div class="lines">${_nLn(20)}</div>${ft}</div>`;
@@ -7866,6 +7949,185 @@ function _lcCopyrightPage(cfg) {
       Printed in the United States of America
     </div>
   </div>`;
+}
+
+// ─── SUDOKU GENERATOR ────────────────────────────────────────────
+
+function _sudokuValid(g, r, c, n) {
+  if (g[r].includes(n)) return false;
+  for (let i=0;i<9;i++) if (g[i][c]===n) return false;
+  const br=Math.floor(r/3)*3, bc=Math.floor(c/3)*3;
+  for (let i=0;i<3;i++) for (let j=0;j<3;j++) if (g[br+i][bc+j]===n) return false;
+  return true;
+}
+function _sudokuFindEmpty(g) {
+  for (let r=0;r<9;r++) for (let c=0;c<9;c++) if (g[r][c]===0) return [r,c];
+  return null;
+}
+function _sudokuFill(g) {
+  const empty = _sudokuFindEmpty(g);
+  if (!empty) return true;
+  const [r,c] = empty;
+  const nums = [1,2,3,4,5,6,7,8,9];
+  for (let i=8;i>0;i--){const j=Math.floor(Math.random()*(i+1));[nums[i],nums[j]]=[nums[j],nums[i]];}
+  for (const n of nums) {
+    if (_sudokuValid(g,r,c,n)) {
+      g[r][c]=n;
+      if (_sudokuFill(g)) return true;
+      g[r][c]=0;
+    }
+  }
+  return false;
+}
+function _sudokuGenerate(difficulty) {
+  const grid = Array.from({length:9},()=>Array(9).fill(0));
+  _sudokuFill(grid);
+  const solution = grid.map(r=>[...r]);
+  const removals = {easy:35, medium:46, hard:54}[difficulty]||46;
+  const pos=[];
+  for(let r=0;r<9;r++) for(let c=0;c<9;c++) pos.push([r,c]);
+  for(let i=pos.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pos[i],pos[j]]=[pos[j],pos[i]];}
+  let removed=0;
+  for(const [r,c] of pos){if(removed>=removals)break;grid[r][c]=0;removed++;}
+  return {puzzle:grid, solution};
+}
+
+// ─── WORD SEARCH GRID BUILDER ─────────────────────────────────────
+
+function _buildWordGrid(words, cols, rows) {
+  const grid = Array.from({length:rows},()=>Array(cols).fill(''));
+  const placed = [];
+  const dirs = [[0,1],[1,0],[0,-1],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
+  const alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for (const word of words) {
+    const w = word.toUpperCase().replace(/[^A-Z]/g,'');
+    if (!w || w.length > cols) continue;
+    let ok = false;
+    for (let attempt=0; attempt<300 && !ok; attempt++) {
+      const d = dirs[Math.floor(Math.random()*dirs.length)];
+      const maxR = d[0]===0 ? rows-1 : d[0]>0 ? rows-w.length : w.length-1;
+      const maxC = d[1]===0 ? cols-1 : d[1]>0 ? cols-w.length : w.length-1;
+      const minR = d[0]<0 ? w.length-1 : 0;
+      const minC = d[1]<0 ? w.length-1 : 0;
+      if (maxR<minR||maxC<minC) continue;
+      const sr = minR + Math.floor(Math.random()*(maxR-minR+1));
+      const sc = minC + Math.floor(Math.random()*(maxC-minC+1));
+      let fits=true;
+      for(let i=0;i<w.length;i++){
+        const gr=sr+d[0]*i, gc=sc+d[1]*i;
+        if(gr<0||gr>=rows||gc<0||gc>=cols||grid[gr][gc]!==''&&grid[gr][gc]!==w[i]){fits=false;break;}
+      }
+      if(fits){for(let i=0;i<w.length;i++) grid[sr+d[0]*i][sc+d[1]*i]=w[i]; placed.push(w); ok=true;}
+    }
+  }
+  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++) if(!grid[r][c]) grid[r][c]=alpha[Math.floor(Math.random()*26)];
+  return {grid, placed};
+}
+
+// ─── SVG MANDALA GENERATOR ────────────────────────────────────────
+
+function _genMandala(sz, petals, rings) {
+  const cx=sz/2, cy=sz/2, maxR=sz*0.44;
+  const f=n=>n.toFixed(2);
+  let parts=[`<rect width="${sz}" height="${sz}" fill="white"/>`];
+  for(let ring=1; ring<=rings; ring++){
+    const outerR=maxR*ring/rings;
+    const innerR=maxR*(ring-1)/rings;
+    const sw=(1.8-ring*0.1).toFixed(1);
+    for(let p=0; p<petals; p++){
+      const aS=(2*Math.PI*p/petals)-Math.PI/2;
+      const aM=(2*Math.PI*(p+0.5)/petals)-Math.PI/2;
+      const aE=(2*Math.PI*(p+1)/petals)-Math.PI/2;
+      const bx1=cx+innerR*Math.cos(aS), by1=cy+innerR*Math.sin(aS);
+      const tx=cx+outerR*Math.cos(aM),  ty=cy+outerR*Math.sin(aM);
+      const bx2=cx+innerR*Math.cos(aE), by2=cy+innerR*Math.sin(aE);
+      const cr=(outerR+innerR)*0.62;
+      const cp1x=cx+cr*Math.cos(aS+0.22), cp1y=cy+cr*Math.sin(aS+0.22);
+      const cp2x=cx+cr*Math.cos(aE-0.22), cp2y=cy+cr*Math.sin(aE-0.22);
+      const innerArc=innerR<2?`L${f(cx)},${f(cy)}`:`A${f(innerR)},${f(innerR)} 0 0,0 ${f(bx1)},${f(by1)}`;
+      parts.push(`<path d="M${f(bx1)},${f(by1)} Q${f(cp1x)},${f(cp1y)} ${f(tx)},${f(ty)} Q${f(cp2x)},${f(cp2y)} ${f(bx2)},${f(by2)} ${innerArc}Z" fill="white" stroke="#222" stroke-width="${sw}"/>`);
+      if(outerR-innerR>14){
+        const mR=(outerR+innerR)/2;
+        const eR=(outerR-innerR)*0.14;
+        parts.push(`<circle cx="${f(cx+mR*Math.cos(aM))}" cy="${f(cy+mR*Math.sin(aM))}" r="${f(eR)}" fill="white" stroke="#444" stroke-width="0.9"/>`);
+      }
+    }
+    parts.push(`<circle cx="${cx}" cy="${cy}" r="${f(outerR)}" fill="none" stroke="#444" stroke-width="0.7"/>`);
+  }
+  const cR=maxR/rings*0.55;
+  parts.push(`<circle cx="${cx}" cy="${cy}" r="${f(cR)}" fill="white" stroke="#222" stroke-width="1.8"/>`);
+  if(cR>8) parts.push(`<circle cx="${cx}" cy="${cy}" r="${f(cR*0.5)}" fill="white" stroke="#555" stroke-width="1"/>`);
+  parts.push(`<circle cx="${cx}" cy="${cy}" r="${f(maxR*1.01)}" fill="none" stroke="#aaa" stroke-width="0.5" stroke-dasharray="3 2"/>`);
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}">${parts.join('')}</svg>`;
+}
+
+// ─── PRE-GENERATION DISPATCHER ────────────────────────────────────
+
+async function lcPreGenContent() {
+  const type = _lcSelectedType?.key;
+  if (!type) return;
+  const btn=document.getElementById('lcPreGenBtn');
+  const spin=document.getElementById('lcPreGenSpin');
+  const txt=document.getElementById('lcPreGenTxt');
+  const status=document.getElementById('lcPreGenStatus');
+  btn.disabled=true; spin.style.display='inline-block';
+  txt.textContent='Generando…'; status.style.color='var(--muted)'; status.textContent='⏳ In corso…';
+  const cfg=getLcConfig();
+  try {
+    if (type==='sudoku') {
+      const diff=document.querySelector('input[name="lcSudokuDiff"]:checked')?.value||'medium';
+      status.textContent=`Generando ${cfg.pages} puzzle Sudoku ${diff}…`;
+      const puzzles=[];
+      for(let i=0;i<cfg.pages;i++) puzzles.push(_sudokuGenerate(diff));
+      _lcContent={type:'sudoku', puzzles, diff};
+      status.textContent=`✅ ${cfg.pages} puzzle Sudoku ${diff} pronti! Premi "Genera Interior PDF".`;
+      status.style.color='var(--accent)';
+    } else if (type==='wordsearch') {
+      const theme=document.getElementById('lcWordTheme')?.value?.trim()||'nature';
+      status.textContent=`Chiedendo a Claude parole su "${theme}"…`;
+      const prompt=`Generate a themed word list for a word search puzzle about "${theme}". Return exactly 40 words in UPPERCASE, one per line. Words must be 3-12 letters with no spaces or hyphens. Vary the lengths. No numbering, no explanations — just the words, one per line.`;
+      const tmpEl=document.createElement('div');
+      const raw=await _lcStream(prompt, tmpEl, 600);
+      const words=raw.split('\n').map(w=>w.trim().toUpperCase().replace(/[^A-Z]/g,'')).filter(w=>w.length>=3&&w.length<=12);
+      status.textContent=`${words.length} parole ottenute. Costruendo ${cfg.pages} griglie…`;
+      const grids=[];
+      for(let i=0;i<cfg.pages;i++){
+        const pageWords=[...words].sort(()=>Math.random()-0.5).slice(0,16);
+        grids.push(_buildWordGrid(pageWords,15,15));
+      }
+      _lcContent={type:'wordsearch', grids, words, theme};
+      status.textContent=`✅ ${cfg.pages} griglie Word Search pronte! Tema: ${theme}`;
+      status.style.color='var(--accent)';
+    } else if (type==='habit') {
+      const theme=document.getElementById('lcHabitTheme')?.value?.trim()||'daily routine';
+      status.textContent=`Chiedendo a Claude abitudini su "${theme}"…`;
+      const prompt=`Create exactly 10 habit tracker habit names for the theme "${theme}". Each habit should be short (2-5 words), actionable, and specific. Return one habit per line, no numbering, no explanations, no bullet points.`;
+      const tmpEl=document.createElement('div');
+      const raw=await _lcStream(prompt, tmpEl, 300);
+      const habits=raw.split('\n').map(h=>h.trim().replace(/^[-•\d.]+\s*/,'')).filter(h=>h.length>1).slice(0,10);
+      _lcContent={type:'habit', habits};
+      status.textContent=`✅ ${habits.length} abitudini pronte! Saranno pre-compilate nel tracker.`;
+      status.style.color='var(--accent)';
+    } else if (type==='mandala') {
+      const cmplx=document.querySelector('input[name="lcMandalaCmplx"]:checked')?.value||'medium';
+      const cfgMap={simple:{petals:[6,8],rings:[3,4]},medium:{petals:[8,12],rings:[4,5]},complex:{petals:[12,16],rings:[5,6]}};
+      const mc=cfgMap[cmplx]||cfgMap.medium;
+      status.textContent=`Generando ${cfg.pages} mandala SVG (${cmplx})…`;
+      const mandalas=[];
+      for(let i=0;i<cfg.pages;i++){
+        const p=mc.petals[i%mc.petals.length];
+        const r=mc.rings[i%mc.rings.length];
+        mandalas.push(_genMandala(460,p,r));
+      }
+      _lcContent={type:'mandala', mandalas, cmplx};
+      status.textContent=`✅ ${cfg.pages} mandala pronti! Premi "Genera Interior PDF".`;
+      status.style.color='var(--accent)';
+    }
+  } catch(e) {
+    status.textContent='❌ '+e.message; status.style.color='#f87171';
+  } finally {
+    btn.disabled=false; spin.style.display='none'; txt.textContent='⚡ Pre-genera contenuto';
+  }
 }
 
 // ─── STREAMING HELPER (for research + copy) ──────────────────────
