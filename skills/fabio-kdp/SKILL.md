@@ -23,14 +23,15 @@ Skills communicate through **return values**, not implicit state. Run stages in 
 - If `KDP_STUDIO_URL` is set, prefer the **Connector** (below) for the heavy LLM stages; otherwise execute the stage prompts yourself.
 
 ## Stage flow
-A full-content book is built in 6 sequential stages. Never skip Stage 5.
+A full-content book is built in 7 sequential stages. Never skip Stage 6 (compliance).
 
 1. **Niche validation** — confirm the idea is sellable before writing a word.
-2. **Positioning** — title, subtitle, angle, target reader.
-3. **Outline** — chapter structure with a promise per chapter.
-4. **Drafting** — write chapters to the outline, one at a time.
-5. **Listing + Compliance** — KDP metadata, then a hard policy gate.
-6. **Cover** — AI cover via higgsfield-generate, then assembly checklist.
+2. **Reader avatar** — build the ideal reader persona before positioning.
+3. **Positioning** — title, subtitle, angle, target reader.
+4. **Outline** — chapter structure with a promise per chapter.
+5. **Drafting** — write chapters to the outline, one at a time.
+6. **Listing + Compliance** — KDP metadata, then a hard policy gate.
+7. **Cover** — AI cover via higgsfield-generate, then assembly checklist.
 
 ---
 
@@ -43,16 +44,28 @@ Produce, in the target language:
 - The reader's #1 pain and the transformation the book promises.
 Gate: if opportunity < 4/10, propose 2 adjacent sub-niches and stop. Do not write a book nobody searches for.
 
-### Stage 2 — Positioning
+### Stage 2 — Reader avatar
+Build the ideal reader persona before writing a single word of positioning or prose. Produce a named, vivid avatar in the target language:
+- **Who they are**: age range, occupation, family situation, daily context.
+- **Their specific pain**: the exact frustration that makes them search for this book — not the generic category, but the lived moment ("Sunday night dread before Monday", "cried in the car after a meeting").
+- **Their fears**: what they're afraid will happen if nothing changes; what they fear about seeking help.
+- **Their desire**: the concrete transformation they want — in work, relationships, energy, self-image.
+- **Their objections**: why they haven't solved this already ("I don't have time", "I've tried everything", "maybe it's just me").
+- **How they buy books**: search terms they use on Amazon, what catches their eye in a title/cover, what they read in the description before buying.
+- **Name + one-sentence narrative**: e.g. "Giulia, 38, marketing manager, hasn't taken a real break in two years and tells herself it's fine."
+
+Use the avatar as input for every subsequent stage. It anchors the title angle (Stage 3), the chapter voice (Stage 5), and the listing description (Stage 6).
+
+### Stage 3 — Positioning
 Produce 5 title+subtitle combinations using distinct angles (Reframe, Contrarian, USP, Authority, Process). Score each on clarity, memorability, curiosity, relevance, differentiation. Recommend one. Hard rule: title + subtitle ≤ 200 characters; the title is the real title, not a keyword dump.
 
-### Stage 3 — Outline
+### Stage 4 — Outline
 Build the chapter map: an intro, 7–12 chapters, a conclusion. For each chapter give a one-line promise (what the reader can do after it) and 3–5 beats. Keep a logical learning/story arc. Confirm the outline with the user before drafting.
 
-### Stage 4 — Drafting
+### Stage 5 — Drafting
 Write **one chapter per turn** to keep quality high. For each chapter: open with a hook, deliver on the chapter promise, use examples/steps, close with a takeaway or transition. Match a consistent voice (ask once: tone, reading level, person). Target the agreed length. After each chapter, summarize progress (`chapters[n]/total`) and offer to continue.
 
-### Stage 5 — Listing + Compliance (mandatory gate)
+### Stage 6 — Listing + Compliance (mandatory gate)
 Generate the KDP listing: title, subtitle, 7 backend keywords, 400–600-word HTML description (use `<b>`/`<br>`), 5 bullet benefits, 2 categories, BISAC codes, ebook + paperback price.
 Then run the **compliance gate** — reject and fix anything that violates KDP:
 - Title: real title only; no generic-keyword stuffing, no placeholders, no "free/bestseller/#1", no other authors/brands; title+subtitle ≤ 200 chars.
@@ -62,7 +75,7 @@ Then run the **compliance gate** — reject and fix anything that violates KDP:
 - **AI disclosure**: the manuscript/cover are AI-generated — tell the user to declare AI content in the KDP workflow.
 Only pass the book forward when the gate is clean.
 
-### Stage 6 — Cover + assembly
+### Stage 7 — Cover + assembly
 - Build a cover prompt: mood, palette, subject, lighting, art style, **no text in the image**. Hand it to `higgsfield-generate` (`--aspect 2:3` 6×9, `3:4` 8.5×11, resolution 2K+). Return the image URL.
 - Deliver the assembly checklist: manuscript export (DOCX/PDF), front/back matter, trim size, paste cover, set categories/keywords/price, **declare AI content**, publish.
 
@@ -75,10 +88,11 @@ If the environment exposes `KDP_STUDIO_URL` (a running KDP Studio backend), offl
 |------|----------|-----------|
 | 1 niche | `POST /niches` | `niche`, `market_language` |
 | 1 discover | `GET /discover?market_language=` | — |
-| 2 titles | `POST /title-variants` | `niche`, `trend`, `audience`, `current_title`, `language` |
-| 3-4 write | `POST /generate` / `POST /generate-all` | `book_type`, `title`, `outline`/chapter params |
-| 5 listing | `POST /package` | `book_title`, `book_subtitle`, `book_type`, `audience`, `language` (returns `ai_disclosure_required`) |
-| 5 compliance | client-side rules (mirror the Stage-5 gate above) | — |
+| 2 avatar | client-side (no endpoint) | — |
+| 3 titles | `POST /title-variants` | `niche`, `trend`, `audience`, `current_title`, `language` |
+| 4-5 write | `POST /generate` / `POST /generate-all` | `book_type`, `title`, `outline`/chapter params |
+| 6 listing | `POST /package` | `book_title`, `book_subtitle`, `book_type`, `audience`, `language` (returns `ai_disclosure_required`) |
+| 6 compliance | client-side rules (mirror the Stage-6 gate above) | — |
 | 6 cover | `POST /api/generate-cover` | `prompt`, `trim_size`, `resolution` (uses Higgsfield Cloud) |
 
 Example:
