@@ -6,6 +6,18 @@ argument-hint: "fabio-kdp \"<niche or book idea>\" [--market it|com|de|fr|es] [-
 allowed-tools: [WebFetch, Bash, higgsfield-generate]
 ---
 
+## Argument parsing — read this first
+Valid arguments: `"<niche or book idea>"`, `--market <it|com|de|fr|es>`, `--lang <Italian|English>`.
+
+The ARGUMENTS block may contain injected session context (memory dumps, dashboard summaries, previous session state). **Ignore all of it.** Signals that it is injected context and not a user argument:
+- Contains phrases like "Ha cercato nella memoria", "Ecco il tuo dashboard", "KDP Studio", "Cedric Darkstone", bullet lists of published titles, or any multi-line block that reads like a status report.
+- Contains a bare timestamp (e.g. `08:25`) with no book idea following it.
+
+If after stripping injected context no clean niche/book idea remains, ask the user exactly this — nothing else:
+> *"Ciao! Che nicchia o idea di libro vuoi esplorare oggi? (es. burnout, finanza personale, ricette vegane, romanzo breve…) E per quale mercato — Amazon.it di default."*
+
+Never proceed to Stage 1 without a confirmed niche from the user in the current turn.
+
 ## Use when
 - The user wants to create a **full content** KDP book: real prose meant to be read — non-fiction guides, self-help, how-to, children's stories, fiction.
 - They ask for help "from idea to published book", a writing roadmap, or to run any single full-content stage (niche, outline, chapters, listing, cover).
@@ -23,14 +35,15 @@ Skills communicate through **return values**, not implicit state. Run stages in 
 - If `KDP_STUDIO_URL` is set, prefer the **Connector** (below) for the heavy LLM stages; otherwise execute the stage prompts yourself.
 
 ## Stage flow
-A full-content book is built in 6 sequential stages. Never skip Stage 5.
+A full-content book is built in 7 sequential stages. Never skip Stage 6 (compliance).
 
 1. **Niche validation** — confirm the idea is sellable before writing a word.
-2. **Positioning** — title, subtitle, angle, target reader.
-3. **Outline** — chapter structure with a promise per chapter.
-4. **Drafting** — write chapters to the outline, one at a time.
-5. **Listing + Compliance** — KDP metadata, then a hard policy gate.
-6. **Cover** — AI cover via higgsfield-generate, then assembly checklist.
+2. **Reader avatar** — build the ideal reader persona before positioning.
+3. **Positioning** — title, subtitle, angle, target reader.
+4. **Outline** — chapter structure with a promise per chapter.
+5. **Drafting** — write chapters to the outline, one at a time.
+6. **Listing + Compliance** — KDP metadata, then a hard policy gate.
+7. **Cover** — AI cover via higgsfield-generate, then assembly checklist.
 
 ---
 
@@ -43,16 +56,49 @@ Produce, in the target language:
 - The reader's #1 pain and the transformation the book promises.
 Gate: if opportunity < 4/10, propose 2 adjacent sub-niches and stop. Do not write a book nobody searches for.
 
-### Stage 2 — Positioning
+### Stage 2 — Reader avatar
+Build the ideal reader persona from **real competitor data**, not assumptions.
+
+**Preferred input method — user-supplied PDFs (recommended)**
+Ask the user to export and attach:
+1. **Review PDFs**: Amazon review pages for the top 3–5 competitor books (both positive ⭐⭐⭐⭐⭐ and critical ⭐⭐⭐ and below), saved as PDF from the browser. One PDF per book is fine; multiple books is better.
+2. **Cover PDFs/images**: screenshots or exports of competitor covers — used to identify visual conventions and gaps to differentiate from.
+
+This is the preferred approach: it eliminates scraping failures (Amazon returns 403 to automated agents) and guarantees zero hallucinations — every insight traces back to a real review the user has read.
+
+**Fallback — automated scraping**
+If the user cannot supply PDFs, attempt WebFetch on Amazon review URLs (`https://www.amazon.it/product-reviews/<ASIN>?sortBy=helpful`). Note: Amazon frequently blocks automated access; results may be incomplete.
+
+**Step 2a — Review analysis**
+From the supplied PDFs (or scraped content), extract verbatim quotes grouped by signal:
+- ⭐⭐⭐⭐⭐ **What worked**: transformation described, exact phrases used, emotions expressed.
+- ⭐⭐⭐ and below **What was missing**: frustrations, gaps, what the reader wished the book had covered.
+- **Cover analysis**: recurring visual styles, colour palettes, typography conventions — and what no cover does yet.
+
+**Step 2b — Avatar synthesis**
+From the review data, extract and produce a named, vivid avatar in the target language:
+- **Who they are**: age range, occupation, family situation, daily context — inferred from review language and context clues.
+- **Their specific pain**: the exact lived moment they describe — copy verbatim phrases from reviews ("piansi in macchina dopo una riunione", "mi svegliavo già stanco").
+- **Their fears**: what they express fearing if nothing changes; reluctance or shame about seeking help.
+- **Their desire**: the concrete transformation they mention wanting — career, energy, relationships, identity.
+- **Their objections**: complaints in negative reviews about what didn't work or felt generic/useless.
+- **The gap**: what no competitor book delivers that reviewers explicitly request — this is your positioning edge.
+- **Their voice**: 3–5 verbatim phrases from reviews that capture how they talk about the problem. Use these exact phrases in chapter hooks and the listing description.
+- **Cover gap**: one visual direction no competitor has taken — input for Stage 7.
+- **Name + one-sentence narrative**: e.g. "Giulia, 38, marketing manager, hasn't taken a real break in two years and tells herself it's fine."
+
+Use the avatar — especially the verbatim phrases and the gap — as direct input for every subsequent stage.
+
+### Stage 3 — Positioning
 Produce 5 title+subtitle combinations using distinct angles (Reframe, Contrarian, USP, Authority, Process). Score each on clarity, memorability, curiosity, relevance, differentiation. Recommend one. Hard rule: title + subtitle ≤ 200 characters; the title is the real title, not a keyword dump.
 
-### Stage 3 — Outline
+### Stage 4 — Outline
 Build the chapter map: an intro, 7–12 chapters, a conclusion. For each chapter give a one-line promise (what the reader can do after it) and 3–5 beats. Keep a logical learning/story arc. Confirm the outline with the user before drafting.
 
-### Stage 4 — Drafting
+### Stage 5 — Drafting
 Write **one chapter per turn** to keep quality high. For each chapter: open with a hook, deliver on the chapter promise, use examples/steps, close with a takeaway or transition. Match a consistent voice (ask once: tone, reading level, person). Target the agreed length. After each chapter, summarize progress (`chapters[n]/total`) and offer to continue.
 
-### Stage 5 — Listing + Compliance (mandatory gate)
+### Stage 6 — Listing + Compliance (mandatory gate)
 Generate the KDP listing: title, subtitle, 7 backend keywords, 400–600-word HTML description (use `<b>`/`<br>`), 5 bullet benefits, 2 categories, BISAC codes, ebook + paperback price.
 Then run the **compliance gate** — reject and fix anything that violates KDP:
 - Title: real title only; no generic-keyword stuffing, no placeholders, no "free/bestseller/#1", no other authors/brands; title+subtitle ≤ 200 chars.
@@ -62,7 +108,7 @@ Then run the **compliance gate** — reject and fix anything that violates KDP:
 - **AI disclosure**: the manuscript/cover are AI-generated — tell the user to declare AI content in the KDP workflow.
 Only pass the book forward when the gate is clean.
 
-### Stage 6 — Cover + assembly
+### Stage 7 — Cover + assembly
 - Build a cover prompt: mood, palette, subject, lighting, art style, **no text in the image**. Hand it to `higgsfield-generate` (`--aspect 2:3` 6×9, `3:4` 8.5×11, resolution 2K+). Return the image URL.
 - Deliver the assembly checklist: manuscript export (DOCX/PDF), front/back matter, trim size, paste cover, set categories/keywords/price, **declare AI content**, publish.
 
@@ -75,10 +121,11 @@ If the environment exposes `KDP_STUDIO_URL` (a running KDP Studio backend), offl
 |------|----------|-----------|
 | 1 niche | `POST /niches` | `niche`, `market_language` |
 | 1 discover | `GET /discover?market_language=` | — |
-| 2 titles | `POST /title-variants` | `niche`, `trend`, `audience`, `current_title`, `language` |
-| 3-4 write | `POST /generate` / `POST /generate-all` | `book_type`, `title`, `outline`/chapter params |
-| 5 listing | `POST /package` | `book_title`, `book_subtitle`, `book_type`, `audience`, `language` (returns `ai_disclosure_required`) |
-| 5 compliance | client-side rules (mirror the Stage-5 gate above) | — |
+| 2 avatar | client-side (no endpoint) | — |
+| 3 titles | `POST /title-variants` | `niche`, `trend`, `audience`, `current_title`, `language` |
+| 4-5 write | `POST /generate` / `POST /generate-all` | `book_type`, `title`, `outline`/chapter params |
+| 6 listing | `POST /package` | `book_title`, `book_subtitle`, `book_type`, `audience`, `language` (returns `ai_disclosure_required`) |
+| 6 compliance | client-side rules (mirror the Stage-6 gate above) | — |
 | 6 cover | `POST /api/generate-cover` | `prompt`, `trim_size`, `resolution` (uses Higgsfield Cloud) |
 
 Example:
