@@ -45,16 +45,29 @@ Produce, in the target language:
 Gate: if opportunity < 4/10, propose 2 adjacent sub-niches and stop. Do not write a book nobody searches for.
 
 ### Stage 2 — Reader avatar
-Build the ideal reader persona before writing a single word of positioning or prose. Produce a named, vivid avatar in the target language:
-- **Who they are**: age range, occupation, family situation, daily context.
-- **Their specific pain**: the exact frustration that makes them search for this book — not the generic category, but the lived moment ("Sunday night dread before Monday", "cried in the car after a meeting").
-- **Their fears**: what they're afraid will happen if nothing changes; what they fear about seeking help.
-- **Their desire**: the concrete transformation they want — in work, relationships, energy, self-image.
-- **Their objections**: why they haven't solved this already ("I don't have time", "I've tried everything", "maybe it's just me").
-- **How they buy books**: search terms they use on Amazon, what catches their eye in a title/cover, what they read in the description before buying.
+Build the ideal reader persona from **real competitor data**, not assumptions. Follow this research sequence:
+
+**Step 2a — Competitor discovery**
+Search Amazon in the target market for the top 5–8 books in the niche. For each: title, author, ASIN, star rating, number of reviews, price. Use WebFetch on Amazon search results pages (e.g. `https://www.amazon.it/s?k=burnout+lavoro`).
+
+**Step 2b — Review mining**
+For each top competitor, fetch the review pages (most helpful + most recent, both positive and negative). Collect verbatim quotes from:
+- ⭐⭐⭐⭐⭐ reviews: what readers loved, the transformation they described, the exact words they used.
+- ⭐⭐⭐ and below reviews: what was missing, what frustrated them, what they wished the book had covered.
+Use WebFetch on Amazon review URLs (e.g. `https://www.amazon.it/product-reviews/<ASIN>?sortBy=helpful`).
+
+**Step 2c — Avatar synthesis**
+From the review data, extract and produce a named, vivid avatar in the target language:
+- **Who they are**: age range, occupation, family situation, daily context — inferred from review language and context clues.
+- **Their specific pain**: the exact lived moment they describe — copy verbatim phrases from reviews ("piansi in macchina dopo una riunione", "mi svegliavo già stanco").
+- **Their fears**: what they express fearing if nothing changes; reluctance or shame about seeking help.
+- **Their desire**: the concrete transformation they mention wanting — career, energy, relationships, identity.
+- **Their objections**: complaints in negative reviews about what didn't work or felt generic/useless.
+- **The gap**: what no competitor book delivers that reviewers explicitly request — this is your positioning edge.
+- **Their voice**: 3–5 verbatim phrases from reviews that capture how they talk about the problem. Use these exact phrases in chapter hooks and the listing description.
 - **Name + one-sentence narrative**: e.g. "Giulia, 38, marketing manager, hasn't taken a real break in two years and tells herself it's fine."
 
-Use the avatar as input for every subsequent stage. It anchors the title angle (Stage 3), the chapter voice (Stage 5), and the listing description (Stage 6).
+Use the avatar — especially the verbatim phrases and the gap — as direct input for every subsequent stage.
 
 ### Stage 3 — Positioning
 Produce 5 title+subtitle combinations using distinct angles (Reframe, Contrarian, USP, Authority, Process). Score each on clarity, memorability, curiosity, relevance, differentiation. Recommend one. Hard rule: title + subtitle ≤ 200 characters; the title is the real title, not a keyword dump.
