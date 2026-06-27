@@ -449,6 +449,7 @@ select option{background:var(--s2)}
   <button class="step-tab" data-panel="p6" onclick="goPanel('p6')">📊 Tracking</button>
   <button class="step-tab" data-panel="p7" onclick="goPanel('p7')">📣 Marketing</button>
   <div class="sidebar-divider"></div>
+  <button class="step-tab" data-panel="p10" onclick="goPanel('p10')">🎓 Full Content</button>
   <button class="step-tab" data-panel="p8" onclick="goPanel('p8')">📓 Low Content</button>
   <button class="step-tab" data-panel="p9" onclick="goPanel('p9')">⚖️ Compliance</button>
 </nav>
@@ -1865,6 +1866,43 @@ select option{background:var(--s2)}
   </div>
 </div><!-- /p9 -->
 
+<!-- ============ PANEL 10: FULL CONTENT COACH ============ -->
+<div class="panel" id="p10">
+  <div class="panel-hero">
+    <h2>🎓 <span>Full Content</span> Coach</h2>
+    <p>Dall'idea al libro pubblicato: un percorso guidato in 6 fasi per scrivere e pubblicare un vero libro full content su Amazon KDP, con l'AI al tuo fianco a ogni passo.</p>
+  </div>
+
+  <!-- Higgsfield skill note -->
+  <div style="background:linear-gradient(135deg,rgba(168,85,247,0.08),rgba(99,102,241,0.06));border:1px solid rgba(168,85,247,0.28);border-radius:10px;padding:12px 14px;margin-bottom:18px;font-size:12px;line-height:1.6;color:var(--text)">
+    🚀 Questo coach è disponibile anche come <b>skill portabile</b> (<code style="font-size:11px">higgsfield-kdp-full-content</code>) per il <b>Supercomputer Higgsfield</b>, Claude Code, Cursor e Codex — vedi <code style="font-size:11px">skills/</code> nel repo. La skill usa questa stessa app come connettore API.
+  </div>
+
+  <!-- AI Coach box -->
+  <div style="background:var(--s1);border:1px solid var(--border2);border-radius:12px;padding:16px;margin-bottom:22px">
+    <div style="font-size:13px;font-weight:600;margin-bottom:10px">💬 Chiedi al Coach</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+      <div style="flex:1;min-width:220px">
+        <textarea id="fcCoachInput" rows="2" placeholder="es. Che struttura dovrei dare a un libro su mindfulness per principianti? Aiutami a validare la nicchia 'finanza personale per ventenni'…" style="width:100%;resize:vertical;font-size:13px"></textarea>
+      </div>
+      <button class="btn btn-accent" onclick="fcAskCoach()" id="fcCoachBtn">
+        <div class="spin" id="fcCoachSpin" style="display:none;width:14px;height:14px"></div>
+        <span id="fcCoachTxt">🎓 Chiedi</span>
+      </button>
+    </div>
+    <div id="fcCoachOut" style="display:none;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:12px;font-size:13px;line-height:1.7;white-space:pre-wrap"></div>
+  </div>
+
+  <!-- Roadmap -->
+  <div class="sect-label">Roadmap — 6 fasi</div>
+  <div id="fcRoadmap" style="display:grid;gap:12px"></div>
+
+  <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+    <button class="btn btn-ghost" onclick="fcResetProgress()" style="font-size:12px">↺ Azzera progresso</button>
+    <span id="fcProgressLabel" style="font-size:12px;color:var(--muted)"></span>
+  </div>
+</div><!-- /p10 -->
+
 </div><!-- /app-content -->
 </div><!-- /app-shell -->
 
@@ -2028,6 +2066,7 @@ function goPanel(id) {
   if (id === 'p7') initMarketing();
   if (id === 'p8') initLowContent();
   if (id === 'p9') initCompliance();
+  if (id === 'p10') initFullContent();
   saveState();
 }
 
@@ -8606,6 +8645,112 @@ function runComplianceCheck() {
   res.style.display = 'grid';
   res.innerHTML = summary + out.join('');
   res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ════════════════════════════════════════════════════════════════
+// FULL CONTENT COACH — guided end-to-end KDP full-content workflow.
+// Mirrors the portable skill higgsfield-kdp-full-content.
+// ════════════════════════════════════════════════════════════════
+
+const _FC_STAGES = [
+  { icon:'🔍', title:'1 · Validazione nicchia',
+    desc:'Conferma che l\'idea sia vendibile PRIMA di scrivere: competizione, domanda, keyword, prezzo. Se l\'opportunità è bassa, cambia sotto-nicchia.',
+    btn:'Vai a Discovery', panel:'p1' },
+  { icon:'🎯', title:'2 · Positioning & Titolo',
+    desc:'5 combinazioni titolo+sottotitolo con angoli diversi (Reframe, Contrarian, USP, Authority, Process). Titolo+sottotitolo ≤ 200 caratteri.',
+    btn:'Vai a Libro', panel:'p2' },
+  { icon:'🗂️', title:'3 · Outline',
+    desc:'Struttura: introduzione, 7-12 capitoli, conclusione. Una promessa per capitolo (cosa saprà fare il lettore dopo).',
+    btn:'Vai a Scrivi', panel:'p3' },
+  { icon:'✍️', title:'4 · Stesura capitoli',
+    desc:'Scrivi un capitolo alla volta mantenendo voce e qualità costanti. Hook → contenuto → takeaway.',
+    btn:'Vai a Scrivi', panel:'p3' },
+  { icon:'📦', title:'5 · Listing + Compliance',
+    desc:'Genera il listing KDP (titolo, keyword, descrizione, categorie, prezzo), poi passa il gate compliance. Niente va avanti finché non è pulito.',
+    btn:'Genera Package', panel:'p4', btn2:'Check Compliance', panel2:'p9' },
+  { icon:'🎨', title:'6 · Cover + pubblicazione',
+    desc:'Genera la cover AI (Higgsfield) dal prompt del Package, poi segui la checklist: export manoscritto, impagina, carica, dichiara contenuto AI, pubblica.',
+    btn:'Vai al Package/Cover', panel:'p4' },
+];
+
+let _fcInited = false;
+function _fcProgress() {
+  try { return JSON.parse(localStorage.getItem('kdp_fc_progress') || '{}'); } catch { return {}; }
+}
+function _fcSaveProgress(p) { localStorage.setItem('kdp_fc_progress', JSON.stringify(p)); }
+
+function initFullContent() {
+  renderFcRoadmap();
+  _fcInited = true;
+}
+
+function renderFcRoadmap() {
+  const wrap = document.getElementById('fcRoadmap');
+  if (!wrap) return;
+  const prog = _fcProgress();
+  wrap.innerHTML = _FC_STAGES.map((s, i) => {
+    const done = !!prog[i];
+    const b2 = s.btn2 ? `<button class="btn btn-ghost" style="font-size:12px" onclick="fcGoStage('${s.panel2}')">${s.btn2}</button>` : '';
+    return `<div style="background:var(--s1);border:1px solid ${done?'rgba(74,222,128,0.4)':'var(--border2)'};border-radius:12px;padding:14px 16px;display:flex;gap:14px;align-items:flex-start">
+      <button onclick="fcToggleStage(${i})" title="Segna come completata" style="flex-shrink:0;width:26px;height:26px;border-radius:50%;border:2px solid ${done?'var(--accent)':'var(--muted2)'};background:${done?'var(--accent)':'transparent'};color:#04040e;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;margin-top:2px">${done?'✓':''}</button>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:5px"><span style="font-size:18px">${s.icon}</span>${s.title}</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:10px">${s.desc}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-accent" style="font-size:12px" onclick="fcGoStage('${s.panel}')">${s.btn} →</button>
+          ${b2}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  const done = Object.values(prog).filter(Boolean).length;
+  const lbl = document.getElementById('fcProgressLabel');
+  if (lbl) lbl.textContent = `${done}/${_FC_STAGES.length} fasi completate`;
+}
+
+function fcToggleStage(i) {
+  const p = _fcProgress();
+  p[i] = !p[i];
+  _fcSaveProgress(p);
+  renderFcRoadmap();
+}
+function fcGoStage(panel) { goPanel(panel); }
+function fcResetProgress() {
+  if (!confirm('Azzerare il progresso del Full Content Coach?')) return;
+  _fcSaveProgress({});
+  renderFcRoadmap();
+}
+
+async function fcAskCoach() {
+  const inp = document.getElementById('fcCoachInput');
+  const out = document.getElementById('fcCoachOut');
+  const btn = document.getElementById('fcCoachBtn');
+  const spin = document.getElementById('fcCoachSpin');
+  const txt = document.getElementById('fcCoachTxt');
+  const q = (inp.value || '').trim();
+  if (!q) { out.style.display = 'block'; out.textContent = '⚠️ Scrivi una domanda per il coach.'; return; }
+  const lang = document.getElementById('outputLanguage')?.value || 'Italian';
+
+  btn.disabled = true; spin.style.display = 'inline-block'; txt.textContent = 'Penso…';
+  out.style.display = 'block'; out.textContent = '⏳…';
+
+  const prompt = `You are a KDP FULL CONTENT publishing coach. You guide authors from idea to published readable book (non-fiction or fiction), NOT low-content notebooks/planners.
+
+Your method has 6 stages: 1) validate the niche (competition, demand, keywords, price — stop if opportunity is low), 2) positioning & title (5 angles; title+subtitle ≤ 200 chars), 3) outline (intro, 7-12 chapters with a promise each, conclusion), 4) draft chapters one at a time with consistent voice, 5) KDP listing + a strict compliance gate (no keyword stuffing, no banned promo terms, no misleading metadata, declare AI content), 6) AI cover + publishing checklist.
+
+Always respect Amazon KDP policy and remind the user to declare AI-generated content at publish time when relevant.
+
+Answer the author's question in ${lang}, concretely and actionably, grounded in this method. If the question maps to a stage, say which stage and give the next concrete step.
+
+Author's question: "${q}"`;
+
+  try {
+    await _lcStream(prompt, out, 1800);
+  } catch(e) {
+    out.textContent = '❌ ' + e.message;
+  } finally {
+    btn.disabled = false; spin.style.display = 'none'; txt.textContent = '🎓 Chiedi';
+  }
 }
 </script>
 </body>
