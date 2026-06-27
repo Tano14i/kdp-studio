@@ -45,18 +45,25 @@ Produce, in the target language:
 Gate: if opportunity < 4/10, propose 2 adjacent sub-niches and stop. Do not write a book nobody searches for.
 
 ### Stage 2 — Reader avatar
-Build the ideal reader persona from **real competitor data**, not assumptions. Follow this research sequence:
+Build the ideal reader persona from **real competitor data**, not assumptions.
 
-**Step 2a — Competitor discovery**
-Search Amazon in the target market for the top 5–8 books in the niche. For each: title, author, ASIN, star rating, number of reviews, price. Use WebFetch on Amazon search results pages (e.g. `https://www.amazon.it/s?k=burnout+lavoro`).
+**Preferred input method — user-supplied PDFs (recommended)**
+Ask the user to export and attach:
+1. **Review PDFs**: Amazon review pages for the top 3–5 competitor books (both positive ⭐⭐⭐⭐⭐ and critical ⭐⭐⭐ and below), saved as PDF from the browser. One PDF per book is fine; multiple books is better.
+2. **Cover PDFs/images**: screenshots or exports of competitor covers — used to identify visual conventions and gaps to differentiate from.
 
-**Step 2b — Review mining**
-For each top competitor, fetch the review pages (most helpful + most recent, both positive and negative). Collect verbatim quotes from:
-- ⭐⭐⭐⭐⭐ reviews: what readers loved, the transformation they described, the exact words they used.
-- ⭐⭐⭐ and below reviews: what was missing, what frustrated them, what they wished the book had covered.
-Use WebFetch on Amazon review URLs (e.g. `https://www.amazon.it/product-reviews/<ASIN>?sortBy=helpful`).
+This is the preferred approach: it eliminates scraping failures (Amazon returns 403 to automated agents) and guarantees zero hallucinations — every insight traces back to a real review the user has read.
 
-**Step 2c — Avatar synthesis**
+**Fallback — automated scraping**
+If the user cannot supply PDFs, attempt WebFetch on Amazon review URLs (`https://www.amazon.it/product-reviews/<ASIN>?sortBy=helpful`). Note: Amazon frequently blocks automated access; results may be incomplete.
+
+**Step 2a — Review analysis**
+From the supplied PDFs (or scraped content), extract verbatim quotes grouped by signal:
+- ⭐⭐⭐⭐⭐ **What worked**: transformation described, exact phrases used, emotions expressed.
+- ⭐⭐⭐ and below **What was missing**: frustrations, gaps, what the reader wished the book had covered.
+- **Cover analysis**: recurring visual styles, colour palettes, typography conventions — and what no cover does yet.
+
+**Step 2b — Avatar synthesis**
 From the review data, extract and produce a named, vivid avatar in the target language:
 - **Who they are**: age range, occupation, family situation, daily context — inferred from review language and context clues.
 - **Their specific pain**: the exact lived moment they describe — copy verbatim phrases from reviews ("piansi in macchina dopo una riunione", "mi svegliavo già stanco").
@@ -65,6 +72,7 @@ From the review data, extract and produce a named, vivid avatar in the target la
 - **Their objections**: complaints in negative reviews about what didn't work or felt generic/useless.
 - **The gap**: what no competitor book delivers that reviewers explicitly request — this is your positioning edge.
 - **Their voice**: 3–5 verbatim phrases from reviews that capture how they talk about the problem. Use these exact phrases in chapter hooks and the listing description.
+- **Cover gap**: one visual direction no competitor has taken — input for Stage 7.
 - **Name + one-sentence narrative**: e.g. "Giulia, 38, marketing manager, hasn't taken a real break in two years and tells herself it's fine."
 
 Use the avatar — especially the verbatim phrases and the gap — as direct input for every subsequent stage.
