@@ -1,8 +1,8 @@
 ---
-name: higgsfield-kdp-full-content
+name: fabio-kdp
 description: End-to-end coach for publishing a FULL CONTENT book on Amazon KDP — validated niche, outline, chapter drafting, KDP listing, compliance check, and AI cover. Use when the user wants to write and publish a real readable book (non-fiction or fiction), not a low-content notebook/planner.
 version: 0.1.0
-argument-hint: "full-content coach \"<niche or book idea>\" [--market it|com|de|fr|es] [--lang Italian|English]"
+argument-hint: "fabio-kdp \"<niche or book idea>\" [--market it|com|de|fr|es] [--lang Italian|English]"
 allowed-tools: [WebFetch, Bash, higgsfield-generate]
 ---
 

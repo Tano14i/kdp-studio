@@ -9,7 +9,7 @@ Supercomputer**, **Claude Code**, **Cursor**, or **Codex** — and act as a
 
 | Skill | What it does |
 |------|--------------|
-| `higgsfield-kdp-full-content` | End-to-end coach for a full-content KDP book: niche → positioning → outline → drafting → listing + compliance gate → AI cover. Chains to `higgsfield-generate` for the cover and to the KDP Studio API for the heavy LLM stages. |
+| `fabio-kdp` | End-to-end coach for a full-content KDP book: niche → positioning → outline → drafting → listing + compliance gate → AI cover. Chains to `higgsfield-generate` for the cover and to the KDP Studio API for the heavy LLM stages. |
 
 ## Install
 
@@ -18,7 +18,7 @@ Supercomputer**, **Claude Code**, **Cursor**, or **Codex** — and act as a
 ```bash
 # from the repo root
 mkdir -p ~/.claude/skills
-ln -s "$(pwd)/skills/higgsfield-kdp-full-content" ~/.claude/skills/higgsfield-kdp-full-content
+ln -s "$(pwd)/skills/fabio-kdp" ~/.claude/skills/fabio-kdp
 # (Cursor: ~/.cursor/skills · Codex: ~/.codex/skills)
 ```
 
