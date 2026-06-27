@@ -13,13 +13,17 @@ Supercomputer**, **Claude Code**, **Cursor**, or **Codex** — and act as a
 
 ## Install
 
-**Any agent that reads `~/.<agent>/skills/<name>/SKILL.md`** (Claude Code, Cursor, Codex):
+These skills live in **`.claude/skills/`** inside the repo, so Claude Code
+discovers them automatically as **project skills** whenever the repo is open —
+including fresh Claude Code on the web sessions. No symlink or setup hook is
+required: clone the repo, type `/fabio-kdp`, done.
+
+**Other agents** (Cursor, Codex) that read `~/.<agent>/skills/<name>/SKILL.md`:
 
 ```bash
 # from the repo root
-mkdir -p ~/.claude/skills
-ln -s "$(pwd)/skills/fabio-kdp" ~/.claude/skills/fabio-kdp
-# (Cursor: ~/.cursor/skills · Codex: ~/.codex/skills)
+mkdir -p ~/.cursor/skills   # or ~/.codex/skills
+ln -s "$(pwd)/.claude/skills/fabio-kdp" ~/.cursor/skills/fabio-kdp
 ```
 
 **Higgsfield Supercomputer** — use the official installer/marketplace flow:

@@ -3,8 +3,10 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+
+# Ignore local Claude state, but track committed project config + skills
 .claude/*
 !.claude/settings.json
 !.claude/skill-args-sanitizer.py
 !.claude/hooks/
-!.claude/hooks/session-start.sh
+!.claude/skills/
