@@ -12,13 +12,12 @@ campione c'e'.
 | Novara, *Urlare non serve a nulla* (Goodreads) | 143 | 3 |
 | Moreno e Marchetti, *4 Libri in 1* (Amazon.it) | 58 | **2, ed e' tutto quello che esiste** |
 | Petrucciani, *Educare senza perdere la calma* | 185 | **2** (le sole a 1 stella; restano ~7 a 2 e 3) |
-| Merini, *4 libri in 1* | 211 | **0 — da raccogliere** |
-| Nunziata, *Educare senza urlare* | 113 | **0 — da raccogliere** |
+| Merini, *4 libri in 1* | 211 | **17** |
+| Nunziata, *Educare senza urlare* | 113 | 0 — da raccogliere |
 
-**Sette lettori in tutto, su tre libri.** Poco — `ricerca-inversa` §5 avverte
-che i commenti sono un campione distorto — ma non piu' irrilevante: le due
-lamentele di §2 adesso tornano su **autori diversi**, ed e' la ricorrenza, non
-il numero, che le rende qualcosa.
+**Ventiquattro lettori su tre libri.** Adesso e' un campione: non grande, ma
+abbastanza da far emergere quale lamentela domina e quale no. E il risultato
+non e' quello che questo file si aspettava.
 
 ## 2. Le due lamentele che si ripetono su libri diversi
 
@@ -106,34 +105,131 @@ isolata, e' il buco piu' grande dello scaffale.
 E il titolo che si e' dato: **«La storia del sasso che fa il minestrone»** —
 un libro che promette una ricetta e ti fa mettere tutti gli ingredienti tu.
 
-**Cosa questo cambia, e cosa no.** La piega portante non e' piu' fondata su un
-libro solo: e' attestata su due autori su tre campionati. Resta pero' **un
-lettore** su Petrucciani, e il campione totale e' sette. Non e' un fatto
-dimostrato, e' un'ipotesi che ha superato la prova che le era stata messa
-davanti. Merini, con 211 recensioni, e' il terzo test e va fatto.
+**Il terzo test e' stato fatto, e la lamentela B non l'ha superato.** Sotto
+Merini — 211 recensioni, il piu' venduto del reparto, diciassette negative
+raccolte — «se non funziona sbagli tu» **non compare mai**. Nessuno accusa il
+libro di scaricargli addosso il fallimento del metodo, e nessuno chiede cosa
+fare alla decima volta.
 
-## 3. Una lamentela nuova, che non e' un angolo
+La regola era scritta prima (§5, versione precedente di questo file): *se sotto
+211 recensioni non compare, resta attestata su due libri su tre; si costruisce
+lo stesso, ma il concept mette davanti la lamentela A.* Si applica.
 
-Su Moreno e Marchetti, entrambe le recensioni negative parlano di **qualita' di
-esecuzione**:
+**Cosa resta vero di B:** e' reale, e' su due autori diversi, ed e' la
+lamentela piu' articolata che abbiamo (Alvise). **Cosa non e':** non e' la
+lamentela dominante del reparto. Chi la fa e' un lettore che ha *provato* il
+metodo fino in fondo — e sono pochi. Va nel libro, non nel sottotitolo.
 
-> «numerosi errori di battitura, e l'interlinea che cambia, sembra, a casaccio,
-> ci sono errori grammaticali e lessicali che farebbero quasi pensare a una…»
-> — Francesca, 3 stelle *(troncata nella raccolta)*
+## 3. La lamentela C, che e' diventata la prima: «e' scritto da una macchina»
 
-> «ho riscontrato **diverse imprecisioni rispetto a quanto riportato dalle
-> fonti scientifiche**, soprattutto per quanto riguarda temi delicati come
-> allattamento e svezzamento» — Marta, 3 stelle
+In una versione precedente di questo file questa era una nota a margine, con
+scritto: *se pero' torna anche sugli altri, cambia di categoria.* **E' tornata,
+ed e' la lamentela dominante del reparto.**
 
-Va registrata, e va anche detto cosa **non** e': non e' un angolo. «Scrivo un
-libro fatto meglio» e' quello che pensa chiunque guardi un concorrente, e non
-si puo' mettere in un sottotitolo. Serve come **vincolo di produzione** — su
-questo scaffale un libro sciatto viene notato e punito nelle recensioni — non
-come posizionamento.
+Su Merini — il libro piu' venduto, 211 valutazioni — **undici delle diciassette
+negative parlano della forma**, non del contenuto. Su Moreno erano due su due.
 
-Se pero' torna anche sugli altri tre, cambia di categoria: diventerebbe la
-prova che il reparto e' pieno di libri fatti in fretta, e allora la cura
-diventa un argomento di vendita.
+> «Non solo pieno di errori grammaticali e refusi ma proprio di **frasi prive di
+> senso** come quella nella foto. […] la persona che lo ha scritto probabilmente
+> lo ha fatto a casa sua, poi **senza farlo neanche leggere e correggere** lo ha
+> messo in vendita al prezzo di 17 euro. […] **NON LO COMPRATE**, oppure fate
+> almeno una ricerca sulla persona che lo ha scritto prima di acquistarlo.»
+> — 1 stella, con **la foto della pagina**. Ventuno persone l'hanno trovata utile.
+
+> «Chi ha scritto questo libro […] **una certa Letizia Merini che in pratica non
+> esiste.** Esiste una persona psicologa dell'infanzia con un cognome simile
+> (solo una vocale cambiata), ma nel libro non c'è alcun riferimento ad una
+> storia personale e referenze. […] Una serie di concetti copiati o sviluppati
+> dalla **intelligenza artificiale** […] **Questa gente che vuole far soldi con
+> Amazon e i libretti scritti da una macchina, incomincia un pó a stufare…
+> almeno che scrivessero la verità!**»
+> — recensione intitolata *«un libro scritto dalla intelligenza artificiale»*
+
+> «lessico e grammatica sono **allucinanti**. Il testo sembra essere, in alcuni
+> punti, l'esito di una **traduzione automatica** dall'inglese […]
+> **Raccapricciante.**»
+
+> «non ho mai letto un libro scritto in maniera così scorretta. **Non fate il
+> mio stesso errore. Non compratelo!**»
+
+> «La forma, scadente, distrae dai contenuti e rende il libro **illeggibile**.»
+> — dopo poche pagine, reso
+
+E due lettori diversi, sotto lo stesso libro, dicono la stessa cosa sul voto:
+
+> «**Non capisco come la valutazione possa essere così positiva** e la cosa non
+> dar fastidio ai più.»
+
+> «**Non capisco come faccia ad essere il numero uno dei libri più venduti** in
+> questa serie senza che nessuno o pochi se ne siano accorti.»
+
+## 3-bis. Cosa vuol dire per questo progetto, detto senza addolcirlo
+
+**La buona notizia.** Il libro numero uno del reparto e', a detta dei suoi
+lettori, scritto male, tradotto a macchina e firmato da un autore che non
+esiste. Un libro in italiano vero, scritto con cura, si distingue sull'asse
+piu' visibile che c'e' — e la domanda e' dimostrata: 211 valutazioni.
+
+**La cattiva, ed e' seria.** Il piano di questo repo e' pubblicare **con un pen
+name**, **scrivendo con l'aiuto dell'AI**. E' esattamente cio' che questi
+lettori attaccano, per nome. Uno di loro ha **cercato l'autrice** e ha scoperto
+che non esiste; un altro invita chiunque a fare la stessa cosa **prima di
+comprare**. Non e' un rischio teorico: e' un comportamento gia' in atto sotto
+il best seller della nicchia.
+
+Non chiude il progetto. Impone tre vincoli, e vanno portati ai checkpoint
+invece di essere scoperti dopo:
+
+1. **La lingua deve essere italiano nato italiano.** Niente che sappia di
+   traduzione o di generazione: e' il singolo motivo per cui questo scaffale
+   viene stroncato. Il repo ha gia' la skill `avoid-ai-writing`, e qui smette
+   di essere un optional. Va al **checkpoint 4** (DNA stilistico) come regola,
+   e alla revisione come controllo.
+2. **Il pen name deve reggere una ricerca.** O ha un'identita' verificabile e
+   una competenza dichiarata, oppure il libro non deve poggiare
+   sull'autorevolezza dell'autore — nessun «esperta di», nessuna credenziale
+   vaga. La via di mezzo e' la sola che i lettori puniscono. Va al
+   **checkpoint 2**, insieme al nome.
+3. **Niente «4 libri in 1».** Cinque recensioni diverse lo dicono: ripetitivo,
+   pesante, troppi concetti ripetuti, un volume fuori target, prezzo non
+   giustificato. Il formato-raccolta e' bruciato su questo scaffale. Va al
+   **checkpoint 3** (outline).
+
+**E una nota sull'onesta' del confronto.** Il vantaggio qui non e' «scriviamo
+meglio di una macchina»: e' che *questi* libri sono stati fatti in fretta e non
+riletti. Un libro fatto con l'AI e riletto, corretto e riscritto in italiano
+vero non e' quello che i lettori stanno stroncando. Ma la differenza la vedono
+solo se c'e' davvero, e la foto della pagina evidenziata dimostra che
+guardano.
+
+## 3-ter. La lamentela A esce rafforzata, ed e' quella che va davanti
+
+«Si arriva alla fine senza aver trovato cosa fare» e' l'unica presente su tutti
+e tre i libri, e su Merini domina la parte non-formale delle negative:
+
+> «4 libri in 1 infatti **molto ripetitivo**. Concetti interessenti ma
+> **ripetuti troppo**» — Ale, 3 stelle
+
+> «Troppo **pesante** da leggere, dopo il primo capitolo **mi sono annoiata** e
+> non l'ho più letto» — Pamela, 3 stelle
+
+> «Scorrevole ma **molto ripetitivo**» — Maria Ida, 3 stelle
+
+> «Non l'ho mai finito perché **mi ha annoiata**»
+
+> «Libro **ripetitivo** con parecchi errori di ortografia. **Pochi concetti.**»
+> — Antonella, 2 stelle
+
+> «**Troppi concetti in cosi poche pagine**» — 3 stelle
+
+L'ultima e' la piu' interessante perche' e' l'opposto delle altre, e insieme
+dicono la stessa cosa: **il lettore non trova il rapporto giusto fra quanto
+legge e quanto puo' usare.** O ripete all'infinito lo stesso concetto, o
+accatasta concetti senza spazio.
+
+**Questa e' la lamentela su cui costruire il concept**, per applicazione della
+regola scritta prima del test. Ed e' anche coerente con la piega «uso» del
+passo 1b: un libro che si **apre**, non che si attraversa.
 
 ## 4. Un indizio isolato che vale la pena non perdere
 
@@ -154,9 +250,14 @@ delle altre. Resta un indizio, non un dato.
 
 | Recensioni | Libro | Link diretto al filtro | Stato |
 |---:|---|---|---|
-| 211 | Merini, *Educare Senza Urlare: 4 libri in 1* | `amazon.it/product-reviews/B0BDNFCH9N/?filterByStar=critical` | **da fare** |
-| 113 | Nunziata, *Educare senza urlare* | `amazon.it/product-reviews/B0CK3ZZKQS/?filterByStar=critical` | **da fare** |
+| 211 | Merini, *Educare Senza Urlare: 4 libri in 1* | `amazon.it/product-reviews/B0BDNFCH9N/?filterByStar=critical` | **fatto — 17 negative** |
+| 113 | Nunziata, *Educare senza urlare* | `amazon.it/product-reviews/B0CK3ZZKQS/?filterByStar=critical` | facoltativo adesso |
 | 185 | Petrucciani, *Educare senza perdere la calma* | `amazon.it/product-reviews/B0CZ5P4SD5/?filterByStar=critical` | fatte le 2 a 1 stella; restano ~7 a 2 e 3 |
+
+**Il campione basta per partire.** Ventiquattro lettori su tre libri, con una
+gerarchia chiara fra le lamentele: la forma prima, il rapporto
+lettura/utilita' poi, la colpa terza. Nunziata servirebbe a confermare, non a
+scoprire: si puo' fare dopo, o non farla.
 
 `filterByStar=critical` da' 1, 2 e 3 stelle in un colpo solo, senza toccare i
 filtri a mano.
@@ -167,16 +268,9 @@ raccolta:
 1. **Completare la recensione di Alvise** su Petrucciani. E' troncata dopo
    «Ripete un mantra mille volte…», ed e' la citazione piu' importante che
    abbiamo. Quello che c'e' dopo puo' valere quanto quello che c'e' prima.
-2. **Merini e' il terzo test della lamentela B.** La domanda, posta adesso per
-   non poterla piegare dopo:
-
-   > Sotto Merini — 211 recensioni, il piu' venduto del reparto — la lamentela
-   > «se non funziona sbagli tu» compare? Se compare, la piega portante e' un
-   > dato su tre autori su tre e il concept si costruisce li'. Se sotto 211
-   > recensioni non compare mai, resta attestata su due libri su tre: si
-   > costruisce lo stesso, ma il concept mette **davanti** la lamentela A —
-   > «si arriva alla fine senza aver trovato cosa fare» — che e' l'unica
-   > presente su tutti e tre.
+2. ~~Merini e' il terzo test della lamentela B~~ — **fatto il 06/09 sera. B non
+   compare, in nessuna delle diciassette.** Vale il secondo ramo della regola:
+   si costruisce lo stesso, con la lamentela A davanti. Vedi §3-ter.
 
 ## 5-bis. Il nemico ha un nome: la scenetta che funziona al primo colpo
 

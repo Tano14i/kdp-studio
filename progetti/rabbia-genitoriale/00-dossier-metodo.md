@@ -24,7 +24,7 @@ decide il titolo vero, e questa cartella non si rinomina mai.
 | 0 | Cartella e convenzioni | fatto | — | 06/09 |
 | 1 | Nicchia e concorrenti | fatto — **NON SI FA** sul tema | — | 06/09 |
 | 1b | Angolo (`ricerca-inversa`) | fatto — **SI FA** sull'angolo | — | 06/09 |
-| 2 | Avatar cliente | **da fare — aperta** | — | |
+| 2 | Avatar cliente | **in corso** — materia prima raccolta | — | |
 | 3 | Concept e positioning | da fare | CP1 | |
 | 4 | Titolo, sottotitolo, copertina | da fare | CP2 | |
 | 5 | Outline | da fare | CP3 | |
@@ -66,24 +66,37 @@ momento ce ne sono tre, di lettrici italiane sotto Novara su Goodreads
 (`01 Ricerca/01b-angolo.md` §2). Bastano a sostenere un'ipotesi, non a
 costruire un avatar.
 
-Da prendere, con `scheda-raccolta.md` parte B, sui tre concorrenti piu'
-recensiti della prevenzione — che adesso si sanno per nome e per numero:
+**Raccolte il 06/09 sera: ventiquattro recensioni negative su tre libri**
+(Merini 17, Moreno 2, Petrucciani 2, piu' 3 di Novara da Goodreads). Il
+campione basta per partire. Testi verbatim in
+`01 Ricerca/recensioni-negative.txt`, lettura in
+`01 Ricerca/lamentele-ricorrenti.md`.
 
-| ASIN | Titolo | Recensioni |
-|---|---|---:|
-| `B0BDNFCH9N` | Merini, *Educare Senza Urlare: 4 libri in 1* | 211 |
-| `B0CZ5P4SD5` | Petrucciani, *Educare senza perdere la calma* | 184 |
-| `B0CK3ZZKQS` | Nunziata, *Educare senza urlare* | 113 |
+**La gerarchia delle lamentele, ed e' diversa da quella attesa:**
 
-Filtro 1, 2 e 3 stelle, dieci-quindici per libro, **testo intero, senza
-riassumere**. Se sotto tre libri diversi torna la stessa frase di Novara — «mi
-ha fatto sentire in colpa» — la piega portante dell'angolo smette di essere
-un'ipotesi e diventa il primo capitolo.
+1. **la forma** — «e' scritto da una macchina». Undici delle diciassette
+   negative di Merini parlano di errori, frasi senza senso, traduzione
+   automatica, autore inesistente. E' la lamentela dominante del reparto;
+2. **il rapporto lettura/utilita'** — ripetitivo, pesante, mi sono annoiata,
+   pochi concetti ripetuti troppo. E' l'unica presente su tutti e tre i libri;
+3. **«se non funziona sbagli tu»** — la piega portante del passo 1b. Reale, su
+   due autori, ma **sotto Merini non compare mai in diciassette negative**. Va
+   nel libro, non nel sottotitolo.
 
-**La condizione che il SI FA si porta dietro**, e che vale al checkpoint 1: il
-concept deve promettere un'**azione**, non uno **stato**. «Un libro per non
-sentirti in colpa» e' gia' stato provato da Sonzogno e Vallardi, e ha fatto 10
-e 2 recensioni.
+Il punto 3 e' l'applicazione di una regola scritta prima del test, non una
+ritirata: vedi `lamentele-ricorrenti.md` §2.
+
+**I tre vincoli che la lamentela 1 impone**, da portare ai checkpoint invece
+che scoprirli dopo (dettaglio e citazioni in `lamentele-ricorrenti.md` §3-bis):
+
+| Vincolo | Dove va |
+|---|---|
+| Italiano nato italiano, niente che sappia di traduzione o generazione. `avoid-ai-writing` diventa obbligatoria | **CP4**, DNA stilistico |
+| Il pen name deve reggere una ricerca: identita' verificabile, oppure nessuna pretesa di autorevolezza | **CP2**, insieme al titolo |
+| Niente «4 libri in 1»: il formato-raccolta e' bruciato su questo scaffale | **CP3**, outline |
+
+**La condizione che il SI FA si portava dietro** resta valida e si somma: il
+concept deve promettere un'**azione**, non uno **stato**.
 
 ## Cosa manca, in ordine
 
@@ -102,9 +115,10 @@ e 2 recensioni.
    `analizza_concorrenti.py`, che si puo' fare adesso). Manca solo la scelta.
 5. ~~La verifica dell'angolo~~ — fatta il 06/09 sera, esito **SI FA**
    (`01 Ricerca/scaffale-il-dopo.md`).
-6. **Le recensioni negative dei tre concorrenti piu' recensiti** — vedi
-   «Aperto adesso». E' l'ingresso della fase 2, e l'unica cosa che manca.
-7. **Poi: `avatar-cliente`**, sulle stesse recensioni.
+6. ~~Le recensioni negative dei tre concorrenti piu' recensiti~~ — fatte il
+   06/09 sera, 24 in tutto.
+7. **`avatar-cliente`**, sulle stesse recensioni. E' il prossimo passo, e ha
+   tutto quello che gli serve.
 
 Tutto il resto della mappa (concept, copertina, outline, DNA, campione,
 manoscritto, revisione, interni, immagini, scheda) e' adesso **da fare piu'
