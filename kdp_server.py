@@ -3576,9 +3576,16 @@ async def niche_validator(req: dict):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/api/debug/env")
+@app.get("/api/debug/env", dependencies=[_AUTH])
 async def debug_env():
-    """Show which env vars are present (keys only, no values) — for diagnosing Railway config."""
+    """Show which env vars are present (keys only, no values) — for diagnosing Railway config.
+
+    Protetto dalla chiave come gli altri: e' solo diagnostico, ma senza
+    dependencies=[_AUTH] elencava pubblicamente i nomi di tutte le variabili
+    d'ambiente del servizio, confermando a chiunque quali chiavi API esistono.
+    I valori non uscivano, i nomi si'. Per leggerli quando la chiave non
+    funziona ci sono le Variables sul cruscotto Railway.
+    """
     import os
     apify_vars = {k: ("SET (non-empty)" if v else "SET (empty)") for k, v in os.environ.items() if "APIFY" in k.upper()}
     token_present = bool(APIFY_TOKEN)
