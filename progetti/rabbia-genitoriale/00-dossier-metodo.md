@@ -25,8 +25,8 @@ decide il titolo vero, e questa cartella non si rinomina mai.
 | 1 | Nicchia e concorrenti | fatto — **NON SI FA** sul tema | — | 06/09 |
 | 1b | Angolo (`ricerca-inversa`) | fatto — **SI FA** sull'angolo | — | 06/09 |
 | 2 | Avatar cliente | fatto — **prima stesura**, campione magro | — | 06/09 |
-| 3 | Concept e positioning | **menu pronto — aspetta l'autore** | CP1 | |
-| 4 | Titolo, sottotitolo, copertina | da fare | CP2 | |
+| 3 | Concept e positioning | fatto — **CP1 chiuso** | CP1 | 06/09 |
+| 4 | Titolo, sottotitolo, copertina | **da fare — aperto** | CP2 | |
 | 5 | Outline | da fare | CP3 | |
 | 6 | DNA stilistico | da fare | CP4 | |
 | 7 | Campione di scrittura | da fare | CP5 | |
@@ -54,34 +54,34 @@ chiuso o solo fermo.
 
 ## Aperto adesso
 
-**CHECKPOINT 1. Il lavoro e' fermo e aspetta una scelta dell'autore.**
-
-Sul tavolo: `02 Validazione/menu-concept.md`, quattro blocchi da comporre —
-una macro tipologia, le USP che si sommano, il bonus, il formato con il
-prezzo. Ogni opzione porta scritti i buchi che sfrutta e la sua fattibilita'
-vera, difetti compresi. I dieci buchi, ognuno con la citazione da cui viene,
-stanno in `02 Validazione/buchi-concorrenti.md`.
-
-La casella da riempire:
+**Il checkpoint 1 e' chiuso.** Deciso dall'autore il 06/09:
 
 ```
-A_ ,  B_ + B_ + B_ ,  C_ ,  D_
+A2 ,  B1 + B3 + B4 + B8 ,  C1 ,  D2
 ```
 
-Tre cose da sapere prima di scegliere:
+Il libro del dopo — cosa fare quando la tecnica gentile non ha funzionato.
+Ogni esempio fallisce prima di riuscire, ogni capitolo si regge da solo,
+novanta-cento pagine a 9,99-10,99 euro, con una scheda stampabile.
 
-- **il buco piu' pulito e' il 2** — cosa fare quando la tecnica fallisce.
-  Nessun libro italiano lo copre, verificato da tre strade. Ma poggia su 3
-  recensioni su 24, e sotto Merini non compare mai;
-- **il buco piu' frequente e' l'1** — «sembra scritto da una macchina», 12 su
-  24. Non e' un posizionamento da copertina: e' una cosa che si dimostra nelle
-  prime tre pagine dell'anteprima;
-- **la scelta del prezzo non e' neutra.** La recensione piu' votata del reparto
-  (21 persone) attacca proprio i 17 euro di un libro autopubblicato. Vedi D3.
+> Per chi ha gia' letto «come non urlare» e alla decima volta ha urlato lo
+> stesso: questo libro comincia da li' — a differenza di *Educare senza
+> perdere la calma*, dove ogni esempio riesce al primo tentativo.
 
-**Finche' non c'e' una combinazione scritta, il passo 4 non parte.** E qui il
-libro puo' morire: se nessuna combinazione convince, non si prende la meno
-peggio, si torna ai buchi o alla nicchia.
+Documenti: `02 Validazione/concept-scelto.md`, `concept-scartati.md`,
+`decisioni/01-concept.md`.
+
+**Il prossimo passo e' il 4 — titolo, sottotitolo, copertina — che e' il
+checkpoint 2.** Arriva con cinque vincoli gia' decisi, e uno va letto prima di
+qualunque bozza:
+
+> **Il libro non pretende autorevolezza.** B5 non e' stato scelto, quindi il
+> buco 7 resta aperto: niente «esperta di», niente credenziali vaghe, nessuna
+> allusione a una competenza che non c'e'. La via di mezzo e' l'unica forma che
+> i lettori puniscono — uno di loro e' andato a cercare l'autrice di Merini e
+> ha scoperto che non esiste.
+
+Gli altri quattro stanno in `decisioni/01-concept.md`.
 
 ## Cosa manca, in ordine
 
@@ -106,8 +106,10 @@ peggio, si torna ai buchi o alla nicchia.
    su campione magro: vedi §8 di quel file.
 8. ~~`concept-positioning`~~ — menu costruito il 06/09 sera. **Aspetta la
    scelta dell'autore**: e' il checkpoint 1.
-9. **Le recensioni a 4 e 5 stelle** di Merini e Petrucciani, prima
-   dell'outline: e' li' che stanno i buchi che l'avatar non vede.
+9. ~~`concept-positioning`, checkpoint 1~~ — chiuso dall'autore il 06/09.
+10. **Passo 4, titolo e copertina** — e' il checkpoint 2, ed e' il prossimo.
+11. **Le recensioni a 4 e 5 stelle** di Merini e Petrucciani, prima
+    dell'outline: e' li' che stanno i buchi che l'avatar non vede.
 
 Tutto il resto della mappa (concept, copertina, outline, DNA, campione,
 manoscritto, revisione, interni, immagini, scheda) e' adesso **da fare piu'
