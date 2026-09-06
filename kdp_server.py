@@ -1055,10 +1055,13 @@ async def health_full():
     amazon_autocomplete_ok = False
     try:
         async with httpx.AsyncClient(timeout=5, headers={**AMAZON_HEADERS, "Accept": "application/json"}) as c:
-            r = await c.get("https://completion.amazon.com/api/2017/suggestions", params={
-                "limit": 1, "prefix": "journal", "suggestion-type": "KEYWORD",
-                "page-type": "Search", "alias": "stripbooks", "mid": "ATVPDKIKX0DER",
-            })
+            _mk = amazon_market(env("AMAZON_MARKET", "us"))
+            r = await c.get(
+                f"https://completion.amazon.{_mk['tld']}/api/2017/suggestions", params={
+                    "limit": 1, "prefix": "journal", "suggestion-type": "KEYWORD",
+                    "page-type": "Search", "alias": "stripbooks",
+                    "lop": _mk["lop"], "mid": _mk["mid"],
+                })
             amazon_autocomplete_ok = r.status_code == 200
     except Exception:
         pass
@@ -1250,6 +1253,64 @@ AMAZON_HEADERS = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
 }
 
+# ── Marketplace Amazon ────────────────────────────────────────────────────
+# Ogni valore qui e' stato verificato con una chiamata reale all'autocomplete.
+#
+# REGOLA CHE NON SI PUO' AGGIRARE: l'host deve essere completion.amazon.<tld>
+# del marketplace che si sta interrogando. Su completion.amazon.com ogni
+# marketplace non-US risponde HTTP 200 con "suggestions": [] — uno zero falso,
+# indistinguibile da "nessuno cerca questa cosa". Chi legge quello zero conclude
+# che la nicchia non ha domanda, e la conclusione e' sbagliata.
+#
+# Si cambiano i marketplace SOLO qui dentro.
+AMAZON_MARKETS = {
+    "us": {"tld": "com",   "mid": "ATVPDKIKX0DER",  "lop": "en_US", "country": "US", "accept_language": "en-US,en;q=0.9"},
+    "uk": {"tld": "co.uk", "mid": "A1F83G8C2ARO7P", "lop": "en_GB", "country": "GB", "accept_language": "en-GB,en;q=0.9"},
+    "it": {"tld": "it",    "mid": "APJ6JRA9NG5V4",  "lop": "it_IT", "country": "IT", "accept_language": "it-IT,it;q=0.9"},
+    "de": {"tld": "de",    "mid": "A1PA6795UKMFR9", "lop": "de_DE", "country": "DE", "accept_language": "de-DE,de;q=0.9"},
+    "fr": {"tld": "fr",    "mid": "A13V1IB3VIYZZH", "lop": "fr_FR", "country": "FR", "accept_language": "fr-FR,fr;q=0.9"},
+    "es": {"tld": "es",    "mid": "A1RKKUPIHCS9HS", "lop": "es_ES", "country": "ES", "accept_language": "es-ES,es;q=0.9"},
+}
+# Alias accettati nelle richieste: "com" e "us" sono lo stesso mercato.
+_MARKET_ALIASES = {"com": "us", "en": "us", "gb": "uk", "co.uk": "uk"}
+
+# Gli endpoint che ricevono una lingua invece di un marketplace passano di qui.
+LANGUAGE_TO_MARKET = {
+    "italian": "it", "italiano": "it", "it": "it",
+    "german": "de", "deutsch": "de", "de": "de",
+    "french": "fr", "francais": "fr", "fran\u00e7ais": "fr", "fr": "fr",
+    "spanish": "es", "espanol": "es", "espa\u00f1ol": "es", "es": "es",
+    "english": "us", "en": "us",
+}
+
+
+def amazon_market(code: str = "us") -> dict:
+    """Risolve un codice mercato nella sua riga. Sconosciuto -> us, come prima."""
+    key = (code or "us").strip().lower()
+    key = _MARKET_ALIASES.get(key, key)
+    return AMAZON_MARKETS.get(key, AMAZON_MARKETS["us"])
+
+
+def amazon_tld(code: str = "us") -> str:
+    return amazon_market(code)["tld"]
+
+
+def amazon_search_url(query: str, market: str = "us") -> str:
+    """URL di ricerca nel reparto Libri del marketplace giusto.
+
+    Usa i=stripbooks e non rh=n:283155: quel browse node e' di amazon.com e su
+    un altro marketplace filtra su un reparto che li' non esiste, restituendo
+    zero risultati che sembrano assenza di concorrenza.
+    """
+    import urllib.parse as _up
+    return (f"https://www.amazon.{amazon_tld(market)}/s?"
+            + _up.urlencode({"k": query, "i": "stripbooks"}))
+
+
+def amazon_headers(market: str = "us") -> dict:
+    return {**AMAZON_HEADERS, "Accept-Language": amazon_market(market)["accept_language"]}
+
+
 async def fetch_amazon_book_info(url: str) -> dict:
     """Follow redirect and extract title/author/description from an Amazon product page."""
     if not url:
@@ -1300,7 +1361,7 @@ async def fetch_amazon_book_info(url: str) -> dict:
         return {}
 
 
-async def fetch_amazon_book_count(query: str) -> dict:
+async def fetch_amazon_book_count(query: str, market: str = "us") -> dict:
     """
     Gap analysis: how many books on Amazon already match this niche.
     Scrapes the Amazon Books search results count. Returns count=None
@@ -1308,16 +1369,30 @@ async def fetch_amazon_book_count(query: str) -> dict:
     """
     import re
     try:
-        async with httpx.AsyncClient(timeout=10, headers=AMAZON_HEADERS, follow_redirects=True) as client:
-            r = await client.get("https://www.amazon.com/s", params={"k": query, "i": "stripbooks"})
+        async with httpx.AsyncClient(timeout=10, headers=amazon_headers(market), follow_redirects=True) as client:
+            r = await client.get(f"https://www.amazon.{amazon_tld(market)}/s",
+                                 params={"k": query, "i": "stripbooks"})
             if r.status_code != 200:
                 return {"query": query, "count": None}
             html = r.text
-            m = re.search(r'of\s+(?:over\s+)?([\d,]+)\s+results', html, re.IGNORECASE)
-            if not m:
-                m = re.search(r'([\d,]+)\s+results?\s+for', html, re.IGNORECASE)
+            # Il conteggio e' scritto nella lingua del marketplace: un solo
+            # pattern inglese su amazon.it/.de/.fr non trova mai nulla e
+            # restituisce count=None, che a valle diventa "dati non disponibili".
+            m = None
+            for pat in (r'of\s+(?:over\s+)?([\d,.]+)\s+results',
+                        r'([\d,.]+)\s+results?\s+for',
+                        r'(?:di oltre|di)\s+([\d,.]+)\s+risultati',
+                        r'([\d,.]+)\s+risultati',
+                        r'(?:von|von mehr als)\s+([\d,.]+)\s+Ergebnissen',
+                        r'([\d,.]+)\s+Ergebnisse',
+                        r'sur\s+(?:plus de\s+)?([\d,.]+)\s+r\u00e9sultats',
+                        r'de\s+(?:m\u00e1s de\s+)?([\d,.]+)\s+resultados'):
+                m = re.search(pat, html, re.IGNORECASE)
+                if m:
+                    break
             if m:
-                return {"query": query, "count": int(m.group(1).replace(",", ""))}
+                digits = m.group(1).replace(".", "").replace(",", "")
+                return {"query": query, "count": int(digits)}
             return {"query": query, "count": None}
     except Exception as e:
         print(f"[Amazon Gap] {query}: {e}")
@@ -1335,28 +1410,31 @@ def classify_amazon_saturation(count: Optional[int]) -> tuple[str, str]:
         return "saturated", f"{count}+ libri su Amazon — nicchia satura, cerca una sotto-nicchia o angolo molto diverso"
 
 
-async def fetch_amazon_autocomplete(query: str) -> list[str]:
+async def fetch_amazon_autocomplete(query: str, market: str = "us") -> list[str]:
     """
     Real demand signal: what Amazon's search-bar autocomplete suggests for this
     niche query — reflects actual searches typed by shoppers/readers in the
     Books store. Undocumented endpoint, degrades to [] on any failure.
     """
     try:
-        headers = {**AMAZON_HEADERS, "Accept": "application/json"}
+        mk = amazon_market(market)
+        headers = {**amazon_headers(market), "Accept": "application/json"}
         async with httpx.AsyncClient(timeout=8, headers=headers) as client:
-            r = await client.get("https://completion.amazon.com/api/2017/suggestions", params={
-                "limit": 10,
-                "prefix": query,
-                "suggestion-type": "KEYWORD",
-                "page-type": "Search",
-                "alias": "stripbooks",
-                "site-variant": "desktop",
-                "version": "3",
-                "event": "onKeyPress",
-                "wc": "",
-                "lop": "en_US",
-                "mid": "ATVPDKIKX0DER",
-            })
+            r = await client.get(
+                f"https://completion.amazon.{mk['tld']}/api/2017/suggestions",
+                params={
+                    "limit": 10,
+                    "prefix": query,
+                    "suggestion-type": "KEYWORD",
+                    "page-type": "Search",
+                    "alias": "stripbooks",
+                    "site-variant": "desktop",
+                    "version": "3",
+                    "event": "onKeyPress",
+                    "wc": "",
+                    "lop": mk["lop"],
+                    "mid": mk["mid"],
+                })
             if r.status_code != 200:
                 return []
             data = r.json()
@@ -1417,12 +1495,17 @@ async def fetch_tiktok_trending(limit: int = 20) -> list[dict]:
 
 
 @app.get("/discover", dependencies=[_AUTH])
-async def discover_unbiased(market_language: str = "English"):
+async def discover_unbiased(market_language: str = "English", market: str = ""):
     """
     Zero-bias discovery: fetch raw global signals from Reddit + Google Trends,
     then let Claude identify KDP opportunities — no niche pre-selection.
+
+    `market` e' il marketplace Amazon su cui misurare il gap (it, de, fr, es,
+    uk, us). Se non passato si deduce dalla lingua: un discover in italiano
+    misurato su amazon.com direbbe che la nicchia e' vuota anche quando non lo e'.
     """
     stamp = now_stamp()
+    _market = market or LANGUAGE_TO_MARKET.get((market_language or "").strip().lower(), "us")
 
     # Run all fetches in parallel
     reddit_posts, gtrends, youtube_videos, tiktok_hashtags = await asyncio.gather(
@@ -1625,10 +1708,10 @@ Return ONLY raw JSON, no markdown, ASCII-safe strings only:
             if idx > 0:
                 await asyncio.sleep(0.8)
             gr, suggestions = await asyncio.gather(
-                fetch_amazon_book_count(niche),
-                fetch_amazon_autocomplete(niche),
+                fetch_amazon_book_count(niche, _market),
+                fetch_amazon_autocomplete(niche, _market),
             )
-            search_url = "https://www.amazon.com/s?" + urllib.parse.urlencode({"k": niche, "i": "stripbooks"})
+            search_url = amazon_search_url(niche, _market)
             count = gr.get("count")
             level, note = classify_amazon_saturation(count)
             o["gap_analysis"] = {
@@ -3356,7 +3439,6 @@ async def arc_sequence(req: dict):
 @app.post("/api/niche-validator", dependencies=[_AUTH])
 async def niche_validator(req: dict):
     """Full KDP niche profitability validation: demand, competition density, scores, go/no-go."""
-    from urllib.parse import quote as url_quote
     niche = (req.get("niche") or "").strip()
     marketplace = req.get("marketplace", "us")
     if not niche:
@@ -3365,19 +3447,17 @@ async def niche_validator(req: dict):
     # Step 1: Amazon keyword autocomplete — demand signal (fast, free)
     amazon_keywords: list[str] = []
     try:
-        amazon_keywords = await _amazon_autocomplete(niche)
+        amazon_keywords = await _amazon_autocomplete(niche, marketplace)
     except Exception:
         pass
 
     # Step 2: Apify Amazon book search — real BSR/review data (optional)
     books_data: list[dict] = []
     if APIFY_TOKEN:
-        tld_map = {"us": "com", "de": "de", "it": "it", "es": "es", "fr": "fr"}
-        tld = tld_map.get(marketplace, "com")
-        search_url = (
-            f"https://www.amazon.{tld}/s?k={url_quote(niche)}"
-            f"&rh=n%3A283155&s=relevanceexprank"
-        )
+        # niente rh=n:283155: e' il browse node Libri di amazon.com e su un
+        # altro marketplace filtra un reparto inesistente -> zero risultati,
+        # che a valle si leggono come "nessun concorrente".
+        search_url = amazon_search_url(niche, marketplace) + "&s=relevanceexprank"
         try:
             items = await asyncio.wait_for(
                 run_actor(
@@ -3512,18 +3592,17 @@ async def debug_env():
 @app.post("/api/asin-reverse", dependencies=[_AUTH])
 async def asin_reverse(req: dict):
     """Reverse-engineer a competitor ASIN: extract real niche, keywords, gaps, attack angle."""
-    from urllib.parse import quote as url_quote
     asin = (req.get("asin") or "").strip().upper()
     marketplace = req.get("marketplace", "us")
     if not asin or len(asin) < 8:
         raise HTTPException(status_code=400, detail="ASIN non valido — deve essere tipo B0XXXXXXXX")
 
     # Step 1: Try Apify to get real product data
-    tld_map = {"us": "com", "de": "de", "it": "it", "es": "es", "fr": "fr"}
+
     product_data: dict = {}
     apify_error_msg: str | None = None
     if APIFY_TOKEN:
-        tld = tld_map.get(marketplace, "com")
+        tld = amazon_tld(marketplace)
         product_url = f"https://www.amazon.{tld}/dp/{asin}"
         try:
             items = await asyncio.wait_for(
@@ -3561,7 +3640,7 @@ async def asin_reverse(req: dict):
             apify_error_msg = str(e)[:300]
             print(f"[AsinReverse/Apify] {e}")
 
-    context = f"ASIN: {asin}\nMarketplace: amazon.{tld_map.get(marketplace, 'com')}\n"
+    context = f"ASIN: {asin}\nMarketplace: amazon.{amazon_tld(marketplace)}\n"
     if product_data.get("title"):
         context += f"Title: {product_data['title']}\n"
     if product_data.get("bsr"):
@@ -3706,25 +3785,27 @@ def _key_query(text: str, max_words: int = 4) -> str:
     return short or text[:40]
 
 
-async def _amazon_autocomplete(query: str) -> list[str]:
+async def _amazon_autocomplete(query: str, market: str = "us") -> list[str]:
     """Call Amazon's autocomplete API (2017 version) directly — no Apify, sub-second.
     Tries the full query first; falls back to key-words only if empty."""
     async def _fetch(prefix: str) -> list[str]:
         async with httpx.AsyncClient(timeout=8) as client:
+            mk = amazon_market(market)
             res = await client.get(
-                "https://completion.amazon.com/api/2017/suggestions",
+                f"https://completion.amazon.{mk['tld']}/api/2017/suggestions",
                 params={
-                    "lop": "en_US",
+                    "lop": mk["lop"],
                     "site-variant": "desktop",
                     "category": "stripbooks",
                     "prefix": prefix,
-                    "mid": "ATVPDKIKX0DER",
+                    "mid": mk["mid"],
                     "alias": "stripbooks",
                 },
                 headers={
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                     "Accept": "application/json",
-                    "Referer": "https://www.amazon.com/",
+                    "Accept-Language": mk["accept_language"],
+                    "Referer": f"https://www.amazon.{mk['tld']}/",
                 },
             )
             res.raise_for_status()
@@ -3754,7 +3835,7 @@ async def apify_amazon_niche(req: dict):
     if not keyword:
         return {"data": []}
     try:
-        suggestions = await _amazon_autocomplete(keyword)
+        suggestions = await _amazon_autocomplete(keyword, req.get("market", "us"))
         return {"data": [{"platform": "amazon", "suggestions": suggestions}]}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -3767,7 +3848,7 @@ async def apify_amazon_best(req: dict):
     if not niche:
         return {"data": []}
     try:
-        suggestions = await _amazon_autocomplete(niche)
+        suggestions = await _amazon_autocomplete(niche, req.get("market", "us"))
         return {"data": [{"platform": "amazon", "suggestions": suggestions}]}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -3860,7 +3941,7 @@ async def apify_keywords(req: dict):
             if plat == "google":
                 sugg = await _autocomplete_google(query)
             elif plat == "amazon":
-                sugg = await _amazon_autocomplete(query)
+                sugg = await _amazon_autocomplete(query, req.get("market", "us"))
             elif plat == "pinterest":
                 sugg = await _autocomplete_pinterest(query)
             elif plat == "tiktok":
@@ -4397,10 +4478,8 @@ async def fetch_amazon_reviews(req: dict):
     if not APIFY_TOKEN:
         raise HTTPException(status_code=503, detail="APIFY_TOKEN non configurato")
 
-    tld_map = {"us": "com", "de": "de", "it": "it", "es": "es", "fr": "fr", "uk": "co.uk"}
-    tld = tld_map.get(marketplace, "com")
-    country_code_map = {"us": "US", "de": "DE", "it": "IT", "es": "ES", "fr": "FR", "uk": "GB"}
-    country_code = country_code_map.get(marketplace, "US")
+    tld = amazon_tld(marketplace)
+    country_code = amazon_market(marketplace)["country"]
 
     async def fetch_for_asin(asin: str, fetch_tld: str = tld, fetch_country: str = country_code) -> list:
         actor_configs = [
@@ -4636,15 +4715,13 @@ async def competition_map(req: dict):
     if not niche:
         raise HTTPException(status_code=400, detail="Niche required")
 
-    tld_map = {"us": "com", "de": "de", "it": "it", "es": "es", "fr": "fr", "uk": "co.uk"}
-    tld = tld_map.get(marketplace, "com")
+    tld = amazon_tld(marketplace)
 
     books_data: list[dict] = []
     apify_used = False
 
     if APIFY_TOKEN:
-        from urllib.parse import quote as url_quote
-        search_url = f"https://www.amazon.{tld}/s?k={url_quote(niche)}&rh=n%3A283155"
+        search_url = amazon_search_url(niche, marketplace)
         try:
             items = await asyncio.wait_for(
                 run_actor("junglee/amazon-crawler", {
@@ -4742,7 +4819,8 @@ async def keyword_funnel(req: dict):
             all_suggestions.update(r)
 
     try:
-        amazon_sugg = await asyncio.wait_for(fetch_amazon_autocomplete(niche), timeout=8.0)
+        amazon_sugg = await asyncio.wait_for(
+            fetch_amazon_autocomplete(niche, marketplace), timeout=8.0)
         all_suggestions.update(amazon_sugg)
     except Exception:
         pass
