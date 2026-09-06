@@ -58,23 +58,64 @@ E' il dato che decide, piu' del conteggio:
 | lavoro e vita professionale | n. 14 |
 | ADHD come punto di forza, potenziale | n. 1, n. 3 |
 
-## 4. Cosa manca a questa raccolta, e quanto pesa
+## 4. Le recensioni: la condizione, e come e' andata
 
-**Nessun numero di recensioni, nessuna stella, nessun BSR.** Quindi si sa che
-lo scaffale e' **pieno**, non se e' pieno di libri che vendono.
+La prima raccolta non portava recensioni ne' stelle, quindi si sapeva che lo
+scaffale era **pieno**, non se era pieno di libri che vendono. Non e' una
+pignoleria: e' la stessa distinzione che il 06/09 ha corretto una conclusione
+gia' scritta (`note-mercato.md` §3-bis, «ancora con editore e' una categoria,
+non una misura»), e andava applicata anche adesso che il conteggio giocava
+contro.
 
-Non e' una pignoleria: e' la stessa distinzione che il 06/09 ha corretto una
-conclusione gia' scritta. `_profili/note-mercato.md` §3-bis — «ancora con
-editore e' una categoria, non una misura» — e' nata dallo scoprire che cinque
-dei sei «bestseller da editore» avevano fra dieci e cinquantanove recensioni.
-La stessa cautela va applicata al contrario, adesso che il conteggio gioca
-contro: **quattordici titoli con tre recensioni l'uno sono un mercato diverso
-da quattordici titoli con trecento.**
+**La condizione, fissata prima di conoscere i numeri:** se i tre titoli piu'
+recensiti hanno meno di 30 recensioni ciascuno, lo scaffale e' sottile e
+l'angolo torna in discussione; se anche uno solo ne ha 30 o piu', il NON SI FA
+e' definitivo.
 
-Per questo il verdetto di §5 e' scritto con la sua condizione davanti, decisa
-**prima** di vedere i numeri e non dopo.
+I numeri sono stati presi da `www.amazon.it/dp/<ASIN>` con `sonda_angolo.py`,
+recuperando gli ASIN dalle ricerche web (la pagina di ricerca di Amazon resta
+503). Dati grezzi in `dati-scaffale-adhd.json`, generato.
 
-## 5. Verdetto sull'angolo: NON SI FA
+| ASIN | Titolo | Voto | Recensioni |
+|---|---|---:|---:|
+| `B0BTT5YSGD` | ADHD negli Adulti: Tecniche ed Esercizi Pratici | 4,2 | **179** |
+| `B0DVPR14ZH` | ADHD, il Potere nascosto in Te | 4,6 | **158** |
+| `B096TW9CS4` | Guida Completa Alla Scoperta Dell'ADHD | 4,0 | **114** |
+| `B0DNWN5YVR` | ADHD dal Caos Mentale all'Equilibrio | 4,4 | 102 |
+| `B0FQC1XQ53` | ADHD — La Guida Essenziale per Conoscere e Capire le Menti Superveloci | 4,4 | 92 |
+| `B0DV6HFTX6` | ADHD — Adulti e Bambini: Ritrova il Tuo Equilibrio | 4,9 | 86 |
+| `B0FR1GBCJC` | MANUALE ADHD ADULTI | 4,6 | 58 |
+| `B0FCF38CTK` | Il Grande Libro dell'ADHD: 5 Libri in 1 | 4,7 | 13 |
+| `B0D9YW3L6G` | Adulti ADHD: Manuale pratico e tanti esercizi | 4,8 | 7 |
+| `B0FXGLW2L3` | ADHD Adulto: 100 Trucchi Pratici | 4,0 | 3 |
+
+**I tre piu' recensiti hanno 179, 158 e 114.** La soglia era 30. Non e' vicina:
+e' superata di sei volte dal primo, e **sei titoli su dieci stanno sopra 85**.
+Le stelle vanno da 4,0 a 4,9 — non sono libri stroncati, sono libri che i
+lettori tengono.
+
+**E questi dieci non sono i quattordici di §1.** Sono ASIN diversi, emersi
+cercando i titoli uno per uno: quindi lo scaffale vero non ha quattordici
+titoli, ne ha **almeno venti**. Ogni misura fatta finora su questa nicchia era
+per difetto.
+
+### Il libro che era arrivato per primo, e perche' non contava
+
+La prima scheda portata indietro era `B0HHSQ6H4W` — *PEI e ADHD*, guida alla
+stesura del Piano Educativo Individualizzato — con **0 recensioni**, BSR 52.006
+in Libri, pubblicato il **4 settembre 2026**, cioe' due giorni prima di questa
+misura.
+
+Zero recensioni su un libro di due giorni non dice niente sullo scaffale, e in
+piu' quel titolo e' rivolto agli **insegnanti di sostegno** per infanzia e
+primaria: un altro pubblico, un'altra sezione. Sarebbe stato comodo leggerlo
+come «lo scaffale e' sottile», ed e' esattamente il motivo per cui la
+condizione era stata scritta prima.
+
+Una cosa pero' la dice, e va tenuta: **in questa nicchia si pubblica adesso.**
+Un titolo nuovo, di due giorni, gia' in prima pagina.
+
+## 5. Verdetto sull'angolo: NON SI FA — definitivo
 
 L'angolo candidato era: *«per l'adulto con ADHD che ha gia' provato i libri
 sulla procrastinazione e li ha mollati, un libro da aprire nel momento in cui
@@ -94,20 +135,26 @@ percorsi o quaderni. Ma non basta a tenere in piedi l'angolo da sola, e
 gonfiarla adesso sarebbe cercare una scusa invece di una nicchia —
 `ricerca-inversa` §5: *questa skill cerca, non giustifica.*
 
-**La condizione, scritta prima di conoscere i numeri.** Manca il numero di
-recensioni (§4), e senza quello non si distingue uno scaffale pieno da uno
-affollato di fantasmi. La regola, fissata adesso per non poterla piegare dopo:
+**La condizione era stata scritta prima di conoscere i numeri**, per non
+poterla piegare dopo:
 
 > Se i tre titoli piu' recensiti di questa lista hanno **meno di 30 recensioni
 > ciascuno**, lo scaffale e' sottile e l'angolo torna in discussione. Se anche
 > uno solo ne ha 30 o piu', il NON SI FA e' definitivo.
 
-Trenta non e' un numero a caso: e' l'ordine di grandezza sotto cui stavano
+Trenta non era un numero a caso: e' l'ordine di grandezza sotto cui stavano
 cinque dei sei titoli «con editore» delle due nicchie precedenti, e sopra cui
 sta Wiest con 1.204. E' la soglia che separa un libro che esiste da un libro
 che vende.
 
-Finche' quel dato non c'e', **l'angolo e' chiuso** e il progetto non riparte.
+**I tre piu' recensiti hanno 179, 158 e 114** (§4). La condizione e' rispettata
+con sei volte il margine, e sei titoli su dieci stanno sopra 85. Nessuno di
+questi e' un fantasma.
+
+**Il NON SI FA e' definitivo, e il progetto autosabotaggio si chiude qui.** Due
+verdetti negativi — uno sul tema, uno sull'angolo — quattro pieghe provate, e
+il motivo di ognuna scritto. E' un no molto piu' solido di quello di stamattina,
+che era il no di chi non aveva provato niente.
 
 ## 6. Cosa questo dice del metodo, non solo di questa nicchia
 

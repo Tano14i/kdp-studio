@@ -76,7 +76,7 @@ comune considera «sempre validi», e stanno perdendo terreno piu' della media.
 | Tema | Concorrenti visti | Ancore con editore | Concentrazione |
 |---|---:|---|---|
 | Gioco d'azzardo | 4 | **nessuna trovata** | tutti autopubblicati |
-| ADHD adulti | **14** (vedi sotto) | 2 | **falso: il centro e' pieno** |
+| ADHD adulti | **20+**, misurati 10 | 2 | **falso: il centro e' pieno** |
 | Endometriosi | 6 | Signorile, Cook | **tutti sull'alimentazione** |
 | Mindfulness | molti | molte | satura da anni |
 
@@ -90,6 +90,12 @@ dodici su quattordici sono autopubblicati e otto stanno in Kindle Unlimited.
 Il posto «fra il manuale e il consiglio generico» non e' vuoto: e' dove stanno
 tutti. Raccolta e conteggio in
 `progetti/autosabotaggio/01 Ricerca/scaffale-adhd-adulti.md`.
+
+**E lo scaffale non e' sottile.** Dieci di quei titoli sono stati misurati uno
+per uno: i tre piu' recensiti hanno **179, 158 e 114 recensioni**, con voti fra
+4,0 e 4,9, e sei su dieci stanno sopra 85. Erano ASIN *diversi* dai quattordici
+visti in prima pagina, quindi il numero vero dei concorrenti e' almeno venti.
+Tabella in `progetti/autosabotaggio/01 Ricerca/scaffale-adhd-adulti.md` §4.
 
 Ne esce una regola, e vale per ogni riga di questa tabella:
 
@@ -296,7 +302,13 @@ prima di scriverlo:
 La divisione che ne esce e' netta e conviene tenerla a mente:
 
 - **scoprire** chi c'e' sopra una nicchia resta lavoro da browser
-  (`scheda-raccolta.md`): la ricerca e' l'unica porta, ed e' chiusa;
+  (`scheda-raccolta.md`): la ricerca e' l'unica porta, ed e' chiusa. **Ma con
+  un titolo in mano l'ASIN si recupera dalla ricerca web**: cercare il titolo
+  esatto restituisce l'URL `amazon.it/dp/<ASIN>`, e da li' i numeri si leggono
+  a macchina. E' cosi' che il 06/09 sera l'angolo ADHD e' stato chiuso in
+  cinque minuti invece che con un secondo giro nel browser. Chi porta indietro
+  una lista di titoli senza numeri non ha portato meta' lavoro: ha portato la
+  chiave per il resto;
 - **misurare** un titolo che si conosce gia' e' automatico:
   `python3 sonda_angolo.py --asin <lista> --out <file.json>`, che ritenta
   finche' la scheda vera non passa;

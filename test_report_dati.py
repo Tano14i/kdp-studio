@@ -26,7 +26,10 @@ RADICE = pathlib.Path(__file__).resolve().parent
 # somiglianza di titolo vuol dire indovinare, e due libri che contengono
 # entrambi la parola «vittima» mandano l'accostamento sul libro sbagliato
 # senza dirlo. Un controllo che indovina non e' un controllo.
-RIGA = re.compile(r"^\|\s*`(?P<asin>[0-9]{9}[0-9X])`\s*\|(?P<titolo>[^|]+)\|"
+# L'ASIN e' un ISBN-10 (i libri con editore) oppure un codice B0... (tutto il
+# resto, compreso ogni titolo autopubblicato). Accettarne uno solo dei due
+# lascerebbe fuori dal controllo meta' delle tabelle.
+RIGA = re.compile(r"^\|\s*`(?P<asin>[0-9]{9}[0-9X]|B0[A-Z0-9]{8})`\s*\|(?P<titolo>[^|]+)\|"
                   r"(?P<voto>[^|]*)\|(?P<recensioni>[^|]*)\|\s*$")
 
 
@@ -36,9 +39,33 @@ def numero(cella: str):
     return int(pulita) if pulita.isdigit() else None
 
 
+def schede_accanto(report: pathlib.Path) -> dict:
+    """Tutte le schede lette dai file di dati che stanno nella stessa cartella.
+
+    Un report puo' poggiare su piu' di un file generato — `dati-angolo.json`
+    per i concorrenti del passo 1, `dati-scaffale-*.json` per la verifica
+    dell'angolo. Cercarne uno solo per nome fisso lascerebbe le altre tabelle
+    fuori dal controllo senza dirlo.
+    """
+    per_asin = {}
+    for f in sorted(report.parent.glob("dati-*.json")):
+        try:
+            contenuto = json.loads(f.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        # nella stessa cartella vivono anche i dati della domanda, che sono
+        # liste: si ignorano invece di far esplodere il controllo.
+        if not isinstance(contenuto, dict):
+            continue
+        schede = contenuto.get("schede", [])
+        for s in schede:
+            if s.get("recensioni"):
+                per_asin[s["asin"]] = s
+    return per_asin
+
+
 def controlla(report: pathlib.Path) -> list[str]:
-    dati = json.loads((report.parent / "dati-angolo.json").read_text(encoding="utf-8"))
-    per_asin = {s["asin"]: s for s in dati["schede"] if s.get("recensioni")}
+    per_asin = schede_accanto(report)
     guasti, controllate = [], 0
     for n, riga in enumerate(report.read_text(encoding="utf-8").splitlines(), 1):
         m = RIGA.match(riga)
@@ -52,7 +79,7 @@ def controlla(report: pathlib.Path) -> list[str]:
         scheda = per_asin.get(asin)
         if scheda is None:
             guasti.append(f"{report}:{n} — «{titolo}» cita {atteso} recensioni per "
-                          f"l'ASIN {asin}, che in dati-angolo.json non e' stato letto")
+                          f"l'ASIN {asin}, che nessun dati-*.json accanto ha letto")
             continue
         reale = int(scheda["recensioni"])
         controllate += 1
@@ -102,7 +129,8 @@ def controlla_trasversale(file: pathlib.Path, tutte: dict) -> list[str]:
 
 
 def main() -> int:
-    report = sorted(RADICE.glob("progetti/*/01 Ricerca/01b-angolo.md"))
+    report = sorted(list(RADICE.glob("progetti/*/01 Ricerca/01b-angolo.md"))
+                    + list(RADICE.glob("progetti/*/01 Ricerca/scaffale-*.md")))
     if not report:
         print("Nessun 01b-angolo.md: niente da controllare.")
         return 0
@@ -112,9 +140,7 @@ def main() -> int:
     for r in report:
         print(f"\n{r.relative_to(RADICE)}")
         guasti += controlla(r)
-        for s in json.loads((r.parent / "dati-angolo.json").read_text(encoding="utf-8"))["schede"]:
-            if s.get("recensioni"):
-                tutte[s["asin"]] = s
+        tutte.update(schede_accanto(r))
 
     trasversali = [RADICE / "_profili" / "note-mercato.md"]
     for f in trasversali:

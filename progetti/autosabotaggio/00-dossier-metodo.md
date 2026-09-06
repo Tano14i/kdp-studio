@@ -20,7 +20,7 @@ diversi e nessuno saprebbe quale vale.
 |---|------|-------|-----------|-----------|
 | 0 | Cartella e convenzioni | fatto | — | 06/09 |
 | 1 | Nicchia e concorrenti | fatto — **NON SI FA** sul tema | — | 06/09 |
-| 1b | Angolo (`ricerca-inversa`) | fatto — **NON SI FA** sull'angolo | — | 06/09 |
+| 1b | Angolo (`ricerca-inversa`) | fatto — **NON SI FA** sull'angolo, definitivo | — | 06/09 |
 | 2 | Avatar cliente | da fare | — | |
 | 3 | Concept e positioning | da fare | CP1 | |
 | 4 | Titolo, sottotitolo, copertina | da fare | CP2 | |
@@ -56,15 +56,19 @@ prima pagina, uno solo clinico, dieci pratici rivolti proprio a quel lettore.
 Il sotto-angolo della procrastinazione ha gia' il suo libro. Vedi §7 e
 `01 Ricerca/scaffale-adhd-adulti.md`.
 
-**Resta una condizione sola, scritta prima di conoscere i numeri** per non
-poterla piegare dopo: se i tre titoli piu' recensiti di quella lista hanno
-meno di 30 recensioni ciascuno, lo scaffale e' sottile e l'angolo torna in
-discussione; a 30 o piu' anche per uno solo, il NON SI FA e' definitivo. E'
-cinque minuti nel browser, ordinando per recensioni.
+**La condizione e' stata verificata la sera stessa, ed e' andata contro.** Era
+scritta prima di conoscere i numeri per non poterla piegare dopo: sotto 30
+recensioni sui tre titoli piu' recensiti l'angolo tornava in discussione, a 30
+o piu' il no diventava definitivo.
 
-Finche' quel dato non c'e', **il progetto non riparte**. E se il dato dice 30
-o piu', questa cartella si chiude per davvero — con dentro due no, quattro
-pieghe provate e il motivo di ognuna.
+I tre piu' recensiti hanno **179, 158 e 114**, con voti fra 4,0 e 4,9, e sei
+titoli su dieci stanno sopra 85. Non e' uno scaffale di fantasmi: e' uno
+scaffale di libri che i lettori tengono.
+
+**Questa cartella si chiude qui** — due no, uno sul tema e uno sull'angolo,
+quattro pieghe provate e il motivo di ognuna scritto. Se un giorno qualcuno la
+riapre, ci trova un no molto piu' solido di quello di stamattina, che era il no
+di chi non aveva provato niente.
 
 La domanda che era aperta qui prima — «ha senso provare un'altra nicchia con
 lo strumento attuale?» — ha ricevuto una risposta parziale il 06/09 sera, e
@@ -79,8 +83,8 @@ hanno corretto una conclusione del passo 1. Vedi §7.
 3. ~~Passo 1b, l'angolo~~ — fatto il 06/09 sera, `01 Ricerca/01b-angolo.md`.
 4. ~~La verifica dell'angolo sullo scaffale ADHD~~ — fatta il 06/09 sera,
    `01 Ricerca/scaffale-adhd-adulti.md`. Esito: **NON SI FA sull'angolo**.
-5. **Le recensioni dei tre titoli piu' recensiti di quella lista** — cinque
-   minuti, ed e' l'unica condizione rimasta (vedi «Aperto adesso»).
+5. ~~Le recensioni dei tre titoli piu' recensiti~~ — fatte il 06/09 sera:
+   179, 158, 114. La condizione non e' rispettata, il no e' definitivo.
 6. **Scegliere come procurarsi i dati dei concorrenti.** Non e' piu' una
    domanda senza risposta: due strade sono pronte e descritte in
    `_profili/note-mercato.md` §5-bis — il backend su Railway (vivo, con
@@ -235,3 +239,19 @@ scaffale», e messo quella verifica come punto 1. Se avesse chiuso con un SI
 FA, adesso ci sarebbero un avatar e un outline costruiti su un vuoto
 inesistente. Il cancello e' costato una ricerca nel browser invece di tre
 settimane — ed e' esattamente il mestiere che fa.
+
+**La chiusura, la sera stessa.** La condizione sulle recensioni e' stata
+verificata recuperando gli ASIN dalle ricerche web e leggendo le schede con
+`sonda_angolo.py`: dieci titoli misurati, i tre piu' recensiti a 179, 158 e
+114. Tabella in `01 Ricerca/scaffale-adhd-adulti.md` §4.
+
+Due cose imparate strada facendo, che valgono oltre questa nicchia:
+
+- **gli ASIN si recuperano dalla ricerca web**, non solo dal browser
+  dell'autore. `www.amazon.it/s` resta 503, ma cercare un titolo esatto su un
+  motore di ricerca restituisce l'URL `amazon.it/dp/<ASIN>`, e da li'
+  `sonda_angolo.py` legge i numeri. E' la strada che ha chiuso questo
+  progetto in cinque minuti invece di rimandare a un altro giro nel browser;
+- **ogni conteggio fatto finora su questa nicchia era per difetto.** I dieci
+  titoli misurati sono ASIN *diversi* dai quattordici visti in prima pagina:
+  lo scaffale vero ne ha almeno venti.
