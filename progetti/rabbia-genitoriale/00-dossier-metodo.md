@@ -25,8 +25,8 @@ decide il titolo vero, e questa cartella non si rinomina mai.
 | 1 | Nicchia e concorrenti | fatto — **NON SI FA** sul tema | — | 06/09 |
 | 1b | Angolo (`ricerca-inversa`) | fatto — **SI FA** sull'angolo | — | 06/09 |
 | 2 | Avatar cliente | fatto — **prima stesura**, campione magro | — | 06/09 |
-| 3 | Concept e positioning | **CP1 riaperto** su A2 | CP1 | |
-| 4 | Titolo, sottotitolo, copertina | fermo — aspetta il CP1 | CP2 | |
+| 3 | Concept e positioning | fatto — **CP1 chiuso**, manca la forma di B5 | CP1 | 06/09 |
+| 4 | Titolo, sottotitolo, copertina | **prossimo**, dopo la forma di B5 | CP2 | |
 | 5 | Outline | da fare | CP3 | |
 | 6 | DNA stilistico | da fare | CP4 | |
 | 7 | Campione di scrittura | da fare | CP5 | |
@@ -54,42 +54,44 @@ chiuso o solo fermo.
 
 ## Aperto adesso
 
-**Il checkpoint 1 e' riaperto, e su un punto solo: A2.** B1, B3, B4, B8, C1 e
-D2 reggono e non si ridiscutono.
+**Il checkpoint 1 e' chiuso, nella forma rivista della sera del 06/09.**
+L'autore ha scelto **strada 1 + strada 3**:
 
-Motivo: sono state lette le ~60 recensioni a 5 stelle che `02-avatar.md` §8
-indicava come la cosa che avrebbe cambiato di piu' il quadro. L'hanno
-cambiato. Tutto in `02 Validazione/riesame-cp1.md`; qui il minimo.
+```
+A2 (stretto) ,  B1 + B3 + B4 + B5 + B8 ,  C1 ,  D2
+```
 
-**La premessa emotiva di A2 e' smentita.** «Nessuno raccoglie il genitore dalla
-parte della colpa» era falso: Petrucciani lo fa, ed e' il motivo ricorrente
-delle sue cinque stelle — «senza ambire ad una perfezione che non è possibile»,
-«ti fanno sentire umano e non sbagliato», «togliermi i sensi di colpa»,
-«normalizzare […] è un balsamo». Alvise resta vero per se': e' una lettura di
-minoranza dello stesso libro.
+> Per chi ha gia' letto un libro su come non urlare e alla decima volta ha
+> urlato lo stesso: qui ci sono **le mosse per la decima volta** — a differenza
+> di *Educare senza perdere la calma*, che ti fa sentire capito ma non ti dice
+> cosa fare.
 
-**Cosa sopravvive, piu' stretto e piu' pulito.** Nessuna delle 60 entusiaste
-dice che il libro le abbia detto **cosa fare** quando il metodo non funziona.
-Il conforto c'e', la mossa tattica no. Il buco 2 passa da posizione emotiva a
-lacuna tattica, e ora poggia anche sull'assenza in 60 recensioni positive —
-che e' una prova piu' forte delle 3 negative da cui era nato.
+**Cosa e' cambiato rispetto al pomeriggio**, e perche' conta: il libro non
+promette piu' di assolvere. Quella posizione e' di Petrucciani e i suoi lettori
+la ringraziano per quella («togliermi i sensi di colpa», «normalizzare […] è un
+balsamo»). Il nostro libro da' **cosa fare**, che e' l'unica cosa che nessuna
+delle 60 entusiaste dice di aver ricevuto.
 
-**Il problema nuovo, ed e' il piu' serio.** I lettori di Petrucciani comprano
-**la dottoressa**: «la dott.ssa Petrucciani incarna», «una professionista»,
-«c'è competenza», «Grazie Dottoressa!». B5 non e' stato scelto. Contro Merini
-e' un vantaggio; contro Petrucciani — il concorrente nominato nella nostra
-promessa — e' uno svantaggio diretto.
+E B1 cambia statuto: **regola di scrittura interna, non accusa pubblica.** Le
+scene vanno storte dentro il libro; il libro non dice che i concorrenti
+mostrano solo scene riuscite — trenta lettori di Petrucciani lo smentirebbero.
 
-**Le tre strade** (dettaglio in `riesame-cp1.md` §7, si sommano fra loro):
+**Manca una cosa sola prima del passo 4: che forma dare a B5.** Non e'
+rimandabile, perche' il nome e la qualifica dell'autore vanno in copertina, e
+la copertina e' il checkpoint 2. Tre forme oneste, in `02 Validazione/
+concept-scelto.md` ultimo paragrafo:
 
-1. **tenere A2, stretto sulla tattica** — pubblico piu' piccolo, buco verificato
-   in tre modi e ora anche contro 60 entusiaste;
-2. **scivolare verso il principiante** — dove sta il grosso del mercato, ma
-   concorrenza frontale con Petrucciani senza la dottoressa;
-3. **riaprire B5** — indipendente dalle altre due, toglie l'unico svantaggio
-   diretto.
+| | Forma | Costo |
+|---|---|---|
+| **B5-a** | L'autorita' dell'esperienza, dichiarata per quello che e': un genitore che ha letto quei libri e li ha applicati, non un professionista | zero |
+| **B5-b** | L'autorita' della trasparenza: ogni affermazione con la sua fonte, bibliografia vera | basso |
+| **B5-c** | La co-firma di un professionista vero | denaro, tempo, una persona disposta |
 
-**Finche' non c'e' una scelta scritta, il passo 4 non parte.**
+**a + b si sommano e costano quasi nulla. c e' l'unica che pareggia davvero con
+Petrucciani, ed e' l'unica che dipende da qualcuno che non siamo noi.**
+
+Vietata in tutti e tre i casi la via di mezzo: niente «esperta di», niente
+credenziali allusive, nessun titolo che non esista.
 
 ## Cosa manca, in ordine
 

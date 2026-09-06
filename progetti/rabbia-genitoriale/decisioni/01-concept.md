@@ -1,26 +1,48 @@
 # Decisione 01 — Concept e positioning
-**Checkpoint 1** · deciso dall'autore il **06/09/2026**
+**Checkpoint 1** · deciso il **06/09/2026**, **rivisto la sera stessa**
 
-## La decisione
+## La decisione, nella forma finale
 
 ```
-A2 ,  B1 + B3 + B4 + B8 ,  C1 ,  D2
+A2 (stretto) ,  B1 + B3 + B4 + B5 + B8 ,  C1 ,  D2
 ```
+
+Due decisioni a poche ore di distanza, e la seconda vale.
+
+**Prima, il 06/09 pomeriggio:** `A2, B1+B3+B4+B8, C1, D2`.
+
+**Poi, la sera:** lette ~60 recensioni a 5 stelle — quelle che `02-avatar.md`
+§8 indicava come la cosa che avrebbe cambiato di piu' il quadro. Hanno smentito
+la premessa emotiva di A2 e reso B5 necessario
+(`02 Validazione/riesame-cp1.md`). Il checkpoint e' stato riaperto sul solo
+punto A2, con tre strade sul tavolo. **L'autore ha scelto la 1 e la 3.**
+
+Non e' un cambio di idea: e' la stessa idea con una prova in piu' e un errore
+in meno. La cosa importante e' che il dato e' arrivato **dopo** la decisione e
+la decisione e' stata riaperta lo stesso.
 
 Il libro del dopo — cosa fare quando la tecnica gentile non ha funzionato.
 Ogni esempio fallisce prima di riuscire. Ogni capitolo si regge da solo.
 Novanta-cento pagine, tascabile, 9,99-10,99 euro, con una scheda stampabile.
 
-**La promessa:**
+**La promessa, nella forma finale:**
 
-> Per chi ha gia' letto «come non urlare» e alla decima volta ha urlato lo
-> stesso: questo libro comincia da li' — a differenza di *Educare senza
-> perdere la calma*, dove ogni esempio riesce al primo tentativo.
+> Per chi ha gia' letto un libro su come non urlare e alla decima volta ha
+> urlato lo stesso: qui ci sono **le mosse per la decima volta** — a differenza
+> di *Educare senza perdere la calma*, che ti fa sentire capito ma non ti dice
+> cosa fare.
+
+La versione del pomeriggio accusava quel libro di mostrare solo esempi che
+riescono al primo colpo. **Trenta suoi lettori dicono il contrario**, e una
+promessa costruita su un'accusa che il mercato smentisce si fa correggere in
+pubblico, nelle recensioni. La nuova dice invece una cosa che nessuna delle 60
+entusiaste contraddice.
 
 ## Le parole dell'autore
 
-La combinazione e' stata scelta senza commento: **«A2, B1, B3, B4, B8, C1,
-D2»**. Non c'e' una motivazione a voce da riportare, e non se ne inventa una.
+Due volte, ed entrambe senza commento: **«A2, B1, B3, B4, B8, C1, D2»** il
+pomeriggio, **«1/3»** la sera — letto come strada 1 piu' strada 3. Non c'e' una
+motivazione a voce da riportare, e non se ne inventa una.
 
 Quello che si puo' dire e' cosa la scelta **mostra**, ed e' verificabile
 guardando cosa e' stato preso e cosa lasciato:
@@ -29,9 +51,13 @@ guardando cosa e' stato preso e cosa lasciato:
   italiano lo copre, ma poggia su 3 recensioni su 24) invece del piu' sicuro
   (A1, fattibilita' alta);
 - ha preso **tutte e quattro le USP che parlano di come il libro e' fatto**
-  (B1, B3, B4, B8) e nessuna di quelle che parlano di chi lo scrive (B5) o per
-  chi (B7). E' coerente con la conclusione dell'avatar: questo mercato non ha
-  un problema di contenuto, ha un problema di esecuzione;
+  (B1, B3, B4, B8) e nessuna di quelle che parlano di chi lo scrive o per chi.
+  E' coerente con la conclusione dell'avatar: questo mercato non ha un problema
+  di contenuto, ha un problema di esecuzione;
+- **la sera ha aggiunto B5**, cioe' l'unica cosa che aveva lasciato fuori e che
+  la prova nuova rendeva necessaria. Ha tenuto A2 quando la sua premessa
+  emotiva era caduta, restringendolo alla parte che regge — la tattica — invece
+  di abbandonarlo o di difenderlo intero;
 - ha preso **il formato piu' corto e piu' economico** (D2) invece del piu'
   prudente (D1), accettandone il difetto dichiarato sul margine.
 
@@ -59,8 +85,16 @@ Tutte, per intero, in `02 Validazione/concept-scartati.md`. In breve:
    verificabile, non come intenzione.
 3. **Cento pagine sono un tetto**, non una stima. Al CP3 i capitoli che non
    entrano si tagliano con il motivo scritto, non si comprimono.
-4. **Il libro non pretende autorevolezza.** B5 non e' stato scelto: niente
-   «esperta di», niente credenziali vaghe. Condizione da rispettare al CP2.
+4. **Il libro non promette conforto: promette mosse.** La posizione «non sei
+   sbagliato» e' di Petrucciani, e i suoi lettori la ringraziano per quella. Se
+   il nostro testo scivola li', compete dove l'altro e' piu' forte.
+5. **B1 e' una regola di scrittura, non un'accusa pubblica.** Le scene vanno
+   storte dentro il libro; il libro non dice che i concorrenti mostrano solo
+   scene riuscite.
+6. **B5 e' scelto ma senza forma.** Vietata in ogni caso la via di mezzo:
+   niente «esperta di», niente credenziali allusive. Tre forme oneste in
+   `concept-scelto.md` — l'esperienza dichiarata, la trasparenza delle fonti,
+   la co-firma di un professionista.
 5. **La scheda «stasera» e' una pagina.** Se diventa un fascicolo, lavora
    contro il concept che dovrebbe servire.
 
@@ -78,5 +112,12 @@ Tutte, per intero, in `02 Validazione/concept-scartati.md`. In breve:
 
 ## Prossimo passo
 
-**Passo 4 — titolo, sottotitolo, copertina**, che e' il **checkpoint 2**.
-Vedi `pubblicazione-kdp` §4.
+**Manca una cosa sola prima del passo 4: la forma di B5.** Le tre opzioni
+stanno in `concept-scelto.md`, ultimo paragrafo. Due (a e b) costano quasi
+nulla e si sommano; la terza dipende da una persona reale disposta a
+co-firmare.
+
+Non e' una formalita' rimandabile al passo 4: **il nome e la qualifica
+dell'autore vanno in copertina**, e la copertina e' il checkpoint 2.
+
+Poi: **passo 4 — titolo, sottotitolo, copertina**. Vedi `pubblicazione-kdp` §4.
