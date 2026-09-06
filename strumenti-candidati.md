@@ -2,6 +2,7 @@
 Aggiornato il 06/09/2026
 
 ## Indice
+0. Esito delle ispezioni (06/09, sera)
 1. Come leggere questo elenco
 2. Il blocco di oggi: recensioni negative
 3. Il buco strutturale: BSR e curva di declino
@@ -9,9 +10,37 @@ Aggiornato il 06/09/2026
 5. La strada ufficiale
 6. Cosa NON risolvono
 
+## 0. Esito delle ispezioni (06/09, sera)
+
+Tre candidati ispezionati sul codice, non sulle descrizioni. La lezione vale
+piu' dei singoli esiti: **la descrizione su GitHub e' pubblicita'**, e due su
+tre non erano quello che dicevano.
+
+| Repository | Cosa e' davvero | Esito |
+|---|---|---|
+| `omkarcloud/amazon-scraper` | **non uno scraper**: 344 righe che chiamano un'API RapidAPI a pagamento dello stesso autore. `grep review` nel codice: 0 occorrenze | scartato |
+| `scrapehero-code/amazon-review-scraper` | scraper vero ma fermo a feb 2024, su `requests` semplice: sbatte nello stesso 503. Il suo codice lo ammette («try using better proxies») | scartato — ma il suo URL di partenza ha rivelato `filterByStar`, il parametro vero di Amazon |
+| `neatrat/amazon-reviews-scraper` (Apify) | dichiara `ratings` ad array senza login. In produzione: **403 actor-is-not-rented**, $25/mese + consumo | non provato: decisione dell'autore di non noleggiare |
+
+Cio' che ha risolto davvero il problema non era in nessun repository: era lo
+**schema di input dell'actor che gia' usavamo**, letto invece che indovinato.
+Tre campi su quattro avevano il nome sbagliato (`filterByStar` per
+`filterByStars`, `maxReviews` per `maxReviewsPerProduct`, `countryCode` per
+`marketplace`), e l'actor usava silenziosamente i default. Corretti, ha
+colpito amazon.it per la prima volta. Ma con qualunque filtro per stelle
+restituisce zero: Amazon mostra le recensioni filtrate solo a chi e' loggato.
+
+Conclusione operativa: per le recensioni negative, **browser loggato**. Per
+tutto il resto — domanda, offerta, prezzi, recensioni non filtrate con data —
+la strada automatica c'e' e funziona.
+
 ## 1. Come leggere questo elenco
 
-**Nessuno di questi e' stato provato.** Sono stati trovati per descrizione, non
+Le sezioni che seguono sono l'elenco originale, scritto PRIMA delle ispezioni.
+Restano come traccia di cosa sembrava promettente e perche'; l'esito vero e'
+nella sezione 0.
+
+**Nessuno di questi e' stato provato** al momento in cui e' stato scritto. Sono stati trovati per descrizione, non
 ispezionandone il codice, la licenza o lo stato di manutenzione. Metterli qui
 come «soluzioni» sarebbe lo stesso errore commesso oggi tre volte: scrivere
 come fatto qualcosa verificato da un angolo solo.
