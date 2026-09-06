@@ -10,6 +10,7 @@ Fase 1 · Amazon.it, italiano · aggiornato il 06/09/2026
 6. Cosa manca per un verdetto completo
 7. Se si volesse insistere lo stesso
 8. Come rifare questa misura
+9. Correzione del 06/09: il segnale «+libro» era falso
 
 ---
 
@@ -50,7 +51,8 @@ Query nude, senza titolo o autore attaccato:
 - `come non urlare ai figli`
 - `come non crescere degli str[onzi]`
 - `come non reagire alle provocazioni`
-- `capricci libro` ← il suffisso «libro»: chi cerca non trova un libro
+- `capricci libro` ← il suffisso «libro». **Lo avevo letto come segnale di
+  vuoto: era sbagliato, vedi §9.**
 - `capricci istruzioni per l'uso`, `capricci e regole`, `capricci non nemici`
 
 Query che arrivano **con un autore attaccato** — cioe' ricerche gia' possedute
@@ -140,11 +142,12 @@ misurare *quanto* e' saturo, non *se*.
 
 ## 7. Se si volesse insistere lo stesso
 
-L'unico spiraglio visto nei dati e' `capricci libro`, con il suffisso «libro»
-che segnala una ricerca che non fa emergere un libro. Ma il sottotitolo di
-Monte contiene gia' «Evitando Capricci», quindi lo spiraglio e' probabilmente
-chiuso prima di essere aperto. Andrebbe verificato prima di investirci, non
-dopo.
+Avevo indicato uno spiraglio in `capricci libro`, sulla base del suffisso
+«libro». **Quello spiraglio non esiste**: il segnale su cui poggiava si e'
+rivelato falso il giorno stesso, vedi §9. E il sottotitolo di Monte contiene
+comunque gia' «Evitando Capricci».
+
+Non resta nessuno spiraglio in questa nicchia.
 
 ## 8. Come rifare questa misura
 
@@ -155,3 +158,20 @@ python3 harvest_demand.py --market it --out domanda-it.json
 Il file di uscita e' generato, non sorgente: non si modifica a mano. Se il
 totale torna zero, e' lo strumento puntato male, non il mercato vuoto —
 `python3 test_amazon_markets.py` lo dice in trenta secondi.
+
+## 9. Correzione del 06/09: il segnale «+libro» era falso
+
+Questo report, nella sua prima stesura, trattava il suffisso «libro» in una
+query come segnale di vuoto di mercato. La misura della nicchia successiva
+(`progetti/autosabotaggio`) lo ha smentito: `autosabotaggio libri`,
+`vittimismo libro` e `procrastinazione libro` hanno rispettivamente sei, tre e
+sei libri, con bestseller da editore in cima.
+
+La causa vera e' che su Amazon.it l'alias `stripbooks` non filtra ai soli
+libri — lo stesso difetto per cui la radice «guida per» restituiva box doccia.
+Chi vuole un libro aggiunge «libro» perche' il filtro del reparto e' rotto,
+non perche' il libro manchi.
+
+Il verdetto NON SI FA di §1 **non cambia**: non poggiava su quel segnale ma
+sui dieci concorrenti diretti e sulle tre ancore con editore. Cambia il §7:
+lo spiraglio indicato li' non esiste.

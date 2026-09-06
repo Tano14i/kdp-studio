@@ -63,6 +63,10 @@ nuova: questa resta com'e', con dentro il motivo dello stop.
   non serve a nulla»), con distribuzione editoriale vera. Va misurato prima
   di decidere l'angolo, non dopo. Misurato il 06/09: non era uno, erano tre
   con editore piu' dieci autopubblicati.
+- **Il suffisso «+libro» in una query NON e' un segnale di vuoto.** Lo avevo
+  creduto e usato per costruire la rosa delle nicchie: smentito il 06/09
+  stesso, vedi `01 Ricerca/report-nicchia.md` §9. Misura il fatto che su
+  Amazon.it il filtro del reparto Libri non funziona, non un buco di mercato.
 - **Una query senza autore attaccato non e' una query libera.** Puo' essere
   un titolo cosi' noto da non aver bisogno del nome dell'autore: e' il caso
   di «come non odiare tuo marito dopo i figli», che e' un Sonzogno del 2017.
