@@ -25,7 +25,7 @@ decide il titolo vero, e questa cartella non si rinomina mai.
 | 1 | Nicchia e concorrenti | fatto — **NON SI FA** sul tema | — | 06/09 |
 | 1b | Angolo (`ricerca-inversa`) | fatto — **SI FA** sull'angolo | — | 06/09 |
 | 2 | Avatar cliente | fatto — **prima stesura**, campione magro | — | 06/09 |
-| 3 | Concept e positioning | **da fare — aperto** | CP1 | |
+| 3 | Concept e positioning | **menu pronto — aspetta l'autore** | CP1 | |
 | 4 | Titolo, sottotitolo, copertina | da fare | CP2 | |
 | 5 | Outline | da fare | CP3 | |
 | 6 | DNA stilistico | da fare | CP4 | |
@@ -54,39 +54,34 @@ chiuso o solo fermo.
 
 ## Aperto adesso
 
-**La fase 2 e' fatta: `02-avatar.md`.** Il prossimo passo e' il **3, concept e
-positioning**, che e' il **checkpoint 1** — il primo punto in cui il lavoro si
-ferma e aspetta una scelta dell'autore.
+**CHECKPOINT 1. Il lavoro e' fermo e aspetta una scelta dell'autore.**
 
-**Le tre cose che l'avatar ha stabilito, e che il concept deve rispettare:**
+Sul tavolo: `02 Validazione/menu-concept.md`, quattro blocchi da comporre —
+una macro tipologia, le USP che si sommano, il bonus, il formato con il
+prezzo. Ogni opzione porta scritti i buchi che sfrutta e la sua fattibilita'
+vera, difetti compresi. I dieci buchi, ognuno con la citazione da cui viene,
+stanno in `02 Validazione/buchi-concorrenti.md`.
 
-1. **Questo mercato non ha un problema di contenuto, ha un problema di
-   esecuzione.** Tre lettori diversi dicono che il contenuto va bene ed e' la
-   forma a rovinarlo — «peccato perché il contenuto è potenzialmente
-   interessante». La lamentela numero uno, dodici volte su ventiquattro, e'
-   «sembra scritto da una macchina». E' una lettura mia, non una loro parola,
-   ed e' la conclusione piu' importante del documento;
-2. **la piega portante del passo 1b e' quarta per frequenza**, non prima.
-   «Se non funziona sbagli tu» e' reale e profonda — e' l'unica lamentela
-   formulata come una domanda a cui un libro puo' rispondere — ma tre volte su
-   ventiquattro. Va nel cuore del libro, non nel sottotitolo;
-3. **chi legge e chi compra sono la stessa persona**, e compra sulle recensioni
-   degli altri. Nessun segnale regalo, verificato anche sull'autocomplete.
+La casella da riempire:
 
-**I vincoli che arrivano ai checkpoint** (dettaglio in `02-avatar.md` §7):
+```
+A_ ,  B_ + B_ + B_ ,  C_ ,  D_
+```
 
-| Vincolo | Dove |
-|---|---|
-| Italiano nato italiano; `avoid-ai-writing` obbligatoria; rilettura vera | **CP4** |
-| Il pen name regge una ricerca, oppure il libro non poggia sull'autorevolezza | **CP2** |
-| Niente «N libri in 1»; capitoli corti, apribili fuori ordine, nessun concetto ripetuto | **CP3** |
+Tre cose da sapere prima di scegliere:
 
-**Cosa manca all'avatar, ed e' scritto in `02-avatar.md` §8:** zero recensioni
-positive. Ne abbiamo 24, tutte negative, contro le 150-250 che la fase 2
-prevede. Sappiamo cosa il lettore **rifiuta**, non sappiamo cosa **compra**.
-Basta per il concept, che si costruisce sui vincoli; e' magro per l'outline.
-Le ~350 recensioni a 4 e 5 stelle di Merini e Petrucciani sono la cosa che
-cambierebbe di piu' il quadro, e sono ancora tutte da leggere.
+- **il buco piu' pulito e' il 2** — cosa fare quando la tecnica fallisce.
+  Nessun libro italiano lo copre, verificato da tre strade. Ma poggia su 3
+  recensioni su 24, e sotto Merini non compare mai;
+- **il buco piu' frequente e' l'1** — «sembra scritto da una macchina», 12 su
+  24. Non e' un posizionamento da copertina: e' una cosa che si dimostra nelle
+  prime tre pagine dell'anteprima;
+- **la scelta del prezzo non e' neutra.** La recensione piu' votata del reparto
+  (21 persone) attacca proprio i 17 euro di un libro autopubblicato. Vedi D3.
+
+**Finche' non c'e' una combinazione scritta, il passo 4 non parte.** E qui il
+libro puo' morire: se nessuna combinazione convince, non si prende la meno
+peggio, si torna ai buchi o alla nicchia.
 
 ## Cosa manca, in ordine
 
@@ -109,7 +104,8 @@ cambierebbe di piu' il quadro, e sono ancora tutte da leggere.
    06/09 sera, 24 in tutto.
 7. ~~`avatar-cliente`~~ — fatto il 06/09 sera, `02-avatar.md`. Prima stesura
    su campione magro: vedi §8 di quel file.
-8. **`concept-positioning`** — e' il prossimo passo, ed e' il **checkpoint 1**.
+8. ~~`concept-positioning`~~ — menu costruito il 06/09 sera. **Aspetta la
+   scelta dell'autore**: e' il checkpoint 1.
 9. **Le recensioni a 4 e 5 stelle** di Merini e Petrucciani, prima
    dell'outline: e' li' che stanno i buchi che l'avatar non vede.
 
