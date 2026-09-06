@@ -1,0 +1,85 @@
+# Controlli automatici a ogni push e a ogni pull request.
+#
+# Regola di questo workflow: NIENTE RETE. Tutti i passi qui girano senza
+# chiamare Amazon, Wikipedia o altro. Un controllo che dipende dalla rete
+# fallisce a caso, e un controllo che fallisce a caso viene ignorato dopo
+# due volte — a quel punto e' peggio di non averlo.
+#
+# I controlli che richiedono la rete (test_amazon_markets.py senza --offline,
+# harvest_demand.py, trend_topics.py) si lanciano a mano quando serve
+# verificare che Amazon o Wikipedia non abbiano cambiato comportamento.
+name: Controlli
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  controlli:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Dipendenze del server
+        # Servono solo al controllo su competition-map, che importa
+        # kdp_server.py per davvero invece di limitarsi a compilarlo.
+        run: pip install --quiet -r requirements.txt
+
+      - name: Sintassi di tutti gli script
+        # compileall non importa i moduli, quindi kdp_server.py viene
+        # controllato senza installare fastapi, anthropic e httpx.
+        run: python -m compileall -q .
+
+      - name: Tabella dei marketplace — struttura, lingue, alias
+        # Il guasto che questo sorveglia e' silenzioso: un marketplace
+        # puntato male risponde 200 con lista vuota, e a valle sembra
+        # "nessuno cerca questa cosa". Senza questo controllo si scopre
+        # solo scartando una nicchia buona.
+        run: python test_amazon_markets.py --offline
+
+      - name: competition-map — le misure sopravvivono all'analisi
+        # Apify e Claude sono sostituiti da funzioni finte: si verifica la
+        # logica di questo codice, non il comportamento di due servizi
+        # esterni. Nessuna rete, nessuna chiave.
+        run: python test_competition_map.py
+
+      - name: Analisi concorrenti — conclude quando i dati bastano
+        run: python analizza_concorrenti.py tests/fixtures/concorrenti-completi.csv
+
+      - name: Analisi concorrenti — si rifiuta quando i dati non bastano
+        # Il controllo piu' importante dei due: si pretende ESATTAMENTE 1,
+        # non "diverso da zero". Un percorso sbagliato darebbe 2 e farebbe
+        # passare il test senza aver provato niente.
+        run: |
+          set +e
+          python analizza_concorrenti.py tests/fixtures/concorrenti-scarsi.csv
+          codice=$?
+          set -e
+          if [ "$codice" -ne 1 ]; then
+            echo "Atteso codice 1 (rifiuto di concludere), ottenuto $codice"
+            exit 1
+          fi
+          echo "ok: si e' rifiutato di concludere, come deve"
+
+      - name: Mercato sconosciuto rifiutato
+        run: |
+          set +e
+          python harvest_demand.py --market inesistente
+          codice=$?
+          set -e
+          if [ "$codice" -ne 2 ]; then
+            echo "Atteso codice 2 (mercato sconosciuto), ottenuto $codice"
+            exit 1
+          fi
+          echo "ok: mercato sconosciuto rifiutato"
+
+      - name: Gli strumenti si avviano
+        run: |
+          python trend_topics.py --help > /dev/null
+          python harvest_demand.py --help > /dev/null
+          echo "ok: entrambi rispondono a --help"

@@ -1,0 +1,7 @@
+asin;titolo;autore;prezzo_cartaceo;prezzo_kindle;n_recensioni;stelle;bsr;data_pubblicazione;pagine
+B0TEST0001;Titolo di prova uno;Autore Uno;14,99;4,99;23;4,2;180.450;03/2024;120
+B0TEST0002;Titolo di prova due;Autore Due;16,90;9,99;412;4,5;24.300;2021;192
+B0TEST0003;Titolo di prova tre;Autore Tre;18,00;6,99;87;4,1;95.200;giugno 2019;210
+B0TEST0004;Titolo di prova quattro;Autore Quattro;22,00;12,99;54;4,3;210.000;2018;350
+B0TEST0005;Titolo di prova cinque;Autore Cinque;19,50;7,99;31;4,0;340.000;2018;150
+B0TEST0006;Titolo di prova sei;Autore Sei;13,50;3,99;8;4,6;520.000;02/2026;140

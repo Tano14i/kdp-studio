@@ -1,0 +1,4 @@
+asin;titolo;autore;prezzo_cartaceo;prezzo_kindle;n_recensioni;stelle;bsr;data_pubblicazione;pagine
+B0TEST0101;Titolo scarso uno;Autore Uno;?;?;12;4,0;?;?;100
+B0TEST0102;Titolo scarso due;Autore Due;14,99;?;30;4,2;?;?;120
+B0TEST0103;Titolo scarso tre;Autore Tre;?;?;5;3,9;?;2024;90
