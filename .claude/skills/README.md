@@ -10,6 +10,7 @@ Supercomputer**, **Claude Code**, **Cursor**, or **Codex** — and act as a
 | Skill | What it does |
 |------|--------------|
 | `fabio-kdp` | End-to-end coach for a full-content KDP book: niche → positioning → outline → drafting → listing + compliance gate → AI cover. Chains to `higgsfield-generate` for the cover and to the KDP Studio API for the heavy LLM stages. |
+| `promozione-social` | Porta un libro **gia' pubblicato** davanti ai lettori su Instagram, TikTok e Facebook, in organico e senza mostrare il volto: identita' del pen name, tre format ripetibili, piano editoriale a 30 giorni, ponte verso la scheda Amazon e regole di taglio a 14 e 30 giorni. E' la fase che il metodo non copriva — dopo `pubblicazione-kdp`. |
 
 ## Install
 
