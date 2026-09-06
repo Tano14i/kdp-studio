@@ -4,22 +4,50 @@
 **Generati il:** 2026-09-06 · **Strumento:** `tools/slides-martina-riva.py` (HTML + Chromium headless)
 **Stato:** generati e verificati a schermo, **non pubblicati**. PNG 1080×1920, palette copertina (crema `#FAF3E6`→`#EFE0C6`, oro `#C9A227`, testo `#2B2118`), Playfair Display + Lato.
 
-> **Prima versione scartata.** I template Blotato ignoravano il font richiesto, lasciavano due terzi del frame vuoto e stampavano «Written by Martina Riva» in inglese. Rifatti da zero con un generatore proprio, così la resa è controllabile e ispezionabile.
+Testi verificati sul manoscritto (introduzione → cap. 8) e passati al controllo AI-writing, profilo `linkedin`, voce warm/blunt.
+
+> **Due versioni scartate.** (1) I template Blotato ignoravano il font, lasciavano due terzi del frame vuoto e stampavano «Written by Martina Riva» in inglese. (2) Le descrizioni dei 5 volti erano ricostruite dalla scheda Amazon: quella del Perfezionista era proprio sbagliata. Ora vengono dal capitolo 4.
 
 ---
 
-## 1 — Carosello frasi «Smetti di chiedere il permesso»
+## 1 — Carosello «I 5 volti del bisogno di piacere»
+
+File: `A1.png` … `A7.png` — copertina + 5 volti + CTA
+Ogni slide porta la frase guida del volto, presa dal capitolo 4.
+
+| # | Volto | Frase guida (dal libro) | Punto debole (dal libro) |
+|---|---|---|---|
+| 1 | Il Pacificatore | «L'importante è che non ci siano conflitti.» | Il risentimento silenzioso: pentola a pressione |
+| 2 | Il Salvatore | «Se non lo faccio io, non lo fa nessuno.» | Il burnout: non si ricarica mai |
+| 3 | Il Perfezionista | «Se non posso farlo alla perfezione, è meglio non farlo.» | La paralisi: preferisce non provare |
+| 4 | L'Invisibile | «Non voglio dare fastidio.» | L'invisibilità funziona troppo bene |
+| 5 | Il Camaleonte | «Con te sono una persona, con lui sono completamente diverso.» | La frammentazione dell'identità |
+
+**Caption:**
+
+> Pacificatore, Salvatore, Perfezionista, Invisibile, Camaleonte.
+>
+> Il bisogno di piacere non ha una faccia sola. Ne ha cinque, e quasi nessuno riconosce la propria al primo colpo.
+>
+> Tu in quale ti sei riconosciuto? Scrivilo nei commenti.
+>
+> #booktok #peoplepleasing #libriitaliani
+
+---
+
+## 2 — Carosello frasi dal libro
 
 File: `B1.png` … `B7.png` — 6 citazioni + slide finale
-Composizione: virgoletta oro, citazione in Playfair 82px centrata, filetto oro, titolo del libro
+Tutte le citazioni sono **verbatim dal manoscritto**, con il capitolo di provenienza.
 
-**Testi:**
-1. Sai cosa vorresti dire. E poi dici sì. Il senso di colpa arriva sempre prima della parola.
-2. Non sei debole. Sei dentro un meccanismo che il tuo cervello ha costruito anni fa per proteggerti.
-3. Il senso di colpa non è la tua coscienza. È il guardiano della gabbia.
-4. Puoi dire no senza spiegazioni, senza scuse, senza premesse. Una frase basta.
-5. Se le tue relazioni ti prosciugano più di quanto ti nutrano, non sei tu che chiedi troppo.
-6. Il permesso che hai sempre cercato fuori è sempre stato dentro di te.
+| # | Citazione | Fonte |
+|---|---|---|
+| 1 | La gentilezza non è più un dono che fai agli altri. È il prezzo che paghi per stare nella stanza. | Introduzione |
+| 2 | Non è normale. È solo familiare. E c'è una differenza enorme tra le due cose. | Introduzione |
+| 3 | Il senso di colpa non è la tua coscienza. È il guardiano della gabbia. | Titolo cap. 5 |
+| 4 | La conferma che arriva da fuori è come l'acqua salata per chi ha sete: più ne bevi, più hai sete. | Cap. 2 |
+| 5 | Il no con scusa è un no che chiede permesso. Il no senza giustificazione è un confine. | Cap. 8 |
+| 6 | La consapevolezza non è il cambiamento. Ma è l'unica porta attraverso cui il cambiamento può entrare. | Cap. 1 |
 
 **Caption:**
 
@@ -27,41 +55,23 @@ Composizione: virgoletta oro, citazione in Playfair 82px centrata, filetto oro, 
 >
 > Sei frasi dal libro, per chi ha imparato a dire sì troppo presto.
 >
-> Salva il post e rileggilo la prossima volta che stai per accettare qualcosa che non vuoi.
+> Salvalo e rileggilo la prossima volta che stai per accettare qualcosa che non vuoi.
 >
-> #booktok #libriconsigliati #crescitapersonale #psicologia #peoplepleaser #direno #confini #libriitaliani
-
+> #booktok #direno #libriitaliani
 
 ---
 
-## 2 — Carosello «I 5 volti del bisogno di piacere»
+## Controllo AI-writing
 
-File: `A1.png` … `A7.png` — copertina + 5 volti + CTA
-Composizione: numerale oro 238px, nome in Playfair 120px, descrizione in Lato 54px
+Profilo `linkedin`, voce warm/blunt. Corretto nei testi miei:
 
-**⚠️ Da verificare sul testo.** I cinque nomi vengono dalla scheda Amazon, che li elenca senza definirli. Le descrizioni qui sotto sono una mia interpretazione: confrontarle con il capitolo prima di pubblicare, o il contenuto contraddice il libro.
+- **Due lineette em** nelle descrizioni di Salvatore e Invisibile → punto fermo e due punti. La voce blunt vuole il punto, non il trattino.
+- **Hashtag da 8 a 3** per caption. Oltre i 5-6 tag l'engagement cala e il post legge come output automatico; quelli generici (`#crescitapersonale`, `#psicologia`, `#autostima`) non portano lettori.
+- **Una lineetta em** nella caption del carosello A → virgola.
 
-1. **Il Pacificatore.** Spegne ogni conflitto sul nascere, dice sì per non far arrabbiare nessuno, e si porta a casa la rabbia che ha evitato.
-2. **Il Salvatore.** Si occupa dei problemi di tutti tranne i suoi. Se non serve a qualcuno, non sa più bene chi è.
-3. **Il Perfezionista.** Crede che basti non sbagliare mai per meritarsi affetto. Alza l'asticella, e la colpa resta comunque lì.
-4. **L'Invisibile.** Non chiede, non disturba, non occupa spazio. Poi si stupisce che nessuno si accorga di cosa gli serve.
-5. **Il Camaleonte.** Diventa chi ha davanti: cambia tono, opinioni, gusti. A fine giornata non sa più cosa pensa davvero.
-
-**Caption:**
-
-> Pacificatore, Salvatore, Perfezionista, Invisibile, Camaleonte.
->
-> Il bisogno di piacere non ha una faccia sola. Ne ha cinque — e quasi nessuno riconosce la propria al primo colpo.
->
-> Tu in quale ti sei riconosciuto? Scrivilo nei commenti.
->
-> #booktok #psicologia #crescitapersonale #peoplepleasing #libriconsigliati #autostima #relazioni #libriitaliani
-
-
----
+Non corretto, per scelta: le citazioni verbatim e le frasi guida restano com'erano. Sono materiale citato, non testo mio.
 
 ## Prima di pubblicare
 
-1. Controllare le descrizioni dei 5 volti contro il testo del libro.
-2. Collegare `@martina.rivabooks` a Blotato — oggi non è tra gli account del workspace, quindi la pubblicazione automatica non parte.
-3. TikTok richiede il flag `isAiGenerated` sui contenuti generati con AI.
+1. Collegare `@martina.rivabooks` a Blotato — oggi non è tra gli account del workspace.
+2. TikTok richiede il flag `isAiGenerated` sui contenuti generati con AI.
