@@ -12,7 +12,7 @@ Cedric Darkstone (pen name) · inglese · mercato Amazon US · avviato il 06/09/
 ## 1. Stato
 | # | Fase | Stato | Checkpoint | Chiuso il |
 |---|------|-------|-----------|-----------|
-| 1 | Nicchia e concorrenti | da fare | verdetto | |
+| 1 | Nicchia e concorrenti | verdetto: DA VERIFICARE | verdetto | 06/09 |
 | 2 | Avatar cliente | fatto (minimo, da validare) | — | 06/09 |
 | 3 | Concept e positioning | da fare | CP1 | |
 | 4 | Titolo, sottotitolo, copertina | in corso | CP2 | |
@@ -31,9 +31,12 @@ Cedric Darkstone (pen name) · inglese · mercato Amazon US · avviato il 06/09/
 > dorsale. Il piano social (fase 12) parte quindi su basi incomplete: vedi §5.
 
 ## 2. Aperto adesso
-**CP7 (Marketing) aperto.** Fatti: avatar minimo (`01 Ricerca/avatar-cliente.md`) e
-bozza del piano social IG+TikTok (`04 Mercato/contenuti-social.md`).
-L'autore ha scelto: avatar minimo prima → piano su **Instagram + TikTok**.
+**Fase 1 (nicchia): verdetto DA VERIFICARE** (`01 Ricerca/report-nicchia.md`).
+Domanda misurata e forte; varco plausibile ma non dimostrato coi numeri live dei
+concorrenti (Amazon e Goodreads bloccati dal proxy in questa sessione). Per chiudere
+il cancello serve raccogliere: tabella concorrenti live (voti/recensioni/date/prezzi),
+curva del voto, suggerimenti di ricerca US. → decisione autore: come prendere quei
+numeri (browser proprio, oppure `kdp_server.py` di questo repo).
 
 **CP7 chiuso** (`decisioni/07-marketing.md`): handle `@CedricDkstn`, lead magnet
 "1-Hour Session Prep Checklist", 3 Reel in produzione. Prossimo: creare la checklist
