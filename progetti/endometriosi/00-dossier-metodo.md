@@ -10,6 +10,7 @@ all'avvio. Un file solo.
 3. Cosa manca, in ordine
 4. Da non dimenticare
 5. Errori commessi e come sono stati corretti
+6. Perche' le recensioni negative non arrivano da Apify
 
 ## Stato
 
@@ -44,10 +45,10 @@ per quanto allettante sia: e' la regola che oggi ha risparmiato due libri.
 ## Cosa manca, in ordine
 
 1. ~~Cartella e convenzioni~~ — fatto il 06/09
-2. **Recensioni negative dei tre libri con trazione.** Dal browser sono venti
-   minuti (`scheda-raccolta.md`, parte B). Via Apify servirebbe un filtro per
-   stelle che l'endpoint oggi non espone: `/api/amazon-reviews` ha restituito
-   10 recensioni su 60 richieste, nove a 4-5 stelle.
+2. **Recensioni negative dei tre libri con trazione — solo dal browser.**
+   La strada automatica e' stata tentata e non funziona, vedi §5. Restano
+   venti minuti con `scheda-raccolta.md`, parte B: recensioni a 1, 2 e 3
+   stelle di `8844056623`, `8858161254`, `B0G9X7BQ3T`, testo intero.
 3. Poi: chiudere la fase 1 con SI FA o NON SI FA, con i numeri accanto.
 4. Solo dopo: avatar cliente, sulle stesse recensioni.
 
@@ -81,3 +82,33 @@ ricostruito a memoria da quello breve. GitHub ha rifiutato con 409 invece di
 procedere. Il guasto sarebbe stato invisibile senza quel controllo: e' lo
 stesso principio degli strumenti scritti oggi, che si rifiutano di concludere
 quando non sanno.
+
+## 6. Perche' le recensioni negative non arrivano da Apify
+
+Tentato e chiuso il 06/09. Vale la pena scriverlo perche' e' esattamente il
+genere di cosa che qualcuno riproverebbe fra un mese.
+
+`filterByStar` **esiste** ed e' un parametro vero della pagina recensioni di
+Amazon. E' stato passato in due modi: come campo agli actor, e dentro l'URL
+`/product-reviews/<asin>?filterByStar=critical`, con l'actor per URL messo per
+primo perche' e' l'unico che potrebbe onorarlo.
+
+**Nessuno dei due lo onora.** La prova che chiude la questione: stesso ASIN,
+una chiamata con filtro e una senza, e le recensioni tornate sono **identiche**
+parola per parola. L'unica differenza fra le due risposte e' il campo
+`avviso` in piu'.
+
+Un secondo limite, indipendente dal filtro: su `8844056623`, che su Amazon.it
+ha **212 recensioni**, l'actor ne restituisce **cinque**. Anche senza filtro il
+campione e' troppo piccolo per fondarci un avatar.
+
+Cosa e' stato guadagnato comunque:
+
+- la **data** di ogni recensione, prima estratta e buttata. Serve alla curva di
+  declino ed e' l'unico modo di ricostruirla senza BSR;
+- l'**avviso** che ha impedito il verdetto sbagliato: dieci recensioni a voto
+  medio 4,8 stavano per essere lette come «le critiche dei lettori». Sarebbe
+  finita con «i libri esistenti sono ottimi, nicchia difficile», con i dati in
+  mano e la conclusione capovolta.
+
+Non ritentare per la terza volta senza un actor diverso da questi due.
