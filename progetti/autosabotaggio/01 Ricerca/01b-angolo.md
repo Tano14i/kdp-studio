@@ -236,6 +236,27 @@ e `product-reviews` risponde anti-robot.
 
 ## 6. A che punto e' il passo 1b
 
+**Chiuso il 06/09 sera con NON SI FA sull'angolo.** La verifica che mancava e'
+stata fatta: `scaffale-adhd-adulti.md`, quattordici titoli dalla prima pagina
+di Amazon.it.
+
+Il conteggio che questo documento chiedeva — «quanti clinici, quanti pratici»
+— e' tornato **1 clinico e 10 pratici per l'adulto che ce l'ha addosso**. La
+piega «pubblico» poggiava sul fatto che fra il manuale clinico e il consiglio
+generico non ci fosse niente: c'e' tutto, ed e' li' che stanno tutti. Il
+sotto-angolo della procrastinazione ha gia' il suo libro, *IL METODO ADHD: 30
+giorni*.
+
+Il verdetto e' scritto per esteso in `scaffale-adhd-adulti.md` §5, con una
+condizione fissata prima di conoscere i numeri delle recensioni, e in §6 c'e'
+l'errore di metodo che l'ha reso possibile.
+
+**Quello che segue e' il testo com'era prima della verifica**, e resta perche'
+serve piu' cosi' che corretto: e' il ragionamento che sembrava solido e che lo
+scaffale ha smentito.
+
+### Com'era scritto qui prima del 06/09 sera
+
 **In corso — verifica sullo scaffale mancante.** Non e' un SI FA e non e' un
 NON SI FA, e la differenza non e' formale.
 
@@ -248,20 +269,25 @@ disciplina esiste per evitare, un piano piu' avanti.
 
 Il passo 2 non parte. Manca una cosa sola, e sono venti minuti.
 
-## 7. Cosa resta da verificare, in ordine
+## 7. Cosa resta da verificare
 
-1. **Lo scaffale «adhd adulti» su Amazon.it, dal browser dell'autore.**
-   `scheda-raccolta.md`, sulle query `adhd adulti`, `adhd adulti libro`,
-   `procrastinazione adhd`, `adhd donne adulte`. Servono: quanti titoli,
-   quanti clinici e quanti pratici, e i primi cinque con voto e numero di
-   recensioni. E' l'unica cosa che separa questo file da un verdetto.
-2. **Controllare se `adhd adulti` e' un titolo.** La query arriva nuda
-   dall'autocomplete, e in questo repo una query nuda ha gia' ingannato due
-   volte (`report-nicchia.md` §5 e §3 del progetto rabbia).
-3. **Le recensioni negative dei due-tre titoli ADHD che si troveranno.** Sono
-   la materia prima della fase 2 e la prova finale dell'angolo: se i lettori
-   dei manuali clinici lamentano «e adesso cosa faccio», l'angolo e' vero.
-4. Solo dopo, e solo con un SI FA scritto: `avatar-cliente`.
+~~Lo scaffale «adhd adulti»~~ — **fatto il 06/09 sera**, ed e' quello che ha
+chiuso l'angolo. Vedi `scaffale-adhd-adulti.md`.
+
+Resta **una cosa sola**, ed e' la condizione scritta in
+`scaffale-adhd-adulti.md` §5: il numero di recensioni dei tre titoli piu'
+recensiti della lista. Sotto le 30 recensioni ciascuno lo scaffale e' sottile
+e l'angolo torna in discussione; a 30 o piu' anche per uno solo, il NON SI FA
+e' definitivo.
+
+Non e' una scappatoia lasciata aperta: e' la stessa cautela che il 06/09 ha
+corretto una conclusione gia' scritta nell'altra direzione
+(`note-mercato.md` §3-bis). Finche' quel dato non c'e', l'angolo e' chiuso.
+
+Le altre due voci che stavano qui **non hanno piu' un motivo**: se `adhd
+adulti` sia un titolo non cambia niente ora che si e' visto lo scaffale, e le
+recensioni negative dei concorrenti erano materia prima della fase 2, che non
+parte.
 
 ---
 

@@ -20,7 +20,7 @@ diversi e nessuno saprebbe quale vale.
 |---|------|-------|-----------|-----------|
 | 0 | Cartella e convenzioni | fatto | — | 06/09 |
 | 1 | Nicchia e concorrenti | fatto — **NON SI FA** sul tema | — | 06/09 |
-| 1b | Angolo (`ricerca-inversa`) | **in corso** — manca la verifica | — | |
+| 1b | Angolo (`ricerca-inversa`) | fatto — **NON SI FA** sull'angolo | — | 06/09 |
 | 2 | Avatar cliente | da fare | — | |
 | 3 | Concept e positioning | da fare | CP1 | |
 | 4 | Titolo, sottotitolo, copertina | da fare | CP2 | |
@@ -49,17 +49,22 @@ occasione: questa si fermava al 13 ed era la vecchia mappa.
 
 ## Aperto adesso
 
-**Una verifica di venti minuti nel browser dell'autore.** Il passo 1b ha
-trovato un angolo che regge su tre pieghe — l'adulto con ADHD che ha gia'
-mollato i libri sulla procrastinazione — ma un angolo resta un'ipotesi finche'
-non e' guardato lo scaffale, e la ricerca di Amazon.it da qui risponde 503.
+**Il progetto e' chiuso su tema e su angolo, e adesso il no e' solido.** Il
+passo 1b ha provato quattro pieghe; la piu' forte era l'adulto con ADHD, e la
+verifica sullo scaffale l'ha smentita il 06/09 sera: quattordici titoli in
+prima pagina, uno solo clinico, dieci pratici rivolti proprio a quel lettore.
+Il sotto-angolo della procrastinazione ha gia' il suo libro. Vedi §7 e
+`01 Ricerca/scaffale-adhd-adulti.md`.
 
-Da cercare, con `scheda-raccolta.md`: `adhd adulti`, `adhd adulti libro`,
-`procrastinazione adhd`, `adhd donne adulte`. Serve sapere quanti titoli ci
-sono, **quanti clinici e quanti pratici**, e i primi cinque con voto e numero
-di recensioni.
+**Resta una condizione sola, scritta prima di conoscere i numeri** per non
+poterla piegare dopo: se i tre titoli piu' recensiti di quella lista hanno
+meno di 30 recensioni ciascuno, lo scaffale e' sottile e l'angolo torna in
+discussione; a 30 o piu' anche per uno solo, il NON SI FA e' definitivo. E'
+cinque minuti nel browser, ordinando per recensioni.
 
-L'elenco completo, in ordine, sta in `01 Ricerca/01b-angolo.md` §7.
+Finche' quel dato non c'e', **il progetto non riparte**. E se il dato dice 30
+o piu', questa cartella si chiude per davvero — con dentro due no, quattro
+pieghe provate e il motivo di ognuna.
 
 La domanda che era aperta qui prima — «ha senso provare un'altra nicchia con
 lo strumento attuale?» — ha ricevuto una risposta parziale il 06/09 sera, e
@@ -72,21 +77,22 @@ hanno corretto una conclusione del passo 1. Vedi §7.
 1. ~~Cartella e convenzioni~~ — fatto il 06/09
 2. ~~Nicchia e concorrenti~~ — fatto il 06/09, verdetto **NON SI FA**
 3. ~~Passo 1b, l'angolo~~ — fatto il 06/09 sera, `01 Ricerca/01b-angolo.md`.
-4. **La verifica dell'angolo sullo scaffale ADHD** — vedi «Aperto adesso».
-   E' la sola cosa che separa questo progetto da un SI FA o da un NON SI FA
-   definitivo.
-5. **Scegliere come procurarsi i dati dei concorrenti.** Non e' piu' una
+4. ~~La verifica dell'angolo sullo scaffale ADHD~~ — fatta il 06/09 sera,
+   `01 Ricerca/scaffale-adhd-adulti.md`. Esito: **NON SI FA sull'angolo**.
+5. **Le recensioni dei tre titoli piu' recensiti di quella lista** — cinque
+   minuti, ed e' l'unica condizione rimasta (vedi «Aperto adesso»).
+6. **Scegliere come procurarsi i dati dei concorrenti.** Non e' piu' una
    domanda senza risposta: due strade sono pronte e descritte in
    `_profili/note-mercato.md` §5-bis — il backend su Railway (vivo, con
    APIFY_TOKEN configurato; serve prima il merge della PR #2 e il redeploy,
    poi la chiave) oppure la raccolta nel browser (`scheda-raccolta.md` +
    `analizza_concorrenti.py`, che si puo' fare adesso). Manca solo la scelta.
-6. **Poi: su quale nicchia spenderla.** Non piu' «non su queste due»: il
+7. **Poi: su quale nicchia spenderla.** Non piu' «non su queste due»: il
    passo 1b ha riaperto entrambe a livello di angolo. La classifica dei temi
    in crescita resta in `_profili/note-mercato.md` §2, e da li' viene la
    piega piu' forte di questo progetto (ADHD adulti, indice 2,59 e 277.376
    visite: la miglior combinazione crescita+volume della tabella).
-7. **Solo con un SI FA scritto:** `avatar-cliente`.
+8. ~~`avatar-cliente`~~ — non si apre: non c'e' nessun SI FA da cui partire.
 
 ## Da non dimenticare
 
@@ -199,3 +205,33 @@ esce da qui, ed e' registrata in `_profili/note-mercato.md` §3-bis. Vale per
 ogni nicchia futura: un editore in cima a una lista non dice quanto vende quel
 libro, e in due nicchie su due i numeri veri erano molto piu' bassi di quanto
 la categoria facesse pensare.
+
+
+## 8. La verifica che ha chiuso l'angolo, e l'errore che l'aveva aperto
+
+06/09 sera. Lo scaffale `adhd adulti` e' stato guardato nel browser, ed e'
+`01 Ricerca/scaffale-adhd-adulti.md`. Il conteggio chiesto — quanti clinici,
+quanti pratici — e' tornato **1 clinico e 10 pratici per l'adulto che ce l'ha
+addosso**, su quattordici titoli in prima pagina. Dodici su quattordici
+autopubblicati, otto in Kindle Unlimited.
+
+La piega piu' forte del passo 1b poggiava su una frase di
+`_profili/note-mercato.md` §3: sopra ADHD adulti c'erano «sei concorrenti, o
+clinici o strategie generiche», quindi in mezzo non c'era niente. In mezzo c'e'
+tutto.
+
+**L'errore, con la causa tecnica.** Quei sei erano i titoli emersi da un paio
+di ricerche, e accanto era anche scritto che l'elenco era «parziale per
+difetto». Poi la frase e' stata riusata come se fosse un censimento. La regola,
+ora anche in `note-mercato.md` §3:
+
+> Un conteggio di concorrenti dichiarato parziale non puo' reggere una
+> conclusione sul vuoto. Un elenco che sa di essere incompleto puo' dire
+> «e' occupato», mai «e' libero».
+
+**Cosa invece ha funzionato, e va detto insieme all'errore.** Il passo 1b non
+aveva scritto SI FA: aveva scritto «in corso, manca la verifica sullo
+scaffale», e messo quella verifica come punto 1. Se avesse chiuso con un SI
+FA, adesso ci sarebbero un avatar e un outline costruiti su un vuoto
+inesistente. Il cancello e' costato una ricerca nel browser invece di tre
+settimane — ed e' esattamente il mestiere che fa.

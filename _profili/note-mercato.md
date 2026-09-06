@@ -76,15 +76,40 @@ comune considera «sempre validi», e stanno perdendo terreno piu' della media.
 | Tema | Concorrenti visti | Ancore con editore | Concentrazione |
 |---|---:|---|---|
 | Gioco d'azzardo | 4 | **nessuna trovata** | tutti autopubblicati |
-| ADHD adulti | 6 | 2-3 testi clinici | o clinico, o «strategie» generiche |
+| ADHD adulti | **14** (vedi sotto) | 2 | **falso: il centro e' pieno** |
 | Endometriosi | 6 | Signorile, Cook | **tutti sull'alimentazione** |
 | Mindfulness | molti | molte | satura da anni |
 
+**Correzione del 06/09 sera, sulla riga ADHD adulti.** Quel «6 concorrenti, o
+clinico o strategie generiche» era sbagliato, ed e' stato sbagliato in un modo
+che conta: era un elenco emerso da un paio di ricerche — dichiarato «parziale
+per difetto» quando fu scritto — poi usato come se fosse un censimento. La
+prima pagina di `adhd adulti` su Amazon.it ha **quattordici titoli**, di cui
+**uno solo clinico e dieci pratici rivolti all'adulto che ce l'ha addosso**;
+dodici su quattordici sono autopubblicati e otto stanno in Kindle Unlimited.
+Il posto «fra il manuale e il consiglio generico» non e' vuoto: e' dove stanno
+tutti. Raccolta e conteggio in
+`progetti/autosabotaggio/01 Ricerca/scaffale-adhd-adulti.md`.
+
+Ne esce una regola, e vale per ogni riga di questa tabella:
+
+> Un conteggio di concorrenti dichiarato parziale non puo' reggere una
+> conclusione sul vuoto. Un elenco che sa di essere incompleto puo' dire
+> «e' occupato», mai «e' libero».
+
+**Le altre tre righe della tabella sono nate allo stesso modo** — poche
+ricerche, elenco parziale — quindi vanno lette come indizi di occupazione, mai
+come prova di spazio. In particolare «Gioco d'azzardo: 4 concorrenti, nessuna
+ancora editoriale» non e' dimostrato che sia un vuoto: e' dimostrato che in due
+ricerche non e' emerso un editore.
+
 Due cose utili si vedono anche senza i dati di vendita:
 
-- **La ludopatia non ha nessuna ancora editoriale.** Nessun Mondadori,
-  nessun Vallardi in mezzo: solo pen name. E' l'unico dei cinque dove non c'e'
-  un editore che presidia. In compenso la domanda su Amazon e' magra.
+- **La ludopatia non ha nessuna ancora editoriale** *fra i titoli emersi*.
+  Nessun Mondadori, nessun Vallardi: solo pen name. Da leggere con la
+  correzione qui sopra — e' l'unico dei cinque dove in due ricerche non e'
+  emerso un editore, il che non e' la stessa cosa che non ce ne siano. In
+  compenso la domanda su Amazon e' magra.
 - **L'endometriosi ha l'offerta tutta su un angolo solo**, l'alimentazione.
   Sei libri, sei sulla dieta. Quello che non c'e' e' il resto: diagnosi,
   lavoro, coppia, dolore cronico quotidiano.
