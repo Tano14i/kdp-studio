@@ -121,7 +121,7 @@ vuol dire che sullo scaffale non ci sia: la ricerca di Amazon.it da qui
 risponde 503, e tutto quello che si sa dei titoli italiani passa da quello che
 un motore decide di mostrare. E' un indizio forte, non una misura.
 
-## 5. A che punto siamo
+## 5. Le due ricerche mancanti: nessun risultato
 
 Il passo 1b su questo progetto resta **in corso**. Sono state chiuse due
 domande e ne resta aperta una, che e' quella che decide.
@@ -133,15 +133,91 @@ NON SI FA del passo 1 e' definitivo e non si riapre.
 quali con editore (§2). Non e' un vuoto invitante: e' un posto dove qualcuno
 ha gia' provato e non ha funzionato.
 
-**Aperto, ed e' l'unica cosa che manca:** lo scaffale della **riparazione**,
-sulle due ricerche che non sono state ancora fatte —
-`dopo aver urlato ai figli` e `chiedere scusa ai figli`, su Amazon.it. Servono
-solo i titoli: i numeri si leggono poi a macchina.
+**Fatte il 06/09 sera. Esito: nessun risultato**, su entrambe.
 
-La domanda a cui rispondono, formulata adesso per non poterla piegare dopo:
+La domanda era stata formulata prima di vederne l'esito, per non poterla
+piegare dopo:
 
 > Esiste un libro italiano per genitori che venda **cosa si fa dopo**, invece
 > di come non farlo? Se esiste ed e' forte, l'angolo e' chiuso. Se esiste ed e'
 > debole come i tre della colpa, vale la lettura B di §3 e l'angolo e' chiuso
 > lo stesso. **Se non esiste affatto**, allora contano i contenuti di §4, e
 > l'angolo passa al concept.
+
+Il terzo caso.
+
+### Prima di crederci: quanto vale uno zero
+
+In questo repo uno zero ha gia' ingannato due volte, ed e' scritto in
+`note-mercato.md` §6 che **prima di credere a uno zero si verifica di aver
+interrogato la cosa giusta**. Un «nessun risultato» dalla ricerca di Amazon su
+una frase lunga in italiano e' uno strumento debole: potrebbe essere il motore
+che non regge la frase, non lo scaffale che e' vuoto. Prenderlo per buono
+sarebbe la terza replica dello stesso errore — e per giunta nella direzione in
+cui fa comodo, che e' la peggiore.
+
+Per questo la conclusione poggia su **tre strade indipendenti**, non su quella:
+
+| Strada | Esito |
+|---|---|
+| Ricerca Amazon.it su `dopo aver urlato ai figli` e `chiedere scusa ai figli` | nessun risultato |
+| Ricerca in rete di un libro italiano sulla riparazione (tre formulazioni diverse) | nessun libro per genitori; escono articoli, podcast, e libri illustrati **per bambini** sul chiedere scusa |
+| Ricerca in rete sul termine tecnico «rottura e riparazione» | un volume FrancoAngeli su separazione e divorzio (altro tema), un articolo sull'«educazione riparativa». Nessun libro pratico per genitori |
+
+Due delle tre non passano dalla casella di ricerca di Amazon, quindi lo zero
+non e' piu' un artefatto di un solo strumento. E' la regola del repo:
+*una conclusione che decide un investimento va verificata due volte, da due
+angoli diversi.*
+
+### Cosa c'e' al posto del libro
+
+L'unico titolo che esce cercando la riparazione e' *Smettere di urlare e'
+facile* di Rona Renner — che e' di nuovo la **prevenzione**, tradotta. Il
+resto e' contenuto gratuito, e si accumula:
+
+- Unobravo, «Urlare ai figli: come gestire la vergogna da genitore»
+- Unobravo, «Perche' urlo ai miei figli? Rabbia e vergogna genitoriale»
+- Nostrofiglio, «Ho urlato a mio figlio: ho rovinato tutto?»
+- ilgenitoreconsapevole.it, «Che differenza c'e' tra scusarsi e riparare?»
+- La Tela, podcast «Riparare e chiedere scusa: non e' lo stesso»
+- genitorisenzastress, «Perche' urlare ai tuoi figli non funziona»
+
+Sei fonti diverse, tutte gratuite, tutte sulla stessa domanda. E' il quadro
+che `ricerca-inversa` descrive: **la domanda e' servita, il libro no.**
+
+## 6. Verdetto sull'angolo: SI FA
+
+Primo SI FA di questo repo, dopo cinque temi misurati e due progetti chiusi.
+Va scritto con dentro anche cio' che lo indebolisce, perche' il passo
+successivo ci si costruisce sopra.
+
+**Cosa lo regge:**
+
+- nessun libro italiano sulla riparazione, verificato da tre strade (§5);
+- la domanda esiste e viene servita da sei fonti gratuite diverse (§5);
+- **il pubblico c'e' e spende**: lo scaffale accanto fa 211, 184 e 113
+  recensioni (§1). Non e' un vuoto in una stanza vuota, e' un vuoto dentro un
+  reparto affollato;
+- due lettrici italiane, sotto l'incumbent, dicono con parole loro di essersi
+  sentite giudicate (`01b-angolo.md` §2). E' il bisogno che nessuno raccoglie.
+
+**Cosa lo indebolisce, e va portato al passo successivo invece che dimenticato:**
+
+- **la cornice della colpa non vende** (§2): 10, 4 e 2 recensioni, con Sonzogno
+  e Vallardi dietro. E' l'unico contro-indizio duro che abbiamo;
+- l'ipotesi che spiega la differenza — *gli stati non vendono, le azioni si'*
+  (§3) — **non e' verificata**, ed e' quella su cui poggia il fatto che il
+  contro-indizio non colpisca questo angolo;
+- che una riparazione non abbia libri potrebbe avere un motivo che non
+  conosciamo. `ricerca-inversa` §4, domanda 2: un pubblico che non compra e'
+  un vuoto che resta vuoto.
+
+**La condizione che il SI FA porta con se', al checkpoint 1:**
+
+> Il concept deve promettere un'**azione**, non uno stato. «Cosa fai nei dieci
+> minuti dopo» si puo' fare; «un libro per non sentirti in colpa» e' gia' stato
+> provato da due editori e ha fatto 10 e 2 recensioni. Se le opzioni di
+> `concept-positioning` scivolano sulla seconda, questo verdetto non le copre.
+
+Il passo 1b e' chiuso. Il prossimo e' il **passo 2, `avatar-cliente`**.
+

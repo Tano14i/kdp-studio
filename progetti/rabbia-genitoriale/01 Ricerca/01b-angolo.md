@@ -265,6 +265,22 @@ pagina raggiungibile e' una versione leggera che non li porta, e
 
 ## 6. A che punto e' il passo 1b
 
+**Chiuso il 06/09 sera con SI FA sull'angolo.** La verifica sullo scaffale e'
+in `scaffale-il-dopo.md`, e il verdetto con le sue riserve sta li' §6. In
+breve: nessun libro italiano sulla riparazione — verificato da tre strade
+indipendenti — dentro un reparto che vende (211, 184, 113 recensioni sulla
+prevenzione), con sei fonti gratuite che servono gia' quella domanda.
+
+Il SI FA porta con se' una condizione al checkpoint 1: **il concept deve
+promettere un'azione, non uno stato.** L'unico contro-indizio duro e' che i
+tre libri sulla colpa dei genitori fanno 10, 4 e 2 recensioni con Sonzogno e
+Vallardi dietro.
+
+**Quello che segue e' il testo com'era prima della verifica**, e resta perche'
+mostra su cosa poggiava il ragionamento prima che i numeri arrivassero.
+
+### Com'era scritto qui prima del 06/09 sera
+
 **In corso — verifica sullo scaffale mancante.** Non e' un SI FA e non e' un
 NON SI FA.
 

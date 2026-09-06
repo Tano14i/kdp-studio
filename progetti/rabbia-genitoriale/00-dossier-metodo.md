@@ -23,8 +23,8 @@ decide il titolo vero, e questa cartella non si rinomina mai.
 |---|------|-------|-----------|-----------|
 | 0 | Cartella e convenzioni | fatto | — | 06/09 |
 | 1 | Nicchia e concorrenti | fatto — **NON SI FA** sul tema | — | 06/09 |
-| 1b | Angolo (`ricerca-inversa`) | **in corso** — manca la verifica | — | |
-| 2 | Avatar cliente | da fare | — | |
+| 1b | Angolo (`ricerca-inversa`) | fatto — **SI FA** sull'angolo | — | 06/09 |
+| 2 | Avatar cliente | **da fare — aperta** | — | |
 | 3 | Concept e positioning | da fare | CP1 | |
 | 4 | Titolo, sottotitolo, copertina | da fare | CP2 | |
 | 5 | Outline | da fare | CP3 | |
@@ -54,57 +54,36 @@ chiuso o solo fermo.
 
 ## Aperto adesso
 
-**Due ricerche su Amazon.it, e servono solo i titoli.** La verifica dell'angolo
-e' stata fatta a meta' il 06/09 sera —
-`01 Ricerca/scaffale-il-dopo.md` — e restano aperte `dopo aver urlato ai
-figli` e `chiedere scusa ai figli`.
+**Il passo 1b e' chiuso con SI FA sull'angolo, ed e' il primo di questo repo.**
+Il progetto riparte. Vedi §7 e `01 Ricerca/scaffale-il-dopo.md` §6.
 
-Quello che si sa gia':
+L'angolo: *non un altro libro su come non urlare, ma cosa si fa nei dieci
+minuti dopo — per il genitore che ha gia' urlato e lo sa.*
 
-- **la prevenzione vende sul serio.** 211, 184 e 113 recensioni sui primi tre
-  di «educare senza urlare». Il NON SI FA sul tema e' definitivo;
-- **la cornice della colpa e' occupata da tre libri deboli** — 10, 4 e 2
-  recensioni — e due hanno dietro Sonzogno e Vallardi. Non e' un vuoto
-  invitante: e' un posto dove qualcuno ha gia' provato senza riuscirci;
-- **della riparazione dopo l'urlo non risulta nessun libro italiano**, ma
-  girano articoli, un podcast e un reel — compreso un pezzo intitolato «Ho
-  urlato a mio figlio: ho rovinato tutto?», che e' l'angolo candidato parola
-  per parola, scritto da un giornale invece che da un autore.
+**Il prossimo passo e' il 2, `avatar-cliente`**, e ha bisogno di una cosa che
+ancora non c'e': le **recensioni negative dei concorrenti**, testo intero. Al
+momento ce ne sono tre, di lettrici italiane sotto Novara su Goodreads
+(`01 Ricerca/01b-angolo.md` §2). Bastano a sostenere un'ipotesi, non a
+costruire un avatar.
 
-La domanda che decide, formulata prima di vedere i risultati per non poterla
-piegare dopo, sta in `scaffale-il-dopo.md` §5. In breve: se un libro sul
-«dopo» esiste, l'angolo e' chiuso — forte o debole che sia. Se non esiste
-affatto, passa al concept.
+Da prendere, con `scheda-raccolta.md` parte B, sui tre concorrenti piu'
+recensiti della prevenzione — che adesso si sanno per nome e per numero:
 
-La fase 2 non parte prima. E' la regola che oggi ha gia' chiuso due progetti
-invece di farli scrivere.
+| ASIN | Titolo | Recensioni |
+|---|---|---:|
+| `B0BDNFCH9N` | Merini, *Educare Senza Urlare: 4 libri in 1* | 211 |
+| `B0CZ5P4SD5` | Petrucciani, *Educare senza perdere la calma* | 184 |
+| `B0CK3ZZKQS` | Nunziata, *Educare senza urlare* | 113 |
 
-## Da non dimenticare
+Filtro 1, 2 e 3 stelle, dieci-quindici per libro, **testo intero, senza
+riassumere**. Se sotto tre libri diversi torna la stessa frase di Novara — «mi
+ha fatto sentire in colpa» — la piega portante dell'angolo smette di essere
+un'ipotesi e diventa il primo capitolo.
 
-- **Il mercato e' Amazon.it, in italiano.** Scelto il 06/09. Ogni misura va
-  presa su amazon.it: una presa su amazon.com non vale e non va confrontata.
-- **Lo strumento va puntato sul mercato giusto.** L'autocomplete di Amazon su
-  `completion.amazon.com` risponde 200 con lista vuota per ogni marketplace
-  non-US. Uno zero cosi' sembra assenza di domanda e non lo e'. Corretto in
-  `kdp_server.py` il 06/09; `test_amazon_markets.py` lo sorveglia.
-- **Su Amazon.it l'alias `stripbooks` non filtra ai soli libri.** Le radici
-  nominali ("guida per") tornano ferramenta. Solo radici a verbo di intento.
-- **Il suffisso «libro» in una query e' un segnale di vuoto.** Chi scrive
-  "... libro" lo fa perche' la ricerca senza quella parola non gli ha fatto
-  emergere un libro.
-- **C'e' un incumbent forte nella genitorialita' italiana** (Novara, «Urlare
-  non serve a nulla»), con distribuzione editoriale vera. Va misurato prima
-  di decidere l'angolo, non dopo. Misurato il 06/09: non era uno, erano tre
-  con editore piu' dieci autopubblicati.
-- **Il suffisso «+libro» in una query NON e' un segnale di vuoto.** Lo avevo
-  creduto e usato per costruire la rosa delle nicchie: smentito il 06/09
-  stesso, vedi `01 Ricerca/report-nicchia.md` §9. Misura il fatto che su
-  Amazon.it il filtro del reparto Libri non funziona, non un buco di mercato.
-- **Una query senza autore attaccato non e' una query libera.** Puo' essere
-  un titolo cosi' noto da non aver bisogno del nome dell'autore: e' il caso
-  di «come non odiare tuo marito dopo i figli», che e' un Sonzogno del 2017.
-  Prima di chiamare vuota una query, si cerca il titolo. Errore commesso e
-  corretto il 06/09, vedi `01 Ricerca/report-nicchia.md` §5.
+**La condizione che il SI FA si porta dietro**, e che vale al checkpoint 1: il
+concept deve promettere un'**azione**, non uno **stato**. «Un libro per non
+sentirti in colpa» e' gia' stato provato da Sonzogno e Vallardi, e ha fatto 10
+e 2 recensioni.
 
 ## Cosa manca, in ordine
 
@@ -121,11 +100,16 @@ invece di farli scrivere.
    APIFY_TOKEN configurato; serve prima il merge della PR #2 e il redeploy,
    poi la chiave) oppure la raccolta nel browser (`scheda-raccolta.md` +
    `analizza_concorrenti.py`, che si puo' fare adesso). Manca solo la scelta.
-6. **Poi, e solo con un SI FA scritto:** `avatar-cliente`.
+5. ~~La verifica dell'angolo~~ — fatta il 06/09 sera, esito **SI FA**
+   (`01 Ricerca/scaffale-il-dopo.md`).
+6. **Le recensioni negative dei tre concorrenti piu' recensiti** — vedi
+   «Aperto adesso». E' l'ingresso della fase 2, e l'unica cosa che manca.
+7. **Poi: `avatar-cliente`**, sulle stesse recensioni.
 
 Tutto il resto della mappa (concept, copertina, outline, DNA, campione,
-manoscritto, revisione, interni, immagini, scheda) resta fermo: non e' «da
-fare piu' avanti», e' da non fare finche' il punto 4 non ha risposta.
+manoscritto, revisione, interni, immagini, scheda) e' adesso **da fare piu'
+avanti** e non piu' «da non fare»: e' cambiato il 06/09 sera con il SI FA. Ma
+si fa in ordine, e il prossimo e' il 2.
 
 ## Errori commessi e come sono stati corretti
 
@@ -209,3 +193,37 @@ dipendeva da quei numeri. Sul progetto gemello lo stesso controllo ha trovato
 la stessa cosa in modo piu' netto. La regola che ne esce, e che vale per ogni
 misura futura: **«ancora con editore» e' una categoria, non una misura.**
 Registrata in `_profili/note-mercato.md` §3-bis.
+
+
+## 7. Il SI FA del 06/09 sera
+
+Primo verdetto positivo del repo, dopo cinque temi misurati e due progetti
+chiusi. Le prove stanno in `01 Ricerca/scaffale-il-dopo.md`; qui il minimo che
+serve per riprendere senza riaprirlo.
+
+**Cosa e' stato verificato.** Le quattro ricerche dell'angolo su Amazon.it.
+Due — `dopo aver urlato ai figli` e `chiedere scusa ai figli` — non danno
+nessun risultato.
+
+**Perche' a quello zero si e' creduto.** Non da solo. In questo repo uno zero
+ha gia' ingannato due volte, e un «nessun risultato» dalla ricerca di Amazon su
+una frase lunga in italiano e' uno strumento debole. La conclusione poggia su
+**tre strade indipendenti**, due delle quali non passano da quella casella:
+nessun libro italiano per genitori sulla riparazione esce ne' cercando il tema
+in tre formulazioni diverse, ne' cercando il termine tecnico «rottura e
+riparazione». Escono articoli, un podcast, e libri illustrati **per bambini**
+sul chiedere scusa, che sono il pubblico opposto.
+
+**Cosa c'e' al posto del libro.** Sei fonti gratuite sulla stessa domanda —
+Unobravo (due), Nostrofiglio, ilgenitoreconsapevole, il podcast La Tela,
+genitorisenzastress. La domanda e' servita, il libro no.
+
+**Il vuoto e' dentro una stanza piena.** Lo scaffale accanto — la prevenzione —
+fa 211, 184 e 113 recensioni. Il pubblico c'e' e spende: e' la differenza fra
+un vuoto e un deserto.
+
+**Il contro-indizio, che va portato avanti e non dimenticato.** I tre libri
+sulla colpa dei genitori fanno 10, 4 e 2 recensioni, e due hanno dietro
+Sonzogno e Vallardi. L'ipotesi che spiega perche' questo non colpisca l'angolo
+— *gli stati non vendono, le azioni si'* — **non e' verificata**. E' per questo
+che il SI FA arriva al checkpoint 1 con una condizione attaccata.
