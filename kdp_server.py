@@ -1282,6 +1282,12 @@ FILTRI_STELLE = {
 }
 
 
+def _actor_marketplace(country: str) -> str:
+    """Il codice paese della tabella nel formato che l'actor si aspetta.
+    Coincidono tranne il Regno Unito: da noi GB (ISO), per l'actor UK."""
+    return {"GB": "UK"}.get((country or "US").upper(), (country or "US").upper())
+
+
 def amazon_reviews_url(asin: str, market: str = "us", filtro: str = "") -> str:
     """Pagina delle recensioni di un ASIN, eventualmente filtrata per stelle."""
     import urllib.parse as _up
@@ -4516,13 +4522,20 @@ async def fetch_amazon_reviews(req: dict):
 
     async def fetch_for_asin(asin: str, fetch_tld: str = tld, fetch_country: str = country_code,
                              fetch_market: str = marketplace) -> list:
+        # Nomi dei campi presi dallo schema di input pubblicato dell'actor
+        # (apify.com/automation-lab/amazon-reviews-scraper/input-schema), non
+        # indovinati. Prima ne passavamo quattro e tre avevano il nome
+        # sbagliato — maxReviews, countryCode, filterByStar — quindi l'actor
+        # li ignorava tutti e usava i default: 5-10 recensioni invece di 60,
+        # nessun filtro, e marketplace US anche chiedendo l'Italia (da li' il
+        # rabbocco da amazon.com). Un campo ignorato non da' errore: da'
+        # silenziosamente il default, che e' il modo peggiore di sbagliare.
         per_asin = ("automation-lab/amazon-reviews-scraper", {
             "asins": [asin],
-            "maxReviews": max_per_asin,
-            "reviewsCount": max_per_asin,
-            "countryCode": fetch_country,
-            # Se l'actor non conosce questo campo lo ignora: non fa danno.
-            **({"filterByStar": filtro} if filtro else {}),
+            "marketplace": _actor_marketplace(fetch_country),
+            "maxReviewsPerProduct": max_per_asin,
+            "sort": "recent",                       # le date piu' utili alla curva
+            "filterByStars": filtro or "all",
         })
         per_url = ("epctex/amazon-reviews-scraper", {
             # Non /dp/<asin> ma la pagina delle recensioni, che accetta
