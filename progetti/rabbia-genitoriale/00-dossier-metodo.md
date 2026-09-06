@@ -25,8 +25,8 @@ decide il titolo vero, e questa cartella non si rinomina mai.
 | 1 | Nicchia e concorrenti | fatto — **NON SI FA** sul tema | — | 06/09 |
 | 1b | Angolo (`ricerca-inversa`) | fatto — **SI FA** sull'angolo | — | 06/09 |
 | 2 | Avatar cliente | fatto — **prima stesura**, campione magro | — | 06/09 |
-| 3 | Concept e positioning | fatto — **CP1 chiuso** | CP1 | 06/09 |
-| 4 | Titolo, sottotitolo, copertina | **da fare — aperto** | CP2 | |
+| 3 | Concept e positioning | **CP1 riaperto** su A2 | CP1 | |
+| 4 | Titolo, sottotitolo, copertina | fermo — aspetta il CP1 | CP2 | |
 | 5 | Outline | da fare | CP3 | |
 | 6 | DNA stilistico | da fare | CP4 | |
 | 7 | Campione di scrittura | da fare | CP5 | |
@@ -54,34 +54,42 @@ chiuso o solo fermo.
 
 ## Aperto adesso
 
-**Il checkpoint 1 e' chiuso.** Deciso dall'autore il 06/09:
+**Il checkpoint 1 e' riaperto, e su un punto solo: A2.** B1, B3, B4, B8, C1 e
+D2 reggono e non si ridiscutono.
 
-```
-A2 ,  B1 + B3 + B4 + B8 ,  C1 ,  D2
-```
+Motivo: sono state lette le ~60 recensioni a 5 stelle che `02-avatar.md` §8
+indicava come la cosa che avrebbe cambiato di piu' il quadro. L'hanno
+cambiato. Tutto in `02 Validazione/riesame-cp1.md`; qui il minimo.
 
-Il libro del dopo — cosa fare quando la tecnica gentile non ha funzionato.
-Ogni esempio fallisce prima di riuscire, ogni capitolo si regge da solo,
-novanta-cento pagine a 9,99-10,99 euro, con una scheda stampabile.
+**La premessa emotiva di A2 e' smentita.** «Nessuno raccoglie il genitore dalla
+parte della colpa» era falso: Petrucciani lo fa, ed e' il motivo ricorrente
+delle sue cinque stelle — «senza ambire ad una perfezione che non è possibile»,
+«ti fanno sentire umano e non sbagliato», «togliermi i sensi di colpa»,
+«normalizzare […] è un balsamo». Alvise resta vero per se': e' una lettura di
+minoranza dello stesso libro.
 
-> Per chi ha gia' letto «come non urlare» e alla decima volta ha urlato lo
-> stesso: questo libro comincia da li' — a differenza di *Educare senza
-> perdere la calma*, dove ogni esempio riesce al primo tentativo.
+**Cosa sopravvive, piu' stretto e piu' pulito.** Nessuna delle 60 entusiaste
+dice che il libro le abbia detto **cosa fare** quando il metodo non funziona.
+Il conforto c'e', la mossa tattica no. Il buco 2 passa da posizione emotiva a
+lacuna tattica, e ora poggia anche sull'assenza in 60 recensioni positive —
+che e' una prova piu' forte delle 3 negative da cui era nato.
 
-Documenti: `02 Validazione/concept-scelto.md`, `concept-scartati.md`,
-`decisioni/01-concept.md`.
+**Il problema nuovo, ed e' il piu' serio.** I lettori di Petrucciani comprano
+**la dottoressa**: «la dott.ssa Petrucciani incarna», «una professionista»,
+«c'è competenza», «Grazie Dottoressa!». B5 non e' stato scelto. Contro Merini
+e' un vantaggio; contro Petrucciani — il concorrente nominato nella nostra
+promessa — e' uno svantaggio diretto.
 
-**Il prossimo passo e' il 4 — titolo, sottotitolo, copertina — che e' il
-checkpoint 2.** Arriva con cinque vincoli gia' decisi, e uno va letto prima di
-qualunque bozza:
+**Le tre strade** (dettaglio in `riesame-cp1.md` §7, si sommano fra loro):
 
-> **Il libro non pretende autorevolezza.** B5 non e' stato scelto, quindi il
-> buco 7 resta aperto: niente «esperta di», niente credenziali vaghe, nessuna
-> allusione a una competenza che non c'e'. La via di mezzo e' l'unica forma che
-> i lettori puniscono — uno di loro e' andato a cercare l'autrice di Merini e
-> ha scoperto che non esiste.
+1. **tenere A2, stretto sulla tattica** — pubblico piu' piccolo, buco verificato
+   in tre modi e ora anche contro 60 entusiaste;
+2. **scivolare verso il principiante** — dove sta il grosso del mercato, ma
+   concorrenza frontale con Petrucciani senza la dottoressa;
+3. **riaprire B5** — indipendente dalle altre due, toglie l'unico svantaggio
+   diretto.
 
-Gli altri quattro stanno in `decisioni/01-concept.md`.
+**Finche' non c'e' una scelta scritta, il passo 4 non parte.**
 
 ## Cosa manca, in ordine
 
@@ -108,8 +116,8 @@ Gli altri quattro stanno in `decisioni/01-concept.md`.
    scelta dell'autore**: e' il checkpoint 1.
 9. ~~`concept-positioning`, checkpoint 1~~ — chiuso dall'autore il 06/09.
 10. **Passo 4, titolo e copertina** — e' il checkpoint 2, ed e' il prossimo.
-11. **Le recensioni a 4 e 5 stelle** di Merini e Petrucciani, prima
-    dell'outline: e' li' che stanno i buchi che l'avatar non vede.
+11. ~~Le recensioni a 4 e 5 stelle di Merini e Petrucciani~~ — lette il 06/09
+    sera, ~60. Hanno riaperto il checkpoint 1: vedi «Aperto adesso».
 
 Tutto il resto della mappa (concept, copertina, outline, DNA, campione,
 manoscritto, revisione, interni, immagini, scheda) e' adesso **da fare piu'

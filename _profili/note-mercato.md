@@ -349,6 +349,14 @@ portata, e restano il pezzo che serve il browser dell'autore.
   peggio ancora — completa per prefisso, quindi una frase gia' completa non
   ha continuazioni e restituisce zero sempre. `sonda_angolo.py` chiede a
   scala di prefissi apposta.
+- **La media delle stelle non dice come e' fatto lo scaffale: lo dicono le
+  date.** Su Merini (4,3 su 211) ~25 delle ~30 cinque stelle lette stanno in
+  cinque settimane del 2022, e le stroncature arrivano dopo, sparse su quattro
+  anni; due di quelle recensioni, da account diversi, hanno lo stesso testo con
+  lo stesso errore dentro. Su Petrucciani (4,7 su 185) le cinque stelle sono
+  distribuite su ventotto mesi senza concentrazioni. **Sono due numeri che si
+  assomigliano e due mercati diversi.** Prima di dire quanto e' forte un
+  concorrente, si guarda la distribuzione delle date delle recensioni positive.
 - **Su Wikipedia, una richiesta fallita non e' una voce assente.** Con sei
   worker in parallelo il 429 diventava «voce inesistente» e cancellava meta'
   della classifica. Solo un 404 conta come assenza.

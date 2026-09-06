@@ -191,15 +191,46 @@ questo documento e va al checkpoint 1.
 
 ## 5. Chi compra
 
-**Chi legge e chi compra sono la stessa persona.** Nessuna delle 24 dice «l'ho
-preso per», «regalo», «per mia figlia che e' diventata mamma». Il segnale
-regalo, che `avatar-cliente` §2 dice di cercare, **qui non c'e'**.
+> **CORRETTO IL 06/09 SERA.** Quello che c'era scritto qui era sbagliato, e per
+> l'errore esatto che `avatar-cliente` §5 mette in cima alla lista di quelli
+> che costano: **avevo letto solo le stelle basse.** Il testo originale e'
+> conservato piu' sotto perche' l'errore vale piu' della conclusione giusta.
 
-Controprova fatta sulla seconda fonte, come chiede §3: l'autocomplete di
-Amazon.it su `regalo per genitori` completa **`regalo per genitori dai figli`**
-— cioe' il regalo in questo reparto va nella direzione opposta, dai figli
-adulti ai genitori anziani. Non e' il nostro caso.
-(`01 Ricerca/dati-avatar-controprova.json`, generato.)
+**Il segnale regalo esiste**, e sta dove non avevo guardato:
+
+> «Preso come **regalo per una coppia di neogenitori** che hanno apprezzato
+> molto» — Mirko Moro, 5 stelle su Merini
+
+**Il compratore e' piu' largo del lettore.** Dalle ~60 entusiaste
+(`01 Ricerca/recensioni-positive.txt`): educatori di nido («sono
+un'educatrice di nido da vent'anni»), insegnanti, genitori di bambini con
+disabilita', chi non e' genitore affatto («premetto che non sono genitore ma ho
+avuto una mamma che mi ha sempre urlato»), e soprattutto **neogenitori** — che
+sono la maggioranza delle cinque stelle di Merini.
+
+**E chi compra il best seller e' chi comincia**, non chi ha gia' provato:
+«sono alle prime armi con l'argomento», «sono mamma da poco», «per chi e'
+genitore da poco o lo diventera' in futuro», «adattissimo se avete bambini
+piccoli». Ha conseguenze sul concept, ed e' in
+`02 Validazione/riesame-cp1.md` §4.
+
+**Cosa fa comprare:** le recensioni degli altri. Tre lettori su ventiquattro lo
+dicono in chiaro, ed e' l'unico meccanismo di acquisto attestato. Va tenuto per
+il passo 12.
+
+### Il testo sbagliato, e perche' lo era
+
+> «Chi legge e chi compra sono la stessa persona. Nessuna delle 24 dice «l'ho
+> preso per», «regalo». Il segnale regalo, che `avatar-cliente` §2 dice di
+> cercare, qui non c'e'. Controprova sulla seconda fonte: l'autocomplete di
+> Amazon.it su `regalo per genitori` completa `regalo per genitori dai figli`
+> — cioe' il regalo in questo reparto va nella direzione opposta.»
+
+La controprova non era sbagliata: l'autocomplete dice davvero quello. Era
+sbagliato **il campione a monte** — 24 recensioni tutte negative — e la
+controprova su una seconda fonte non salva una domanda posta a un campione
+storto. *Una seconda fonte conferma o smentisce una misura; non la corregge se
+la misura guardava dall'inizio la meta' sbagliata del mondo.*
 
 **Cosa fa comprare, invece: le recensioni degli altri.** Tre lettori su
 ventiquattro lo dicono in chiaro, ed e' l'unico meccanismo di acquisto
@@ -253,9 +284,32 @@ la lamentela 4 e' quarta per frequenza ma prima per profondita' — e' l'unica
 formulata come una domanda a cui un libro puo' rispondere. Le tre sopra di lei
 dicono come deve essere fatto il libro, non di cosa parla.
 
+## 7-bis. Cosa i concorrenti fanno bene
+
+Aggiunto il 06/09 sera con le ~60 entusiaste. E' la parte che
+`avatar-cliente` §2 chiede — quello che funziona nei concorrenti non va
+reinventato — e che senza le positive non si poteva scrivere.
+
+**Gli esempi sono il prodotto.** E' la cosa piu' ripetuta di tutta la raccolta:
+chi elogia elogia gli esempi («pieno di esempi in cui ti ritrovi», «esempi
+pratici e realistici», «esempi tratti dal quotidiano»), chi stronca chiede piu'
+esempi concreti. Circa 12 delle 30 entusiaste di Petrucciani li nominano.
+
+Poi: si legge d'un fiato · spiega come funziona il cervello del bambino · tono
+di un'amica, non di un manuale · cita le fonti invece di copiarle · un capitolo
+preciso che risolve una cosa precisa.
+
+Dettaglio e citazioni in `02 Validazione/riesame-cp1.md` §5.
+
 ## 8. Il buco di questo documento
 
 Va letto prima di costruirci sopra.
+
+> **AGGIORNATO IL 06/09 SERA: il buco principale e' stato colmato.** Sono state
+> lette ~60 recensioni a 5 stelle (Merini ~30, Petrucciani ~30), in
+> `01 Ricerca/recensioni-positive.txt`. Hanno corretto §5, aggiunto §7-bis, e
+> **riaperto il checkpoint 1** — vedi `02 Validazione/riesame-cp1.md`. Quello
+> che segue e' il testo di prima, e resta perche' aveva ragione.
 
 **Zero recensioni positive.** `avatar-cliente` §5 mette questo fra gli errori
 che costano: *«leggere solo le stelle basse — meta' dei buchi migliori sta
