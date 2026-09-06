@@ -4546,6 +4546,18 @@ async def fetch_amazon_reviews(req: dict):
             "sort": "recent",                       # le date piu' utili alla curva
             "filterByStars": filtro or "all",
         })
+        # neatrat/amazon-reviews-scraper: schema pubblicato con `ratings` ad
+        # array e "No Login Required". In produzione risponde 403
+        # actor-is-not-rented ($25/mese): resta qui perche' e' l'unico che
+        # dichiara di filtrare, e se un giorno viene noleggiato funziona senza
+        # toccare il codice. L'esito per-actor esce nella risposta.
+        con_ratings = ("neatrat/amazon-reviews-scraper", {
+            "asin": f"{fetch_tld.split('.')[-1] if fetch_tld != 'com' else 'com'}:{asin}",
+            "region": fetch_tld,
+            "maxReviews": max_per_asin,
+            "sortBy": "recent",
+            "ratings": STELLE_PER_FILTRO.get(filtro, [1, 2, 3, 4, 5]),
+        })
         # epctex/amazon-reviews-scraper e' stato tolto il 06/09: in ogni
         # chiamata della giornata ha risposto 403 actor-is-not-rented, cioe'
         # non e' mai partito. Come "riserva" costava un giro a vuoto per ASIN

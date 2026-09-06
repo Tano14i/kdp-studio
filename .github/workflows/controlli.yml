@@ -51,6 +51,9 @@ jobs:
       - name: Filtro pertinenza sui titoli veri di Amazon.it
         run: python test_pertinenza.py
 
+      - name: amazon-reviews — mai un 500, sempre un esito per actor
+        run: python test_amazon_reviews.py
+
       - name: Analisi concorrenti — conclude quando i dati bastano
         run: python analizza_concorrenti.py tests/fixtures/concorrenti-completi.csv
 
