@@ -4516,23 +4516,27 @@ async def fetch_amazon_reviews(req: dict):
 
     async def fetch_for_asin(asin: str, fetch_tld: str = tld, fetch_country: str = country_code,
                              fetch_market: str = marketplace) -> list:
-        actor_configs = [
-            ("automation-lab/amazon-reviews-scraper", {
-                "asins": [asin],
-                "maxReviews": max_per_asin,
-                "reviewsCount": max_per_asin,
-                "countryCode": fetch_country,
-                # Se l'actor non conosce questo campo lo ignora: non fa danno,
-                # e se lo conosce risparmia il giro sull'URL.
-                **({"filterByStar": filtro} if filtro else {}),
-            }),
-            ("epctex/amazon-reviews-scraper", {
-                # Non /dp/<asin> ma la pagina delle recensioni, che accetta
-                # filterByStar: e' li' che il filtro esiste davvero.
-                "startUrls": [{"url": amazon_reviews_url(asin, fetch_market, filtro)}],
-                "maxItems": max_per_asin,
-            }),
-        ]
+        per_asin = ("automation-lab/amazon-reviews-scraper", {
+            "asins": [asin],
+            "maxReviews": max_per_asin,
+            "reviewsCount": max_per_asin,
+            "countryCode": fetch_country,
+            # Se l'actor non conosce questo campo lo ignora: non fa danno.
+            **({"filterByStar": filtro} if filtro else {}),
+        })
+        per_url = ("epctex/amazon-reviews-scraper", {
+            # Non /dp/<asin> ma la pagina delle recensioni, che accetta
+            # filterByStar: e' li' che il filtro esiste davvero.
+            "startUrls": [{"url": amazon_reviews_url(asin, fetch_market, filtro)}],
+            "maxItems": max_per_asin,
+        })
+        # L'ordine conta piu' di quanto sembri. Il ciclo sotto si ferma al primo
+        # actor che risponde: con l'actor per ASIN in testa, quello per URL non
+        # veniva mai eseguito e il filtro per stelle non aveva mai la sua
+        # occasione. Verificato in produzione il 06/09: filtro "critical",
+        # dieci recensioni tornate, voto medio 4,8, zero negative.
+        # Quando un filtro c'e', va per primo l'unico che puo' onorarlo.
+        actor_configs = [per_url, per_asin] if filtro else [per_asin, per_url]
         for actor_id, actor_input in actor_configs:
             try:
                 result = await asyncio.wait_for(run_actor(actor_id, actor_input), timeout=90.0)
