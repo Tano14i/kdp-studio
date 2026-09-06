@@ -36,8 +36,12 @@ un verdetto ma un compito. Vedi `01 Ricerca/report-nicchia.md`.
 
 ## Aperto adesso
 
-Un dato, non una decisione: **le recensioni a 1, 2 e 3 stelle** dei tre libri
-con trazione — `8844056623`, `8858161254`, `B0G9X7BQ3T`.
+Un dato, non piu' una decisione: **le recensioni a 1, 2 e 3 stelle** dei tre
+libri con trazione — `8844056623`, `8858161254`, `B0G9X7BQ3T`.
+
+**Deciso il 06/09 sera, dall'autore: si raccolgono dal browser.** Scartato il
+noleggio di `neatrat` ($25/mese, non dimostrato). Link gia' filtrati e formato
+in `01 Ricerca/da-raccogliere.md`.
 
 E' l'unica cosa che manca per chiudere la fase 1. La fase 2 non parte prima,
 per quanto allettante sia: e' la regola che oggi ha risparmiato due libri.
