@@ -1274,6 +1274,24 @@ AMAZON_MARKETS = {
 # Alias accettati nelle richieste: "com" e "us" sono lo stesso mercato.
 _MARKET_ALIASES = {"com": "us", "en": "us", "gb": "uk", "co.uk": "uk"}
 
+# Valori accettati da Amazon per filterByStar sulla pagina delle recensioni.
+# "critical" e' 1-3 stelle: e' quello che serve per capire cosa manca a un libro.
+FILTRI_STELLE = {
+    "critical", "positive",
+    "one_star", "two_star", "three_star", "four_star", "five_star",
+}
+
+
+def amazon_reviews_url(asin: str, market: str = "us", filtro: str = "") -> str:
+    """Pagina delle recensioni di un ASIN, eventualmente filtrata per stelle."""
+    import urllib.parse as _up
+    par = {"ie": "UTF8", "reviewerType": "all_reviews"}
+    if filtro in FILTRI_STELLE:
+        par["filterByStar"] = filtro
+    return (f"https://www.amazon.{amazon_tld(market)}/product-reviews/{asin}?"
+            + _up.urlencode(par))
+
+
 # Gli endpoint che ricevono una lingua invece di un marketplace passano di qui.
 LANGUAGE_TO_MARKET = {
     "italian": "it", "italiano": "it", "it": "it",
@@ -4479,6 +4497,14 @@ async def fetch_amazon_reviews(req: dict):
     asins = [a.strip().upper() for a in raw_asins if a and len(a.strip()) >= 8]
     marketplace = req.get("marketplace", "us")
     max_per_asin = min(int(req.get("max_reviews", 50)), 100)
+    # Le recensioni che servono a capire cosa manca a un libro sono le negative,
+    # e senza filtro arrivano quasi solo 4-5 stelle. Amazon lo espone come
+    # parametro della pagina recensioni, non come funzione di un actor.
+    filtro = str(req.get("filtro_stelle") or req.get("star_filter") or "").strip().lower()
+    if filtro and filtro not in FILTRI_STELLE:
+        raise HTTPException(
+            status_code=400,
+            detail=f"filtro_stelle non valido: {filtro!r}. Ammessi: {', '.join(sorted(FILTRI_STELLE))}")
 
     if not asins:
         raise HTTPException(status_code=400, detail="Nessun ASIN valido fornito")
@@ -4488,16 +4514,22 @@ async def fetch_amazon_reviews(req: dict):
     tld = amazon_tld(marketplace)
     country_code = amazon_market(marketplace)["country"]
 
-    async def fetch_for_asin(asin: str, fetch_tld: str = tld, fetch_country: str = country_code) -> list:
+    async def fetch_for_asin(asin: str, fetch_tld: str = tld, fetch_country: str = country_code,
+                             fetch_market: str = marketplace) -> list:
         actor_configs = [
             ("automation-lab/amazon-reviews-scraper", {
                 "asins": [asin],
                 "maxReviews": max_per_asin,
                 "reviewsCount": max_per_asin,
                 "countryCode": fetch_country,
+                # Se l'actor non conosce questo campo lo ignora: non fa danno,
+                # e se lo conosce risparmia il giro sull'URL.
+                **({"filterByStar": filtro} if filtro else {}),
             }),
             ("epctex/amazon-reviews-scraper", {
-                "startUrls": [{"url": f"https://www.amazon.{fetch_tld}/dp/{asin}"}],
+                # Non /dp/<asin> ma la pagina delle recensioni, che accetta
+                # filterByStar: e' li' che il filtro esiste davvero.
+                "startUrls": [{"url": amazon_reviews_url(asin, fetch_market, filtro)}],
                 "maxItems": max_per_asin,
             }),
         ]
@@ -4519,7 +4551,8 @@ async def fetch_amazon_reviews(req: dict):
     enriched = False
     if tld != "com" and len(all_items) < 15:
         print(f"[AmazonReviews] Only {len(all_items)} items from .{tld}, enriching from .com")
-        com_results = await asyncio.gather(*[fetch_for_asin(a, fetch_tld="com", fetch_country="US") for a in asins])
+        com_results = await asyncio.gather(
+            *[fetch_for_asin(a, fetch_tld="com", fetch_country="US", fetch_market="us") for a in asins])
         com_items = [item for sub in com_results for item in sub]
         # Deduplicate: skip .com items whose first 80 chars of text already appear in local results
         def _review_text(it):
@@ -4538,8 +4571,8 @@ async def fetch_amazon_reviews(req: dict):
     if not all_items:
         raise HTTPException(status_code=404, detail=f"Nessuna recensione trovata per: {', '.join(asins)}")
 
-    # Debug: log actual keys so we can fix field mapping
     lines = []
+    strutturate = []
     for it in all_items:
         if not isinstance(it, dict):
             continue
@@ -4556,6 +4589,22 @@ async def fetch_amazon_reviews(req: dict):
         except (ValueError, TypeError):
             star = ""
         lines.append(f"{star} {title}\n{text}".strip())
+        # La data serve alla curva di declino: quando le recensioni sono
+        # arrivate conta quanto quante sono. Veniva estratta dall'actor e poi
+        # buttata insieme al resto della struttura.
+        try:
+            voto = float(str(rating).split()[0].replace(",", ".")) if rating else None
+        except (ValueError, IndexError):
+            voto = None
+        strutturate.append({
+            "asin": it.get("asin") or it.get("productAsin"),
+            "rating": voto,
+            "title": title,
+            "text": text,
+            "date": (it.get("date") or it.get("reviewDate") or it.get("reviewedAt")
+                     or it.get("publishedAt") or None),
+            "verified": it.get("verified") or it.get("isVerified"),
+        })
 
     if not lines:
         sample_keys = list(all_items[0].keys()) if all_items and isinstance(all_items[0], dict) else []
@@ -4564,13 +4613,32 @@ async def fetch_amazon_reviews(req: dict):
             detail=f"Nessun testo recensione estratto. Campi disponibili: {sample_keys}"
         )
 
-    return {
+    voti = [r["rating"] for r in strutturate if r["rating"] is not None]
+    risposta = {
         "reviews_text": "\n\n".join(lines),
+        "reviews": strutturate,
         "count": len(lines),
         "asins": asins,
         "marketplace": marketplace,
         "enriched": enriched,
+        "filtro_stelle": filtro or None,
+        "date_note": sum(1 for r in strutturate if r["date"]),
     }
+    if voti:
+        risposta["voti"] = {
+            "medio": round(sum(voti) / len(voti), 2),
+            "negative_1_3": sum(1 for v in voti if v <= 3),
+            "positive_4_5": sum(1 for v in voti if v >= 4),
+        }
+        # Se si e' chiesto "critical" e tornano quasi solo 4-5 stelle, il filtro
+        # non ha morso: va detto, altrimenti si legge un campione positivo come
+        # se fosse l'opinione media.
+        if filtro == "critical" and risposta["voti"]["positive_4_5"] > risposta["voti"]["negative_1_3"]:
+            risposta["avviso"] = (
+                "Chiesto filtro 'critical' ma la maggioranza delle recensioni tornate e' "
+                "a 4-5 stelle: il filtro non ha avuto effetto su questo actor. "
+                "Non trattare questo campione come rappresentativo delle critiche.")
+    return risposta
 
 
 @app.post("/api/avatar", dependencies=[_AUTH])
