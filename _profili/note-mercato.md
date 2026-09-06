@@ -11,7 +11,7 @@ questo file va sotto `_profili/<pen-name>/`.
 3. Cosa c'e' sopra i temi in crescita
 4. Perche' «trovare una nicchia non satura» non funziona qui
 5. Dove sta il vuoto, se c'e'
-5-bis. Lo sblocco: due strade pronte
+5-bis. Lo sblocco: due strade pronte (verificate sul campo)
 6. Difetti noti di Amazon.it come strumento di misura
 7. Come rifare queste misure
 
@@ -132,6 +132,39 @@ percorrere. E' l'unica cosa che tiene fermi entrambi i progetti.
 Il servizio e' **vivo**: `https://web-production-e6914.up.railway.app/health`
 risponde 200, e `APIFY_TOKEN` e' configurato e non vuoto. Apify e' cio' che
 porta recensioni e BSR.
+
+### Verificata sul campo il 06/09, sera
+
+| Endpoint | Serve Claude? | Stato reale |
+|---|---|---|
+| `/api/amazon-reviews` | **no** | **FUNZIONA.** Recensioni italiane vere in ~32s |
+| `/api/competition-map` | si' | bloccato due volte, vedi sotto |
+| `/api/niche-validator` | si' | idem |
+| `/api/review-mining`, `/api/avatar` | si' | idem |
+
+**Il credito Anthropic del backend e' esaurito**: ogni endpoint che chiama
+Claude risponde 400 `invalid_request_error — credit balance is too low`. Non e'
+un problema di configurazione e non si risolve col redeploy.
+
+Ne segue una divisione netta e comoda:
+
+- le **recensioni** (materiale della fase 2) si prendono da Railway **adesso**:
+  `/api/amazon-reviews` non tocca Claude, e in produzione era gia' corretto per
+  l'Italia — costruisce `amazon.it/dp/<asin>` con `countryCode: IT`, senza
+  browse node ne' autocomplete, quindi il bug del marketplace non lo toccava;
+- i **numeri** (prezzi, BSR, conteggi: materiale della fase 1) da Railway
+  restano bloccati anche dopo il merge, perche' `competition-map` chiama Claude
+  dopo Apify e fallisce li'. Per quelli serve la strada B, la raccolta nel
+  browser.
+
+**La combinazione che funziona oggi e' mista**: Apify per le recensioni,
+raccolta manuale per i numeri. Non e' un ripiego, e' la divisione giusta —
+l'analisi delle recensioni non serve farla al backend, si fa qui.
+
+Bug del marketplace dimostrato dal vivo: `POST /api/apify/amazon-niche` con
+`{"keyword":"endometriosi","market":"it"}` sul codice in produzione risponde
+`suggestions: ["endometriosis"]`, in inglese. Il `market` viene ignorato e la
+domanda viene misurata sul mercato americano.
 
 Restano due passaggi, **in quest'ordine**:
 
