@@ -4527,6 +4527,8 @@ async def fetch_amazon_reviews(req: dict):
     tld = amazon_tld(marketplace)
     country_code = amazon_market(marketplace)["country"]
 
+    tentativi: list[dict] = []   # cosa ha fatto ogni actor, per ASIN
+
     async def fetch_for_asin(asin: str, fetch_tld: str = tld, fetch_country: str = country_code,
                              fetch_market: str = marketplace) -> list:
         # Nomi dei campi presi dallo schema di input pubblicato dell'actor
@@ -4577,7 +4579,18 @@ async def fetch_amazon_reviews(req: dict):
                 if result:
                     print(f"[AmazonReviews] {asin} ({fetch_tld}): {actor_id} → {len(result)} items")
                     return result
+                # Nessuna eccezione ma zero elementi: e' un esito diverso da un
+                # errore, e va registrato come tale.
+                tentativi.append({"asin": asin, "tld": fetch_tld, "actor": actor_id,
+                                  "esito": "0 elementi"})
             except Exception as e:
+                # Prima finiva solo in un print sui log di Railway, che da fuori
+                # non si leggono: al chiamante arrivava un 404 identico sia se
+                # l'actor aveva girato a vuoto sia se non era partito affatto
+                # (per esempio perche' richiede un noleggio). Ora la risposta
+                # dice cosa e' successo a ciascuno.
+                tentativi.append({"asin": asin, "tld": fetch_tld, "actor": actor_id,
+                                  "esito": f"{type(e).__name__}: {e}"[:240]})
                 print(f"[AmazonReviews] {asin} ({fetch_tld}): {actor_id} failed: {e}")
         return []
 
@@ -4607,7 +4620,11 @@ async def fetch_amazon_reviews(req: dict):
         print(f"[AmazonReviews] After enrichment: {len(all_items)} total items")
 
     if not all_items:
-        raise HTTPException(status_code=404, detail=f"Nessuna recensione trovata per: {', '.join(asins)}")
+        raise HTTPException(status_code=404, detail={
+            "messaggio": f"Nessuna recensione trovata per: {', '.join(asins)}",
+            "filtro_stelle": filtro or None,
+            "tentativi": tentativi,
+        })
 
     lines = []
     strutturate = []
@@ -4661,6 +4678,7 @@ async def fetch_amazon_reviews(req: dict):
         "enriched": enriched,
         "filtro_stelle": filtro or None,
         "date_note": sum(1 for r in strutturate if r["date"]),
+        "tentativi": tentativi,
     }
     if voti:
         risposta["voti"] = {
