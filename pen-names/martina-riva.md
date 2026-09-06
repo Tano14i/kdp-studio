@@ -45,6 +45,8 @@ _Da definire con la skill `avatar-cliente`._ Prerequisito: recensioni dei concor
 | Link in bio | _da compilare_ | — |
 | Formato video ricorrente | _da compilare_ | — |
 
+**Blotato:** l'account `@martina.rivabooks` **non è collegato** al workspace Blotato (verificato il 2026-09-06). Gli unici account collegati sono TikTok `@tennisasmr`, YouTube, LinkedIn e Pinterest. Finché il profilo non viene aggiunto in Blotato, i contenuti si possono generare ma non pubblicare su questo pen name.
+
 ---
 
 ## Nota sull'accesso ai dati
