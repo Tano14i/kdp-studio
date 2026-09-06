@@ -53,11 +53,17 @@ def load_markets(server_path: pathlib.Path) -> dict:
     Importare il modulo tirerebbe dentro anthropic, fastapi e la API key:
     qui serve solo la tabella, e deve restare una sola (kdp_server.py).
     """
-    src = server_path.read_text(encoding="utf-8")
-    start = src.index("AMAZON_MARKETS = {")
-    end = src.index("def amazon_market(", start)
+    try:
+        src = server_path.read_text(encoding="utf-8")
+        inizio = src.index("AMAZON_MARKETS = {")
+        fine = src.index("def amazon_market(", inizio)
+    except (OSError, ValueError) as e:
+        raise SystemExit(
+            f"Non riesco a leggere la tabella dei marketplace da {server_path}: {e}\n"
+            "Se AMAZON_MARKETS e' stata rinominata o spostata, va aggiornato anche "
+            "questo script.") from e
     ns: dict = {}
-    exec(src[start:end], ns)
+    exec(src[inizio:fine], ns)
     return ns["AMAZON_MARKETS"]
 
 

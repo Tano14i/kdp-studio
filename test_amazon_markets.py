@@ -8,18 +8,24 @@ controllato, cosi' si legge l'esito senza rileggere il codice.
     python3 test_amazon_markets.py          # tabella completa (rete)
     python3 test_amazon_markets.py --offline # solo i controlli senza rete
 """
-import json, sys, urllib.parse, urllib.request, importlib.util, pathlib
+import json, sys, urllib.parse, urllib.request, pathlib
 
-spec = importlib.util.spec_from_file_location(
-    "kdp_probe", pathlib.Path(__file__).with_name("kdp_server.py"))
-
-# kdp_server importa anthropic e pretende una API key: qui serve solo la
-# tabella, quindi la si rilegge dal sorgente invece di importare il modulo.
-src = pathlib.Path(__file__).with_name("kdp_server.py").read_text(encoding="utf-8")
+# kdp_server importa anthropic, fastapi e httpx e pretende una API key: qui
+# serve solo la tabella, quindi la si rilegge dal sorgente invece di importare
+# il modulo. Cosi' il controllo gira anche dove quelle librerie non ci sono.
+_sorgente = pathlib.Path(__file__).with_name("kdp_server.py")
+try:
+    src = _sorgente.read_text(encoding="utf-8")
+    inizio = src.index("AMAZON_MARKETS = {")
+    fine = src.index("def amazon_market(", inizio)
+except (OSError, ValueError) as e:
+    print(f"Non riesco a leggere la tabella dei marketplace da {_sorgente}: {e}\n"
+          "Se AMAZON_MARKETS e' stata rinominata o spostata, va aggiornato anche "
+          "questo controllo — altrimenti smette di sorvegliare senza dirlo.",
+          file=sys.stderr)
+    sys.exit(2)
 ns: dict = {}
-start = src.index("AMAZON_MARKETS = {")
-end = src.index("def amazon_market(", start)
-exec(src[start:end], ns)
+exec(src[inizio:fine], ns)
 AMAZON_MARKETS = ns["AMAZON_MARKETS"]
 LANGUAGE_TO_MARKET = ns["LANGUAGE_TO_MARKET"]
 _MARKET_ALIASES = ns["_MARKET_ALIASES"]
