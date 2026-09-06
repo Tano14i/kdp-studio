@@ -1282,6 +1282,12 @@ FILTRI_STELLE = {
 }
 
 
+def _actor_marketplace(country: str) -> str:
+    """Il codice paese della tabella nel formato che l'actor si aspetta.
+    Coincidono tranne il Regno Unito: da noi GB (ISO), per l'actor UK."""
+    return {"GB": "UK"}.get((country or "US").upper(), (country or "US").upper())
+
+
 def amazon_reviews_url(asin: str, market: str = "us", filtro: str = "") -> str:
     """Pagina delle recensioni di un ASIN, eventualmente filtrata per stelle."""
     import urllib.parse as _up
@@ -4516,27 +4522,33 @@ async def fetch_amazon_reviews(req: dict):
 
     async def fetch_for_asin(asin: str, fetch_tld: str = tld, fetch_country: str = country_code,
                              fetch_market: str = marketplace) -> list:
+        # Nomi dei campi presi dallo schema di input pubblicato dell'actor
+        # (apify.com/automation-lab/amazon-reviews-scraper/input-schema), non
+        # indovinati. Prima ne passavamo quattro e tre avevano il nome
+        # sbagliato — maxReviews, countryCode, filterByStar — quindi l'actor
+        # li ignorava tutti e usava i default: 5-10 recensioni invece di 60,
+        # nessun filtro, e marketplace US anche chiedendo l'Italia (da li' il
+        # rabbocco da amazon.com). Un campo ignorato non da' errore: da'
+        # silenziosamente il default, che e' il modo peggiore di sbagliare.
         per_asin = ("automation-lab/amazon-reviews-scraper", {
             "asins": [asin],
-            "maxReviews": max_per_asin,
-            "reviewsCount": max_per_asin,
-            "countryCode": fetch_country,
-            # Se l'actor non conosce questo campo lo ignora: non fa danno.
-            **({"filterByStar": filtro} if filtro else {}),
+            "marketplace": _actor_marketplace(fetch_country),
+            "maxReviewsPerProduct": max_per_asin,
+            "sort": "recent",                       # le date piu' utili alla curva
+            "filterByStars": filtro or "all",
         })
+        # Riserva, senza filtro. Il suo schema pubblicato
+        # (apify.com/epctex/amazon-reviews-scraper/input-schema) accetta solo
+        # URL di prodotto /dp/<asin>, non la pagina /product-reviews, e non ha
+        # ne' filtro per stelle ne' limite: le versioni precedenti gli passavano
+        # entrambi, e lui li ignorava. Se si arriva qui con un filtro chiesto,
+        # le recensioni tornano NON filtrate e l'avviso a valle lo dira'.
         per_url = ("epctex/amazon-reviews-scraper", {
-            # Non /dp/<asin> ma la pagina delle recensioni, che accetta
-            # filterByStar: e' li' che il filtro esiste davvero.
-            "startUrls": [{"url": amazon_reviews_url(asin, fetch_market, filtro)}],
-            "maxItems": max_per_asin,
+            "startUrls": [{"url": f"https://www.amazon.{fetch_tld}/dp/{asin}"}],
         })
-        # L'ordine conta piu' di quanto sembri. Il ciclo sotto si ferma al primo
-        # actor che risponde: con l'actor per ASIN in testa, quello per URL non
-        # veniva mai eseguito e il filtro per stelle non aveva mai la sua
-        # occasione. Verificato in produzione il 06/09: filtro "critical",
-        # dieci recensioni tornate, voto medio 4,8, zero negative.
-        # Quando un filtro c'e', va per primo l'unico che puo' onorarlo.
-        actor_configs = [per_url, per_asin] if filtro else [per_asin, per_url]
+        # Il ciclo si ferma al primo actor che risponde. automation-lab e'
+        # l'unico che sa filtrare e limitare, quindi va sempre per primo.
+        actor_configs = [per_asin, per_url]
         for actor_id, actor_input in actor_configs:
             try:
                 result = await asyncio.wait_for(run_actor(actor_id, actor_input), timeout=90.0)
