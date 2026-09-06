@@ -54,6 +54,12 @@ jobs:
       - name: amazon-reviews — mai un 500, sempre un esito per actor
         run: python test_amazon_reviews.py
 
+      - name: I report del passo 1b citano i numeri che i dati hanno davvero
+        # regia §10: una tabella scritta a mano e un JSON generato divergono
+        # sempre, e in silenzio. Qui il legame e' l'ASIN, e il controllo copre
+        # tutte le righe di tutti i report — non un campione.
+        run: python test_report_dati.py
+
       - name: Analisi concorrenti — conclude quando i dati bastano
         run: python analizza_concorrenti.py tests/fixtures/concorrenti-completi.csv
 

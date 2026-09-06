@@ -1,0 +1,155 @@
+{
+  "generato_il": "2026-09-06 20:01",
+  "mercato": "amazon.it",
+  "lingua_dell_angolo": {
+    "adhd adulti": {
+      "prefisso_che_risponde": "adhd adulti",
+      "suggerimenti": [
+        "adhd adulti"
+      ],
+      "esito": "intera"
+    },
+    "adhd adulti libro": {
+      "prefisso_che_risponde": "adhd adulti libro",
+      "suggerimenti": [
+        "adhd adulti libro"
+      ],
+      "esito": "intera"
+    },
+    "procrastinazione adhd": {
+      "prefisso_che_risponde": "procrastinazion",
+      "suggerimenti": [
+        "procrastinazione libro"
+      ],
+      "esito": "risale"
+    },
+    "come smettere di procrastinare adhd": {
+      "prefisso_che_risponde": "come smettere di procrastinar",
+      "suggerimenti": [
+        "come smettere di procrastinare"
+      ],
+      "esito": "risale"
+    },
+    "autosabotaggio adhd": {
+      "prefisso_che_risponde": "autosabotaggi",
+      "suggerimenti": [
+        "autosabotaggio libri"
+      ],
+      "esito": "risale"
+    },
+    "come gestire adhd": {
+      "prefisso_che_risponde": "come gestire a",
+      "suggerimenti": [
+        "come gestire ansia a lavoro"
+      ],
+      "esito": "risale"
+    },
+    "disorganizzazione adhd": {
+      "prefisso_che_risponde": null,
+      "suggerimenti": [],
+      "esito": "muto"
+    },
+    "come ricominciare dopo aver mollato": {
+      "prefisso_che_risponde": null,
+      "suggerimenti": [],
+      "esito": "muto"
+    },
+    "come non mollare": {
+      "prefisso_che_risponde": "come non m",
+      "suggerimenti": [
+        "come non mangiarsi le unghie"
+      ],
+      "esito": "risale"
+    },
+    "perche la crescita personale non funziona": {
+      "prefisso_che_risponde": "perche la",
+      "suggerimenti": [
+        "perche la tortura"
+      ],
+      "esito": "risale"
+    },
+    "ho letto tanti libri di crescita personale": {
+      "prefisso_che_risponde": "ho letto",
+      "suggerimenti": [
+        "ho letto"
+      ],
+      "esito": "risale"
+    },
+    "come smettere di ricominciare da capo": {
+      "prefisso_che_risponde": "come smettere di ri",
+      "suggerimenti": [
+        "come smettere di rimandare"
+      ],
+      "esito": "risale"
+    },
+    "autosabotaggio": {
+      "prefisso_che_risponde": "autosabotaggio",
+      "suggerimenti": [
+        "autosabotaggio libri"
+      ],
+      "esito": "intera"
+    },
+    "come smettere di procrastinare": {
+      "prefisso_che_risponde": "come smettere di procrastinare",
+      "suggerimenti": [
+        "come smettere di procrastinare"
+      ],
+      "esito": "intera"
+    }
+  },
+  "schede": [
+    {
+      "asin": "8845410048",
+      "titolo": "La montagna sei tu. Trasformare l'autosabotaggio in autocontrollo",
+      "valutazione": "4,4 su 5 stelle",
+      "recensioni": "1204",
+      "prezzo": null,
+      "tentativi": 1,
+      "letto_il": "2026-09-06"
+    },
+    {
+      "asin": "885902420X",
+      "titolo": "Basta autosabotaggio! Sblocca le tue qualità e raggiungi i tuoi obiettivi",
+      "valutazione": "4,0 su 5 stelle",
+      "recensioni": "14",
+      "prezzo": null,
+      "tentativi": 2,
+      "letto_il": "2026-09-06"
+    },
+    {
+      "asin": "8804582677",
+      "titolo": "Come smettere di fare la vittima e non diventare carnefice",
+      "valutazione": "4,4 su 5 stelle",
+      "recensioni": "59",
+      "prezzo": null,
+      "tentativi": 2,
+      "letto_il": "2026-09-06"
+    },
+    {
+      "asin": "8880934449",
+      "titolo": "Mai più vittima. Scegliere di essere responsabili della propria vita per trovare la felicità",
+      "valutazione": "3,8 su 5 stelle",
+      "recensioni": "10",
+      "prezzo": null,
+      "tentativi": 8,
+      "letto_il": "2026-09-06"
+    },
+    {
+      "asin": "885901753X",
+      "titolo": "Prima o poi lo faccio! Vincere la procrastinazione e smetterla di rimandare sempre",
+      "valutazione": "4,5 su 5 stelle",
+      "recensioni": "32",
+      "prezzo": null,
+      "tentativi": 4,
+      "letto_il": "2026-09-06"
+    },
+    {
+      "asin": "8844048035",
+      "errore": "HTTP 500 su 8 tentativi"
+    }
+  ],
+  "limiti": [
+    "www.amazon.it/s risponde 503: nessun ASIN nuovo si scopre da qui",
+    "www.amazon.it/product-reviews risponde anti-robot: niente testo recensioni ne' BSR"
+  ]
+}

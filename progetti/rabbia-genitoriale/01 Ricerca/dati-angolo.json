@@ -1,0 +1,118 @@
+{
+  "generato_il": "2026-09-06 19:56",
+  "mercato": "amazon.it",
+  "lingua_dell_angolo": {
+    "ho urlato a mio figlio": {
+      "prefisso_che_risponde": null,
+      "suggerimenti": [],
+      "esito": "muto"
+    },
+    "come chiedere scusa ai figli": {
+      "prefisso_che_risponde": "come chiedere scusa",
+      "suggerimenti": [
+        "come chiedere scusa"
+      ],
+      "esito": "risale"
+    },
+    "senso di colpa dopo aver urlato": {
+      "prefisso_che_risponde": "senso di colpa",
+      "suggerimenti": [
+        "senso di colpa libro"
+      ],
+      "esito": "risale"
+    },
+    "riparare dopo aver urlato": {
+      "prefisso_che_risponde": "riparare",
+      "suggerimenti": [
+        "riparare sedile pelle"
+      ],
+      "esito": "risale"
+    },
+    "come rimediare dopo aver urlato": {
+      "prefisso_che_risponde": "come rim",
+      "suggerimenti": [
+        "come rimuovere calli"
+      ],
+      "esito": "risale"
+    },
+    "papa che urla": {
+      "prefisso_che_risponde": null,
+      "suggerimenti": [],
+      "esito": "muto"
+    },
+    "padri che urlano": {
+      "prefisso_che_risponde": null,
+      "suggerimenti": [],
+      "esito": "muto"
+    },
+    "mamma non urlare": {
+      "prefisso_che_risponde": "mamma non urlare",
+      "suggerimenti": [
+        "mamma non urlare"
+      ],
+      "esito": "intera"
+    },
+    "come non urlare agli adolescenti": {
+      "prefisso_che_risponde": "come non urlare a",
+      "suggerimenti": [
+        "come non urlare ai figli"
+      ],
+      "esito": "risale"
+    },
+    "urlare ai figli adolescenti": {
+      "prefisso_che_risponde": null,
+      "suggerimenti": [],
+      "esito": "muto"
+    },
+    "la rabbia dei genitori": {
+      "prefisso_che_risponde": "la rabbia dei",
+      "suggerimenti": [
+        "la rabbia dei vinti. la guerra dopo la guerra 1917-1923"
+      ],
+      "esito": "risale"
+    },
+    "come gestire la mia rabbia con i figli": {
+      "prefisso_che_risponde": "come gestire la",
+      "suggerimenti": [
+        "come gestire la glicemia libro"
+      ],
+      "esito": "risale"
+    },
+    "come smettere di urlare": {
+      "prefisso_che_risponde": "come smettere di",
+      "suggerimenti": [
+        "come smettere di pensare troppo"
+      ],
+      "esito": "risale"
+    },
+    "educare senza urlare": {
+      "prefisso_che_risponde": "educare senza urlare",
+      "suggerimenti": [
+        "educare senza urlare moreno marchetti"
+      ],
+      "esito": "intera"
+    }
+  },
+  "schede": [
+    {
+      "asin": "8822736478",
+      "titolo": "Smettila di urlare. Il metodo rivoluzionario per farsi ascoltare dai figli e mantenere la calma",
+      "valutazione": "3,9 su 5 stelle",
+      "recensioni": "14",
+      "prezzo": null,
+      "tentativi": 6
+    },
+    {
+      "asin": "8858674081",
+      "errore": "HTTP 500 su 8 tentativi"
+    },
+    {
+      "asin": "8845497380",
+      "errore": "HTTP 500 su 8 tentativi"
+    }
+  ],
+  "limiti": [
+    "www.amazon.it/s risponde 503: nessun ASIN nuovo si scopre da qui",
+    "www.amazon.it/product-reviews risponde anti-robot: niente testo recensioni ne' BSR"
+  ]
+}

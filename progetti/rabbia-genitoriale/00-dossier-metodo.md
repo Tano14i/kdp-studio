@@ -15,13 +15,15 @@ decide il titolo vero, e questa cartella non si rinomina mai.
 4. Da non dimenticare
 5. Errori commessi e come sono stati corretti
 6. Aggiornamento del 06/09, sera
+7. Il passo 1b, aperto la sera del 06/09
 
 ## Stato
 
 | # | Fase | Stato | Checkpoint | Chiuso il |
 |---|------|-------|-----------|-----------|
 | 0 | Cartella e convenzioni | fatto | — | 06/09 |
-| 1 | Nicchia e concorrenti | fatto — **NON SI FA** | — | 06/09 |
+| 1 | Nicchia e concorrenti | fatto — **NON SI FA** sul tema | — | 06/09 |
+| 1b | Angolo (`ricerca-inversa`) | **in corso** — manca la verifica | — | |
 | 2 | Avatar cliente | da fare | — | |
 | 3 | Concept e positioning | da fare | CP1 | |
 | 4 | Titolo, sottotitolo, copertina | da fare | CP2 | |
@@ -34,18 +36,36 @@ decide il titolo vero, e questa cartella non si rinomina mai.
 | 11 | Immagini e copertina finita | da fare | — | |
 | 12 | Scheda, A+, campagne | da fare | CP7 | |
 | 13 | Traduzione e mercati | da fare | CP6 | |
+| 14 | Promozione social | da fare | — | |
 
 La fase 1 e' chiusa con verdetto **NON SI FA**: la domanda esiste, ma lo
 scaffale e' occupato da dieci pen name con lo stesso posizionamento e tre
-titoli con editore. Le fasi da 2 in poi restano *da fare* e non partono su
-questa nicchia. Vedi `01 Ricerca/report-nicchia.md`.
+titoli con editore. Vedi `01 Ricerca/report-nicchia.md`.
+
+**Quel verdetto non chiude piu' il progetto.** Riguarda il *tema*, e nella
+mappa attuale un NON SI FA sul tema apre il passo **1b** invece di finire la
+corsa. Il 1b e' stato eseguito il 06/09 sera: vedi §7 e
+`01 Ricerca/01b-angolo.md`.
+
+Le righe **1b** e **14** sono state aggiunte alla tabella nella stessa
+occasione: questa si fermava al 13 ed era la vecchia mappa. Il 1b mancante non
+era un dettaglio di forma — era la riga che decideva se questo progetto fosse
+chiuso o solo fermo.
 
 ## Aperto adesso
 
-**Il progetto e' fermo per verdetto negativo.** Aspetta una decisione
-dell'autore: cambiare nicchia (restano in rosa autosabotaggio, lutto, salute
-cronica) oppure chiudere qui. Se si cambia nicchia si apre una cartella
-nuova: questa resta com'e', con dentro il motivo dello stop.
+**Una verifica di venti minuti nel browser dell'autore, e non e' piu' una
+decisione: e' un dato.** Il passo 1b ha trovato un angolo che regge su
+quattro pieghe, ma un angolo trovato nelle recensioni resta un'ipotesi finche'
+non e' guardato lo scaffale — e la ricerca di Amazon.it da qui risponde 503.
+
+Da cercare, con `scheda-raccolta.md`: `dopo aver urlato ai figli`, `senso di
+colpa genitori`, `chiedere scusa ai figli`, `riparare rapporto con i figli`.
+La domanda e' una sola: **qualcuno vende gia' il dopo, invece del prima?**
+
+L'elenco completo, in ordine, sta in `01 Ricerca/01b-angolo.md` §7. La fase 2
+non parte prima, per quanto l'angolo sia convincente: e' la regola che oggi ha
+gia' risparmiato due libri.
 
 ## Da non dimenticare
 
@@ -78,18 +98,22 @@ nuova: questa resta com'e', con dentro il motivo dello stop.
 
 1. ~~Cartella e convenzioni~~ — fatto il 06/09
 2. ~~Nicchia e concorrenti~~ — fatto il 06/09, verdetto **NON SI FA**
-3. **Scegliere come procurarsi i dati dei concorrenti.** Non e' piu' una
+3. ~~Passo 1b, l'angolo~~ — fatto il 06/09 sera, `01 Ricerca/01b-angolo.md`.
+   Tre pieghe su quattro reggono, con parole di lettori italiani sotto.
+4. **La verifica dell'angolo sullo scaffale** — vedi «Aperto adesso». E' la
+   sola cosa che separa questo progetto da un SI FA o da un NON SI FA
+   definitivo.
+5. **Scegliere come procurarsi i dati dei concorrenti.** Non e' piu' una
    domanda senza risposta: due strade sono pronte e descritte in
    `_profili/note-mercato.md` §5-bis — il backend su Railway (vivo, con
    APIFY_TOKEN configurato; serve prima il merge della PR #2 e il redeploy,
    poi la chiave) oppure la raccolta nel browser (`scheda-raccolta.md` +
    `analizza_concorrenti.py`, che si puo' fare adesso). Manca solo la scelta.
-4. **Poi: su quale nicchia spenderla.** Non su queste due, chiuse con NON SI
-   FA. La classifica dei temi in crescita e' in `_profili/note-mercato.md` §2.
+6. **Poi, e solo con un SI FA scritto:** `avatar-cliente`.
 
-Tutto il resto della mappa (avatar, concept, copertina, outline, DNA,
-campione, manoscritto, revisione, interni, immagini, scheda) non e' «da fare
-piu' avanti»: non e' da fare affatto su questa nicchia.
+Tutto il resto della mappa (concept, copertina, outline, DNA, campione,
+manoscritto, revisione, interni, immagini, scheda) resta fermo: non e' «da
+fare piu' avanti», e' da non fare finche' il punto 4 non ha risposta.
 
 ## Errori commessi e come sono stati corretti
 
@@ -139,3 +163,37 @@ Cosa e' stato fatto dopo la chiusura, e dove sta scritto:
 
 Si scrive qui perche' chi riprende questo progetto legge questo file per primo,
 e senza questa riga ricomincerebbe a cercare una soluzione che esiste gia'.
+
+
+## 7. Il passo 1b, aperto la sera del 06/09
+
+Il progetto era stato chiuso con NON SI FA e archiviato. Non era sbagliato il
+verdetto: era incompleta la mappa. Un NON SI FA riguarda il **tema**, e in
+questo mercato un tema libero non esiste per costruzione
+(`_profili/note-mercato.md` §1) — quindi chiudere li' vuol dire chiudere
+sempre. Il passo 1b chiede un'altra cosa: **dentro questo tema occupato, quale
+angolo e' scoperto?**
+
+Il documento sta in `01 Ricerca/01b-angolo.md`. Tre cose da tenere a mente
+senza doverlo riaprire:
+
+**L'angolo candidato.** Non un altro libro su come non urlare, ma cosa si fa
+nei dieci minuti dopo — per il genitore che ha gia' urlato e lo sa. Tredici
+concorrenti su tredici vendono la prevenzione; nessuno di loro puo' occupare
+il dopo senza contraddire il proprio titolo.
+
+**La prova, e il suo limite.** Due lettrici italiane diverse dicono con parole
+loro che il libro dell'incumbent le ha fatte sentire in colpa — «Ottimo se
+volete sapere cosa sbagliate!» e «mi sono sentita una 💩 per quasi tutto il
+tempo della lettura». Quello e' un dato. Che cio' che manca sia *la
+riparazione* e' invece una deduzione, dichiarata come tale nel documento: e'
+il motivo per cui il 1b non chiude con un SI FA.
+
+**Un numero che corregge il passo 1.** `Smettila di urlare` di Naumburg, una
+delle tre «ancore con editore» che avevano deciso il NON SI FA, ha **14
+recensioni** su Amazon.it. Il passo 1 le aveva contate come prova di
+saturazione senza poterle misurare, e aveva scritto che il verdetto non
+dipendeva da quei numeri. Sul progetto gemello lo stesso controllo ha trovato
+la stessa cosa in modo piu' netto. La regola che ne esce, e che vale per ogni
+misura futura: **«ancora con editore» e' una categoria, non una misura.**
+Registrata in `_profili/note-mercato.md` §3-bis.

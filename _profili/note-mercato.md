@@ -9,9 +9,11 @@ questo file va sotto `_profili/<pen-name>/`.
 1. La conclusione che conta
 2. Quali temi si stanno scaldando
 3. Cosa c'e' sopra i temi in crescita
+3-bis. «Ancora con editore» e' una categoria, non una misura
 4. Perche' «trovare una nicchia non satura» non funziona qui
 5. Dove sta il vuoto, se c'e'
 5-bis. Lo sblocco: due strade pronte (verificate sul campo)
+5-ter. Correzione del 06/09 sera: le schede prodotto si leggono
 6. Difetti noti di Amazon.it come strumento di misura
 7. Come rifare queste misure
 
@@ -88,6 +90,54 @@ Due cose utili si vedono anche senza i dati di vendita:
   lavoro, coppia, dolore cronico quotidiano.
 
 L'angolo scoperto e' visibile anche senza le recensioni. Il tema no.
+
+## 3-bis. «Ancora con editore» e' una categoria, non una misura
+
+Scritto il 06/09 sera, dopo aver letto per la prima volta i numeri veri.
+
+I due NON SI FA di questo repo poggiavano, in parte, sulla stessa frase: sopra
+la nicchia ci sono «due o tre ancore con editore», quindi lo scaffale e'
+presidiato. In entrambi i report era anche scritto che il verdetto **non
+dipendeva** dai numeri mancanti — prezzi, recensioni, BSR — perche' il
+conteggio dei concorrenti bastava da solo.
+
+I numeri adesso ci sono (§5-ter), e quella frase va corretta:
+
+| ASIN | Titolo | Voto | Recensioni su Amazon.it |
+|---|---|---:|---:|
+| `8845410048` | Wiest, *La montagna sei tu* | 4,4 | **1204** |
+| `8804582677` | Giacobbe, *Come smettere di fare la vittima* (Mondadori) | 4,4 | 59 |
+| `885901753X` | Ramirez Basco, *Prima o poi lo faccio!* | 4,5 | 32 |
+| `885902420X` | Ho, *Basta autosabotaggio!* | 4,0 | **14** |
+| `8822736478` | Naumburg, *Smettila di urlare* | 3,9 | **14** |
+| `8880934449` | Pradervand, *Mai piu' vittima* | 3,8 | **10** |
+
+Sono i sei titoli che i due report del passo 1 avevano classificato come «con
+editore». Il marchio e' riportato solo dove il report lo nominava (Mondadori):
+degli altri e' documentato l'ISBN, non l'editore, e non e' stato dedotto dal
+prefisso — dedurlo sarebbe stata l'ennesima conclusione scritta come fatto
+senza verifica.
+
+Su sei titoli con editore, **uno** ha peso e cinque stanno fra dieci e
+cinquantanove recensioni: lo stesso ordine di grandezza dei pen name KDP. Un
+marchio in copertina dice che il libro e' distribuito in libreria, non che
+vende su Amazon — e su Amazon si compete su Amazon.
+
+Cosa cambia, in concreto:
+
+- **non si conta piu' «quante ancore con editore»**, si contano le recensioni.
+  Il conteggio dei concorrenti resta valido per dire *se* lo scaffale e'
+  occupato, non *quanto*;
+- **un gigante e cinque libri sottili non e' un mercato saturo**: e' un
+  mercato con un leader. Sono due situazioni diverse e chiedono decisioni
+  diverse;
+- i due NON SI FA **non si ribaltano** — dieci pen name con lo stesso
+  sottotitolo restano dieci — ma non erano solidi come sembravano, e nessuno
+  dei due report lo poteva sapere quando e' stato scritto.
+
+E' il secondo caso in questo repo di una conclusione che decideva un
+investimento e che andava verificata da due angoli prima di essere scritta
+come fatto. Il primo fu «come non odiare tuo marito dopo i figli».
 
 ## 4. Perche' «trovare una nicchia non satura» non funziona qui
 
@@ -204,6 +254,42 @@ numeri, la B per le recensioni dei tre titoli piu' recensiti.
 Bastano **una nicchia, dieci libri e tre liste di recensioni** per far
 ripartire il metodo.
 
+## 5-ter. Correzione del 06/09 sera: le schede prodotto si leggono
+
+**Questo file diceva che Amazon.it non e' raggiungibile da qui. E' vero solo
+in parte, e la parte che manca cambia il metodo.** Misurato il 06/09 sera,
+prima di scriverlo:
+
+| Indirizzo | Esito | Cosa se ne ricava |
+|---|---|---|
+| `www.amazon.it/s?k=...` (ricerca) | **503**, come documentato | niente: **non si scoprono ASIN nuovi** |
+| `www.amazon.it/dp/<ASIN>` | **200 circa una volta su quattro** | titolo, voto, numero di recensioni |
+| `www.amazon.it/product-reviews/...` | pagina anti-robot | niente: nessun testo di recensione, nessun BSR |
+| `completion.amazon.it` | 200, come documentato | la domanda indicizzata |
+| `goodreads.com` | 200, pagine complete | **recensioni dei lettori, testo intero** |
+
+La divisione che ne esce e' netta e conviene tenerla a mente:
+
+- **scoprire** chi c'e' sopra una nicchia resta lavoro da browser
+  (`scheda-raccolta.md`): la ricerca e' l'unica porta, ed e' chiusa;
+- **misurare** un titolo che si conosce gia' e' automatico:
+  `python3 sonda_angolo.py --asin <lista> --out <file.json>`, che ritenta
+  finche' la scheda vera non passa;
+- **leggere i lettori** passa da Goodreads, non da Amazon. Con un'avvertenza
+  che pesa: Goodreads raccoglie il pubblico dell'originale, quindi per un
+  libro tradotto le recensioni sono in inglese e non sono voce del mercato
+  italiano. Per un libro italiano — Novara, Giacobbe — lo sono.
+
+**Perche' questo file diceva il contrario.** Non per un errore di misura: il
+503 sulla ricerca era ed e' vero. E' che da «la ricerca non risponde» era
+stato dedotto «Amazon non risponde», senza provare la scheda prodotto. E' la
+stessa forma dell'errore gia' registrato due volte qui: *prima di credere a
+uno zero, verifica di aver interrogato la cosa giusta.* Uno strumento che
+fallisce su una porta non dice niente sulle altre.
+
+Cosa **non** cambia: BSR, prezzi e curva delle recensioni restano fuori
+portata, e restano il pezzo che serve il browser dell'autore.
+
 ## 6. Difetti noti di Amazon.it come strumento di misura
 
 - **`completion.amazon.com` risponde 200 con lista vuota** per ogni marketplace
@@ -219,6 +305,13 @@ ripartire il metodo.
   titolo cosi' noto da non aver bisogno del nome: «come non odiare tuo marito
   dopo i figli» e' Sonzogno, «come smettere di fare la vittima» e' Mondadori.
   Prima di chiamarla vuota, si cerca il titolo.
+- **L'autocomplete non puo' verificare un angolo, solo un tema.** Indicizza
+  cio' che ha volume, e un angolo sta sotto quella soglia per costruzione.
+  Una frase d'angolo che torna muta non e' un angolo senza mercato: e' lo
+  strumento sbagliato per la domanda. Interrogarlo con la frase intera e'
+  peggio ancora — completa per prefisso, quindi una frase gia' completa non
+  ha continuazioni e restituisce zero sempre. `sonda_angolo.py` chiede a
+  scala di prefissi apposta.
 - **Su Wikipedia, una richiesta fallita non e' una voce assente.** Con sei
   worker in parallelo il 429 diventava «voce inesistente» e cancellava meta'
   della classifica. Solo un 404 conta come assenza.
@@ -230,6 +323,7 @@ python3 harvest_demand.py --market it     # domanda: cosa si cerca
 python3 trend_topics.py                   # tendenza: cosa si scalda
 python3 test_amazon_markets.py            # controlla che gli strumenti puntino bene
 python3 analizza_concorrenti.py <file.csv>  # offerta, dalla raccolta manuale
+python3 sonda_angolo.py --frasi f.txt --asin <lista> --out d.json  # angolo (passo 1b)
 ```
 
 I primi tre girano anche da soli a ogni push, nella modalita' senza rete

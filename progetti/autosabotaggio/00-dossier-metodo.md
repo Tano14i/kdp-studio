@@ -12,13 +12,15 @@ diversi e nessuno saprebbe quale vale.
 4. Da non dimenticare
 5. Errori commessi e come sono stati corretti
 6. Aggiornamento del 06/09, sera
+7. Il passo 1b, aperto la sera del 06/09
 
 ## Stato
 
 | # | Fase | Stato | Checkpoint | Chiuso il |
 |---|------|-------|-----------|-----------|
 | 0 | Cartella e convenzioni | fatto | — | 06/09 |
-| 1 | Nicchia e concorrenti | fatto — **NON SI FA** | — | 06/09 |
+| 1 | Nicchia e concorrenti | fatto — **NON SI FA** sul tema | — | 06/09 |
+| 1b | Angolo (`ricerca-inversa`) | **in corso** — manca la verifica | — | |
 | 2 | Avatar cliente | da fare | — | |
 | 3 | Concept e positioning | da fare | CP1 | |
 | 4 | Titolo, sottotitolo, copertina | da fare | CP2 | |
@@ -31,30 +33,60 @@ diversi e nessuno saprebbe quale vale.
 | 11 | Immagini e copertina finita | da fare | — | |
 | 12 | Scheda, A+, campagne | da fare | CP7 | |
 | 13 | Traduzione e mercati | da fare | CP6 | |
+| 14 | Promozione social | da fare | — | |
 
 Fase 1 chiusa con verdetto **NON SI FA**: quindici concorrenti su tre
 sotto-temi, con tre bestseller da editore in cima. Vedi
 `01 Ricerca/report-nicchia.md`.
 
+**Quel verdetto non chiude piu' il progetto.** Riguarda il *tema*, e nella
+mappa attuale un NON SI FA sul tema apre il passo **1b** invece di finire la
+corsa. Il 1b e' stato eseguito il 06/09 sera: vedi §7 e
+`01 Ricerca/01b-angolo.md`.
+
+Le righe **1b** e **14** sono state aggiunte alla tabella nella stessa
+occasione: questa si fermava al 13 ed era la vecchia mappa.
+
 ## Aperto adesso
 
-**Il progetto e' fermo per verdetto negativo.** Ma la decisione che aspetta
-l'autore non e' piu' «quale nicchia proviamo adesso»: e' se ha senso provarne
-un'altra con lo strumento attuale. Due nicchie, due NON SI FA, stesso motivo
-di fondo — vedi `01 Ricerca/report-nicchia.md` §5.
+**Una verifica di venti minuti nel browser dell'autore.** Il passo 1b ha
+trovato un angolo che regge su tre pieghe — l'adulto con ADHD che ha gia'
+mollato i libri sulla procrastinazione — ma un angolo resta un'ipotesi finche'
+non e' guardato lo scaffale, e la ricerca di Amazon.it da qui risponde 503.
+
+Da cercare, con `scheda-raccolta.md`: `adhd adulti`, `adhd adulti libro`,
+`procrastinazione adhd`, `adhd donne adulte`. Serve sapere quanti titoli ci
+sono, **quanti clinici e quanti pratici**, e i primi cinque con voto e numero
+di recensioni.
+
+L'elenco completo, in ordine, sta in `01 Ricerca/01b-angolo.md` §7.
+
+La domanda che era aperta qui prima — «ha senso provare un'altra nicchia con
+lo strumento attuale?» — ha ricevuto una risposta parziale il 06/09 sera, e
+non e' quella che sembrava: **lo strumento attuale non era l'unico**. Le
+schede prodotto di Amazon.it si leggono da qui, e i numeri che hanno prodotto
+hanno corretto una conclusione del passo 1. Vedi §7.
 
 ## Cosa manca, in ordine
 
 1. ~~Cartella e convenzioni~~ — fatto il 06/09
 2. ~~Nicchia e concorrenti~~ — fatto il 06/09, verdetto **NON SI FA**
-3. **Scegliere come procurarsi i dati dei concorrenti.** Non e' piu' una
+3. ~~Passo 1b, l'angolo~~ — fatto il 06/09 sera, `01 Ricerca/01b-angolo.md`.
+4. **La verifica dell'angolo sullo scaffale ADHD** — vedi «Aperto adesso».
+   E' la sola cosa che separa questo progetto da un SI FA o da un NON SI FA
+   definitivo.
+5. **Scegliere come procurarsi i dati dei concorrenti.** Non e' piu' una
    domanda senza risposta: due strade sono pronte e descritte in
    `_profili/note-mercato.md` §5-bis — il backend su Railway (vivo, con
    APIFY_TOKEN configurato; serve prima il merge della PR #2 e il redeploy,
    poi la chiave) oppure la raccolta nel browser (`scheda-raccolta.md` +
    `analizza_concorrenti.py`, che si puo' fare adesso). Manca solo la scelta.
-4. **Poi: su quale nicchia spenderla.** Non su queste due, chiuse con NON SI
-   FA. La classifica dei temi in crescita e' in `_profili/note-mercato.md` §2.
+6. **Poi: su quale nicchia spenderla.** Non piu' «non su queste due»: il
+   passo 1b ha riaperto entrambe a livello di angolo. La classifica dei temi
+   in crescita resta in `_profili/note-mercato.md` §2, e da li' viene la
+   piega piu' forte di questo progetto (ADHD adulti, indice 2,59 e 277.376
+   visite: la miglior combinazione crescita+volume della tabella).
+7. **Solo con un SI FA scritto:** `avatar-cliente`.
 
 ## Da non dimenticare
 
@@ -124,3 +156,46 @@ Cosa e' stato fatto dopo la chiusura, e dove sta scritto:
 
 Si scrive qui perche' chi riprende questo progetto legge questo file per primo,
 e senza questa riga ricomincerebbe a cercare una soluzione che esiste gia'.
+
+
+## 7. Il passo 1b, aperto la sera del 06/09
+
+Il progetto era chiuso con NON SI FA. Non era sbagliato il verdetto: era
+incompleta la mappa. Un NON SI FA riguarda il **tema**, e in questo mercato un
+tema libero non esiste per costruzione — quindi chiudere li' vuol dire
+chiudere sempre. Il documento del 1b sta in `01 Ricerca/01b-angolo.md`.
+
+**L'angolo candidato.** Per l'adulto con ADHD — diagnosticato o che se lo
+sospetta — che ha gia' provato i libri sulla procrastinazione e li ha mollati
+a meta': un libro da **aprire nel momento in cui stai per mollare**, non da
+leggere dall'inizio alla fine. Tre pieghe nella stessa riga: pubblico,
+momento, uso. I quindici concorrenti trattano tutti l'autosabotaggio come un
+problema di volonta', ed e' esattamente il motivo per cui falliscono su questo
+lettore. Un percorso in ventun giorni venduto a un adulto con ADHD chiede al
+lettore proprio la cosa che non riesce a fare.
+
+**Il numero che corregge il passo 1, e va ricordato.** Le schede prodotto di
+Amazon.it sono risultate leggibili da questo contenitore (circa una volta su
+quattro, con `sonda_angolo.py`). I numeri che ne escono:
+
+| Titolo | Voto | Recensioni |
+|---|---:|---:|
+| Wiest, *La montagna sei tu* | 4,4 | **1.204** |
+| Giacobbe, *Come smettere di fare la vittima* (Mondadori) | 4,4 | 59 |
+| Ramirez Basco, *Prima o poi lo faccio!* | 4,5 | 32 |
+| Ho, *Basta autosabotaggio!* | 4,0 | **14** |
+| Pradervand, *Mai piu' vittima* | 3,8 | **10** |
+
+Il report del passo 1 diceva «tre bestseller da editore in cima ai tre
+sotto-temi» e aggiungeva che il verdetto non dipendeva dai numeri mancanti.
+I numeri dicono che c'e' **un gigante e quattro libri sottili**: sul
+vittimismo l'ancora Mondadori ha 59 recensioni, su procrastinazione la
+migliore ne ha 32. Non ribalta il NON SI FA sul tema — chi entra
+sull'autosabotaggio generico entra contro Wiest — ma smonta il pezzo di
+ragionamento che parlava di tre bestseller.
+
+**«Ancora con editore» e' una categoria, non una misura.** E' la regola che
+esce da qui, ed e' registrata in `_profili/note-mercato.md` §3-bis. Vale per
+ogni nicchia futura: un editore in cima a una lista non dice quanto vende quel
+libro, e in due nicchie su due i numeri veri erano molto piu' bassi di quanto
+la categoria facesse pensare.
