@@ -4546,33 +4546,15 @@ async def fetch_amazon_reviews(req: dict):
             "sort": "recent",                       # le date piu' utili alla curva
             "filterByStars": filtro or "all",
         })
-        # Riserva, senza filtro. Il suo schema pubblicato
-        # (apify.com/epctex/amazon-reviews-scraper/input-schema) accetta solo
-        # URL di prodotto /dp/<asin>, non la pagina /product-reviews, e non ha
-        # ne' filtro per stelle ne' limite: le versioni precedenti gli passavano
-        # entrambi, e lui li ignorava. Se si arriva qui con un filtro chiesto,
-        # le recensioni tornano NON filtrate e l'avviso a valle lo dira'.
-        per_url = ("epctex/amazon-reviews-scraper", {
-            "startUrls": [{"url": f"https://www.amazon.{fetch_tld}/dp/{asin}"}],
-        })
-        # neatrat/amazon-reviews-scraper: schema pubblicato con `ratings` ad
-        # array e "No Login Required". automation-lab con filterByStars
-        # restituisce zero su amazon.it per QUALUNQUE valore diverso da "all"
-        # (verificato il 06/09: one_star e three_star -> 404, all -> 9
-        # recensioni), coerente con Amazon che mostra le recensioni filtrate
-        # solo a chi e' loggato. Questo actor dichiara di aggirarlo: va provato
-        # per primo quando un filtro c'e', e l'avviso a valle dira' se mente.
-        con_ratings = ("neatrat/amazon-reviews-scraper", {
-            "asin": f"{fetch_tld.split('.')[-1] if fetch_tld != 'com' else 'com'}:{asin}",
-            "region": fetch_tld,
-            "maxReviews": max_per_asin,
-            "sortBy": "recent",
-            "ratings": STELLE_PER_FILTRO.get(filtro, [1, 2, 3, 4, 5]),
-        })
-        # Il ciclo si ferma al primo actor che risponde. Con un filtro va
-        # per primo l'unico che dichiara di onorarlo; senza, automation-lab
-        # che e' collaudato.
-        actor_configs = [con_ratings, per_asin, per_url] if filtro else [per_asin, con_ratings, per_url]
+        # epctex/amazon-reviews-scraper e' stato tolto il 06/09: in ogni
+        # chiamata della giornata ha risposto 403 actor-is-not-rented, cioe'
+        # non e' mai partito. Come "riserva" costava un giro a vuoto per ASIN
+        # e per marketplace senza mai restituire nulla.
+        #
+        # Il ciclo si ferma al primo actor che risponde. Con un filtro va per
+        # primo l'unico che dichiara di onorarlo (neatrat, a noleggio); senza,
+        # automation-lab che e' collaudato ma non sa filtrare su amazon.it.
+        actor_configs = [con_ratings, per_asin] if filtro else [per_asin, con_ratings]
         for actor_id, actor_input in actor_configs:
             try:
                 result = await asyncio.wait_for(run_actor(actor_id, actor_input), timeout=90.0)

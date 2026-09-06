@@ -85,30 +85,31 @@ quando non sanno.
 
 ## 6. Perche' le recensioni negative non arrivano da Apify
 
-Tentato e chiuso il 06/09. Vale la pena scriverlo perche' e' esattamente il
-genere di cosa che qualcuno riproverebbe fra un mese.
+Chiuso una prima volta il 06/09 pomeriggio, **riaperto e richiuso la sera con
+la causa esatta**, dopo che il 404 e' stato reso parlante (PR #8).
 
-`filterByStar` **esiste** ed e' un parametro vero della pagina recensioni di
-Amazon. E' stato passato in due modi: come campo agli actor, e dentro l'URL
-`/product-reviews/<asin>?filterByStar=critical`, con l'actor per URL messo per
-primo perche' e' l'unico che potrebbe onorarlo.
+La sequenza, per chi la riprendera':
 
-**Nessuno dei due lo onora.** La prova che chiude la questione: stesso ASIN,
-una chiamata con filtro e una senza, e le recensioni tornate sono **identiche**
-parola per parola. L'unica differenza fra le due risposte e' il campo
-`avviso` in piu'.
+1. `filterByStar` passato nell'URL a `epctex` (PR #4, #5): **non poteva
+   funzionare** — quell'actor non accetta pagine `/product-reviews` ne'
+   filtri, e in piu' non e' mai partito (403 `actor-is-not-rented` in ogni
+   chiamata della giornata).
+2. Nomi di campo corretti su `automation-lab` (PR #6): ora colpisce davvero
+   amazon.it — 9 recensioni datate invece di 5 americane, 1 negativa — ma con
+   **qualunque** `filterByStars` diverso da `all` restituisce **0 elementi**.
+   Coerente con Amazon che mostra le recensioni filtrate e paginate solo a
+   chi e' loggato. 9 su 212 e' quante ne mostra la pagina prodotto.
+3. `neatrat` (PR #7), che dichiara `ratings` ad array senza login: **403
+   `actor-is-not-rented`**. Non ha mai girato. Costa **$25/mese + consumo**.
 
-Un secondo limite, indipendente dal filtro: su `8844056623`, che su Amazon.it
-ha **212 recensioni**, l'actor ne restituisce **cinque**. Anche senza filtro il
-campione e' troppo piccolo per fondarci un avatar.
+Quindi la strada automatica **esiste ma non e' gratuita**, e non e' ancora
+dimostrata: noleggiare `neatrat` e' l'unico modo di sapere se mantiene la
+promessa. E' una decisione dell'autore, con il prezzo accanto.
 
-Cosa e' stato guadagnato comunque:
+Senza noleggio: recensioni negative solo dal browser, `scheda-raccolta.md`
+parte B, venti minuti per i tre ASIN.
 
-- la **data** di ogni recensione, prima estratta e buttata. Serve alla curva di
-  declino ed e' l'unico modo di ricostruirla senza BSR;
-- l'**avviso** che ha impedito il verdetto sbagliato: dieci recensioni a voto
-  medio 4,8 stavano per essere lette come «le critiche dei lettori». Sarebbe
-  finita con «i libri esistenti sono ottimi, nicchia difficile», con i dati in
-  mano e la conclusione capovolta.
-
-Non ritentare per la terza volta senza un actor diverso da questi due.
+Cosa e' stato guadagnato comunque: le date delle recensioni; l'avviso che ha
+impedito due volte un verdetto capovolto; il 404 che ora dice cosa ha fatto
+ogni actor; e la prima negativa italiana vera su `8844056623`, seconda voce
+indipendente che chiama superficiale il libro piu' venduto della nicchia.
