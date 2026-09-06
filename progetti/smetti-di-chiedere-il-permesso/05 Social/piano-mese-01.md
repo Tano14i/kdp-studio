@@ -19,7 +19,7 @@ si copia e si pubblica.
 | Interruttore | Valore |
 |---|---|
 | volto | **no** |
-| voce | **da chiedere** — vedi §2 |
+| voce | **nessuna** — chiusa il 06/09 |
 | partenza | **zero** |
 
 **Format attivi, tre:**
@@ -41,10 +41,16 @@ prima.
   pubblico guarda senza audio e meta' legge solo la didascalia.
 - **Mai «/a».** Nel libro «esausto/a» funziona. A schermo no: si sceglie il
   femminile, coerente con il pen name, e si tiene per sempre.
-- **La voce.** Tutti i contenuti qui sotto funzionano **muti**, con testo a
-  schermo. Se Martina Riva accetta di usare la propria voce — restando
-  invisibile — F1 raddoppia la resa e si aggiunge F5. Da decidere prima del
-  giorno 8.
+- **Nessuna voce, ma sempre una traccia audio.** Un video senza audio viene
+  distribuito meno: su TikTok il suono è un canale, non una decorazione. Per
+  ogni F1 si registra **il suono dell'evidenziatore sulla carta**, con sotto
+  una base strumentale al 10-15%. Diventa la firma sonora del profilo, quindi
+  va fatta bene dal primo video. Dettagli in `formati.md` §2-bis.
+- **Mai un pezzo cantato in italiano sopra il testo a schermo.** Chi guarda
+  non legge e ascolta parole diverse insieme: non fa né l'una né l'altra cosa.
+- **Il testo compare progressivamente**, mai tutto insieme, un blocco per
+  volta. Senza voce è il testo a dare il ritmo. Durata 7-10 secondi, non 15:
+  senza voce non c'è ragione di andare lunghi.
 
 ## 3. Settimana 0 — farming
 
@@ -65,8 +71,10 @@ Sette F1. Si producono **tutti in una sessione**, un'ora, e si pubblicano uno
 al giorno.
 
 Impostazione fissa: inquadratura dall'alto, libro aperto, mani,
-evidenziatore. Frase a schermo per tutta la durata. Chiusura di un secondo
-sulla copertina. Nessuna intro, nessun logo, nessuna musica con parole.
+evidenziatore. La frase compare a schermo **mentre la mano sottolinea**, non
+prima. Chiusura di un secondo sulla copertina. Audio: il suono
+dell'evidenziatore sulla carta, con base strumentale sotto. Nessuna intro,
+nessun logo, nessuna musica cantata.
 
 ---
 

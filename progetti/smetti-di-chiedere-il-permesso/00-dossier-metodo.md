@@ -43,8 +43,9 @@ necessità.
 1. ~~Skill di promozione social~~ — fatta il 06/09
 2. ~~Materia prima dal testo del libro~~ — fatta il 06/09
 3. ~~Identità del pen name e piano del mese 1~~ — fatti il 06/09
-4. **Decidere `voce`** (mia / nessuna). Entro il giorno 8. Il piano gira muto
-   comunque, ma con la voce vera rende di più.
+4. ~~Decidere `voce`~~ — chiusa il 06/09: **nessuna**. F5 escluso, tutto muto
+   con testo a schermo, e il suono dell'evidenziatore come firma sonora del
+   profilo (`formati.md` §2-bis).
 5. **I tre dati** di §2, entro il giorno 14.
 6. **L'indice completo del libro.** Ho l'introduzione, la Parte I e i capitoli
    1-2. Le parti II e III mancano, e sono probabilmente quelle pratiche —

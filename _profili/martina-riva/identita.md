@@ -83,24 +83,27 @@ macchia.
 Con `volto = no` non ci sono alternative: nessuna foto stock, nessuna
 illustrazione scaricata. Un'immagine generica dice «account che non esiste».
 
-## 6. La voce — decisione aperta
+## 6. La voce — chiusa il 06/09: nessuna
 
-`volto = no` è deciso. **`voce` no.**
+`volto = no`, `voce = nessuna`. Configurazione completa, nessuna decisione
+aperta.
 
-Sono due cose diverse e vanno chieste separatamente: un pen name anonimo può
-usare la voce vera dell'autore senza perdere l'anonimato, perché una voce non
-identifica nessuno.
+Cosa comporta:
 
-Cosa cambia:
+- **F5 (voce fuori campo su b-roll) è escluso.** Non si ripropone.
+- **Tutto il testo passa dallo schermo**, e quindi il ritmo lo deve dare il
+  testo: compare progressivamente, un blocco per volta, contenuti più corti —
+  sette-dieci secondi invece di quindici.
+- **L'audio resta obbligatorio lo stesso.** Muto non vuol dire senza traccia
+  audio: su TikTok il suono è un canale di distribuzione, e un video senza
+  audio viene mostrato meno. Regole in `formati.md` §2-bis.
 
-| Scelta | Effetto |
-|---|---|
-| `voce = nessuna` | tutto muto con testo a schermo — il piano attuale, funziona |
-| `voce = mia` | F1 rende di più, e si sblocca F5 (voce fuori campo su b-roll) |
-| `voce = sintetica` | sconsigliato: su questa nicchia la voce finta annulla il vantaggio |
-
-Da decidere entro il giorno 8. Il piano del mese 1 gira comunque, perché è
-stato scritto per funzionare muto.
+**Il suono dell'evidenziatore sulla carta diventa la firma sonora del
+profilo.** È la scelta che compensa meglio l'assenza della voce: c'è una
+persona in quel suono — preme, si ferma, respira — e confina con l'ASMR, che
+ha un pubblico ampiamente sovrapposto a chi cerca contenuti su sovraccarico e
+senso di colpa. Va registrato bene fin dal primo video, perché diventa
+riconoscibile e non si cambia più.
 
 ## 7. Il nome sulla copertina — da risolvere
 

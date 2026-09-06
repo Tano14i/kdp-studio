@@ -7,6 +7,7 @@ compatibile.
 ## Indice
 1. Come si legge una scheda
 2. I format senza volto
+2-bis. L'audio quando non c'e' voce
 3. I format che richiedono il volto
 4. Regole di misura e di taglio
 5. Cosa non fare
@@ -30,7 +31,7 @@ di comparire, e tre su cinque non richiedono nemmeno la voce.
 ### F1 — Video sottolineare
 
 **Piattaforma:** TikTok, poi riusato come Reel e come Reel Facebook
-**Costo:** 3 minuti · **Attrito:** basso · **Volto:** no · **Voce:** opzionale
+**Costo:** 3 minuti · **Attrito:** basso · **Volto:** no · **Voce:** non serve
 
 Inquadratura dall'alto, fissa. In campo: il libro aperto, due mani, un
 evidenziatore. Si sottolinea **una** frase mentre scorre. Sette-quindici
@@ -51,6 +52,9 @@ Costruzione:
 
 **La copertina in chiusura e' la CTA.** Non serve scrivere «lo trovi su
 Amazon»: chi vuole il libro cerca il titolo che ha appena visto.
+
+Con `voce = nessuna` l'audio non e' facoltativo: vedi §2-bis. Il suono
+dell'evidenziatore sulla carta e' l'opzione migliore che questo format abbia.
 
 ---
 
@@ -124,6 +128,70 @@ nell'essere una persona.
 
 Da proporre **solo dopo** aver chiesto esplicitamente della voce. Chi ha detto
 «resto anonima» ha quasi sempre risposto sul volto e non sulla voce.
+
+## 2-bis. L'audio quando non c'è voce
+
+Con `voce = nessuna` resta un problema che il testo a schermo non risolve:
+**su TikTok l'audio è un canale di distribuzione, non una decorazione.** Un
+video pubblicato senza traccia audio viene mostrato meno, indipendentemente
+da quanto è buono. Non è una penalità dichiarata: è che i suoni sono uno dei
+modi in cui i contenuti vengono raggruppati e riproposti.
+
+Quindi ogni contenuto muto ha comunque un audio. Ci sono due strade, e per i
+format faceless la prima è quasi sempre migliore.
+
+### Strada 1 — il suono vero della scena (consigliata per F1)
+
+L'evidenziatore che scorre sulla carta. La pagina che si gira. Il libro che
+si chiude.
+
+È l'opzione più forte per tre ragioni:
+
+1. **È la cosa più vicina a una voce che un format senza volto possa avere.**
+   C'è una persona in quel suono — respira, preme, si ferma. Il legame che la
+   voce avrebbe creato lo crea in parte il gesto.
+2. **Confina con l'ASMR**, che ha un pubblico enorme e in larga parte
+   sovrapposto a chi cerca contenuti su ansia, calma e sovraccarico. Su una
+   nicchia come il bisogno di approvazione la sovrapposizione è quasi totale.
+3. **Non compete con il testo.** Un suono non si legge, quindi non ruba
+   attenzione alle parole a schermo.
+
+Come si registra, senza attrezzatura: stanza silenziosa, telefono a
+venti-trenta centimetri dalla pagina, niente ventole o frigoriferi accesi.
+Sottolineatura lenta e continua. Si registra l'audio insieme al video, non
+dopo.
+
+**Sotto, a volume molto basso, una base strumentale.** Il suono nudo su
+quindici secondi suona come un video a cui è stato dimenticato l'audio; con
+una base sotto suona voluto. La base sta al 10-15%, non deve essere
+riconoscibile.
+
+### Strada 2 — un suono di tendenza
+
+Utile per i caroselli e per i contenuti dove non c'è un gesto da registrare.
+
+Due regole, e non sono negoziabili:
+
+- **Mai un pezzo cantato in italiano sopra un testo a schermo.** Chi guarda
+  non può leggere e ascoltare parole diverse insieme: non fa né l'una né
+  l'altra cosa e scorre via. Se il suono ha un testo cantato, il contenuto
+  deve avere pochissime parole a schermo.
+- **Strumentale, o cantato in una lingua che il pubblico non processa come
+  linguaggio.** È il motivo per cui tanti contenuti di questo tipo montano
+  pezzi in inglese a volume basso.
+
+### Il testo a schermo, quando è l'unico canale
+
+Senza voce, il ritmo lo deve dare il testo.
+
+- **Il testo compare progressivamente**, non tutto insieme. Una frase che si
+  costruisce mentre la mano sottolinea tiene l'attenzione come la terrebbe
+  una voce che la legge. Una frase già tutta lì si legge in due secondi, e
+  quello che resta è vuoto.
+- **Più corto.** Senza voce non c'è ragione di andare lunghi: sette-dieci
+  secondi, non quindici.
+- **Un solo blocco di testo per volta.** Due frasi contemporanee su schermo si
+  annullano.
 
 ## 3. I format che richiedono il volto
 
