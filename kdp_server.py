@@ -4726,6 +4726,7 @@ async def competition_map(req: dict):
 
     books_data: list[dict] = []
     apify_used = False
+    apify_error = None
 
     if APIFY_TOKEN:
         search_url = amazon_search_url(niche, marketplace)
@@ -4754,13 +4755,50 @@ async def competition_map(req: dict):
                     books_data.append({"title": title, "reviews": reviews,
                                        "bsr": bsr_val, "price": str(price)})
             apify_used = bool(books_data)
-        except Exception:
-            pass
+        except Exception as e:
+            # Il motivo esce nella risposta: un elenco vuoto senza spiegazione
+            # si legge come "nessun concorrente" invece che "non ho guardato".
+            apify_error = f"{type(e).__name__}: {e}"[:300]
+    else:
+        apify_error = "APIFY_TOKEN non configurato"
+
+    # I dati misurati escono SEMPRE, accanto all'analisi e non al posto suo.
+    # Prima venivano raccolti da Apify (titolo, recensioni, BSR e prezzo) e poi
+    # buttati: al chiamante arrivava solo la riscrittura di Claude, con
+    # "reviews_est" e "price_est". Una misura trasformata in stima e' una misura
+    # persa, e il prezzo misurato non veniva nemmeno passato al modello.
+    misurati = {
+        "measured_books": books_data,
+        "measured": bool(books_data),
+        "measured_source": f"apify · amazon.{tld}" if books_data else None,
+        "apify_used": apify_used,
+    }
+    if apify_error:
+        misurati["apify_error"] = apify_error
+
+    # solo_dati: niente Claude. Serve quando i numeri bastano (fase 1 del
+    # metodo) o quando il credito Anthropic non c'e': la corsa Apify vale
+    # comunque, e l'analisi si puo' fare altrove.
+    if req.get("raw") or req.get("solo_dati"):
+        return misurati
+
+    if not books_data:
+        # Senza dati misurati non si chiede al modello di inventare titoli,
+        # prezzi e conteggi: tornerebbero numeri plausibili nei campi in cui
+        # altrove stanno numeri veri.
+        return {
+            **misurati,
+            "books": [],
+            "note": ("Nessun dato misurato da Apify: analisi non eseguita. "
+                     "Chiedere una stima riempirebbe di numeri inventati i campi "
+                     "in cui altrove stanno numeri misurati."),
+        }
 
     books_list = "\n".join(
-        f"- \"{b['title']}\" (reviews: {b.get('reviews','?')}, BSR: {b.get('bsr','?')})"
+        f"- \"{b['title']}\" (reviews: {b.get('reviews','?')}, "
+        f"BSR: {b.get('bsr','?')}, price: {b.get('price') or '?'})"
         for b in books_data[:8]
-    ) if books_data else "No live data — use your knowledge of this niche."
+    )
 
     prompt = f"""You are an Amazon KDP competitive intelligence expert.
 Niche: {niche} | Marketplace: amazon.{tld}
@@ -4772,9 +4810,9 @@ Analyze the competitive landscape and return JSON:
 {{
   "books": [
     {{
-      "title": "book title (use real titles if data available, otherwise estimate)",
-      "reviews_est": "number or range",
-      "price_est": "$X.XX or range",
+      "title": "EXACT title from the list above — never invent a book that is not listed",
+      "reviews_est": "copy the measured reviews count from the list; never invent one",
+      "price_est": "copy the measured price from the list; write \"?\" if it is missing",
       "weakness": "specific weakness or gap THIS book has",
       "reader_complaint": "what readers actually complain about"
     }}
@@ -4785,15 +4823,22 @@ Analyze the competitive landscape and return JSON:
   "best_title_formula": "Title pattern that would dominate: example + explanation of the formula"
 }}
 
-Return exactly 5 books. Detect language from the niche and write all text in that language.
+Cover the books listed above, at most 5, and NO others: the list is measured data
+from Amazon, and a book that is not in it does not exist for this analysis.
+"weakness" and "reader_complaint" are your judgement and may be inferred; the
+title, reviews and price fields are measurements and must be copied, not guessed.
+Detect language from the niche and write all text in that language.
 Output ONLY valid JSON."""
 
     try:
         raw = await call_claude(prompt, max_tokens=2200, allow_truncated=True)
         data = parse_json_safe(raw)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"competition-map Claude error: {e}")
-    data["apify_used"] = apify_used
+        # La corsa Apify e' gia' stata pagata: i suoi numeri valgono anche
+        # senza l'analisi. Prima un errore del modello li mandava tutti persi
+        # dentro un 500.
+        return {**misurati, "books": [], "analysis_error": f"{type(e).__name__}: {e}"[:300]}
+    data.update(misurati)
     return data
 
 

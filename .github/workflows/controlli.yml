@@ -25,6 +25,11 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Dipendenze del server
+        # Servono solo al controllo su competition-map, che importa
+        # kdp_server.py per davvero invece di limitarsi a compilarlo.
+        run: pip install --quiet -r requirements.txt
+
       - name: Sintassi di tutti gli script
         # compileall non importa i moduli, quindi kdp_server.py viene
         # controllato senza installare fastapi, anthropic e httpx.
@@ -36,6 +41,12 @@ jobs:
         # "nessuno cerca questa cosa". Senza questo controllo si scopre
         # solo scartando una nicchia buona.
         run: python test_amazon_markets.py --offline
+
+      - name: competition-map — le misure sopravvivono all'analisi
+        # Apify e Claude sono sostituiti da funzioni finte: si verifica la
+        # logica di questo codice, non il comportamento di due servizi
+        # esterni. Nessuna rete, nessuna chiave.
+        run: python test_competition_map.py
 
       - name: Analisi concorrenti — conclude quando i dati bastano
         run: python analizza_concorrenti.py tests/fixtures/concorrenti-completi.csv
