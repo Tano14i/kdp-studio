@@ -14,3 +14,6 @@ venv/
 # Output generato da harvest_demand.py — istantanea di mercato, non sorgente.
 # Il dato che conta finisce in 01 Ricerca/ del progetto libro.
 domanda-*.json
+
+# Output generato da trend_topics.py alla radice (la copia in _profili si tiene).
+/trend-it.json
