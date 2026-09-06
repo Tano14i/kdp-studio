@@ -1,6 +1,6 @@
 # Pen Name — Martina Riva
 
-**Stato:** in apertura — dossier incompleto, dati di mercato da inserire
+**Stato:** attivo — un titolo pubblicato, zero recensioni
 **Aperto il:** 2026-09-06
 
 ---
@@ -12,6 +12,7 @@
 | Pen name | Martina Riva |
 | Mercato | Amazon.it (italiano) |
 | Handle social | `@martina.rivabooks` |
+| Nicchia | Psicologia pratica / crescita personale — people-pleasing e confini |
 
 ## Link
 
@@ -22,11 +23,35 @@
 
 | ASIN | Titolo | Formato | Prezzo | Pubblicato | Recensioni |
 |---|---|---|---|---|---|
-| B0H6V6FPNK | _da compilare_ | _da compilare_ | _da compilare_ | _da compilare_ | _da compilare_ |
+| B0H6V6FPNK | Smetti di Chiedere il Permesso | Paperback, 166 pp. | 13,99 € | 27/06/2026 | 0 |
+
+### Smetti di Chiedere il Permesso
+
+**Sottotitolo:** La psicologia del bisogno di approvazione e la guida pratica per ritrovare te stesso senza perdere le relazioni che ami
+
+- **ISBN-13:** 979-8184560991 · **Editore:** Independently published · **Lingua:** italiano
+- **Formato fisico:** 15,24 × 0,97 × 22,86 cm, 308 g
+- **Copertina:** farfalla dorata su fondo crema, titolo serif bruno scuro. Palette: crema `#F4EADB`, oro `#D4A537`, testo `#2B2118`.
+
+**Promessa:** smontare il meccanismo del bisogno di approvazione con strumenti pratici, senza diventare egoisti e senza perdere le relazioni.
+
+**Ganci di contenuto** (dalla scheda Amazon, riusabili sui social):
+- I 5 volti del bisogno di compiacere: Pacificatore, Salvatore, Perfezionista, Invisibile, Camaleonte
+- 6 frasi-scudo per dire no senza spiegazioni né scuse
+- La tecnica del disco rotto per tenere il confine quando l'altro insiste
+- «Il senso di colpa non è la tua coscienza — è il guardiano della gabbia»
+- Compromesso sano vs. annullamento di sé nella coppia
+- Frase di chiusura: «Il permesso che hai sempre cercato fuori è sempre stato dentro di te.»
+
+**Da verificare sul testo:** la scheda Amazon elenca i nomi dei 5 volti ma non li definisce. Le descrizioni usate nei contenuti social vanno confrontate con il capitolo corrispondente.
 
 ## Nicchia e posizionamento
 
-_Da compilare._ Serve la scheda Amazon del primo titolo per fissare nicchia, categorie e promessa.
+Psicologia divulgativa applicata, mercato italiano. Il libro si posiziona **contro** il self-help motivazionale generico («non è l'ennesimo libro sull'autostima che ti dice di pensare positivo»): la leva è la concretezza — script, frasi pronte, esercizi misurabili — su base neuroscientifica.
+
+**Lettore:** chi dice sì e poi se ne pente, ha paura di deludere, si sente in colpa quando fa qualcosa per sé, e si accorge che le relazioni lo prosciugano. Vuole smettere di cercare approvazione senza sentirsi egoista.
+
+**Punto debole attuale:** zero recensioni. È la priorità numero uno — la riprova sociale manca del tutto, e su una nicchia affollata come questa pesa più delle keyword.
 
 ## DNA stilistico
 
