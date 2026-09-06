@@ -1925,6 +1925,14 @@ const BACKEND_URL = (() => {
 })();
 let BACKEND_LIVE = false;  // set to true after health check passes
 
+// Marketplace scelto nel selettore, in codice paese. Un solo punto, così i
+// pannelli non divergono: i suggerimenti di ricerca vanno chiesti al paese
+// giusto, altrimenti si misura la domanda americana su una nicchia italiana.
+function currentMarketCode() {
+  const mkt = document.getElementById('marketSelect')?.value || '';
+  return { 'English':'us','German philosophy and culture':'de','Mediterranean and Italian culture':'it' }[mkt] || 'us';
+}
+
 // ─── API KEY SETTINGS ─────────────────────────────────────────
 function toggleApiKeyPanel() {
   const panel = document.getElementById('apiKeyPanel');
@@ -6241,7 +6249,7 @@ async function generateTitleVariants() {
 
   let realKeywords = [];
   try {
-    const kwRes = await callBackend('/api/apify/keywords', { query: currentTitle, platforms: ['amazon'] });
+    const kwRes = await callBackend('/api/apify/keywords', { query: currentTitle, platforms: ['amazon'], marketplace: currentMarketCode() });
     realKeywords = (kwRes.data || []).flatMap(item =>
       item.suggestions || item.keywords || (typeof item === 'string' ? [item] : [])
     ).slice(0, 15);
@@ -6548,7 +6556,7 @@ async function searchKeywords() {
   if (out) out.innerHTML = `<div style="font-size:12px;color:var(--muted);padding:8px 0">Recupero suggerimenti da ${platforms.join(', ')}${longtail ? ' + metriche SEO' : ''}…</div>`;
 
   try {
-    const res = await callBackend('/api/apify/keywords', { query, platforms, longtail });
+    const res = await callBackend('/api/apify/keywords', { query, platforms, longtail, marketplace: currentMarketCode() });
     const items = res.data || [];
     const ltItems = res.longtail || [];
 

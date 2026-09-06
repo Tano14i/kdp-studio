@@ -1335,16 +1335,36 @@ def classify_amazon_saturation(count: Optional[int]) -> tuple[str, str]:
         return "saturated", f"{count}+ libri su Amazon — nicchia satura, cerca una sotto-nicchia o angolo molto diverso"
 
 
-async def fetch_amazon_autocomplete(query: str) -> list[str]:
+
+# Marketplace di Amazon: id interno, lingua e dominio per l'autocomplete.
+# L'endpoint dei suggerimenti risponde sempre, anche con un mid sbagliato:
+# restituisce semplicemente i suggerimenti del paese sbagliato. Per questo
+# il default resta esplicito e i chiamanti passano il marketplace scelto.
+AMAZON_MARKETS: dict[str, dict[str, str]] = {
+    "us": {"mid": "ATVPDKIKX0DER",  "lop": "en_US", "host": "www.amazon.com"},
+    "it": {"mid": "APJ6JRA9NG5V4",  "lop": "it_IT", "host": "www.amazon.it"},
+    "de": {"mid": "A1PA6795UKMFR9", "lop": "de_DE", "host": "www.amazon.de"},
+    "fr": {"mid": "A13V1IB3VIYZZH", "lop": "fr_FR", "host": "www.amazon.fr"},
+    "es": {"mid": "A1RKKUPIHCS9HS", "lop": "es_ES", "host": "www.amazon.es"},
+    "uk": {"mid": "A1F83G8C2ARO7P", "lop": "en_GB", "host": "www.amazon.co.uk"},
+}
+
+
+def _market(marketplace: str | None) -> dict[str, str]:
+    return AMAZON_MARKETS.get((marketplace or "us").lower(), AMAZON_MARKETS["us"])
+
+
+async def fetch_amazon_autocomplete(query: str, marketplace: str = "us") -> list[str]:
     """
     Real demand signal: what Amazon's search-bar autocomplete suggests for this
     niche query — reflects actual searches typed by shoppers/readers in the
     Books store. Undocumented endpoint, degrades to [] on any failure.
     """
+    mk = _market(marketplace)
     try:
         headers = {**AMAZON_HEADERS, "Accept": "application/json"}
         async with httpx.AsyncClient(timeout=8, headers=headers) as client:
-            r = await client.get("https://completion.amazon.com/api/2017/suggestions", params={
+            r = await client.get(f"https://completion.{mk['host'].removeprefix('www.')}/api/2017/suggestions", params={
                 "limit": 10,
                 "prefix": query,
                 "suggestion-type": "KEYWORD",
@@ -1354,8 +1374,8 @@ async def fetch_amazon_autocomplete(query: str) -> list[str]:
                 "version": "3",
                 "event": "onKeyPress",
                 "wc": "",
-                "lop": "en_US",
-                "mid": "ATVPDKIKX0DER",
+                "lop": mk["lop"],
+                "mid": mk["mid"],
             })
             if r.status_code != 200:
                 return []
@@ -3365,7 +3385,7 @@ async def niche_validator(req: dict):
     # Step 1: Amazon keyword autocomplete — demand signal (fast, free)
     amazon_keywords: list[str] = []
     try:
-        amazon_keywords = await _amazon_autocomplete(niche)
+        amazon_keywords = await _amazon_autocomplete(niche, marketplace)
     except Exception:
         pass
 
@@ -3706,25 +3726,29 @@ def _key_query(text: str, max_words: int = 4) -> str:
     return short or text[:40]
 
 
-async def _amazon_autocomplete(query: str) -> list[str]:
+async def _amazon_autocomplete(query: str, marketplace: str = "us") -> list[str]:
     """Call Amazon's autocomplete API (2017 version) directly — no Apify, sub-second.
-    Tries the full query first; falls back to key-words only if empty."""
+    Tries the full query first; falls back to key-words only if empty.
+    Il marketplace decide da quale paese arrivano i suggerimenti: senza, si
+    misura la domanda americana su una nicchia italiana."""
+    mk = _market(marketplace)
+
     async def _fetch(prefix: str) -> list[str]:
         async with httpx.AsyncClient(timeout=8) as client:
             res = await client.get(
-                "https://completion.amazon.com/api/2017/suggestions",
+                f"https://completion.{mk['host'].removeprefix('www.')}/api/2017/suggestions",
                 params={
-                    "lop": "en_US",
+                    "lop": mk["lop"],
                     "site-variant": "desktop",
                     "category": "stripbooks",
                     "prefix": prefix,
-                    "mid": "ATVPDKIKX0DER",
+                    "mid": mk["mid"],
                     "alias": "stripbooks",
                 },
                 headers={
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                     "Accept": "application/json",
-                    "Referer": "https://www.amazon.com/",
+                    "Referer": f"https://{mk['host']}/",
                 },
             )
             res.raise_for_status()
@@ -3751,10 +3775,11 @@ async def _amazon_autocomplete(query: str) -> list[str]:
 async def apify_amazon_niche(req: dict):
     """Amazon keyword autocomplete — direct call, no actor cold start."""
     keyword = req.get("keyword", "")
+    marketplace = req.get("marketplace", "us")
     if not keyword:
         return {"data": []}
     try:
-        suggestions = await _amazon_autocomplete(keyword)
+        suggestions = await _amazon_autocomplete(keyword, marketplace)
         return {"data": [{"platform": "amazon", "suggestions": suggestions}]}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -3764,10 +3789,11 @@ async def apify_amazon_niche(req: dict):
 async def apify_amazon_best(req: dict):
     """Amazon keyword autocomplete for a niche — direct call, no actor cold start."""
     niche = req.get("niche", "")
+    marketplace = req.get("marketplace", "us")
     if not niche:
         return {"data": []}
     try:
-        suggestions = await _amazon_autocomplete(niche)
+        suggestions = await _amazon_autocomplete(niche, marketplace)
         return {"data": [{"platform": "amazon", "suggestions": suggestions}]}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -3849,6 +3875,7 @@ async def apify_keywords(req: dict):
     query = req.get("query", "")
     platforms = req.get("platforms", ["google", "amazon", "pinterest"])
     longtail = req.get("longtail", False)
+    marketplace = req.get("marketplace", "us")
 
     if not query:
         return {"data": [], "longtail": []}
@@ -3860,7 +3887,7 @@ async def apify_keywords(req: dict):
             if plat == "google":
                 sugg = await _autocomplete_google(query)
             elif plat == "amazon":
-                sugg = await _amazon_autocomplete(query)
+                sugg = await _amazon_autocomplete(query, marketplace)
             elif plat == "pinterest":
                 sugg = await _autocomplete_pinterest(query)
             elif plat == "tiktok":
