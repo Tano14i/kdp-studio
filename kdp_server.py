@@ -4715,6 +4715,129 @@ Apply the 3-question framework and return JSON:
 # COMPETITION MAP — top 5 collective gap analysis
 # ══════════════════════════════════════════════════════════════
 
+_STOP_NICCHIA = {
+    "come", "cosa", "libro", "libri", "guida", "manuale", "per", "con", "che",
+    "del", "della", "dei", "delle", "dal", "nel", "una", "uno", "gli", "the",
+    "and", "for", "book", "guide", "senza", "dopo", "tuo", "tua", "mio", "mia",
+}
+
+
+def _normalizza(testo: str) -> str:
+    """Minuscolo, senza accenti, senza punteggiatura. Serve perche' 'Endometriosi.'
+    e 'endometriosi' sono la stessa parola e un confronto ingenuo direbbe di no."""
+    import unicodedata as _ud
+    t = _ud.normalize("NFKD", str(testo or "").lower())
+    t = "".join(c for c in t if not _ud.combining(c))
+    return "".join(c if c.isalnum() else " " for c in t)
+
+
+def _token_nicchia(niche: str) -> list[str]:
+    """Le parole della nicchia che valgono come prova di pertinenza.
+
+    Non si privilegiano le parole lunghe: "adhd" ha quattro lettere ed e' la
+    piu' distintiva di "adhd adulti", mentre "adulti" ne ha sei e da sola non
+    dice niente. Una prima versione teneva solo le lunghe e faceva passare
+    "Ricette per bambini adulti e golosi".
+    """
+    return [p for p in _normalizza(niche).split()
+            if len(p) >= 4 and p not in _STOP_NICCHIA]
+
+
+def _pertinenza(libro: dict, token: list[str]) -> tuple[bool, list[str]]:
+    """Pertinente se il titolo contiene TUTTE le parole della nicchia.
+
+    Il confronto e' per prefisso, cosi' "endometriosi" riconosce
+    "endometriosica". Servono tutte e non una qualsiasi: su "gioco d'azzardo",
+    la sola parola "gioco" faceva passare "Il gioco delle perle di vetro".
+
+    Pretendere tutte le parole puo' scartare un libro pertinente dal titolo
+    obliquo. Per questo gli scartati vengono restituiti con il motivo invece di
+    sparire: un errore visibile si corregge, uno silenzioso no.
+
+    Senza token utilizzabili non si filtra affatto: meglio non filtrare che
+    filtrare a caso.
+    """
+    if not token:
+        return True, []
+    parole = _normalizza(f"{libro.get('title', '')} {libro.get('url', '')}").split()
+    trovati = [
+        t for t in token
+        if any(w.startswith(t) or (t.startswith(w) and len(w) >= 5) for w in parole)
+    ]
+    return len(trovati) == len(token), trovati
+
+
+def _primo(item: dict, *chiavi):
+    """Primo valore non vuoto fra piu' nomi possibili dello stesso campo."""
+    for k in chiavi:
+        v = item.get(k)
+        if v not in (None, "", [], {}):
+            return v
+    return None
+
+
+def _prezzo(v):
+    """Normalizza il prezzo in (numero, valuta).
+
+    L'actor lo restituisce come {'value': 15.6, 'currency': '€'}: farne str()
+    produceva la stringa "{'value': 15.6, 'currency': '\u20ac'}" dentro il campo
+    prezzo, illeggibile per chi la consuma e inutilizzabile per un confronto.
+    """
+    if v is None:
+        return None, None
+    if isinstance(v, dict):
+        num = v.get("value", v.get("amount"))
+        try:
+            return (float(num) if num is not None else None), v.get("currency")
+        except (TypeError, ValueError):
+            return None, v.get("currency")
+    if isinstance(v, (int, float)):
+        return float(v), None
+    testo = str(v)
+    import re as _re
+    m = _re.search(r"(\d+[.,]?\d*)", testo.replace(".", "").replace(",", "."))
+    try:
+        return (float(m.group(1)) if m else None), ("€" if "€" in testo else None)
+    except ValueError:
+        return None, None
+
+
+def _estrai_libro(item: dict) -> dict:
+    """Da un elemento dell'actor Apify ai campi che servono alla fase 1."""
+    import re as _re
+    url = _primo(item, "url", "link", "productUrl", "detailPageURL") or ""
+    asin = _primo(item, "asin", "ASIN", "productAsin")
+    if not asin and url:
+        m = _re.search(r"/(?:dp|gp/product)/([A-Z0-9]{10})", str(url))
+        asin = m.group(1) if m else None
+
+    bsr_raw = _primo(item, "bestsellersRank", "bsr", "bestSellersRank", "salesRank")
+    bsr = None
+    if isinstance(bsr_raw, list) and bsr_raw:
+        primo = bsr_raw[0]
+        bsr = (primo.get("rank") or primo.get("position")) if isinstance(primo, dict) else primo
+    elif isinstance(bsr_raw, (int, float)):
+        bsr = int(bsr_raw)
+
+    prezzo, valuta = _prezzo(_primo(item, "price", "price_string", "currentPrice"))
+    stelle = _primo(item, "stars", "rating", "averageRating", "reviewsRating")
+    try:
+        stelle = float(str(stelle).replace(",", ".")) if stelle is not None else None
+    except ValueError:
+        stelle = None
+
+    return {
+        "asin": asin,
+        "title": _primo(item, "title", "name") or "",
+        "reviews": _primo(item, "reviewsCount", "numberOfReviews", "reviews") or 0,
+        "rating": stelle,
+        "bsr": bsr,
+        "price": prezzo,
+        "currency": valuta,
+        "url": str(url) or None,
+    }
+
+
 @app.post("/api/competition-map", dependencies=[_AUTH])
 async def competition_map(req: dict):
     niche = (req.get("niche") or "").strip()
@@ -4725,8 +4848,10 @@ async def competition_map(req: dict):
     tld = amazon_tld(marketplace)
 
     books_data: list[dict] = []
+    scartati: list[dict] = []
     apify_used = False
     apify_error = None
+    actor_fields: list[str] = []
 
     if APIFY_TOKEN:
         search_url = amazon_search_url(niche, marketplace)
@@ -4739,21 +4864,25 @@ async def competition_map(req: dict):
                 }),
                 timeout=90.0,
             )
+            token = _token_nicchia(niche) if req.get("filtra_pertinenza", True) else []
             for item in (items or []):
-                title = item.get("title") or item.get("name") or ""
-                reviews = item.get("reviewsCount") or item.get("numberOfReviews") or 0
-                price = item.get("price") or item.get("price_string") or ""
-                bsr_raw = (item.get("bestsellersRank") or item.get("bsr")
-                           or item.get("bestSellersRank") or [])
-                bsr_val = None
-                if isinstance(bsr_raw, list) and bsr_raw:
-                    first = bsr_raw[0]
-                    bsr_val = first.get("rank") or first.get("position") if isinstance(first, dict) else first
-                elif isinstance(bsr_raw, int):
-                    bsr_val = bsr_raw
-                if title:
-                    books_data.append({"title": title, "reviews": reviews,
-                                       "bsr": bsr_val, "price": str(price)})
+                libro = _estrai_libro(item)
+                if not libro["title"]:
+                    continue
+                pertinente, trovati = _pertinenza(libro, token)
+                if pertinente:
+                    libro["match"] = trovati
+                    books_data.append(libro)
+                else:
+                    # Non si butta in silenzio: uno scarto invisibile fa
+                    # calcolare mediane su un insieme che nessuno ha guardato.
+                    scartati.append({"title": libro["title"][:90],
+                                     "motivo": "il titolo non contiene tutte le parole della nicchia"})
+            # I nomi dei campi dell'actor sono dichiarati nella risposta invece
+            # di essere indovinati: se un giorno cambiano, si legge qui invece
+            # di dedurlo da una colonna di None.
+            if items and isinstance(items[0], dict):
+                actor_fields = sorted(items[0].keys())
             apify_used = bool(books_data)
         except Exception as e:
             # Il motivo esce nella risposta: un elenco vuoto senza spiegazione
@@ -4772,9 +4901,35 @@ async def competition_map(req: dict):
         "measured": bool(books_data),
         "measured_source": f"apify · amazon.{tld}" if books_data else None,
         "apify_used": apify_used,
+        "actor_fields": actor_fields,
+        "scartati_non_pertinenti": scartati,
+        "pertinenza": {
+            "token_cercati": _token_nicchia(niche) if req.get("filtra_pertinenza", True) else [],
+            "tenuti": len(books_data),
+            "scartati": len(scartati),
+            "nota": ("Su Amazon.it l'alias stripbooks non filtra bene: una ricerca "
+                     "restituisce anche libri di altro argomento. Senza questo filtro "
+                     "la mediana dei prezzi della nicchia la deciderebbero i libri "
+                     "sbagliati. Passare filtra_pertinenza:false per averli tutti."),
+        },
     }
     if apify_error:
         misurati["apify_error"] = apify_error
+    # Un campo assente su TUTTI i libri non e' un dato mancante a caso: e' un
+    # campo che questo actor non fornisce. Va detto, altrimenti una colonna di
+    # None si legge come "questi libri non hanno BSR".
+    if books_data:
+        mancanti = [c for c in ("bsr", "price", "rating", "asin")
+                    if all(b.get(c) in (None, "") for b in books_data)]
+        if mancanti:
+            misurati["campi_non_forniti"] = {
+                "campi": mancanti,
+                "nota": ("Assenti su tutti i libri: l'actor non li fornisce per questa "
+                         "richiesta, non e' che i libri ne siano privi. Il BSR in "
+                         "particolare sta sulla pagina del prodotto, non nei risultati "
+                         "di ricerca: serve una chiamata per ASIN. Campi realmente "
+                         "restituiti dall'actor in actor_fields."),
+            }
 
     # solo_dati: niente Claude. Serve quando i numeri bastano (fase 1 del
     # metodo) o quando il credito Anthropic non c'e': la corsa Apify vale
@@ -4796,7 +4951,7 @@ async def competition_map(req: dict):
 
     books_list = "\n".join(
         f"- \"{b['title']}\" (reviews: {b.get('reviews','?')}, "
-        f"BSR: {b.get('bsr','?')}, price: {b.get('price') or '?'})"
+        f"BSR: {b.get('bsr') or '?'}, price: {b.get('price') or '?'} {b.get('currency') or ''})"
         for b in books_data[:8]
     )
 
