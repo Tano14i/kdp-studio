@@ -23,7 +23,7 @@ Cedric Darkstone (pen name) · inglese · mercato Amazon US · avviato il 06/09/
 | 9 | Revisione | da fare | — | |
 | 10 | Interni impaginati | da fare | — | |
 | 11 | Immagini, copertina finita | in corso | — | |
-| 12 | Scheda, A+, social/campagne | CP7 aperto (bozza social pronta) | CP6 · CP7 | |
+| 12 | Scheda, A+, social/campagne | CP7 chiuso (social); CP6 A+ da fare | CP6 · CP7 | 06/09 |
 | 13 | Traduzione e mercati | da fare | — | |
 
 > Nota onesta: le fasi 1-3, 5-10 non sono state eseguite come artefatti in questo
@@ -35,10 +35,10 @@ Cedric Darkstone (pen name) · inglese · mercato Amazon US · avviato il 06/09/
 bozza del piano social IG+TikTok (`04 Mercato/contenuti-social.md`).
 L'autore ha scelto: avatar minimo prima → piano su **Instagram + TikTok**.
 
-**Decisione richiesta all'autore per chiudere CP7:**
-- handle definitivo dell'account,
-- quale lead magnet (checklist gratuita) usare come esca,
-- se produrre subito i primi 5 video con Higgsfield.
+**CP7 chiuso** (`decisioni/07-marketing.md`): handle `@CedricDkstn`, lead magnet
+"1-Hour Session Prep Checklist", 3 Reel in produzione. Prossimo: creare la checklist
+lead magnet e i contenuti A+ (CP6), oppure tornare alla spina dorsale mancante
+(nicchia → concept) se si vuole scalare in ads.
 
 ## 3. Cosa manca, in ordine
 - [ ] Verdetto di nicchia con numeri (fase 1) — *saltato*

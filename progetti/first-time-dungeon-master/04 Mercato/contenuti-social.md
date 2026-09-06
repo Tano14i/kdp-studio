@@ -95,6 +95,14 @@ Riusa lo stesso video verticale su entrambi (rimuovi watermark TikTok prima di I
 - ⚠️ Validare l'avatar: i commenti diranno se il pubblico è davvero "primo tavolo" o
   master esperti. Aggiornare avatar-cliente.md di conseguenza.
 
+## Primi 3 Reel prodotti (06/09, Higgsfield)
+Frame nano_banana_pro 9:16 2k → animati con Kling v3.0 (5s, muti, da editare in CapCut).
+1. Hook #2 "You don't need the whole manual" — video job `161a8c86-eda1-4406-862f-008d95b1ccc4` (frame `f5fae308…`).
+2. Hook #9 "POV 10 min before first session" — video job `e3ae08d1-8ec2-48b9-a0a5-ef94bebcfa50` (frame `50e98ec9…`).
+3. Hook #13 "Roll a d20" — video job `6600e643-0797-44f2-9b06-5fb2e88163aa` (frame `4c5d410d…`).
+Da fare in editing: voce/testo (hook→dolore→consiglio→CTA), audio in tendenza, CTA "book + templates in bio".
+⚠️ Verificare che il testo non si deformi nel movimento prima di pubblicare.
+
 ## Prossimo (checkpoint 7 — Marketing)
 Questo piano è la bozza da approvare. Alla chiusura del CP7 va in `decisioni/`.
 Serve una decisione dell'autore su: handle definitivo, lead magnet (quale checklist),
