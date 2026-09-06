@@ -30,34 +30,66 @@ valgono piu' di qualunque altra cosa io possa tentare da qui.
 
 ## 2. Cosa aprire
 
-Scegli **una** nicchia e apri i suoi tre collegamenti. Non farne tre in
-parallelo: meglio una nicchia completa che tre a meta'.
+**Aggiornato il 06/09 sera.** Le tre nicchie elencate qui prima erano scelte
+per *tema*. Adesso due progetti hanno un **angolo** candidato (passo 1b), e la
+ricerca cambia bersaglio: non piu' «quanti libri ci sono su questo tema», ma
+**«qualcuno vende gia' questo angolo?»**. E' una domanda a cui si risponde in
+venti minuti, e finche' non ha risposta i due progetti restano fermi.
 
-**Endometriosi** — la piu' promettente: sei libri visti, **tutti
-sull'alimentazione**. Se le recensioni confermano che manca il resto
-(diagnosi, lavoro, coppia, dolore quotidiano), l'angolo e' li'.
+Scegli **un** progetto e falla intera. Meglio uno completo che due a meta'.
 
-- https://www.amazon.it/s?k=endometriosi&i=stripbooks
-- https://www.amazon.it/s?k=endometriosi&i=stripbooks&s=review-rank
-- https://www.amazon.it/s?k=endometriosi&i=stripbooks&s=date-desc-rank
+### A — autosabotaggio, angolo «adulto con ADHD» (consigliato)
 
-**ADHD adulti** — volume piu' alto di tutti (277.000 visite/anno) e in
-crescita contro corrente.
+`progetti/autosabotaggio/01 Ricerca/01b-angolo.md`. E' il consigliato perche'
+il tema ha la miglior combinazione crescita+volume gia' misurata (indice 2,59,
+277.000 visite/anno) e perche' la domanda decisiva si risponde contando.
 
 - https://www.amazon.it/s?k=adhd+adulti&i=stripbooks
 - https://www.amazon.it/s?k=adhd+adulti&i=stripbooks&s=review-rank
-- https://www.amazon.it/s?k=adhd+adulti&i=stripbooks&s=date-desc-rank
+- https://www.amazon.it/s?k=procrastinazione+adhd&i=stripbooks
+- https://www.amazon.it/s?k=adhd+donne+adulte&i=stripbooks
 
-**Ludopatia** — l'unica senza nessuna ancora editoriale: solo pen name.
-Domanda piu' magra, ma nessun editore che presidia.
+**La domanda che decide:** dei libri che escono, quanti sono **clinici**
+(manuale, diagnosi, per professionisti o genitori di bambini) e quanti sono
+**pratici per l'adulto che ce l'ha**? Se in mezzo non c'e' niente, l'angolo e'
+vero. Segna accanto a ogni riga `clinico` o `pratico`.
 
-- https://www.amazon.it/s?k=ludopatia&i=stripbooks
-- https://www.amazon.it/s?k=ludopatia&i=stripbooks&s=review-rank
-- https://www.amazon.it/s?k=gioco+d%27azzardo+dipendenza&i=stripbooks
+**Da controllare in piu':** `adhd adulti` arriva dall'autocomplete senza nome
+d'autore attaccato. In questo repo una query nuda ha gia' ingannato due volte
+perche' *era* un titolo. Guarda se esiste un libro che si chiama cosi'.
 
-Il terzo collegamento (ordinato per novita') e' quello che dice se la nicchia
-si sta riempiendo adesso: se i primi risultati sono tutti degli ultimi sei
-mesi, ci stanno entrando in molti proprio ora.
+### B — rabbia-genitoriale, angolo «il dopo, non il prima»
+
+`progetti/rabbia-genitoriale/01 Ricerca/01b-angolo.md`. Tredici concorrenti
+vendono tutti «come non urlare». L'angolo e' cosa si fa **dopo**.
+
+- https://www.amazon.it/s?k=dopo+aver+urlato+ai+figli&i=stripbooks
+- https://www.amazon.it/s?k=senso+di+colpa+genitori&i=stripbooks
+- https://www.amazon.it/s?k=chiedere+scusa+ai+figli&i=stripbooks
+- https://www.amazon.it/s?k=riparare+rapporto+con+i+figli&i=stripbooks
+
+**La domanda che decide:** qualcuno vende gia' il dopo invece del prima? Qui
+un risultato **vuoto o fuori tema e' una buona notizia**, ed e' il contrario
+di come si leggono le altre ricerche di questa scheda.
+
+**Da controllare in piu':** gli ASIN veri di *Urlare non serve a nulla*
+(Novara) e *Come non odiare tuo marito dopo i figli* (Dunn). Quelli dedotti
+dagli ISBN di Goodreads rispondono 500, quindi le loro righe nella tabella dei
+numeri sono vuote. Basta l'URL della pagina Amazon.
+
+### Endometriosi: non piu' in lista
+
+Era la prima delle tre, ed era la piu' promettente. **Sospesa il 06/09 sera
+per decisione dell'autore: tema troppo medico** — vedi
+`progetti/endometriosi/00-dossier-metodo.md` §7. I collegamenti e i tre ASIN
+restano scritti li' dentro, se un giorno riparte.
+
+### Se cerchi per tema e non per angolo
+
+Vale ancora la regola vecchia: il terzo collegamento ordinato per novita'
+(`&s=date-desc-rank`) dice se la nicchia si sta riempiendo adesso. Se i primi
+risultati sono tutti degli ultimi sei mesi, ci stanno entrando in molti
+proprio ora.
 
 ## 3. Cosa copiare — parte A, i numeri
 
