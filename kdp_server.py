@@ -4715,6 +4715,58 @@ Apply the 3-question framework and return JSON:
 # COMPETITION MAP — top 5 collective gap analysis
 # ══════════════════════════════════════════════════════════════
 
+_STOP_NICCHIA = {
+    "come", "cosa", "libro", "libri", "guida", "manuale", "per", "con", "che",
+    "del", "della", "dei", "delle", "dal", "nel", "una", "uno", "gli", "the",
+    "and", "for", "book", "guide", "senza", "dopo", "tuo", "tua", "mio", "mia",
+}
+
+
+def _normalizza(testo: str) -> str:
+    """Minuscolo, senza accenti, senza punteggiatura. Serve perche' 'Endometriosi.'
+    e 'endometriosi' sono la stessa parola e un confronto ingenuo direbbe di no."""
+    import unicodedata as _ud
+    t = _ud.normalize("NFKD", str(testo or "").lower())
+    t = "".join(c for c in t if not _ud.combining(c))
+    return "".join(c if c.isalnum() else " " for c in t)
+
+
+def _token_nicchia(niche: str) -> list[str]:
+    """Le parole della nicchia che valgono come prova di pertinenza.
+
+    Non si privilegiano le parole lunghe: "adhd" ha quattro lettere ed e' la
+    piu' distintiva di "adhd adulti", mentre "adulti" ne ha sei e da sola non
+    dice niente. Una prima versione teneva solo le lunghe e faceva passare
+    "Ricette per bambini adulti e golosi".
+    """
+    return [p for p in _normalizza(niche).split()
+            if len(p) >= 4 and p not in _STOP_NICCHIA]
+
+
+def _pertinenza(libro: dict, token: list[str]) -> tuple[bool, list[str]]:
+    """Pertinente se il titolo contiene TUTTE le parole della nicchia.
+
+    Il confronto e' per prefisso, cosi' "endometriosi" riconosce
+    "endometriosica". Servono tutte e non una qualsiasi: su "gioco d'azzardo",
+    la sola parola "gioco" faceva passare "Il gioco delle perle di vetro".
+
+    Pretendere tutte le parole puo' scartare un libro pertinente dal titolo
+    obliquo. Per questo gli scartati vengono restituiti con il motivo invece di
+    sparire: un errore visibile si corregge, uno silenzioso no.
+
+    Senza token utilizzabili non si filtra affatto: meglio non filtrare che
+    filtrare a caso.
+    """
+    if not token:
+        return True, []
+    parole = _normalizza(f"{libro.get('title', '')} {libro.get('url', '')}").split()
+    trovati = [
+        t for t in token
+        if any(w.startswith(t) or (t.startswith(w) and len(w) >= 5) for w in parole)
+    ]
+    return len(trovati) == len(token), trovati
+
+
 def _primo(item: dict, *chiavi):
     """Primo valore non vuoto fra piu' nomi possibili dello stesso campo."""
     for k in chiavi:
@@ -4796,6 +4848,7 @@ async def competition_map(req: dict):
     tld = amazon_tld(marketplace)
 
     books_data: list[dict] = []
+    scartati: list[dict] = []
     apify_used = False
     apify_error = None
     actor_fields: list[str] = []
@@ -4811,10 +4864,20 @@ async def competition_map(req: dict):
                 }),
                 timeout=90.0,
             )
+            token = _token_nicchia(niche) if req.get("filtra_pertinenza", True) else []
             for item in (items or []):
                 libro = _estrai_libro(item)
-                if libro["title"]:
+                if not libro["title"]:
+                    continue
+                pertinente, trovati = _pertinenza(libro, token)
+                if pertinente:
+                    libro["match"] = trovati
                     books_data.append(libro)
+                else:
+                    # Non si butta in silenzio: uno scarto invisibile fa
+                    # calcolare mediane su un insieme che nessuno ha guardato.
+                    scartati.append({"title": libro["title"][:90],
+                                     "motivo": "il titolo non contiene tutte le parole della nicchia"})
             # I nomi dei campi dell'actor sono dichiarati nella risposta invece
             # di essere indovinati: se un giorno cambiano, si legge qui invece
             # di dedurlo da una colonna di None.
@@ -4839,6 +4902,16 @@ async def competition_map(req: dict):
         "measured_source": f"apify · amazon.{tld}" if books_data else None,
         "apify_used": apify_used,
         "actor_fields": actor_fields,
+        "scartati_non_pertinenti": scartati,
+        "pertinenza": {
+            "token_cercati": _token_nicchia(niche) if req.get("filtra_pertinenza", True) else [],
+            "tenuti": len(books_data),
+            "scartati": len(scartati),
+            "nota": ("Su Amazon.it l'alias stripbooks non filtra bene: una ricerca "
+                     "restituisce anche libri di altro argomento. Senza questo filtro "
+                     "la mediana dei prezzi della nicchia la deciderebbero i libri "
+                     "sbagliati. Passare filtra_pertinenza:false per averli tutti."),
+        },
     }
     if apify_error:
         misurati["apify_error"] = apify_error

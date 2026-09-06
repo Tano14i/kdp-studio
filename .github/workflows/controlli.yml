@@ -48,6 +48,9 @@ jobs:
         # esterni. Nessuna rete, nessuna chiave.
         run: python test_competition_map.py
 
+      - name: Filtro pertinenza sui titoli veri di Amazon.it
+        run: python test_pertinenza.py
+
       - name: Analisi concorrenti — conclude quando i dati bastano
         run: python analizza_concorrenti.py tests/fixtures/concorrenti-completi.csv
 
