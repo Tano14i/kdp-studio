@@ -29,8 +29,15 @@ sessione remota `amazon.it` è irraggiungibile (network policy dell'environment,
 concorrenti, prezzi, valutazioni, curva di declino, suggerimenti di ricerca —
 e senza quelli il verdetto non ha numeri accanto, quindi non è un verdetto.
 
-Serve una decisione dell'autore su come raccogliere i dati. Le opzioni stanno
-in `01 Ricerca/report-nicchia.md`.
+Verificate tutte le strade alternative: bloccate anche IBS, Feltrinelli,
+Mondadori Store, Libraccio, Hoepli, Open Library, Goodreads e Apify. Google
+Books risponde ma ha quota zero senza chiave API.
+
+Con la sola ricerca web si trovano i concorrenti, non i loro numeri. Nicchie
+scelte dall'autore da misurare per prime: alta sensibilità e dipendenza
+affettiva. Il segnale parziale su entrambe sta in `01 Ricerca/report-nicchia.md`.
+
+Serve una decisione dell'autore su come raccogliere i dati.
 
 ## Da non dimenticare
 
