@@ -137,7 +137,7 @@ porta recensioni e BSR.
 
 | Endpoint | Serve Claude? | Stato reale |
 |---|---|---|
-| `/api/amazon-reviews` | **no** | **FUNZIONA.** Recensioni italiane vere in ~32s |
+| `/api/amazon-reviews` | **no** | funziona **senza filtro** (9 recensioni datate per ASIN, quante ne mostra la pagina). Con filtro per stelle: l'actor gratuito da' 0, quello con filtro (`neatrat`) va noleggiato a $25/mese |
 | `/api/competition-map` | si' | bloccato due volte, vedi sotto |
 | `/api/niche-validator` | si' | idem |
 | `/api/review-mining`, `/api/avatar` | si' | idem |
