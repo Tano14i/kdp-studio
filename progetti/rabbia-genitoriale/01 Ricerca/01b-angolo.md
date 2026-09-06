@@ -280,11 +280,19 @@ nessuno ha guardato lo scaffale. Il passo 2 non parte.
 
 ## 7. Cosa resta da verificare, in ordine
 
-1. **Lo scaffale dell'angolo su Amazon.it, dal browser dell'autore.**
-   `scheda-raccolta.md`, sulle query: `dopo aver urlato ai figli`, `senso di
-   colpa genitori`, `chiedere scusa ai figli`, `riparare rapporto con i figli`.
-   Serve sapere se qualcuno vende gia' il dopo invece del prima. E' l'unica
-   cosa che separa questo file da un verdetto.
+**Aggiornamento del 06/09 sera: il punto 1 e' stato fatto a meta'.** I
+risultati stanno in `scaffale-il-dopo.md` e cambiano due cose di questo
+documento: la piega «angolo» (assolvere invece di correggere) ha adesso un
+contro-indizio pesante — tre libri sulla colpa dei genitori con 10, 4 e 2
+recensioni, due con editore — mentre la piega «momento» ha un indizio a
+favore, perche' della riparazione dopo l'urlo non risulta nessun libro ma
+girano articoli e un podcast. La distinzione fra le due (uno **stato** non
+vende, un'**azione** si') e' scritta li' §3 ed e' un'ipotesi, non un fatto.
+
+1. ~~Lo scaffale dell'angolo~~ — fatto a meta'. **Restano due ricerche:**
+   `dopo aver urlato ai figli` e `chiedere scusa ai figli` su Amazon.it.
+   Bastano i titoli, i numeri si leggono a macchina. E' l'unica cosa che
+   separa questo file da un verdetto.
 2. **Gli ASIN veri di Novara e Dunn**, presi dalla pagina Amazon nel browser,
    per completare la tabella di §5. Gli ISBN dedotti da Goodreads non
    funzionano.

@@ -54,18 +54,30 @@ chiuso o solo fermo.
 
 ## Aperto adesso
 
-**Una verifica di venti minuti nel browser dell'autore, e non e' piu' una
-decisione: e' un dato.** Il passo 1b ha trovato un angolo che regge su
-quattro pieghe, ma un angolo trovato nelle recensioni resta un'ipotesi finche'
-non e' guardato lo scaffale — e la ricerca di Amazon.it da qui risponde 503.
+**Due ricerche su Amazon.it, e servono solo i titoli.** La verifica dell'angolo
+e' stata fatta a meta' il 06/09 sera —
+`01 Ricerca/scaffale-il-dopo.md` — e restano aperte `dopo aver urlato ai
+figli` e `chiedere scusa ai figli`.
 
-Da cercare, con `scheda-raccolta.md`: `dopo aver urlato ai figli`, `senso di
-colpa genitori`, `chiedere scusa ai figli`, `riparare rapporto con i figli`.
-La domanda e' una sola: **qualcuno vende gia' il dopo, invece del prima?**
+Quello che si sa gia':
 
-L'elenco completo, in ordine, sta in `01 Ricerca/01b-angolo.md` §7. La fase 2
-non parte prima, per quanto l'angolo sia convincente: e' la regola che oggi ha
-gia' risparmiato due libri.
+- **la prevenzione vende sul serio.** 211, 184 e 113 recensioni sui primi tre
+  di «educare senza urlare». Il NON SI FA sul tema e' definitivo;
+- **la cornice della colpa e' occupata da tre libri deboli** — 10, 4 e 2
+  recensioni — e due hanno dietro Sonzogno e Vallardi. Non e' un vuoto
+  invitante: e' un posto dove qualcuno ha gia' provato senza riuscirci;
+- **della riparazione dopo l'urlo non risulta nessun libro italiano**, ma
+  girano articoli, un podcast e un reel — compreso un pezzo intitolato «Ho
+  urlato a mio figlio: ho rovinato tutto?», che e' l'angolo candidato parola
+  per parola, scritto da un giornale invece che da un autore.
+
+La domanda che decide, formulata prima di vedere i risultati per non poterla
+piegare dopo, sta in `scaffale-il-dopo.md` §5. In breve: se un libro sul
+«dopo» esiste, l'angolo e' chiuso — forte o debole che sia. Se non esiste
+affatto, passa al concept.
+
+La fase 2 non parte prima. E' la regola che oggi ha gia' chiuso due progetti
+invece di farli scrivere.
 
 ## Da non dimenticare
 
@@ -100,9 +112,9 @@ gia' risparmiato due libri.
 2. ~~Nicchia e concorrenti~~ — fatto il 06/09, verdetto **NON SI FA**
 3. ~~Passo 1b, l'angolo~~ — fatto il 06/09 sera, `01 Ricerca/01b-angolo.md`.
    Tre pieghe su quattro reggono, con parole di lettori italiani sotto.
-4. **La verifica dell'angolo sullo scaffale** — vedi «Aperto adesso». E' la
-   sola cosa che separa questo progetto da un SI FA o da un NON SI FA
-   definitivo.
+4. **La verifica dell'angolo sullo scaffale** — fatta a meta' il 06/09 sera
+   (`01 Ricerca/scaffale-il-dopo.md`). Restano due ricerche: `dopo aver urlato
+   ai figli` e `chiedere scusa ai figli`. Bastano i titoli.
 5. **Scegliere come procurarsi i dati dei concorrenti.** Non e' piu' una
    domanda senza risposta: due strade sono pronte e descritte in
    `_profili/note-mercato.md` §5-bis — il backend su Railway (vivo, con

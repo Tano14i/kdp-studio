@@ -1,0 +1,56 @@
+{
+  "generato_il": "2026-09-06 20:43",
+  "mercato": "amazon.it",
+  "lingua_dell_angolo": {},
+  "schede": [
+    {
+      "asin": "B0BTTQHCLP",
+      "titolo": "Educare Senza Urlare: 4 Libri in 1: Cresci bambini felici e sicuri comunicando in modo efficace e applicando la disciplina positiva",
+      "valutazione": "4,7 su 5 stelle",
+      "recensioni": "58",
+      "prezzo": null,
+      "tentativi": 4,
+      "letto_il": "2026-09-06"
+    },
+    {
+      "asin": "B0BDNFCH9N",
+      "titolo": "Educare Senza Urlare: 4 libri in 1: Come Applicare la Disciplina Positiva per Crescere Bambini Felici e Sicuri di Sè, Aumentare la loro Autostima e Comunicare in Modo Efficace Facendosi Rispettare",
+      "valutazione": "4,3 su 5 stelle",
+      "recensioni": "211",
+      "prezzo": null,
+      "tentativi": 1,
+      "letto_il": "2026-09-06"
+    },
+    {
+      "asin": "880997784X",
+      "titolo": "Educare senza gridare: Guida pratica per diventare genitori a cui non saltano mai i nervi",
+      "valutazione": "4,5 su 5 stelle",
+      "recensioni": "35",
+      "prezzo": null,
+      "tentativi": 1,
+      "letto_il": "2026-09-06"
+    },
+    {
+      "asin": "B0CK3ZZKQS",
+      "titolo": "Educare senza urlare: Strategie efficaci di disciplina positiva per creare un profondo legame con i tuoi figli e crescere bambini felici e sicuri.",
+      "valutazione": "4,7 su 5 stelle",
+      "recensioni": "113",
+      "prezzo": "14,40 €",
+      "tentativi": 1,
+      "letto_il": "2026-09-06"
+    },
+    {
+      "asin": "B0CK44F1QL",
+      "titolo": "EDUCARE SENZA URLARE: La Guida Definitiva per Genitori Esauriti. Come Educare Senza Gridare con Disciplina Positiva, Evitando Capricci. Tecniche per il Controllo della Rabbia. Mamma non sgridarmi.",
+      "valutazione": "4,3 su 5 stelle",
+      "recensioni": "10",
+      "prezzo": "11,47 €",
+      "tentativi": 2,
+      "letto_il": "2026-09-06"
+    }
+  ],
+  "limiti": [
+    "www.amazon.it/s risponde 503: nessun ASIN nuovo si scopre da qui",
+    "www.amazon.it/product-reviews risponde anti-robot: niente testo recensioni ne' BSR"
+  ]
+}

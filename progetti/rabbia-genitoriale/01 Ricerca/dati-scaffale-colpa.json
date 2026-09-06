@@ -1,0 +1,38 @@
+{
+  "generato_il": "2026-09-06 20:42",
+  "mercato": "amazon.it",
+  "lingua_dell_angolo": {},
+  "schede": [
+    {
+      "asin": "B0CK44F1QL",
+      "titolo": "EDUCARE SENZA URLARE: La Guida Definitiva per Genitori Esauriti. Come Educare Senza Gridare con Disciplina Positiva, Evitando Capricci. Tecniche per il Controllo della Rabbia. Mamma non sgridarmi.",
+      "valutazione": "4,3 su 5 stelle",
+      "recensioni": "10",
+      "prezzo": "11,47 €",
+      "tentativi": 5,
+      "letto_il": "2026-09-06"
+    },
+    {
+      "asin": "B0CZ5P4SD5",
+      "titolo": "Educare senza perdere la calma. Guida pratica per genitori",
+      "valutazione": "4,7 su 5 stelle",
+      "recensioni": "184",
+      "prezzo": null,
+      "tentativi": 1,
+      "letto_il": "2026-09-06"
+    },
+    {
+      "asin": "B0H2WXMKRM",
+      "titolo": "La colpa non è dei genitori",
+      "valutazione": "5,0 su 5 stelle",
+      "recensioni": "4",
+      "prezzo": null,
+      "tentativi": 1,
+      "letto_il": "2026-09-06"
+    }
+  ],
+  "limiti": [
+    "www.amazon.it/s risponde 503: nessun ASIN nuovo si scopre da qui",
+    "www.amazon.it/product-reviews risponde anti-robot: niente testo recensioni ne' BSR"
+  ]
+}
