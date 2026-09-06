@@ -9,6 +9,12 @@ Questa skill non fa il lavoro: decide **chi lo fa e quando**, si ferma dove
 deve decidere l'autore, e tiene il conto di cosa manca. Vale per un libro, e la
 stessa disciplina regge qualunque progetto lungo.
 
+> **Questa è la copia versionata in `kdp-studio/.claude/skills/regia/`, ed è
+> l'unica valida.** Se ti trovi davanti una regia la cui mappa non ha il passo
+> **1b** (`ricerca-inversa`) e il passo **14** (`promozione-social`), stai
+> leggendo la vecchia copia dell'account: va cancellata da claude.ai, e nel
+> frattempo non va seguita. Il perché sta in `.claude/skills/README.md`.
+
 ## 1. La prima cosa, sempre
 
 All'invocazione, prima di qualsiasi proposta:
