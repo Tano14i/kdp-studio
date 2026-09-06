@@ -78,18 +78,33 @@ raccolta finora:
 > «**Se non funziona sbagli tu!** Ho applicato quanto scritto ma non funziona,
 > punto! Prendiamo questo esempio, secondo voi un genitore non prova
 > l'approccio proposto? **Alla decima volta che non ottieni comunque nulla cosa
-> resta da fare?**»
-> — Alvise, 1 stella, acquisto verificato
+> resta da fare?** Ripete un mantra mille volte ma **non vi è alcuna evidanza
+> che funzioni, qualche volta si ma molte volte no. Fanno finta di non sapere
+> la realtà.** Seguendo questo approccio **mia figlia va a letto a mezzanotte.**
+> Ho capito benissimo che vuole giocare e "mente" dicendo non ho sonno (ci mette
+> tre minuti poi a prendere sonno), vuole dormire con noi.»
+> — Alvise, 1 stella, acquisto verificato, 9 novembre 2024
 
-Va letta due volte. La prima frase e' la lamentela B: il libro scarica sul
-lettore il fallimento del proprio metodo. **L'ultima frase e' l'angolo, posto
-come domanda da un lettore che non sapeva di formularlo** — *alla decima volta
-che non ottieni nulla, cosa resta da fare?* E' esattamente «cosa fai nei dieci
-minuti dopo», detto meglio di come l'avevo scritto io.
+Va letta tre volte, perche' dice tre cose diverse.
 
-Ed e' anche il titolo che si e' dato: **«La storia del sasso che fa il
-minestrone»** — cioe' un libro che promette una ricetta e ti fa mettere tutti
-gli ingredienti tu.
+**La prima frase e' la lamentela B**: il libro scarica sul lettore il
+fallimento del proprio metodo.
+
+**«Alla decima volta che non ottieni comunque nulla cosa resta da fare?» e'
+l'angolo**, posto come domanda da un lettore che non sapeva di formularlo. Ed
+e' piu' preciso di come l'avevo scritto io: non «cosa fai dopo aver urlato»,
+ma **cosa fai quando la tecnica gentile ha gia' fallito nove volte** — che e'
+il momento *prima* dell'urlo, e la ragione per cui l'urlo arriva.
+
+**«Ho capito benissimo che vuole giocare» smonta il presupposto del reparto.**
+Tredici libri partono dall'idea che il genitore debba imparare a capire il
+bambino. Questo lettore lo capisce benissimo — sa perfino che la figlia mente
+sul sonno e ci mette tre minuti ad addormentarsi. Non gli manca la
+comprensione: gli manca cosa fare dopo averla avuta. Se questa non e' una voce
+isolata, e' il buco piu' grande dello scaffale.
+
+E il titolo che si e' dato: **«La storia del sasso che fa il minestrone»** —
+un libro che promette una ricetta e ti fa mettere tutti gli ingredienti tu.
 
 **Cosa questo cambia, e cosa no.** La piega portante non e' piu' fondata su un
 libro solo: e' attestata su due autori su tre campionati. Resta pero' **un
@@ -163,6 +178,38 @@ raccolta:
    > «si arriva alla fine senza aver trovato cosa fare» — che e' l'unica
    > presente su tutti e tre.
 
+## 5-bis. Il nemico ha un nome: la scenetta che funziona al primo colpo
+
+Alvise fa una cosa che nessun'altra recensione raccolta fa: **incolla il pezzo
+del libro che contesta.** Quelle righe non sono sue, sono di Petrucciani, e
+valgono quanto la recensione perche' sono il metodo del concorrente verbatim
+(testo intero in `recensioni-negative.txt`).
+
+E' la scena della bambina e del fiorellino. La mamma «cerca un angolo di pace
+dentro se stessa», dice la frase giusta, e la scena si chiude cosi':
+
+> «utilizzando un approccio più empatico e gentile, **il tempo impiegato è
+> rimasto lo stesso**. Il risultato, invece, è stato ben diverso: **nessun
+> conflitto, ma collaborazione**.»
+
+Un'unica scena, un unico tentativo, riuscito. Nessuna seconda volta, nessun
+bambino che dice no lo stesso, nessun costo.
+
+**Questo e' il bersaglio, ed e' una forma, non un contenuto.** L'obiezione di
+Alvise non e' «l'empatia non serve»: e' che il libro insegna con **vignette che
+riescono al primo colpo**, e chi le applica nella vita vera arriva alla decima
+volta e non trova piu' pagine. Da li' «se non funziona sbagli tu», che il libro
+non dice mai e che il lettore sente comunque.
+
+Serve a due cose, piu' avanti:
+
+- **al concept (checkpoint 1)**: c'e' un posizionamento contro cui posizionarsi,
+  concreto e citabile — non «i libri sono generici», ma *la scenetta che
+  funziona al primo colpo*;
+- **al DNA stilistico (checkpoint 4)**: e' gia' una regola. Nessun esempio di
+  questo libro puo' riuscire al primo tentativo. Se un esempio riesce subito,
+  e' scritto male.
+
 ## 6. La frase da non perdere
 
 Se di questo file si dimentica tutto, questa no. Un padre, acquisto verificato,
@@ -170,6 +217,15 @@ una stella, sotto un libro con 185 valutazioni:
 
 > **«Alla decima volta che non ottieni comunque nulla cosa resta da fare?»**
 
-Non e' una lamentela: e' la domanda a cui il libro deve rispondere, scritta da
-chi la fa. `dna-stilistico` e `promozione-social` la riusano cosi' com'e' — non
-si parafrasa.
+E accanto, la seconda:
+
+> **«Fanno finta di non sapere la realtà.»**
+
+Non sono lamentele: sono la domanda a cui il libro deve rispondere e l'accusa
+da cui deve difendersi, scritte da chi le fa. `dna-stilistico` e
+`promozione-social` le riusano cosi' come sono — non si parafrasano.
+
+**Una cautela, per non montarci sopra piu' di quanto regga.** E' un lettore.
+Ha detto in modo eccellente quello che due lettrici avevano detto peggio sotto
+un altro libro, e questo e' il motivo per cui pesa. Ma resta uno, il campione
+totale e' sette, e Merini con 211 recensioni e' il test che manca.
