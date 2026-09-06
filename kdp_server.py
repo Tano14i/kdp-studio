@@ -1282,6 +1282,13 @@ FILTRI_STELLE = {
 }
 
 
+# Traduzione dei filtri di Amazon nell'array di stelle che neatrat si aspetta.
+STELLE_PER_FILTRO = {
+    "critical": [1, 2, 3], "positive": [4, 5],
+    "one_star": [1], "two_star": [2], "three_star": [3], "four_star": [4], "five_star": [5],
+}
+
+
 def _actor_marketplace(country: str) -> str:
     """Il codice paese della tabella nel formato che l'actor si aspetta.
     Coincidono tranne il Regno Unito: da noi GB (ISO), per l'actor UK."""
@@ -4546,9 +4553,24 @@ async def fetch_amazon_reviews(req: dict):
         per_url = ("epctex/amazon-reviews-scraper", {
             "startUrls": [{"url": f"https://www.amazon.{fetch_tld}/dp/{asin}"}],
         })
-        # Il ciclo si ferma al primo actor che risponde. automation-lab e'
-        # l'unico che sa filtrare e limitare, quindi va sempre per primo.
-        actor_configs = [per_asin, per_url]
+        # neatrat/amazon-reviews-scraper: schema pubblicato con `ratings` ad
+        # array e "No Login Required". automation-lab con filterByStars
+        # restituisce zero su amazon.it per QUALUNQUE valore diverso da "all"
+        # (verificato il 06/09: one_star e three_star -> 404, all -> 9
+        # recensioni), coerente con Amazon che mostra le recensioni filtrate
+        # solo a chi e' loggato. Questo actor dichiara di aggirarlo: va provato
+        # per primo quando un filtro c'e', e l'avviso a valle dira' se mente.
+        con_ratings = ("neatrat/amazon-reviews-scraper", {
+            "asin": f"{fetch_tld.split('.')[-1] if fetch_tld != 'com' else 'com'}:{asin}",
+            "region": fetch_tld,
+            "maxReviews": max_per_asin,
+            "sortBy": "recent",
+            "ratings": STELLE_PER_FILTRO.get(filtro, [1, 2, 3, 4, 5]),
+        })
+        # Il ciclo si ferma al primo actor che risponde. Con un filtro va
+        # per primo l'unico che dichiara di onorarlo; senza, automation-lab
+        # che e' collaudato.
+        actor_configs = [con_ratings, per_asin, per_url] if filtro else [per_asin, con_ratings, per_url]
         for actor_id, actor_input in actor_configs:
             try:
                 result = await asyncio.wait_for(run_actor(actor_id, actor_input), timeout=90.0)
