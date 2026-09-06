@@ -28,11 +28,17 @@ srv = importlib.util.module_from_spec(_spec)
 sys.modules["srv"] = srv
 _spec.loader.exec_module(srv)
 
+# Forma reale osservata in produzione il 06/09: il prezzo e' un oggetto, non
+# una stringa, e i risultati di ricerca NON contengono il BSR — quello sta
+# sulla pagina del prodotto. Le finzioni qui rispecchiano quella forma, non
+# una comoda.
 LIBRI_APIFY = [
     {"title": "La dieta anti endometriosi", "reviewsCount": 412,
-     "bestsellersRank": [{"rank": 24300}], "price": "16,90 €"},
+     "price": {"value": 16.44, "currency": "€"}, "stars": 4.5,
+     "url": "https://www.amazon.it/dp/8844056623"},
     {"title": "Endometriosi ed alimentazione", "reviewsCount": 87,
-     "bestsellersRank": [{"rank": 95200}], "price": "18,00 €"},
+     "price": {"value": 18.0, "currency": "€"}, "stars": 4.1,
+     "asin": "8827223487"},
 ]
 
 fallimenti: list[str] = []
@@ -66,8 +72,13 @@ async def prove():
     verifica(r.get("measured") is True, "i dati misurati restano dichiarati misurati")
     verifica(len(r.get("measured_books", [])) == 2, "i due libri misurati escono comunque")
     verifica("analysis_error" in r, "il fallimento del modello viene dichiarato, non nascosto")
-    verifica(r["measured_books"][0]["bsr"] == 24300, "il BSR misurato arriva intero")
-    verifica(r["measured_books"][0]["price"] == "16,90 €", "il prezzo misurato arriva intero")
+    b0 = r["measured_books"][0]
+    verifica(b0["price"] == 16.44 and b0["currency"] == "€",
+             "il prezzo arriva come numero piu' valuta, non come dizionario stampato")
+    verifica(b0["asin"] == "8844056623", "l'ASIN viene ricavato dall'URL quando manca")
+    verifica(r["measured_books"][1]["asin"] == "8827223487",
+             "l'ASIN esplicito viene letto quando c'e'")
+    verifica(b0["rating"] == 4.5, "la valutazione arriva come numero")
 
     print("\n2. raw:true — i numeri senza il modello")
     chiamato = {"si": False}
@@ -80,6 +91,11 @@ async def prove():
     verifica(chiamato["si"] is False, "con raw il modello non viene chiamato affatto")
     verifica(len(r["measured_books"]) == 2, "i libri misurati ci sono lo stesso")
     verifica("books" not in r, "nessun campo di analisi in modalita' raw")
+    verifica("bsr" in r.get("campi_non_forniti", {}).get("campi", []),
+             "un campo assente su TUTTI i libri viene dichiarato tale, non lasciato a None")
+    verifica("price" not in r.get("campi_non_forniti", {}).get("campi", []),
+             "un campo presente non finisce fra quelli non forniti")
+    verifica(r.get("actor_fields"), "i nomi dei campi dell'actor sono dichiarati")
 
     print("\n3. Apify fallisce — non si chiede al modello di inventare")
     srv.run_actor = apify_fallisce
@@ -94,8 +110,8 @@ async def prove():
     srv.run_actor = apify_riesce
 
     async def claude_ok(prompt, max_tokens=4000, allow_truncated=False):
-        verifica("16,90" in prompt, "il prezzo misurato viene passato al modello")
-        verifica("24300" in prompt, "il BSR misurato viene passato al modello")
+        verifica("16.44" in prompt, "il prezzo misurato viene passato al modello")
+        verifica("412" in prompt, "il conteggio recensioni misurato viene passato al modello")
         return '{"books": [{"title": "La dieta anti endometriosi"}], "collective_gap": "x"}'
     srv.call_claude = claude_ok
     r = await srv.competition_map({"niche": "endometriosi", "marketplace": "it"})

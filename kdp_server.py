@@ -4715,6 +4715,77 @@ Apply the 3-question framework and return JSON:
 # COMPETITION MAP — top 5 collective gap analysis
 # ══════════════════════════════════════════════════════════════
 
+def _primo(item: dict, *chiavi):
+    """Primo valore non vuoto fra piu' nomi possibili dello stesso campo."""
+    for k in chiavi:
+        v = item.get(k)
+        if v not in (None, "", [], {}):
+            return v
+    return None
+
+
+def _prezzo(v):
+    """Normalizza il prezzo in (numero, valuta).
+
+    L'actor lo restituisce come {'value': 15.6, 'currency': '€'}: farne str()
+    produceva la stringa "{'value': 15.6, 'currency': '\u20ac'}" dentro il campo
+    prezzo, illeggibile per chi la consuma e inutilizzabile per un confronto.
+    """
+    if v is None:
+        return None, None
+    if isinstance(v, dict):
+        num = v.get("value", v.get("amount"))
+        try:
+            return (float(num) if num is not None else None), v.get("currency")
+        except (TypeError, ValueError):
+            return None, v.get("currency")
+    if isinstance(v, (int, float)):
+        return float(v), None
+    testo = str(v)
+    import re as _re
+    m = _re.search(r"(\d+[.,]?\d*)", testo.replace(".", "").replace(",", "."))
+    try:
+        return (float(m.group(1)) if m else None), ("€" if "€" in testo else None)
+    except ValueError:
+        return None, None
+
+
+def _estrai_libro(item: dict) -> dict:
+    """Da un elemento dell'actor Apify ai campi che servono alla fase 1."""
+    import re as _re
+    url = _primo(item, "url", "link", "productUrl", "detailPageURL") or ""
+    asin = _primo(item, "asin", "ASIN", "productAsin")
+    if not asin and url:
+        m = _re.search(r"/(?:dp|gp/product)/([A-Z0-9]{10})", str(url))
+        asin = m.group(1) if m else None
+
+    bsr_raw = _primo(item, "bestsellersRank", "bsr", "bestSellersRank", "salesRank")
+    bsr = None
+    if isinstance(bsr_raw, list) and bsr_raw:
+        primo = bsr_raw[0]
+        bsr = (primo.get("rank") or primo.get("position")) if isinstance(primo, dict) else primo
+    elif isinstance(bsr_raw, (int, float)):
+        bsr = int(bsr_raw)
+
+    prezzo, valuta = _prezzo(_primo(item, "price", "price_string", "currentPrice"))
+    stelle = _primo(item, "stars", "rating", "averageRating", "reviewsRating")
+    try:
+        stelle = float(str(stelle).replace(",", ".")) if stelle is not None else None
+    except ValueError:
+        stelle = None
+
+    return {
+        "asin": asin,
+        "title": _primo(item, "title", "name") or "",
+        "reviews": _primo(item, "reviewsCount", "numberOfReviews", "reviews") or 0,
+        "rating": stelle,
+        "bsr": bsr,
+        "price": prezzo,
+        "currency": valuta,
+        "url": str(url) or None,
+    }
+
+
 @app.post("/api/competition-map", dependencies=[_AUTH])
 async def competition_map(req: dict):
     niche = (req.get("niche") or "").strip()
@@ -4727,6 +4798,7 @@ async def competition_map(req: dict):
     books_data: list[dict] = []
     apify_used = False
     apify_error = None
+    actor_fields: list[str] = []
 
     if APIFY_TOKEN:
         search_url = amazon_search_url(niche, marketplace)
@@ -4740,20 +4812,14 @@ async def competition_map(req: dict):
                 timeout=90.0,
             )
             for item in (items or []):
-                title = item.get("title") or item.get("name") or ""
-                reviews = item.get("reviewsCount") or item.get("numberOfReviews") or 0
-                price = item.get("price") or item.get("price_string") or ""
-                bsr_raw = (item.get("bestsellersRank") or item.get("bsr")
-                           or item.get("bestSellersRank") or [])
-                bsr_val = None
-                if isinstance(bsr_raw, list) and bsr_raw:
-                    first = bsr_raw[0]
-                    bsr_val = first.get("rank") or first.get("position") if isinstance(first, dict) else first
-                elif isinstance(bsr_raw, int):
-                    bsr_val = bsr_raw
-                if title:
-                    books_data.append({"title": title, "reviews": reviews,
-                                       "bsr": bsr_val, "price": str(price)})
+                libro = _estrai_libro(item)
+                if libro["title"]:
+                    books_data.append(libro)
+            # I nomi dei campi dell'actor sono dichiarati nella risposta invece
+            # di essere indovinati: se un giorno cambiano, si legge qui invece
+            # di dedurlo da una colonna di None.
+            if items and isinstance(items[0], dict):
+                actor_fields = sorted(items[0].keys())
             apify_used = bool(books_data)
         except Exception as e:
             # Il motivo esce nella risposta: un elenco vuoto senza spiegazione
@@ -4772,9 +4838,25 @@ async def competition_map(req: dict):
         "measured": bool(books_data),
         "measured_source": f"apify · amazon.{tld}" if books_data else None,
         "apify_used": apify_used,
+        "actor_fields": actor_fields,
     }
     if apify_error:
         misurati["apify_error"] = apify_error
+    # Un campo assente su TUTTI i libri non e' un dato mancante a caso: e' un
+    # campo che questo actor non fornisce. Va detto, altrimenti una colonna di
+    # None si legge come "questi libri non hanno BSR".
+    if books_data:
+        mancanti = [c for c in ("bsr", "price", "rating", "asin")
+                    if all(b.get(c) in (None, "") for b in books_data)]
+        if mancanti:
+            misurati["campi_non_forniti"] = {
+                "campi": mancanti,
+                "nota": ("Assenti su tutti i libri: l'actor non li fornisce per questa "
+                         "richiesta, non e' che i libri ne siano privi. Il BSR in "
+                         "particolare sta sulla pagina del prodotto, non nei risultati "
+                         "di ricerca: serve una chiamata per ASIN. Campi realmente "
+                         "restituiti dall'actor in actor_fields."),
+            }
 
     # solo_dati: niente Claude. Serve quando i numeri bastano (fase 1 del
     # metodo) o quando il credito Anthropic non c'e': la corsa Apify vale
@@ -4796,7 +4878,7 @@ async def competition_map(req: dict):
 
     books_list = "\n".join(
         f"- \"{b['title']}\" (reviews: {b.get('reviews','?')}, "
-        f"BSR: {b.get('bsr','?')}, price: {b.get('price') or '?'})"
+        f"BSR: {b.get('bsr') or '?'}, price: {b.get('price') or '?'} {b.get('currency') or ''})"
         for b in books_data[:8]
     )
 
