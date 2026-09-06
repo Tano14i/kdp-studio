@@ -11,6 +11,7 @@ questo file va sotto `_profili/<pen-name>/`.
 3. Cosa c'e' sopra i temi in crescita
 4. Perche' «trovare una nicchia non satura» non funziona qui
 5. Dove sta il vuoto, se c'e'
+5-bis. Lo sblocco: due strade pronte
 6. Difetti noti di Amazon.it come strumento di misura
 7. Come rifare queste misure
 
@@ -118,7 +119,57 @@ oppure una raccolta manuale.
 
 **Finche' quel dato manca, ogni nicchia dara' NON SI FA.** Non e' un giudizio
 sui temi: e' che manca lo strumento per distinguere un tema occupato bene da
-uno occupato male.
+uno occupato male. Vedi §5-bis: le due strade ora esistono entrambe.
+
+## 5-bis. Lo sblocco: due strade pronte
+
+Stato al 06/09/2026. Il dato dei concorrenti non e' piu' un problema aperto
+senza soluzione: sono pronte due strade, e manca solo scegliere quale
+percorrere. E' l'unica cosa che tiene fermi entrambi i progetti.
+
+### Strada A — il backend su Railway
+
+Il servizio e' **vivo**: `https://web-production-e6914.up.railway.app/health`
+risponde 200, e `APIFY_TOKEN` e' configurato e non vuoto. Apify e' cio' che
+porta recensioni e BSR.
+
+Restano due passaggi, **in quest'ordine**:
+
+1. **prima** il merge della PR #2 e il redeploy. Railway distribuisce da
+   `master`, dove gira ancora il codice col bug del marketplace: chiamare
+   `/api/competition-map` con `marketplace=it` adesso userebbe `rh=n:283155`,
+   il reparto Libri di amazon.com, e restituirebbe zero concorrenti che
+   sembrano assenza di concorrenza. Sarebbe lo stesso falso zero di stamattina,
+   ma sui numeri che decidono il verdetto;
+2. **poi** la chiave `KDP_API_KEY`, che tutti gli endpoint POST richiedono.
+
+Prova del deploy riuscito: `/api/debug/env` deve rispondere **401** invece di
+elencare le variabili. La falla chiusa diventa il collaudo del rilascio.
+
+### Strada B — la raccolta nel browser dell'autore
+
+Non dipende da chiavi ne' da rilasci, e si puo' fare adesso.
+
+| File | A cosa serve |
+|---|---|
+| `scheda-raccolta.md` | URL esatti, dieci campi da copiare, dove metterli |
+| `analizza_concorrenti.py` | ingerisce il CSV e produce i numeri della fase 1 |
+
+Provata e scartata una terza strada: guidare Chromium dal contenitore di
+sviluppo. Il browser parte, ma il proxy resetta ogni connessione — anche
+example.com e wikipedia.org, che via `curl` rispondono. Non e' Amazon che
+blocca, e' browser piu' proxy li' dentro. Non si aggirano ne' TLS ne' proxy,
+quindi quella strada resta chiusa.
+
+### Quale conviene
+
+La A e' piu' veloce e ripetibile su piu' nicchie. La B e' piu' lenta ma
+indipendente, e porta un pezzo che la A **non** porta: le recensioni negative
+lette per intero, che sono il materiale della fase 2. Meglio ancora: la A per i
+numeri, la B per le recensioni dei tre titoli piu' recensiti.
+
+Bastano **una nicchia, dieci libri e tre liste di recensioni** per far
+ripartire il metodo.
 
 ## 6. Difetti noti di Amazon.it come strumento di misura
 
@@ -145,7 +196,13 @@ uno occupato male.
 python3 harvest_demand.py --market it     # domanda: cosa si cerca
 python3 trend_topics.py                   # tendenza: cosa si scalda
 python3 test_amazon_markets.py            # controlla che gli strumenti puntino bene
+python3 analizza_concorrenti.py <file.csv>  # offerta, dalla raccolta manuale
 ```
+
+I primi tre girano anche da soli a ogni push, nella modalita' senza rete
+(`.github/workflows/controlli.yml`). Quelli con rete restano da lanciare a mano
+quando serve verificare che Amazon o Wikipedia non abbiano cambiato
+comportamento.
 
 L'offerta — quanti libri ci sono gia' sopra — non e' automatizzata: si cerca
 il titolo, tema per tema, prima di dire che un tema e' libero.

@@ -11,6 +11,7 @@ diversi e nessuno saprebbe quale vale.
 3. Cosa manca, in ordine
 4. Da non dimenticare
 5. Errori commessi e come sono stati corretti
+6. Aggiornamento del 06/09, sera
 
 ## Stato
 
@@ -46,10 +47,14 @@ di fondo — vedi `01 Ricerca/report-nicchia.md` §5.
 
 1. ~~Cartella e convenzioni~~ — fatto il 06/09
 2. ~~Nicchia e concorrenti~~ — fatto il 06/09, verdetto **NON SI FA**
-3. **Decisione dell'autore su come procurarsi i dati dei concorrenti.** Senza
-   recensioni dei concorrenti non si trova un angolo, e senza angolo ogni
-   nicchia dara' NON SI FA. Le due strade sono il backend su Railway con le
-   chiavi Apify, oppure una raccolta manuale su Amazon.it.
+3. **Scegliere come procurarsi i dati dei concorrenti.** Non e' piu' una
+   domanda senza risposta: due strade sono pronte e descritte in
+   `_profili/note-mercato.md` §5-bis — il backend su Railway (vivo, con
+   APIFY_TOKEN configurato; serve prima il merge della PR #2 e il redeploy,
+   poi la chiave) oppure la raccolta nel browser (`scheda-raccolta.md` +
+   `analizza_concorrenti.py`, che si puo' fare adesso). Manca solo la scelta.
+4. **Poi: su quale nicchia spenderla.** Non su queste due, chiuse con NON SI
+   FA. La classifica dei temi in crescita e' in `_profili/note-mercato.md` §2.
 
 ## Da non dimenticare
 
@@ -96,3 +101,26 @@ successa con «come smettere di fare la vittima», che e' un titolo Mondadori di
 Giulio Cesare Giacobbe. Stavolta ho cercato il titolo prima di concludere, e
 la trappola non e' scattata. La regola scritta dopo il primo errore ha
 funzionato al primo impiego.
+
+
+## Aggiornamento del 06/09, sera
+
+Questo progetto resta chiuso: il verdetto NON SI FA non cambia, e le prove
+stanno in `01 Ricerca/report-nicchia.md`.
+
+Cambia pero' il motivo per cui il **metodo** era fermo. Al momento della
+chiusura mancava lo strumento per misurare l'offerta, e quella mancanza era
+scritta qui come un problema aperto. Non lo e' piu'.
+
+Cosa e' stato fatto dopo la chiusura, e dove sta scritto:
+
+| Cosa | Dove |
+|---|---|
+| Le due strade per i dati dei concorrenti | `_profili/note-mercato.md` §5-bis |
+| Classifica dei temi in crescita (26 misurati) | `_profili/note-mercato.md` §2 |
+| Scheda per la raccolta nel browser | `scheda-raccolta.md` |
+| Strumento che trasforma la raccolta in numeri | `analizza_concorrenti.py` |
+| Fix del marketplace, piu' i controlli automatici | PR #2 |
+
+Si scrive qui perche' chi riprende questo progetto legge questo file per primo,
+e senza questa riga ricomincerebbe a cercare una soluzione che esiste gia'.
