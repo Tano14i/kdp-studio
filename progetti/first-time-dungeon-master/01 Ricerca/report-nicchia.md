@@ -87,6 +87,15 @@ di questo repo). Dati precisi da raccogliere:
 4. **Recensioni degli ASIN** in tabella → alimentano la validazione dell'avatar
    (`01 Ricerca/avatar-cliente.md`, oggi "presunto").
 
+### Tentativo 06/09 con kdp_server.py — ESITO: bloccato da policy
+Ho provato a chiamare gli endpoint Amazon (`completion.amazon.com/api/2017/suggestions`
+e `amazon.com/s`) usati da `kdp_server.py`. Il proxy di egress di questa sessione
+**nega Amazon per policy dell'organizzazione** (403 CONNECT su completion.amazon.com,
+confermato da `/__agentproxy/status`). Non è un bug dello strumento: `kdp_server.py`
+funziona, ma **solo dove Amazon è raggiungibile** (il suo deploy Railway, o una
+macchina/browser dell'autore). Da questa sandbox i numeri live Amazon NON sono
+ottenibili. → il verdetto resta DA VERIFICARE finché i dati non si raccolgono altrove.
+
 ### Snippet suggerimenti (US) da eseguire nel browser
 ```js
 const base = 'https://completion.amazon.com/api/2017/suggestions'

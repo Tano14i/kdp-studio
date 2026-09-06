@@ -78,3 +78,7 @@ lead magnet e i contenuti A+ (CP6), oppure tornare alla spina dorsale mancante
 - (06/09) La produzione è partita dalla copertina senza spina dorsale (nicchia →
   avatar → concept). Non è un blocco, ma va sanato prima del marketing, altrimenti
   ogni contenuto social nasce senza un "per chi" e un "contro chi".
+- (06/09) Limite d'ambiente: il proxy di questa sessione **nega Amazon per policy**
+  (403). Né WebFetch né `kdp_server.py` possono raccogliere numeri live Amazon da
+  qui. I dati di nicchia vanno raccolti dove Amazon è raggiungibile (Railway/PC).
+  Non ritentare da questa sandbox: è un diniego di policy, non un errore transitorio.
