@@ -24,8 +24,8 @@ decide il titolo vero, e questa cartella non si rinomina mai.
 | 0 | Cartella e convenzioni | fatto | — | 06/09 |
 | 1 | Nicchia e concorrenti | fatto — **NON SI FA** sul tema | — | 06/09 |
 | 1b | Angolo (`ricerca-inversa`) | fatto — **SI FA** sull'angolo | — | 06/09 |
-| 2 | Avatar cliente | **in corso** — materia prima raccolta | — | |
-| 3 | Concept e positioning | da fare | CP1 | |
+| 2 | Avatar cliente | fatto — **prima stesura**, campione magro | — | 06/09 |
+| 3 | Concept e positioning | **da fare — aperto** | CP1 | |
 | 4 | Titolo, sottotitolo, copertina | da fare | CP2 | |
 | 5 | Outline | da fare | CP3 | |
 | 6 | DNA stilistico | da fare | CP4 | |
@@ -54,49 +54,39 @@ chiuso o solo fermo.
 
 ## Aperto adesso
 
-**Il passo 1b e' chiuso con SI FA sull'angolo, ed e' il primo di questo repo.**
-Il progetto riparte. Vedi §7 e `01 Ricerca/scaffale-il-dopo.md` §6.
+**La fase 2 e' fatta: `02-avatar.md`.** Il prossimo passo e' il **3, concept e
+positioning**, che e' il **checkpoint 1** — il primo punto in cui il lavoro si
+ferma e aspetta una scelta dell'autore.
 
-L'angolo: *non un altro libro su come non urlare, ma cosa si fa nei dieci
-minuti dopo — per il genitore che ha gia' urlato e lo sa.*
+**Le tre cose che l'avatar ha stabilito, e che il concept deve rispettare:**
 
-**Il prossimo passo e' il 2, `avatar-cliente`**, e ha bisogno di una cosa che
-ancora non c'e': le **recensioni negative dei concorrenti**, testo intero. Al
-momento ce ne sono tre, di lettrici italiane sotto Novara su Goodreads
-(`01 Ricerca/01b-angolo.md` §2). Bastano a sostenere un'ipotesi, non a
-costruire un avatar.
+1. **Questo mercato non ha un problema di contenuto, ha un problema di
+   esecuzione.** Tre lettori diversi dicono che il contenuto va bene ed e' la
+   forma a rovinarlo — «peccato perché il contenuto è potenzialmente
+   interessante». La lamentela numero uno, dodici volte su ventiquattro, e'
+   «sembra scritto da una macchina». E' una lettura mia, non una loro parola,
+   ed e' la conclusione piu' importante del documento;
+2. **la piega portante del passo 1b e' quarta per frequenza**, non prima.
+   «Se non funziona sbagli tu» e' reale e profonda — e' l'unica lamentela
+   formulata come una domanda a cui un libro puo' rispondere — ma tre volte su
+   ventiquattro. Va nel cuore del libro, non nel sottotitolo;
+3. **chi legge e chi compra sono la stessa persona**, e compra sulle recensioni
+   degli altri. Nessun segnale regalo, verificato anche sull'autocomplete.
 
-**Raccolte il 06/09 sera: ventiquattro recensioni negative su tre libri**
-(Merini 17, Moreno 2, Petrucciani 2, piu' 3 di Novara da Goodreads). Il
-campione basta per partire. Testi verbatim in
-`01 Ricerca/recensioni-negative.txt`, lettura in
-`01 Ricerca/lamentele-ricorrenti.md`.
+**I vincoli che arrivano ai checkpoint** (dettaglio in `02-avatar.md` §7):
 
-**La gerarchia delle lamentele, ed e' diversa da quella attesa:**
-
-1. **la forma** — «e' scritto da una macchina». Undici delle diciassette
-   negative di Merini parlano di errori, frasi senza senso, traduzione
-   automatica, autore inesistente. E' la lamentela dominante del reparto;
-2. **il rapporto lettura/utilita'** — ripetitivo, pesante, mi sono annoiata,
-   pochi concetti ripetuti troppo. E' l'unica presente su tutti e tre i libri;
-3. **«se non funziona sbagli tu»** — la piega portante del passo 1b. Reale, su
-   due autori, ma **sotto Merini non compare mai in diciassette negative**. Va
-   nel libro, non nel sottotitolo.
-
-Il punto 3 e' l'applicazione di una regola scritta prima del test, non una
-ritirata: vedi `lamentele-ricorrenti.md` §2.
-
-**I tre vincoli che la lamentela 1 impone**, da portare ai checkpoint invece
-che scoprirli dopo (dettaglio e citazioni in `lamentele-ricorrenti.md` §3-bis):
-
-| Vincolo | Dove va |
+| Vincolo | Dove |
 |---|---|
-| Italiano nato italiano, niente che sappia di traduzione o generazione. `avoid-ai-writing` diventa obbligatoria | **CP4**, DNA stilistico |
-| Il pen name deve reggere una ricerca: identita' verificabile, oppure nessuna pretesa di autorevolezza | **CP2**, insieme al titolo |
-| Niente «4 libri in 1»: il formato-raccolta e' bruciato su questo scaffale | **CP3**, outline |
+| Italiano nato italiano; `avoid-ai-writing` obbligatoria; rilettura vera | **CP4** |
+| Il pen name regge una ricerca, oppure il libro non poggia sull'autorevolezza | **CP2** |
+| Niente «N libri in 1»; capitoli corti, apribili fuori ordine, nessun concetto ripetuto | **CP3** |
 
-**La condizione che il SI FA si portava dietro** resta valida e si somma: il
-concept deve promettere un'**azione**, non uno **stato**.
+**Cosa manca all'avatar, ed e' scritto in `02-avatar.md` §8:** zero recensioni
+positive. Ne abbiamo 24, tutte negative, contro le 150-250 che la fase 2
+prevede. Sappiamo cosa il lettore **rifiuta**, non sappiamo cosa **compra**.
+Basta per il concept, che si costruisce sui vincoli; e' magro per l'outline.
+Le ~350 recensioni a 4 e 5 stelle di Merini e Petrucciani sono la cosa che
+cambierebbe di piu' il quadro, e sono ancora tutte da leggere.
 
 ## Cosa manca, in ordine
 
@@ -117,8 +107,11 @@ concept deve promettere un'**azione**, non uno **stato**.
    (`01 Ricerca/scaffale-il-dopo.md`).
 6. ~~Le recensioni negative dei tre concorrenti piu' recensiti~~ — fatte il
    06/09 sera, 24 in tutto.
-7. **`avatar-cliente`**, sulle stesse recensioni. E' il prossimo passo, e ha
-   tutto quello che gli serve.
+7. ~~`avatar-cliente`~~ — fatto il 06/09 sera, `02-avatar.md`. Prima stesura
+   su campione magro: vedi §8 di quel file.
+8. **`concept-positioning`** — e' il prossimo passo, ed e' il **checkpoint 1**.
+9. **Le recensioni a 4 e 5 stelle** di Merini e Petrucciani, prima
+   dell'outline: e' li' che stanno i buchi che l'avatar non vede.
 
 Tutto il resto della mappa (concept, copertina, outline, DNA, campione,
 manoscritto, revisione, interni, immagini, scheda) e' adesso **da fare piu'

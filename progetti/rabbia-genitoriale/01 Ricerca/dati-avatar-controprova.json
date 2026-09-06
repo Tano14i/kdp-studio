@@ -1,0 +1,79 @@
+{
+  "generato_il": "2026-09-06 21:18",
+  "mercato": "amazon.it",
+  "lingua_dell_angolo": {
+    "educare senza urlare": {
+      "prefisso_che_risponde": "educare senza urlare",
+      "suggerimenti": [
+        "educare senza urlare moreno marchetti"
+      ],
+      "esito": "intera"
+    },
+    "come non urlare ai figli": {
+      "prefisso_che_risponde": "come non urlare ai figli",
+      "suggerimenti": [
+        "come non urlare ai figli"
+      ],
+      "esito": "intera"
+    },
+    "disciplina positiva": {
+      "prefisso_che_risponde": "disciplina positiva",
+      "suggerimenti": [
+        "disciplina positiva"
+      ],
+      "esito": "intera"
+    },
+    "genitori esauriti": {
+      "prefisso_che_risponde": "genitori",
+      "suggerimenti": [
+        "genitori felici libro"
+      ],
+      "esito": "risale"
+    },
+    "capricci": {
+      "prefisso_che_risponde": "capricci",
+      "suggerimenti": [
+        "capricci d arte bonollo"
+      ],
+      "esito": "intera"
+    },
+    "libro per genitori": {
+      "prefisso_che_risponde": "libro per genitori",
+      "suggerimenti": [
+        "libro per genitori"
+      ],
+      "esito": "intera"
+    },
+    "regalo per genitori": {
+      "prefisso_che_risponde": "regalo per genitori",
+      "suggerimenti": [
+        "regalo per genitori dai figli"
+      ],
+      "esito": "intera"
+    },
+    "educare adolescenti": {
+      "prefisso_che_risponde": null,
+      "suggerimenti": [],
+      "esito": "muto"
+    },
+    "gestire la rabbia": {
+      "prefisso_che_risponde": "gestire la rabbia",
+      "suggerimenti": [
+        "gestire la rabbia"
+      ],
+      "esito": "intera"
+    },
+    "comunicazione con i figli": {
+      "prefisso_che_risponde": "comunicazione co",
+      "suggerimenti": [
+        "comunicazione con operatore"
+      ],
+      "esito": "risale"
+    }
+  },
+  "schede": [],
+  "limiti": [
+    "www.amazon.it/s risponde 503: nessun ASIN nuovo si scopre da qui",
+    "www.amazon.it/product-reviews risponde anti-robot: niente testo recensioni ne' BSR"
+  ]
+}
