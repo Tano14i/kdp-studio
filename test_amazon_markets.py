@@ -63,6 +63,31 @@ for alias, code in _MARKET_ALIASES.items():
         failures.append(f"alias {alias!r} -> mercato inesistente {code!r}")
     print(f"  {alias:<6} -> {code}  {'ok' if ok else 'ROTTO'}")
 
+# ── URL delle recensioni, con e senza filtro per stelle ──────────────────
+ns2: dict = {}
+_i = src.index("FILTRI_STELLE = {")
+_f = src.index("# Gli endpoint che ricevono una lingua", _i)
+exec("def amazon_tld(c='us'):\n    return {'us':'com','it':'it','de':'de'}[c]\n" + src[_i:_f], ns2)
+amazon_reviews_url = ns2["amazon_reviews_url"]
+FILTRI_STELLE = ns2["FILTRI_STELLE"]
+
+print("\nURL delle recensioni:")
+_casi = [
+    ("us", "", "amazon.com/product-reviews/B01", "filterByStar", False),
+    ("it", "", "amazon.it/product-reviews/B01", "filterByStar", False),
+    ("it", "critical", "amazon.it/product-reviews/B01", "filterByStar=critical", True),
+    ("it", "inesistente", "amazon.it/product-reviews/B01", "filterByStar", False),
+]
+for mercato, filtro, atteso_url, atteso_par, deve_esserci in _casi:
+    u = amazon_reviews_url("B01", mercato, filtro)
+    ok = atteso_url in u and ((atteso_par in u) == deve_esserci)
+    if not ok:
+        failures.append(f"URL recensioni {mercato}/{filtro or 'senza filtro'}: {u}")
+    print(f"  {'ok   ' if ok else 'ROTTO'} {mercato:>3} {filtro or '(nessun filtro)':<12} {u[:78]}")
+print(f"  {'ok   ' if 'critical' in FILTRI_STELLE else 'ROTTO'} 'critical' e' fra i filtri ammessi")
+if "critical" not in FILTRI_STELLE:
+    failures.append("'critical' manca dai filtri ammessi")
+
 if "--offline" in sys.argv:
     print(f"\n{'FALLITO' if failures else 'OK'} — controlli offline "
           f"su {len(AMAZON_MARKETS)} mercati")
