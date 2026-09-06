@@ -174,7 +174,8 @@ Esce: aggiornamento del dossier, con cosa e' stato tagliato e perche'.
 | `pubblicazione-kdp` | viene prima: senza scheda viva non si promuove |
 | `avatar-cliente` | fornisce le lamentele, se il libro non ha recensioni proprie |
 | `dna-stilistico` | la voce dei post e' la stessa del libro, non un'altra |
-| `regia` | chiama questa skill dopo il checkpoint 7 |
+| `regia` | la chiama come **passo 14**, dopo la pubblicazione |
+| `ricerca-inversa` | usa le stesse fonti — contenuti e commenti — ma a monte |
 
 Le recensioni raccolte qui tornano indietro: sono materia prima per
 `avatar-cliente` sul libro successivo. E' l'unica fonte di recensioni su cui
