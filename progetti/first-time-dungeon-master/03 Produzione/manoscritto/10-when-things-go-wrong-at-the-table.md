@@ -9,7 +9,7 @@ next week and a bad table feeling is not.
 The good news is that table problems respond to the same tools as story problems: name
 the thing, address it early, and keep it kind. You are not a boss and your players are not
 staff. You are the person who volunteered to run the game, which gives you the right to
-protect it. Here are the situations you will actually meet, and what to do.
+protect it. Here are the situations you will meet, and what to do.
 
 ### The rules lawyer
 
@@ -43,7 +43,7 @@ correction.
 
 ### Real conflict between players
 
-Sometimes it is not a quirk, it is a genuine clash: two players who want opposite games,
+Sometimes it is not a quirk, it is a clash: two players who want opposite games,
 or a personal friction that spills onto the table. Do not try to solve this mid-session in
 front of everyone. Pause the game if you must, then take it to a private conversation
 after. Name what you saw without taking a side, and ask what would make the game better for

@@ -7,7 +7,7 @@ push too hard. This chapter keeps your generosity from wrecking the balance you 
 Chapter 7, while still letting the players feel rich.
 
 The trick is simple. Give money and useful gear freely. Give raw power slowly and on
-purpose. A party can never have too many interesting objects. It can very easily have too
+purpose. A party can never have too many interesting objects. It can easily have too
 many ways to kill things without trying.
 
 ### Coins are the safe reward

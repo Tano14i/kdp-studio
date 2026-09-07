@@ -25,7 +25,7 @@ An online group drifts when there is nothing to share their eyes on. You do not 
 gridded battle map with animated torches. You need one shared screen: a simple map, a
 picture of the room, even a document with the scene written on it. When combat starts,
 something as plain as tokens on a grid keeps everyone clear on who is where. Pick one tool
-and learn its three buttons you actually use. The fanciest virtual tabletop run by a DM
+and learn the three buttons you use. The fanciest virtual tabletop run by a DM
 who is fighting the software is worse than a shared image and theater of the mind.
 
 ### Hand out the spotlight on purpose

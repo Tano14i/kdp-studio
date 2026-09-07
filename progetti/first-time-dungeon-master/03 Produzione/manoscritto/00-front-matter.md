@@ -28,7 +28,7 @@ job. This book teaches that job, and only that job. It does not re-explain what 
 is or how a saving throw works. You have that already. If you don't, one read of the
 starter rules covers it, and then you come back here.
 
-Every chapter answers one problem a first-time DM actually has, in the order you hit
+Every chapter answers one problem a first-time DM has, in the order you hit
 it: prep, the first session, rulings, improvisation, NPCs, encounters, locations,
 pacing, table trouble, and what comes after session one. Read it front to back once.
 After that, treat it as a toolbox. Open the chapter for the problem in front of you.

@@ -11,7 +11,7 @@ will not meet for a year. Then session one arrives and none of it helps, because
 players walk left when the notes went right. You do not need to be ready for
 everything. You need five things. This chapter is those five things, and nothing else.
 
-### The five things you actually need
+### The five things you need
 
 **A place to start, and a reason to care.** Your players need somewhere to be and a
 problem in front of them on the first line. A tavern is not a start. A tavern with a

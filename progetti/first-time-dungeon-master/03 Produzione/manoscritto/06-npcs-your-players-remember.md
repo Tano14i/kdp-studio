@@ -28,7 +28,7 @@ moments. Pick something you can show through action and speech, not something yo
 narrate. "He keeps glancing at the door" tells the players more than "he is anxious," and
 it gives them something to poke at.
 
-### A voice you can actually do
+### A voice you can do
 
 You do not need to be an actor. You need contrast, so the players can tell one NPC from
 another. Change one dial: talk faster, drop to a near-whisper, clip your sentences short,
