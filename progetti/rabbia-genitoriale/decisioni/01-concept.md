@@ -91,10 +91,12 @@ Tutte, per intero, in `02 Validazione/concept-scartati.md`. In breve:
 5. **B1 e' una regola di scrittura, non un'accusa pubblica.** Le scene vanno
    storte dentro il libro; il libro non dice che i concorrenti mostrano solo
    scene riuscite.
-6. **B5 e' scelto ma senza forma.** Vietata in ogni caso la via di mezzo:
-   niente «esperta di», niente credenziali allusive. Tre forme oneste in
-   `concept-scelto.md` — l'esperienza dichiarata, la trasparenza delle fonti,
-   la co-firma di un professionista.
+6. **B5 = forma a**, decisa il 07/09: l'autorita' dell'esperienza, dichiarata
+   per quello che e'. Il libro non pretende un titolo; dice chi scrive e cosa
+   ha provato. Vietata ogni qualifica inesistente e ogni frase che suoni come
+   parere clinico detto in proprio. **B5-b viene dietro per necessita', non per
+   scelta:** se chi scrive non e' un esperto, ogni affermazione non personale
+   deve dire da dove viene. Regole complete in `concept-scelto.md`.
 5. **La scheda «stasera» e' una pagina.** Se diventa un fascicolo, lavora
    contro il concept che dovrebbe servire.
 
@@ -112,12 +114,10 @@ Tutte, per intero, in `02 Validazione/concept-scartati.md`. In breve:
 
 ## Prossimo passo
 
-**Manca una cosa sola prima del passo 4: la forma di B5.** Le tre opzioni
-stanno in `concept-scelto.md`, ultimo paragrafo. Due (a e b) costano quasi
-nulla e si sommano; la terza dipende da una persona reale disposta a
-co-firmare.
+**Passo 4 — titolo, sottotitolo, copertina**, che e' il **checkpoint 2**.
+Vedi `pubblicazione-kdp` §4.
 
-Non e' una formalita' rimandabile al passo 4: **il nome e la qualifica
-dell'autore vanno in copertina**, e la copertina e' il checkpoint 2.
-
-Poi: **passo 4 — titolo, sottotitolo, copertina**. Vedi `pubblicazione-kdp` §4.
+**Con una cosa da sapere prima di chiudere la copertina:** B5-a regge solo se
+e' vero che chi firma ha davvero attraversato quello che il libro racconta. La
+domanda e' aperta con l'autore ed e' scritta in `concept-scelto.md`. Titolo e
+sottotitolo si possono lavorare comunque; la riga dell'autore no.

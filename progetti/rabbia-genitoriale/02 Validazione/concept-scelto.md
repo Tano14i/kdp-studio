@@ -119,9 +119,80 @@ molto buono per non sembrare scarno.*
   una domanda che un lettore ha davvero fatto. Se un capitolo esiste per fare
   numero, il libro e' corto **e** vuoto, che e' il peggio dei due mondi.
 
-## L'ultimo punto aperto: che forma dare a B5
+## B5: scelta la forma **a** — l'autorita' dell'esperienza
+Deciso dall'autore il **07/09/2026**
 
-B5 e' stato **riaperto** il 06/09 sera, ed e' l'unica cosa non ancora decisa.
+Il libro **non pretende un titolo**. In apertura dichiara chi scrive: un
+genitore che quei libri li ha letti e applicati, non un professionista.
+
+### Cosa questo permette di scrivere
+
+- «Non sono una psicologa. Sono un genitore che ha comprato quei libri e li ha
+  provati» — o qualunque forma vera della stessa cosa;
+- il racconto in prima persona di tentativi andati storti;
+- «questo a me ha funzionato», «questo non ha funzionato»;
+- l'uso di fonti altrui **citate come tali** — vedi sotto.
+
+### Cosa questo vieta, e va controllato riga per riga
+
+- **ogni frase che suoni come un parere clinico.** Niente «i bambini a quell'eta'
+  hanno bisogno di», «e' dimostrato che», «dal punto di vista neurologico»
+  **detto in proprio**. Se serve dirlo, si cita chi lo ha detto;
+- **ogni qualifica che non esista**: «esperta di educazione», «pedagogista»,
+  «formatrice», «specialista in». Nessuna, in nessun punto — copertina, quarta,
+  bio, descrizione Amazon, profilo social;
+- **il plurale della cattedra**: «noi consigliamo», «il nostro metodo».
+
+### Perche' e' coerente con tutto il resto
+
+E' la sola forma che sta in piedi insieme ad A2 stretto: **un libro per chi ha
+gia' provato, scritto da chi ha gia' provato.** L'autorevolezza non viene dal
+titolo di chi scrive ma dall'essere nella stessa stanza del lettore — che e'
+esattamente cio' che i tredici concorrenti non fanno, perche' parlano tutti
+dall'alto di un metodo.
+
+E risolve la tensione fra le due lezioni opposte del riesame:
+Merini insegna che **una competenza finta viene scoperta e punita**;
+Petrucciani insegna che **i lettori comprano la competenza**. B5-a non finge
+una competenza e non ne rivendica una: ne dichiara una diversa, che e' vera.
+
+### La dipendenza di fatto, che non e' una formalita'
+
+**B5-a regge solo se e' vero.** Un pen name che dice «sono un genitore che ha
+provato» senza esserlo e' la stessa bugia di Merini in un vestito diverso, e
+sarebbe peggio: quella almeno non prometteva un'esperienza personale.
+
+Prima della copertina serve sapere:
+
+1. **chi firma il libro e' davvero un genitore**, e ha davvero attraversato
+   quello che il libro racconta;
+2. se no, **quale altra esperienza vera** puo' occupare quel posto (educatore,
+   insegnante, chi ha cresciuto fratelli, chi lo ha vissuto da figlio);
+3. se nessuna, B5-a **non si puo' usare** e si torna a b oppure c.
+
+Questa e' una domanda all'autore, non una cosa che si decide a tavolino.
+
+### B5-b viene dietro comunque, gratis
+
+L'autore ha scelto solo la **a**, e la **b** non era esclusa dalla **a**: la
+trasparenza delle fonti e' una conseguenza obbligata della **a**, non una
+scelta in piu'. Se chi scrive non e' un esperto, **ogni affermazione che non
+sia esperienza personale deve dire da dove viene**, altrimenti la a si rompe
+da sola al primo «e' dimostrato che».
+
+Quindi: bibliografia vera in fondo, e fonte accanto a ogni affermazione presa
+da altri. E' anche l'unica cosa che un lettore ha elogiato in chiaro come segno
+di serieta':
+
+> «quando prende pensieri e teorie da altri autori ha **l'umiltà di citarli
+> direttamente, cosa buona perche in questo campo in molti si copiano senza
+> citare nessuno**» — Wurmgutter, 5 stelle su Petrucciani
+
+---
+
+## *(storico)* Le tre forme fra cui si e' scelto
+
+B5 e' stato **riaperto** il 06/09 sera.
 Il motivo sta in `riesame-cp1.md` §3: i lettori del concorrente migliore
 comprano **la dottoressa**.
 

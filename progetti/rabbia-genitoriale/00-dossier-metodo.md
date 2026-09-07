@@ -25,8 +25,8 @@ decide il titolo vero, e questa cartella non si rinomina mai.
 | 1 | Nicchia e concorrenti | fatto — **NON SI FA** sul tema | — | 06/09 |
 | 1b | Angolo (`ricerca-inversa`) | fatto — **SI FA** sull'angolo | — | 06/09 |
 | 2 | Avatar cliente | fatto — **prima stesura**, campione magro | — | 06/09 |
-| 3 | Concept e positioning | fatto — **CP1 chiuso**, manca la forma di B5 | CP1 | 06/09 |
-| 4 | Titolo, sottotitolo, copertina | **prossimo**, dopo la forma di B5 | CP2 | |
+| 3 | Concept e positioning | fatto — **CP1 chiuso** | CP1 | 06-07/09 |
+| 4 | Titolo, sottotitolo, copertina | **in corso** | CP2 | |
 | 5 | Outline | da fare | CP3 | |
 | 6 | DNA stilistico | da fare | CP4 | |
 | 7 | Campione di scrittura | da fare | CP5 | |
@@ -76,22 +76,21 @@ E B1 cambia statuto: **regola di scrittura interna, non accusa pubblica.** Le
 scene vanno storte dentro il libro; il libro non dice che i concorrenti
 mostrano solo scene riuscite — trenta lettori di Petrucciani lo smentirebbero.
 
-**Manca una cosa sola prima del passo 4: che forma dare a B5.** Non e'
-rimandabile, perche' il nome e la qualifica dell'autore vanno in copertina, e
-la copertina e' il checkpoint 2. Tre forme oneste, in `02 Validazione/
-concept-scelto.md` ultimo paragrafo:
+**B5 e' deciso: forma a**, il 07/09. L'autorita' dell'esperienza, dichiarata
+per quello che e' — il libro non pretende un titolo, dice chi scrive e cosa ha
+provato. Regole complete in `02 Validazione/concept-scelto.md`; in due righe:
+vietata ogni qualifica inesistente e ogni frase che suoni come parere clinico
+detto in proprio, e **ogni affermazione non personale deve dire da dove viene**
+(B5-b viene dietro per necessita', non per scelta).
 
-| | Forma | Costo |
-|---|---|---|
-| **B5-a** | L'autorita' dell'esperienza, dichiarata per quello che e': un genitore che ha letto quei libri e li ha applicati, non un professionista | zero |
-| **B5-b** | L'autorita' della trasparenza: ogni affermazione con la sua fonte, bibliografia vera | basso |
-| **B5-c** | La co-firma di un professionista vero | denaro, tempo, una persona disposta |
+**La domanda aperta, ed e' di fatto, non di stile:** B5-a regge solo se e'
+vero. Un pen name che dice «sono un genitore che ha provato» senza esserlo e'
+la bugia di Merini in un vestito diverso, e peggiore, perche' promette
+un'esperienza personale. Prima di chiudere la copertina serve sapere chi firma
+e cosa ha davvero attraversato — o quale altra esperienza vera occupa quel
+posto. Titolo e sottotitolo si lavorano comunque; la riga dell'autore no.
 
-**a + b si sommano e costano quasi nulla. c e' l'unica che pareggia davvero con
-Petrucciani, ed e' l'unica che dipende da qualcuno che non siamo noi.**
-
-Vietata in tutti e tre i casi la via di mezzo: niente «esperta di», niente
-credenziali allusive, nessun titolo che non esista.
+**Il passo 4 e' partito**: titolo, sottotitolo, copertina — checkpoint 2.
 
 ## Cosa manca, in ordine
 
