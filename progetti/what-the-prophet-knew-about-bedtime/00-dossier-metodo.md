@@ -27,7 +27,7 @@ i file.
 | 1b | Angolo | **mai fatta** | — | |
 | 2 | Avatar cliente | **mai fatta** | — | |
 | 3 | Concept e positioning | **eseguito ma non scritto** | CP1 | |
-| 4 | Titolo, sottotitolo, copertina | **in corso — tre sottotitoli** | CP2 | |
+| 4 | Titolo, sottotitolo, copertina | **in corso — testo deciso, copertina no** | CP2 | |
 | 5 | Outline | **eseguito ma non scritto** | CP3 | |
 | 6 | DNA stilistico | **eseguito ma non scritto** | CP4 | |
 | 7 | Campione di scrittura | saltato | CP5 | |
@@ -50,35 +50,41 @@ esattamente quello che una revisione avrebbe raccolto.
 
 ## Aperto adesso
 
-**Checkpoint 2, e non è una formalità: sono tre promesse diverse dello stesso
-libro.** Frontespizio, copertina e grafica promo portano tre sottotitoli che
-non coincidono (`01 Prodotto/spec-dal-pdf.md` §4.1). Su KDP il sottotitolo è un
-campo solo e deve stare in copertina identico. Finché l'autore non ne sceglie
-uno, due artefatti su tre sono da rifare e non si sa quali.
+**Un dato solo, e blocca la copertina: il numero di pagine dell'interno.**
+Decide lo spessore del dorso, quindi finché non c'è, la copertina non si monta
+e la fase 11 non chiude. Da Drive non si legge — serve il PDF a portata di
+mano, o il numero.
 
-**E un dato, senza il quale la copertina non si monta: il numero di pagine
-dell'interno.** Decide lo spessore del dorso. Da Drive non si legge — serve il
-PDF a portata di mano, o il numero.
+Il testo del checkpoint 2 è invece **chiuso il 07/09**: vince il sottotitolo
+di copertina, *The Forgotten Sunnah Sleep Rituals That Protect, Calm, and
+Connect Your Child to Allah — Night by Night*. Scelta e scartate stanno in
+`02 Copertina/cp2-sottotitolo.md`, con il prezzo da pagare a valle: quel
+sottotitolo non contiene «30» né «Muslim kids», e vanno recuperate nelle
+parole chiave di backend e nella prima riga della descrizione.
 
 ## Cosa manca, in ordine
 
 1. ~~Cartella e dossier~~ — fatti il 07/09
 2. ~~Specifiche estratte dal prodotto~~ — fatte il 07/09,
    `01 Prodotto/spec-dal-pdf.md`
-3. **CP2: scegliere il sottotitolo**, uno solo, e allineare copertina e
-   frontespizio a quello.
-4. **La foliazione dell'interno**, dal PDF vero.
-5. **Le sei pagine con la `C`** (notti 7, 13, 15, 23, 24, 25): guardarle,
+3. ~~CP2: scegliere il sottotitolo~~ — chiuso il 07/09, vince quello di
+   copertina. `02 Copertina/cp2-sottotitolo.md`
+4. **La foliazione dell'interno**, dal PDF vero. È l'unica cosa che blocca.
+5. **Riallineare il frontespizio** del PDF al sottotitolo scelto.
+6. **Le sei pagine con la `C`** (notti 7, 13, 15, 23, 24, 25): guardarle,
    confermare il difetto, rigenerare o ritoccare le illustrazioni.
-6. **La pagina del lead magnet**: verificare che esista e che porti un QR o un
+7. **La pagina del lead magnet**: verificare che esista e che porti un QR o un
    indirizzo. Se non c'è, il tracker non arriva a nessuno.
-7. **Due pagine di fonti degli hadith** in fondo al libro. Prima della stampa,
+8. **Due pagine di fonti degli hadith** in fondo al libro. Prima della stampa,
    perché dopo non si aggiungono.
-8. **Rigenerare la promo sfasciata** (`…20260702_101201…`, testo `10 Bedfor`).
-9. **Fase 1 all'indietro** — vedi §5. Non decide più se fare il libro: serve a
-   prezzo, categorie e parole chiave della scheda.
-10. Poi: fase 12, `pubblicazione-kdp`.
-11. Poi: fase 14, `promozione-social`. Non è facoltativa.
+9. **Rifare le due grafiche promo**: quella con il testo sfasciato
+   (`…20260702_101201…`, `10 Bedfor`) e quella che porta il sottotitolo
+   scartato (`…20260702_100621…`).
+10. **Fase 1 all'indietro** — vedi §5. Non decide più se fare il libro: serve
+    a prezzo, categorie e parole chiave della scheda. E ora ha un compito in
+    più: recuperare «30» e «Muslim kids», che il sottotitolo scelto non porta.
+11. Poi: fase 12, `pubblicazione-kdp`.
+12. Poi: fase 14, `promozione-social`. Non è facoltativa.
 
 ## Da non dimenticare
 
