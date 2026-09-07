@@ -110,6 +110,17 @@ versione stampabile/compilabile → alimenta lead magnet e recensioni.
 - Varietà tabelle: ogni tabella tirabile (improv, complicazioni, location, encounter)
   deve avere voci di famiglie diverse — da verificare leggendo ogni tabella di fila.
 
+## 5b. Espansione (07/09, deciso dall'autore per raggiungere ~140 pag.)
+Aggiunti in scrittura, oltre agli 11 capitoli:
+- Esempio giocato "At a real table" in ogni capitolo.
+- **Cap. 12 bonus** — Running the Game Online (+ Virtual Table Checklist).
+- **Cap. 13 bonus** — Treasure and Magic Items (+ tabella oggetti magici starter).
+- **Appendici**: 80 avventura "The Drowned Bell" (liv.1), 83 seconda avventura
+  "The Hunger Under the Hill" (liv.2-3), 81 bestiario starter (3 fasce + trappole),
+  82 tabelle+semi (d100 nomi, rumor, ricompense, trappole, città/taverne, mosse
+  villain, 6 semi), 84 scheda regole di riferimento rapido.
+Motivo: il segmento vende a 146-169 pag.; la bozza densa era troppo corta.
+
 ## 6. Conto pagine
 Front 6 + Cap 1-11 (12+14+12+12+16+12+14+12+12+10+10 = 136) + back 9 = **~151 pp**.
 Dentro il target 130-160 per 6×9 a $13.99. Prosa stimata ~30-34k parole + pagine

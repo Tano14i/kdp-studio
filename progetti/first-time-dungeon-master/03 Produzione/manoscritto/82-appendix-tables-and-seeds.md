@@ -129,5 +129,80 @@ SEED 6 — The Turned Graves
    Clock: the graves turn a little more each night; on the seventh they open
 ```
 
-Between the starter adventure and these six seeds, you will not run dry for a long time.
-Roll, fill, prep, and play. The table is waiting.
+### d20 traps and hazards
+
+Every trap here has a tell, a beat, and a cost, the way Chapter 7 and the bestiary ask.
+Narrate the tell before the players trigger it.
+
+```
+ 1  A pressure plate; tell: worn floor stones; cost: darts from the walls
+ 2  A pit under a rug; tell: the rug is too clean; cost: a fall and a sprain
+ 3  A gas vent; tell: a faint sweet smell; cost: sleep on a failed save
+ 4  A collapsing stair; tell: cracked mortar; cost: a drop and separation
+ 5  A swinging blade; tell: a groove worn in the wall; cost: a heavy cut
+ 6  A rising water room; tell: damp waterline; cost: a race against drowning
+ 7  A rune-warded door; tell: faint glowing marks; cost: a burst of fire
+ 8  A net trap; tell: rope dust from above; cost: caught and hauled up
+ 9  A false floor over spikes; tell: a hollow sound; cost: a nasty fall
+10  A poisoned lock; tell: a green stain; cost: poison on a failed save
+11  A rolling weight; tell: a slot in the ceiling; cost: outrun it or be hit
+12  A shrieking ward; tell: a thin wire; cost: it summons the guards
+13  A crushing wall; tell: fresh scrape marks; cost: escape before it closes
+14  A grasping vine; tell: too-green growth; cost: held until it is cut
+15  A mirror that swaps a hand's contents; tell: a cold shimmer; cost: theft
+16  A bridge that tilts; tell: it is on a pivot; cost: a slide into the dark
+17  A hall of darts and a safe path; tell: a scuffed safe line; cost: many small cuts
+18  A frost sigil; tell: rime on the floor; cost: cold and slowed movement
+19  A memory ward; tell: a humming stone; cost: forget the last minute
+20  A guardian statue; tell: no dust on its base; cost: it wakes and strikes
+```
+
+### d20 town and tavern names
+
+Roll one of each when the party arrives somewhere you did not name.
+
+```
+TOWNS:  1 Ardwick  2 Hollowmere  3 Greypool  4 Thornfield  5 Saltcombe
+        6 Dunmoor  7 Fenwick  8 Ashford  9 Millbrook  10 Coldharbor
+        11 Ravenscross  12 Oldbridge  13 Marsh End  14 Highcairn
+        15 Blackmoss  16 Elderton  17 Stonewell  18 Redmarch
+        19 Winterbourne  20 Gallowsfield
+TAVERNS: 1 The Broken Wheel  2 The Salted Crow  3 The Last Lantern
+        4 The Drowned Rat  5 The Gilded Sow  6 The Quiet Man
+        7 The Cracked Bell  8 The Green Door  9 The Wayward Son
+        10 The Iron Kettle  11 The Sleeping Giant  12 The Fox and Fiddle
+        13 The Copper Cup  14 The Rusty Anchor  15 The Hunter's Rest
+        16 The Third Moon  17 The Pilgrim's Foot  18 The Bent Nail
+        19 The Widow's Table  20 The Long Winter
+```
+
+### d20 what the villain does while the party dawdles
+
+When the players take their time, the world does not. Roll to advance the enemy's plan and
+turn idleness into pressure.
+
+```
+ 1  Recruits more followers from the desperate
+ 2  Silences a witness the party needed
+ 3  Moves the ritual up a day
+ 4  Buys off a guard or an official
+ 5  Sends a scout to watch the party
+ 6  Frames the party for a crime
+ 7  Takes a hostage the party cares about
+ 8  Fortifies the lair with new traps
+ 9  Spreads a rumor that ruins the party's welcome
+10  Completes one step of the larger plan
+11  Poisons a well or a food store
+12  Strikes a deal with a rival of the party
+13  Relocates the treasure the party is after
+14  Sends assassins in the night
+15  Wins over a town leader to their side
+16  Destroys the evidence the party sought
+17  Sacrifices a follower to gain power
+18  Sets a trap where the party will go next
+19  Escalates: an innocent dies to prove they are serious
+20  Vanishes, leaving the party chasing a cold trail
+```
+
+Between two full adventures, six seeds, and these tables, you will not run dry for a long
+time. Roll, fill, prep, and play. The table is waiting.

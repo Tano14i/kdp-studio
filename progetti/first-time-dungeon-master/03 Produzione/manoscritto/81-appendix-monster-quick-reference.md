@@ -52,6 +52,34 @@ Priest (evil)       2     27  13  +5, heals allies  keeps the fight going
 Giant boar          1     42  11  +5, 10 dmg       charges, knocks prone
 ```
 
+### Tier 3: single bosses for a whole party
+
+These are built to fight a party of four alone, or with a few minions from the tiers above.
+A boss should get more than one action a round so it does not lose to four attackers before
+it acts. Give it the Legendary line below: an extra move on other players' turns.
+
+```
+NAME              THREAT  HP   AC  ATTACK           MOVE + LEGENDARY
+Ogre chieftain      4    93  13  +7, 14 dmg (x2)  Legendary: after a hit, shove a foe back
+Young wyvern        5    110 14  +7, 11 dmg + poison  Legendary: fly up, then dive next turn
+Cult high priest    4    75  15  +6, spell 18 dmg  Legendary: curse a foe (disadvantage)
+Troll                5   84  15  +7, 12 dmg (x2)  regenerates unless burned; Legendary: bite
+Bandit warlord       4   90  17  +7, 10 dmg (x2)  Legendary: command an ally to strike
+Barrow wraith        5   67  13  +6, 13 necrotic  Legendary: drain, heal for half dealt
+```
+
+Run a boss by giving it one normal turn plus one Legendary move on someone else's turn.
+That rhythm keeps the biggest fight in the adventure from ending before it begins, and it
+is the whole secret to a climax that feels dangerous.
+
+### A quick word on traps
+
+Traps are monsters that do not move. Give each one a way to spot it (a check, or a clue you
+narrate), a way to beat it (a check, or a clever action), and a cost for failing (damage, an
+alarm, a separation). If a trap can only be found by one lucky roll and kills on a failure,
+it is not a challenge, it is a coin flip. Telegraph the danger, offer more than one way past,
+and let the players feel clever for beating it.
+
 ### Reskin, do not rebuild
 
 The fastest bestiary trick is paint. The wolf, the dire wolf, and the giant boar are all
