@@ -97,4 +97,8 @@ Proposte, in inglese, con motivo:
 ## 10. Regole aggiunte in corsa
 | Data | Regola | Da quale correzione nasce |
 |---|---|---|
-| — | — | — |
+| 07/09 | **Zero em dash in prosa**: usa punto o due punti. L'inciso si spezza in due frasi. | Pass avoid-ai-writing sul campione (troppi em dash) |
+| 07/09 | **Titoli di capitolo con due punti**: "Chapter N: Title", non "Chapter N — Title". | Stesso pass (convenzione per tutti i capitoli) |
+| 07/09 | **Etichette di step con punto**: "Step N. Titolo", non "Step N — Titolo". | Stesso pass |
+| 07/09 | **Max una triade decorativa per capitolo**: le altre liste-di-tre solo se mappano su elementi reali del metodo (3 beat, 3 quirk, 3 voci safety-net). | Stesso pass (rule of three) |
+| 07/09 | Niente "actually/really" come rafforzativi vuoti; togli e basta. | Stesso pass |
