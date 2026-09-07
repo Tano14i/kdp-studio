@@ -17,3 +17,7 @@ domanda-*.json
 
 # Output generato da trend_topics.py alla radice (la copia in _profili si tiene).
 /trend-it.json
+
+# Estratti KDP scaricati dalla dashboard: dato personale di vendita, resta
+# locale. Nel repo va solo l'aggregato generato da analisi-vendite.py.
+KDP_Orders*.xlsx
