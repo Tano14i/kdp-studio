@@ -19,7 +19,7 @@ Cedric Darkstone (pen name) · inglese · mercato Amazon US · avviato il 06/09/
 | 5 | Outline | fatto | CP3 chiuso ✓ | 07/09 |
 | 6 | DNA stilistico | fatto | CP4 chiuso ✓ | 07/09 |
 | 7 | Campione di scrittura | fatto (approvato) | CP5 chiuso ✓ | 07/09 |
-| 8 | Manoscritto | bozza completa (corta vs piano) | — | 07/09 |
+| 8 | Manoscritto | bozza espansa ~80 pag (target 140) | — | 07/09 |
 | 9 | Revisione | da fare | — | |
 | 10 | Interni impaginati | da fare | — | |
 | 11 | Immagini, copertina finita | in corso | — | |
