@@ -1,4 +1,4 @@
-# Social di brand — Cedric Darkstone (@CedricDkstn)
+# Social di brand — Cedric Darkstone (@cedric.darkstone7)
 07/09/2026 · vende l'AUTORE e il metodo, non un singolo libro
 
 ## Indice

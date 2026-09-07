@@ -3,7 +3,7 @@ Deciso il 06/09/2026
 
 ## Scelto
 - **Canali**: Instagram + TikTok (stesso verticale riusato su entrambi).
-- **Handle**: `@CedricDkstn`.
+- **Handle**: `@cedric.darkstone7`.
 - **Lead magnet**: "The 1-Hour Session Prep Checklist" — una pagina che permette a un
   DM alle prime armi di preparare l'intera sessione in meno di un'ora. Riprende la
   promessa del libro ed è l'esca coerente con "Templates & Checklists Included".
