@@ -75,7 +75,7 @@ Poisoned ...... disadvantage on attacks and ability checks
 Frightened .... disadvantage while the source is in sight; cannot move closer to it
 Blinded ....... cannot see; attacks against it have advantage, its own have disadvantage
 Stunned ....... cannot act; attacks against it have advantage
-Unconscious ... drops everything, prone; attacks against it have advantage and crit up close
+Unconscious ... drops everything, prone; attackers have advantage, and crit in melee
 ```
 
 ### Resting, the short version

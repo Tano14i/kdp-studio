@@ -61,9 +61,9 @@ it acts. Give it the Legendary line below: an extra move on other players' turns
 ```
 NAME              THREAT  HP   AC  ATTACK           MOVE + LEGENDARY
 Ogre chieftain      4    93  13  +7, 14 dmg (x2)  Legendary: after a hit, shove a foe back
-Young wyvern        5    110 14  +7, 11 dmg + poison  Legendary: fly up, then dive next turn
+Young wyvern        5    110 14  +7, 11 + poison  Legendary: dives from the air next turn
 Cult high priest    4    75  15  +6, spell 18 dmg  Legendary: curse a foe (disadvantage)
-Troll                5   84  15  +7, 12 dmg (x2)  regenerates unless burned; Legendary: bite
+Troll                5   84  15  +7, 12 dmg (x2)  regenerates unless burned; extra bite
 Bandit warlord       4   90  17  +7, 10 dmg (x2)  Legendary: command an ally to strike
 Barrow wraith        5   67  13  +6, 13 necrotic  Legendary: drain, heal for half dealt
 ```

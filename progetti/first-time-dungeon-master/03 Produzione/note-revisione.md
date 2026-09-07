@@ -40,6 +40,19 @@ dall'artefatto (tutti verificati al punto 1). Nessuna modifica forzata dal diseg
 - Il "How to use" del front matter elenca i topic dei capitoli nell'ordine di lettura reale.
 - Nel conteggio delle frasi lunghe, titoli e blockquote sono esclusi (non sono prosa).
 
+## 3b. Verifica interni impaginati (proof pass su TUTTO il PDF, 07/09)
+Controllo automatico su tutte le pagine del PDF 6×9 (non a campione, regia §11):
+- **Testo**: 0 fence markdown, 0 `**`/`##` grezzi, 0 mojibake. PASS.
+- **Geometria template**: TROVATO difetto reale — molte righe monospace superavano
+  la larghezza utile (fino a 92 caratteri vs ~73 a 7.7pt) → sarebbero state tagliate
+  a destra in stampa. CORRETTO: (a) auto-fit della dimensione font per singolo box
+  (6.0-7.7pt, così i box larghi rimpiccioliscono quel tanto che basta), (b) accorciate
+  le 3 righe oltre 90 caratteri (bestiario wyvern/troll, condizione "Unconscious").
+  Ora 0 box in overflow, verificato a occhio su bestiario e Quick-Reference.
+- Controlli automatici ora esistenti: `build_interior.py` (rigenera il PDF) + scansione
+  per-pagina + check geometria box. Riusabili a ogni modifica del manoscritto.
+Pagine reali: **74** (`03 Produzione/interni/foliazione-generata.md`).
+
 ## 4. Viste e NON cambiate (con motivo)
 - **Confini a rischio** (prep↔ritmo, improv↔NPC, session zero↔problemi al tavolo):
   verificati leggendo le sezioni vicine. Nessuna duplicazione: i confini reggono per USO

@@ -19,9 +19,9 @@ Cedric Darkstone (pen name) · inglese · mercato Amazon US · avviato il 06/09/
 | 5 | Outline | fatto | CP3 chiuso ✓ | 07/09 |
 | 6 | DNA stilistico | fatto | CP4 chiuso ✓ | 07/09 |
 | 7 | Campione di scrittura | fatto (approvato) | CP5 chiuso ✓ | 07/09 |
-| 8 | Manoscritto | DEFINITIVO (~19,5k parole, 75 pag) | — | 07/09 |
+| 8 | Manoscritto | DEFINITIVO (~19,5k parole, 74 pag) | — | 07/09 |
 | 9 | Revisione | fatto (script + AI-writing + verbale) | — | 07/09 |
-| 10 | Interni impaginati | DEFINITIVO: PDF 6x9, 75 pag | — | 07/09 |
+| 10 | Interni impaginati | DEFINITIVO: PDF 6x9, 74 pag | — | 07/09 |
 | 11 | Immagini, copertina finita | in corso | — | |
 | 12 | Scheda, A+, social/campagne | CP7 chiuso (social); CP6 A+ da fare | CP6 · CP7 | 06/09 |
 | 13 | Traduzione e mercati | da fare | — | |
@@ -82,7 +82,7 @@ descrizione, A+). Flag prezzo: $13.99 è alto per 75 pag → valutare $9.99-10.9
   avatar → concept). Non è un blocco, ma va sanato prima del marketing, altrimenti
   ogni contenuto social nasce senza un "per chi" e un "contro chi".
 - (07/09) Discrepanza piano/artefatto (regia §10), RISOLTA dai numeri reali:
-  l'impaginazione dà **75 pagine reali** 6×9 (~19,5k parole, 2 avventure, bestiario,
+  l'impaginazione dà **74 pagine reali** 6×9 (~19,5k parole, 2 avventure, bestiario,
   tabelle, 13 capitoli). Le mie stime intermedie (~110-140) erano troppo ottimiste;
   ha ragione l'artefatto. Ancora sotto i concorrenti (146-169). Decisione autore
   aperta: raddoppiare i contenuti per ~140 (altre 2 avventure + capitoli + tabelle

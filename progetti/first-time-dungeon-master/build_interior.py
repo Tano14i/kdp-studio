@@ -46,8 +46,13 @@ author_style = ParagraphStyle("author", fontName="Serif", fontSize=13, leading=1
 quote = ParagraphStyle("quote", fontName="Serif-Italic", fontSize=9.6, leading=13.6,
     leftIndent=16, rightIndent=10, spaceBefore=6, spaceAfter=8, borderColor="#888888",
     borderWidth=0, textColor="#222222")
-mono = ParagraphStyle("mono", fontName="Mono", fontSize=7.7, leading=9.4,
-    leftIndent=6, spaceBefore=6, spaceAfter=8, backColor="#f2f2f2", borderPadding=6)
+MONO_ADV = 0.602  # DejaVuSansMono advance width per em
+def mono_style(buf, avail_pt):
+    maxw = max((len(l) for l in buf), default=1)
+    fit = avail_pt / (maxw * MONO_ADV) if maxw else 7.7
+    size = max(6.0, min(7.7, fit))
+    return ParagraphStyle("mono", fontName="Mono", fontSize=size, leading=size*1.24,
+        leftIndent=2, spaceBefore=6, spaceAfter=8, backColor="#f2f2f2", borderPadding=5)
 
 def esc(s):
     return s.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;")
@@ -73,7 +78,8 @@ def flow_for(md, is_front):
             while i<len(lines) and not lines[i].startswith("```"):
                 buf.append(mono_clean(lines[i])); i+=1
             i+=1
-            out.append(KeepTogether(Preformatted("\n".join(buf), mono)))
+            avail = (PW-MARGIN_OUT-MARGIN_IN) - 2*5 - 2  # frame - borderPadding - leftIndent
+            out.append(KeepTogether(Preformatted("\n".join(buf), mono_style(buf, avail))))
             continue
         s=ln.strip()
         if s=="---": flush(); i+=1; continue
