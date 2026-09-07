@@ -16,9 +16,9 @@ Cedric Darkstone (pen name) · inglese · mercato Amazon US · avviato il 06/09/
 | 2 | Avatar cliente | validato in parte su recensioni reali | — | 07/09 |
 | 3 | Concept e positioning | fatto | CP1 chiuso ✓ | 07/09 |
 | 4 | Titolo, sottotitolo, copertina | fatto ($13.99, badge sì) | CP2 chiuso ✓ | 07/09 |
-| 5 | Outline | CP3 aperto (bozza pronta) | CP3 | |
-| 6 | DNA stilistico | da fare | CP4 | |
-| 7 | Campione di scrittura | da fare | CP5 | |
+| 5 | Outline | fatto | CP3 chiuso ✓ | 07/09 |
+| 6 | DNA stilistico | in corso | CP4 | |
+| 7 | Campione di scrittura | in corso | CP5 | |
 | 8 | Manoscritto | da fare | — | |
 | 9 | Revisione | da fare | — | |
 | 10 | Interni impaginati | da fare | — | |
@@ -40,9 +40,10 @@ prezzo $7.99-11.99 (il piano €13,90 è alto), recensioni presto.
 **CP1 + CP2 chiusi (07/09):** concept = sistema guida + template; copertina
 confermata, prezzo $13.99, badge template sì (`decisioni/01-concept.md`,
 `decisioni/02-copertina.md`).
-**Aperto adesso:** fase 5 — **Outline (CP3)**, in corso. Da costruire attorno ai
-template: ogni capitolo termina con la scheda compilabile che insegna a riempire;
-il cap. 1 mette subito il lettore nella prima sessione (no intro su "cos'è il d20").
+**CP3 chiuso (07/09):** outline approvato (`decisioni/03-outline.md`).
+**Aperto adesso:** fasi 6-7 — **DNA stilistico (CP4)** e **capitolo campione (CP5)**.
+Voce attesa: seconda persona, imperativo, densa, "no rambling", orientata all'azione;
+il campione naturale è il Cap. 1 (mette il lettore nella prima sessione).
 
 **CP7 chiuso** (`decisioni/07-marketing.md`): handle `@CedricDkstn`, lead magnet
 "1-Hour Session Prep Checklist", 3 Reel in produzione. Prossimo: creare la checklist
