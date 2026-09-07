@@ -21,7 +21,8 @@ decide il titolo vero, e questa cartella non si rinomina mai.
 | # | Fase | Stato | Checkpoint | Chiuso il |
 |---|------|-------|-----------|-----------|
 | 0 | Cartella e convenzioni | fatto | — | 06/09 |
-| 1 | Nicchia e concorrenti | fatto — **NON SI FA** | — | 06/09 |
+| 1 | Nicchia e concorrenti | fatto — **NON SI FA** sul tema | — | 06/09 |
+| 1b | Angolo (`ricerca-inversa`) | **da fare** | verdetto | |
 | 2 | Avatar cliente | da fare | — | |
 | 3 | Concept e positioning | da fare | CP1 | |
 | 4 | Titolo, sottotitolo, copertina | da fare | CP2 | |
@@ -78,12 +79,16 @@ nuova: questa resta com'e', con dentro il motivo dello stop.
 
 1. ~~Cartella e convenzioni~~ — fatto il 06/09
 2. ~~Nicchia e concorrenti~~ — fatto il 06/09, verdetto **NON SI FA**
-3. **Scegliere come procurarsi i dati dei concorrenti.** Non e' piu' una
-   domanda senza risposta: due strade sono pronte e descritte in
-   `_profili/note-mercato.md` §5-bis — il backend su Railway (vivo, con
-   APIFY_TOKEN configurato; serve prima il merge della PR #2 e il redeploy,
-   poi la chiave) oppure la raccolta nel browser (`scheda-raccolta.md` +
-   `analizza_concorrenti.py`, che si puo' fare adesso). Manca solo la scelta.
+3. **Passo 1b — `ricerca-inversa`, non ancora eseguito.** Questo progetto e'
+   stato chiuso il 06/09 con la regia di allora, per cui un NON SI FA sul tema
+   fermava tutto. La regia versionata nel repo (PR #12, stessa sera) dice
+   un'altra cosa: il no riguarda il *tema*, e prima di chiudere si prova a
+   piegarlo — pubblico, momento, uso, angolo. Il progetto si ferma davvero
+   solo se non regge nessuna delle quattro pieghe. Quindi lo stato onesto non
+   e' «chiuso» ma **«fermo al 1b»**. I dati dei concorrenti, quando serviranno
+   per la verifica dell'angolo, si prendono da Railway: `competition-map` con
+   `raw:true` e `amazon-reviews` senza filtro funzionano (vedi
+   `_profili/note-mercato.md` §5-bis).
 4. **Poi: su quale nicchia spenderla.** Non su queste due, chiuse con NON SI
    FA. La classifica dei temi in crescita e' in `_profili/note-mercato.md` §2.
 

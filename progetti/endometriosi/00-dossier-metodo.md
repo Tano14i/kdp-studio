@@ -58,6 +58,14 @@ per quanto allettante sia: e' la regola che oggi ha risparmiato due libri.
 
 ## Da non dimenticare
 
+- **`ricerca-inversa` (passo 1b della regia nuova) è stata scritta su questo
+  progetto**: la riga «sette libri su nove parlano di alimentazione, il vuoto
+  è l'angolo» è il suo caso di scuola. Se la fase 1 chiude SI FA si passa
+  all'avatar; se chiude NON SI FA si passa al 1b, non alla chiusura. Le quattro
+  pieghe da provare sono già indicate lì: pubblico (partner, genitori, datori
+  di lavoro), momento (prima della diagnosi), uso (da portare in visita),
+  angolo (tutto ciò che non è alimentazione).
+
 - **Sette libri su nove parlano di alimentazione.** Il vuoto, se c'e', non e'
   il tema ma l'angolo: diagnosi, lavoro, coppia, dolore quotidiano fuori dai
   pasti.

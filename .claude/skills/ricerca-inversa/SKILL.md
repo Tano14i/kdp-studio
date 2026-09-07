@@ -158,12 +158,30 @@ Tre domande, con i numeri:
    non compra libri è un vuoto che resta vuoto.
 3. Il pubblico dell'angolo è abbastanza grande da reggere un titolo?
 
-**Da questo contenitore Amazon non è raggiungibile.** Il proxy blocca
-`amazon.it` (403 sul CONNECT, verificato il 06/09/2026, anche su
-`completion.amazon.it`), e prima ancora l'IP di datacenter prendeva 503 —
-`scheda-raccolta.md` §1. La verifica si fa dal browser dell'autore, con quella
-scheda. La strada automatica è chiusa e documentata come chiusa: non
-ritentarla.
+**Da questo contenitore Amazon non è raggiungibile direttamente** — 503 o 403
+a seconda del giorno, verificato due volte il 06/09/2026. Ma **la verifica
+dell'angolo si fa comunque in automatico**, dal backend su Railway che passa
+da Apify (`_profili/note-mercato.md` §5-bis, misurato in produzione la sera
+del 06/09):
+
+- `POST /api/competition-map {"niche":"<angolo>","marketplace":"it","raw":true}`
+  → i libri esistenti su quella ricerca, con ASIN, prezzo, recensioni e voto,
+  filtrati per pertinenza. Risponde in ~12 secondi e non usa Claude, quindi
+  non dipende dal credito Anthropic. È la risposta alla domanda 1.
+- `POST /api/amazon-reviews {"asins":[...],"marketplace":"it"}` → le
+  recensioni **non filtrate** di quegli ASIN, con data. Bastano per la curva
+  di declino e per un primo assaggio delle lamentele.
+
+Quello che resta **solo dal browser** sono le recensioni **filtrate a 1-3
+stelle**: Amazon le mostra solo a chi è loggato, l'actor gratuito restituisce
+zero con qualunque filtro, e quello che dichiara di filtrare va noleggiato
+(`progetti/endometriosi/00-dossier-metodo.md` §6). Per quelle,
+`scheda-raccolta.md` parte B.
+
+Una versione precedente di questa sezione diceva «la strada automatica è
+chiusa: non ritentarla». Era vero per il contenitore e falso per Railway, ed
+è stato corretto con la misura accanto: una regola scritta per un errore va
+riscritta quando l'errore smette di esserlo.
 
 ## 5. Dove questa skill sbaglia
 
