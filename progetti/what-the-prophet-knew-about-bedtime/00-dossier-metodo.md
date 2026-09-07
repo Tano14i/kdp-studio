@@ -39,7 +39,7 @@ i file.
 | 11 | Immagini, copertina finita | **pubblicata** | — | |
 | 12 | Scheda, A+, campagne | **viva ma monca** — 1 categoria su 3, niente A+ | CP7 | |
 | 13 | Traduzione e mercati | da fare | CP6 | |
-| 14 | Promozione social | **da fare, ed è l'unica leva vera** | — | |
+| 14 | Promozione social | **in corso** — identità, materia prima e mese 1 scritti | — | |
 
 Le fasi 3, 5 e 6 sono **eseguite ma non scritte**, lo stato che regia §9 chiama
 il più pericoloso: il libro ha evidentemente un concept, un indice e una voce
@@ -53,7 +53,20 @@ pubblicazione invece che dopo.
 
 ## 2. Aperto adesso
 
-**Un numero solo, e sta su KDP in trenta secondi: quale opzione di stampa a
+**Il cancello del giorno 0 sul piano social, ed è l'unica cosa che blocca la
+partenza.** Gli account esistono già: venti minuti per guardare se il pubblico
+che c'è è quello giusto, perché un pubblico fuori nicchia peggiora la
+distribuzione invece di aiutarla. La decisione e le tre uscite possibili
+stanno in `05 Social/piano-mese-01.md` §4. Servono anche gli **handle**, che
+qui non sono noti.
+
+**E poi la mezz'ora a più alto rendimento del progetto: le recensioni negative
+dei quattro concorrenti più vicini.** Tutti gli hook del mese 1 sono scritti
+da noi, non presi dai lettori — è la causa numero uno di un mese piatto, ed è
+già previsto come esito. Il protocollo sta in `05 Social/materia-prima.md` §2.
+Sono anche quello che accende il format F2, oggi spento.
+
+**Un numero, e sta su KDP in trenta secondi: quale opzione di stampa a
 colori è impostata — premium o standard.**
 
 Il libro sta a **$19,99** su uno scaffale che sta fra $10,99 e $15,99
@@ -76,6 +89,20 @@ Non si tira a indovinare: si legge, e si scrive in `03 Scheda/scheda-viva.md`
 **Poi, e senza aspettare niente, le tre cose gratis della scheda:** le due
 categorie mancanti, i contenuti A+, e le 7 parole chiave (che dalla scheda non
 si vedono — vanno lette su KDP). Vedi `03 Scheda/scheda-viva.md` §4.
+
+### Interruttori social, fissati il 07/09
+
+| Interruttore | Valore |
+|---|---|
+| `lingua` | **inglese** |
+| `volto` | **no** |
+| `voce` | **nessuna** |
+| `partenza` | **esistente**, da confermare al cancello del giorno 0 |
+
+**Format attivi: F1** (video sottolineare, adattato all'albo illustrato — la
+pagina che si gira, il suono vero, testo progressivo) **e F3** (carosello
+informativo empatico). **F2 è spento** finché non ci sono recensioni da cui
+prendere la slide 1: senza, sarebbe un F3 corto e peggiore.
 
 ## 3. Cosa si può ancora cambiare, e a che prezzo
 
@@ -121,9 +148,12 @@ prima.
    blocco A+ rende senza costare un ticket
 8. **Le 7 parole chiave di backend**: leggerle su KDP e scriverle in
    `03 Scheda/scheda-viva.md` §4
-9. **Fase 14, `promozione-social`.** Settanta giorni e zero vendite dicono che
-   Amazon da solo non porta nessuno: il traffico deve arrivare da fuori. È
-   **la leva principale**, non la coda del progetto
+9. ~~Fase 14, identità · materia prima · format · piano del mese 1~~ — scritti
+   il 07/09: `_profili/kara-clem/identita.md`, `05 Social/materia-prima.md`,
+   `05 Social/piano-mese-01.md`. **Restano da fare, in quest'ordine:** il
+   cancello del giorno 0 (§2), gli handle, la risposta alla domanda
+   sull'identità del pen name (`identita.md` §7), la verifica dei riferimenti
+   degli hadith su sunnah.com (`materia-prima.md` §4), poi si pubblica
 10. **Fase 1 all'indietro** — §7. Ora ha un punto di partenza vero: i nove
     concorrenti con i prezzi in `03 Scheda/scheda-viva.md` §3
 11. **Le prime recensioni.** Zero recensioni su un libro devozionale per
