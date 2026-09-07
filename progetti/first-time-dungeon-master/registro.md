@@ -19,9 +19,9 @@ Cedric Darkstone (pen name) · inglese · mercato Amazon US · avviato il 06/09/
 | 5 | Outline | fatto | CP3 chiuso ✓ | 07/09 |
 | 6 | DNA stilistico | fatto | CP4 chiuso ✓ | 07/09 |
 | 7 | Campione di scrittura | fatto (approvato) | CP5 chiuso ✓ | 07/09 |
-| 8 | Manoscritto | bozza espansa ~19,5k parole (~110-125 pag stimate) | — | 07/09 |
+| 8 | Manoscritto | DEFINITIVO (~19,5k parole, 75 pag) | — | 07/09 |
 | 9 | Revisione | fatto (script + AI-writing + verbale) | — | 07/09 |
-| 10 | Interni impaginati | PDF 6x9 fatto: 75 pag REALI | — | 07/09 |
+| 10 | Interni impaginati | DEFINITIVO: PDF 6x9, 75 pag | — | 07/09 |
 | 11 | Immagini, copertina finita | in corso | — | |
 | 12 | Scheda, A+, social/campagne | CP7 chiuso (social); CP6 A+ da fare | CP6 · CP7 | 06/09 |
 | 13 | Traduzione e mercati | da fare | — | |
@@ -39,12 +39,12 @@ concept (`decisioni/01-concept.md`), copertina + prezzo $13.99
 **Aperto adesso:** fase 8 — **Manoscritto**, in scrittura in
 `03 Produzione/manoscritto/`, un file per capitolo, sotto outline + DNA. Cap. 2
 già scritto e approvato come campione. Regole DNA §10 attive.
-**Revisione (fase 9) fatta (07/09):** controlli automatici su tutto (PASS),
-pass avoid-ai-writing, verbale in `03 Produzione/note-revisione.md`, 3 regole nuove
-nel DNA §10. Manoscritto pronto per l'impaginazione.
-Prossimo: interni impaginati / PDF stampa (fase 10) — è lì che esce il numero pagine
-reale (target 140; se corto, terza avventura). Poi copertina finita/wraparound (11),
-scheda + A+ (CP6).
+**Manoscritto + interni DEFINITIVI (07/09):** l'autore ha scelto "lascia così" →
+75 pagine, niente espansione (`decisioni/05-lunghezza-finale.md`). PDF interni in
+`03 Produzione/interni/`.
+**Aperto adesso:** fase 11 — copertina finita/wraparound (ora ho il conteggio pagine:
+dorso ~0.17", niente testo sul dorso sotto 100 pag) e CP6 — scheda KDP (keyword,
+descrizione, A+). Flag prezzo: $13.99 è alto per 75 pag → valutare $9.99-10.99.
 
 ## 3. Cosa manca, in ordine
 - [ ] Verdetto di nicchia con numeri (fase 1) — *saltato*
