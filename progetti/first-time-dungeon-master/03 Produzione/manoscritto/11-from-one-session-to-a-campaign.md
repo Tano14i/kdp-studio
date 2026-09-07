@@ -84,6 +84,8 @@ NEXT-SESSION PREP (fill before you play again)
    One thread to nudge if they stall: ______________
 ```
 
-That is the whole job, start to finish. You can prep a session in an hour, run the table
-with confidence, and turn one night into a campaign. Your first session starts now. Go
-roll some dice.
+That is the core job, start to finish. You can prep a session in an hour, run the table
+with confidence, and turn one night into a campaign. The two chapters that follow are
+extras for when you are ready: running your game online, and handing out treasure without
+breaking it. After that, the appendices hand you two finished adventures and the tables to
+build your own. Next you'll take the whole system online.

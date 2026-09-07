@@ -28,10 +28,13 @@ job. This book teaches that job, and only that job. It does not re-explain what 
 is or how a saving throw works. You have that already. If you don't, one read of the
 starter rules covers it, and then you come back here.
 
-Every chapter answers one problem a first-time DM has, in the order you hit
-it: prep, the first session, rulings, improvisation, NPCs, encounters, locations,
-pacing, table trouble, and what comes after session one. Read it front to back once.
-After that, treat it as a toolbox. Open the chapter for the problem in front of you.
+Every chapter answers one problem a first-time DM has, in the order you hit it: your
+first session, fast prep, session zero, rulings, improvisation, NPCs, encounters,
+locations, pacing, table trouble, and turning one night into a campaign. Two later
+chapters cover playing online and handing out treasure, and the appendices give you two
+finished adventures, a starter bestiary, and tables to build your own. Read it front to
+back once. After that, treat it as a toolbox. Open the chapter for the problem in front
+of you.
 
 The spine of the book is the templates. Each chapter ends with a fillable sheet that
 turns what you just read into something you can use at the table tonight. Copy them,

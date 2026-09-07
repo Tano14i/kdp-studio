@@ -102,3 +102,6 @@ Proposte, in inglese, con motivo:
 | 07/09 | **Etichette di step con punto**: "Step N. Titolo", non "Step N — Titolo". | Stesso pass |
 | 07/09 | **Max una triade decorativa per capitolo**: le altre liste-di-tre solo se mappano su elementi reali del metodo (3 beat, 3 quirk, 3 voci safety-net). | Stesso pass (rule of three) |
 | 07/09 | Niente "actually/really" come rafforzativi vuoti; togli e basta. | Stesso pass |
+| 07/09 | La chiusura di un capitolo fa da ponte al capitolo SEGUENTE; solo l'ultimo capitolo chiude il libro. | Revisione (cap. 11 chiudeva il libro dopo l'espansione) |
+| 07/09 | Il "How to use" del front matter elenca i capitoli nell'ordine di lettura reale. | Revisione (ordine sfasato) |
+| 07/09 | Conteggio frasi lunghe: titoli e blockquote esclusi (non sono prosa). | Revisione (falsi positivi del divisore) |
