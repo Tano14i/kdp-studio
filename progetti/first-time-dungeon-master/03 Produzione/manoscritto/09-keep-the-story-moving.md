@@ -44,9 +44,18 @@ scattered party back into one story without you forcing them onto a path.
 
 A scene that ends where it began is a scene that saps momentum. Aim for each one to change
 something: the players learn a fact, gain or lose an ally, or the situation gets worse. If
-you notice a scene is just the players confirming what they already knew, cut to the next
+you notice a scene is only the players confirming what they already knew, cut to the next
 thing. You are allowed to say "an hour passes, and then" and skip the boring part. New DMs
 narrate every step. Confident DMs cut to where the choices are.
+
+### At a real table
+The party stalls, arguing in the market about whether the disappearances are worth their
+time. Ari does not wait. He starts the clock he prepped: a child screams two streets
+over, and by the time they arrive, another person is gone. The debate is over. Earlier
+Ari made sure the key fact, that the cult meets at midnight, had three paths to it: a
+witness, a dropped token, and a pattern in the dates. The party found the token, missed
+the other two, and felt like detectives. The story moved, and they never saw the rails,
+because there were three of them.
 
 > **At the table:** end each session on a question, not a rest. Stop the moment a door
 > creaks open, a letter arrives, or a stranger says their name. A cliffhanger does two

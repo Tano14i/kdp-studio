@@ -54,6 +54,16 @@ swerve: a way to make a ruling on the spot, a table to invent an NPC in ten seco
 method to build a fight fast. You are not walking in unarmed. You are walking in with a
 kit, and you are about to learn to use it.
 
+### At a real table
+Taka is running her first session for four friends. She skips the world map and fills
+the five slots. The players start in a mill where the miller's daughter has just been
+dragged into the river by something with too many arms. Tonight's goal is to get her
+back. Her three NPCs are a shaking miller, a smug town reeve, and a hedge-witch who
+knows the river. One danger: the thing in the water. When a player says "I jump in after
+her," Taka does not reach for a rule. She says yes, sets the stakes, and calls for a
+Strength check. Twenty minutes in, nobody has noticed she has no map, because the trouble
+was on the first line and the table has been chasing it ever since.
+
 > **At the table:** when your mind goes blank, ask the players a question. "What does
 > your character do?" hands the moment back to them and buys you the three seconds you
 > need to think. A DM who asks good questions looks more prepared than one who talks

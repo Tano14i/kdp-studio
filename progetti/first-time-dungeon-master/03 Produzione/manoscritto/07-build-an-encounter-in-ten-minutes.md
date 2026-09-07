@@ -48,6 +48,15 @@ most fights a way out: a door to flee through, a foe who takes prisoners, a chan
 surrender. Save the no-escape fight for a moment you have built toward, and it will land
 much harder for being rare.
 
+### At a real table
+Four players at level three walk into an ambush. Reese sets a standard budget of four
+points: one CR-2 bandit captain and four weak thugs, spread so the captain is the real
+threat. He turns one danger lever, a rain-slick bridge both sides can shove enemies off.
+The fight swings when a thug goes over the rail and the captain, seeing it turn, tries to
+flee. Reese lets him, because he built an exit. Nobody dies, everyone burned resources,
+and the captain escapes to become next month's problem. A fair fight, built in ten
+minutes, that fed the campaign.
+
 > **At the table:** watch the party's resources, not their hit points, to judge a fight.
 > If they are winning but burning spells and potions fast, the fight is doing its job.
 > Attrition across a session is scarier and fairer than one deadly encounter that can

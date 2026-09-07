@@ -16,7 +16,7 @@ things, delivered in the moment. This chapter makes each of them fast.
 Every NPC on stage should want something in the scene, even something small. The
 merchant wants to close before dark. The guard wants to avoid trouble on his watch. The
 want gives you a way to play the NPC without a script, because you always know what they
-are trying to get. When a player talks to them, you just have the NPC pursue the want,
+are trying to get. When a player talks to them, you have the NPC pursue the want,
 and the scene writes itself. An NPC with no want stands there like furniture and the
 conversation dies.
 
@@ -44,6 +44,14 @@ into any town: a fixer, a healer, a bully, a source of rumors. When the players 
 face you did not plan, you pull one from the stable, rename it, and adjust one trait. The
 missing-child plot in this town and the smuggling plot in the next can both use "the
 tired guard who wants an easy shift," and no one will ever know it was the same sketch.
+
+### At a real table
+The party needs a smith. Lin does not narrate a biography. She gives him a want (close
+early, his kid is sick), a trait (wipes his hands on the same rag over and over), and one
+dial (clipped, tired sentences). "Make it quick. What do you need." A player mentions the
+sick child they overheard about, and Lin has the smith soften, a little. Three sessions
+later the players still call him "the rag guy" and go out of their way to help him. He
+took one line to build and he outlived half the plot Lin actually planned.
 
 > **At the table:** give the NPC an opinion about the players before they speak. A
 > stranger who already likes or distrusts the party turns a flat "how can I help you"

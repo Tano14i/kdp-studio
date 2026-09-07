@@ -64,6 +64,15 @@ get stuck. This is the note you'll reach for during play.
 
 Add it up: fifteen, five, ten, fifteen, ten, five. One hour. Stop when it's done.
 
+### At a real table
+It is 8:40 on a Tuesday and Marcus has twenty minutes before bed. He sets a timer and
+runs the six steps. Strong open: bandits have strung a rope across the forest road and
+are robbing a merchant when the party rides up. The want: the bandit chief needs coin to
+pay off a worse enemy. Then three beats, one fight roughed in, five names, a safety-net
+note. The timer beeps at nine. He closes the notebook with a session ready and his
+evening back. On Saturday the players ignore the merchant entirely and chase the bandits
+home, and it does not matter, because Marcus prepped a situation, not a script.
+
 > **At the table:** keep the safety-net note (Step 6) on top of your pile. When the
 > game stalls and your mind goes blank, look there first. It's the fastest way back
 > into the story.

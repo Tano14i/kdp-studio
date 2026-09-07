@@ -43,7 +43,15 @@ You will get better session by session, and the fastest way is to keep the same 
 for yourself that you keep for the story. After each game, write one thing that worked and
 one thing you would change. Not a review, one line each. Over ten sessions those lines
 become your own style guide, earned at the table instead of read in a book. The confident DM
-you want to be is just you, a dozen sessions from now, having paid attention.
+you want to be is only you, a dozen sessions from now, having paid attention.
+
+### At a real table
+After session one, Bel spends sixty seconds on a recap: the party freed a prisoner,
+promised to warn the next village, and left a bandit alive. Before the next game she runs
+the one-hour prep on the village they are heading to, and she rewards their mercy: the
+spared bandit turns up as a nervous informant. Ten sessions later, her "plan" is mostly
+callbacks to things the players did, stitched together one recap at a time. She never
+mapped a year of story. She only kept the note, and the campaign grew itself.
 
 > **At the table:** keep a running "party legend" list where everyone can see it: names
 > they've met, places they've been, promises they've made. It saves you from contradicting

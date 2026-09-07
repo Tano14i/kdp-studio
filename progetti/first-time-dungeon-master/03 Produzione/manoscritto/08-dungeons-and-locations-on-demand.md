@@ -13,7 +13,7 @@ did not plan.
 
 ### The five-room shape
 
-A satisfying location has a shape, not just rooms in a row. This one has five beats, and
+A satisfying location has a shape, not only rooms in a row. This one has five beats, and
 they can bend around whatever map you sketch.
 
 **The entrance, with a guardian.** The way in should cost something: a lock, a lookout, a
@@ -47,6 +47,15 @@ You do not need a grid map for most locations. A rough sketch of five connected 
 or even a list of five rooms, runs fine as long as you can tell the players what they see
 and what their choices are. Draw a proper map only when the exact geometry matters, like a
 fight where positioning is the whole point.
+
+### At a real table
+"We go into the old lighthouse," a player says, and Noor has a name and nothing else. She
+fills the five beats live. Entrance: a rusted door chained from inside, so someone is
+here. Puzzle: a room of mirrors that must be turned toward the sea. Setback: the stairs
+collapse behind them. Climax: a smuggler-mage finishing a signal-spell at the top. Reward
+and twist: the treasure is a ledger naming a councilwoman the party trusts. Noor drew
+nothing but a stack of five boxes on scrap paper, and the players will talk about the
+lighthouse for weeks.
 
 > **At the table:** describe every new room in three quick strokes: what you see, what you
 > hear or smell, and the one thing that invites action. "Cold water to your ankles, a drip

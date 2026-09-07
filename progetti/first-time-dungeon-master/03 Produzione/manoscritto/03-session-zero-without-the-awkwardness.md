@@ -3,7 +3,7 @@
 Half of the problems that wreck a campaign are set on the first night, before a single
 die is rolled. One player wants a grim war story. Another wants to make jokes and rob
 shopkeepers. Someone assumed there would be no killing of good characters, and nobody
-checked. None of them are wrong. They just never said what they wanted out loud.
+checked. None of them are wrong. They never said what they wanted out loud.
 
 A session zero (the meeting before you play, where the table agrees on what the game
 is) fixes this in one sitting. It is not a rules lecture and it should not feel like a
@@ -50,6 +50,15 @@ Close by pointing at the hooks you collected. "Kesh, your character wants to fin
 brother who vanished. That's going to matter early." You are telling each player their
 choices were heard, and you are quietly promising a game built around them. That promise
 is why they come back for session two.
+
+### At a real table
+Before his first campaign, Devi spends forty minutes on a session zero. He offers a
+frame: a mining town where the deep tunnels have gone quiet. He asks each player the
+three questions and learns one wants revenge, one wants to get rich and leave, one is
+running from family. He asks about table edges, and a player quietly says no torture,
+thank you. Devi writes it down without a word. Two characters turn out to be estranged
+cousins. By the time dice come out, the party has a reason to be together and Devi has
+four hooks he will pull for months. The campaign is built before it starts.
 
 > **At the table:** keep your session-zero notes in front of you during play, not filed
 > away. When the game sags, pull a player's stated fear or want into the scene. Nothing

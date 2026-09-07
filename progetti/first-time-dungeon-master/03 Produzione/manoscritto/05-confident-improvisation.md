@@ -98,6 +98,15 @@ TABLE D — INSTANT NAMES (grab one, cross it off)
  Rough:   Grud · Nix · Halla · Bricktop · Vane · Sump
 ```
 
+### At a real table
+The party strolls into a temple Sam never wrote and asks the priest about a stolen
+relic. Sam has no priest. He rolls on Table A and gets "a devout believer sure of a
+sign," grabs the name Ysolde, and gives her a want: she thinks the theft is a test from
+her god. When the players press for details, Sam rolls Table B, gets "true but
+incomplete," and has Ysolde send them to the wrong suspect in complete good faith. The
+scene crackles, the players argue about whether to trust her, and Sam writes "Ysolde" on
+his keeper list. She was born from two dice and is now a recurring character.
+
 > **At the table:** repeat the player's idea back before you answer it. "You want to
 > bluff the guard into thinking you're his new captain." Saying it out loud buys three
 > seconds, confirms you heard right, and often the table fills the silence with details

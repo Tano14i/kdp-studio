@@ -51,6 +51,15 @@ the cleverness and build the next challenge harder. A table learns fast whether 
 says yes to good ideas or looks for reasons to say no, and that lesson decides how bold
 your players will be for the rest of the campaign.
 
+### At a real table
+A player wants to tip a bookshelf onto a charging cultist. There is no bookshelf-tipping
+rule. Priya runs the four steps in her head. The goal is to stop the charge, Strength
+fits, and she says the stakes out loud. "Beat a 15 and he's pinned and prone. Miss and
+you're off balance, and he gets there first." The player rolls a 17, the shelf comes
+down, the table cheers. Later a rules-focused player mentions the official way to handle
+improvised attacks. "Good catch," Priya says. "Real rule from here. This one stands."
+Nobody could tell she invented the whole thing on the spot.
+
 > **At the table:** when in doubt, make a ruling and add "we'll confirm after the
 > session." It keeps the game moving now and gives you a clean way to look up the real
 > rule later, without a five-minute stall while everyone waits on you.

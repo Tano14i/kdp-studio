@@ -50,6 +50,15 @@ after. Name what you saw without taking a side, and ask what would make the game
 them. Most table conflict shrinks fast once someone with authority says out loud that they
 noticed and they care.
 
+### At a real table
+Two sessions in, Jonah notices Priya has not spoken in forty minutes while two louder
+players run every scene. He does not scold anyone. He starts going around the table by
+name. "Before the guard answers, Priya, what's your character watching for?" She lights
+up and spots the ambush the loud players walked past. Later, privately, Jonah asks a
+checked-out player what they want more of. "Honestly, more fighting." The next session
+opens with a brawl in the first ten minutes, and the player is back. Both problems fixed
+with small nudges, no confrontation.
+
 > **At the table:** the strongest tool you have is a check-in. Every few sessions, spend
 > two minutes asking "what do you want more of, and less of?" It surfaces small
 > frustrations before they grow into someone quietly quitting, and it tells the group you
