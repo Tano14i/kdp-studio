@@ -1,7 +1,8 @@
 # Dossier di metodo — what-the-prophet-knew-about-bedtime
 
 pen name **Kara Clem** · inglese (Amazon.com) · aperto il 07/09/2026
-**Libro già pubblicato** — corretto il 07/09, vedi §6
+**Pubblicato il 29/06/2026 · ASIN `B0H6ZCL6QC` · $19,99 · 67 pagine**
+**70 giorni online, zero vendite, zero recensioni, nessuna posizione**
 
 Terzo progetto del repo che entra dalla fine, e il secondo che entra a libro
 già online, come `smetti-di-chiedere-il-permesso`.
@@ -28,7 +29,7 @@ i file.
 | 1b | Angolo | **mai fatta** | — | |
 | 2 | Avatar cliente | **mai fatta** | — | |
 | 3 | Concept e positioning | **eseguito ma non scritto** | CP1 | |
-| 4 | Titolo, sottotitolo, copertina | **testo deciso — ma vedi §2** | CP2 | 07/09 |
+| 4 | Titolo, sottotitolo, copertina | **chiuso: vince quello online** | CP2 | 07/09 |
 | 5 | Outline | **eseguito ma non scritto** | CP3 | |
 | 6 | DNA stilistico | **eseguito ma non scritto** | CP4 | |
 | 7 | Campione di scrittura | saltato | CP5 | |
@@ -36,7 +37,7 @@ i file.
 | 9 | Revisione | **mai fatta** | — | |
 | 10 | Interni impaginati | **pubblicati, con quattro difetti aperti** | — | |
 | 11 | Immagini, copertina finita | **pubblicata** | — | |
-| 12 | Scheda, A+, campagne | **pubblicata — contenuto da verificare** | CP7 | |
+| 12 | Scheda, A+, campagne | **viva ma monca** — 1 categoria su 3, niente A+ | CP7 | |
 | 13 | Traduzione e mercati | da fare | CP6 | |
 | 14 | Promozione social | **da fare, ed è l'unica leva vera** | — | |
 
@@ -52,24 +53,29 @@ pubblicazione invece che dopo.
 
 ## 2. Aperto adesso
 
-**Non so cosa c'è davvero sulla scheda viva, e senza saperlo non si tocca
-niente.** Amazon non è raggiungibile da questo contenitore (verificato il
-07/09: `000` su `amazon.com` e `amazon.it`), quindi la scheda la può leggere
-solo l'autore.
+**Un numero solo, e sta su KDP in trenta secondi: quale opzione di stampa a
+colori è impostata — premium o standard.**
 
-Servono cinque cose, e sono tutte guardabili in dieci minuti:
+Il libro sta a **$19,99** su uno scaffale che sta fra $10,99 e $15,99
+(`03 Scheda/scheda-viva.md` §3). Ma il prezzo potrebbe non essere una scelta
+sbagliata: potrebbe essere un vincolo. Il colore premium costa **per pagina**,
+e su 67 pagine obbliga a un prezzo alto; il colore standard sotto le ~108
+pagine è un costo fisso basso, e lascia scendere a $13,99 con margine.
 
-1. **ASIN e link.** È la destinazione di ogni cosa che verrà dopo, e la chiave
-   per il targeting delle campagne.
-2. **Quali formati sono online** — ebook, paperback, hardcover, o più d'uno.
-   Cambia cosa si può correggere e come: il paperback ha il dorso, l'ebook no.
-3. **Quale sottotitolo è andato online.** Se è già *The Forgotten Sunnah…*
-   allora il checkpoint 2 è chiuso e non c'è niente da fare. Se è uno degli
-   altri due, non è una modifica: è un ticket all'assistenza (§3).
-4. **Quale copertina è andata online**, fra quelle su Drive.
-5. **La foliazione** dell'interno pubblicato.
+Nella pagina di prezzo su KDP c'è il *printing cost* calcolato sul libro vero.
+Quel numero decide due strade opposte:
 
-Finché non ci sono, ogni correzione è a occhi chiusi.
+- **standard** → si abbassa il prezzo oggi, gratis, senza revisione
+- **premium** → il libro è strutturalmente fuori prezzo, e cambiare opzione
+  vuol dire ricaricare l'interno: allora conviene farlo insieme a tutto il
+  resto, in un solo caricamento
+
+Non si tira a indovinare: si legge, e si scrive in `03 Scheda/scheda-viva.md`
+§3.
+
+**Poi, e senza aspettare niente, le tre cose gratis della scheda:** le due
+categorie mancanti, i contenuti A+, e le 7 parole chiave (che dalla scheda non
+si vedono — vanno lette su KDP). Vedi `03 Scheda/scheda-viva.md` §4.
 
 ## 3. Cosa si può ancora cambiare, e a che prezzo
 
@@ -100,27 +106,38 @@ prima.
 
 ## 4. Cosa manca, in ordine
 
-1. ~~Cartella e dossier~~ — fatti il 07/09
+1. ~~Cartella e dossier~~ — 07/09
 2. ~~Specifiche estratte dal prodotto~~ — `01 Prodotto/spec-dal-pdf.md`
-3. ~~CP2, il testo del sottotitolo~~ — `02 Copertina/cp2-sottotitolo.md`.
-   **Da riaprire solo se online è finito un sottotitolo diverso** (§2.3)
-4. **I cinque dati della §2.** Bloccano tutto il resto.
-5. **La scheda, subito e a costo zero**: descrizione, 7 parole chiave,
-   categorie, prezzo. È il passo 12 e va fatto adesso perché è gratis e
-   istantaneo. Qui rientra il debito del sottotitolo: «30» e «Muslim kids»
-   non stanno nel titolo scelto e vanno recuperate qui
-   (`02 Copertina/cp2-sottotitolo.md` §3)
-6. **Contenuti A+.** Costo zero, si aggiungono a scheda viva
-7. **Fase 14, `promozione-social`.** A libro pubblicato è l'unica leva che
-   porta lettori davvero. Non è l'ultimo passo: è quello che manca
-8. **Un solo caricamento dell'interno corretto**, con tutti e quattro i
-   difetti chiusi insieme, più la copertina rifatta sulla foliazione nuova
-9. **Rifare le due grafiche promo**: quella col testo sfasciato
-   (`…20260702_101201…`) e quella col sottotitolo scartato
-   (`…20260702_100621…`)
-10. **Fase 1 all'indietro** — §7. Serve a prezzo, categorie, parole chiave e
-    targeting, non più a decidere se fare il libro
-11. Le fasi 3, 5, 6 messe per iscritto, perché la fase 14 le userà
+3. ~~CP2, il sottotitolo~~ — chiuso il 07/09: **vince quello già online**, che
+   contiene le parole di ricerca. Non si tocca. `02 Copertina/cp2-sottotitolo.md` §4
+4. ~~Leggere la scheda viva~~ — 07/09, `03 Scheda/scheda-viva.md`
+5. **L'opzione di stampa a colori, e il printing cost.** §2. Blocca la
+   decisione sul prezzo, che è la più pesante che resta
+6. **Le due categorie mancanti.** Una su tre è usata, ed è *Religious
+   **Fiction*** su un libro che insegna Sunnah reali. Gratis, oggi
+7. **I contenuti A+.** Gratis, e su un illustrato sono il posto dove le trenta
+   tavole si vedono — cioè dove $19,99 si giustifica da solo. Qui va la riga
+   scartata al CP2, *The Forgotten Sunnah Sleep Rituals…*, che come titolo del
+   blocco A+ rende senza costare un ticket
+8. **Le 7 parole chiave di backend**: leggerle su KDP e scriverle in
+   `03 Scheda/scheda-viva.md` §4
+9. **Fase 14, `promozione-social`.** Settanta giorni e zero vendite dicono che
+   Amazon da solo non porta nessuno: il traffico deve arrivare da fuori. È
+   **la leva principale**, non la coda del progetto
+10. **Fase 1 all'indietro** — §7. Ora ha un punto di partenza vero: i nove
+    concorrenti con i prezzi in `03 Scheda/scheda-viva.md` §3
+11. **Le prime recensioni.** Zero recensioni su un libro devozionale per
+    bambini è un cancello: nessuno compra il primo. Fa parte del piano della
+    fase 14
+12. **L'edizione Kindle**, che non esiste: seconda scheda, secondo prezzo
+    d'ingresso, nessun costo di stampa
+13. **Rifare le due grafiche promo** (`…20260702_101201…` col testo sfasciato,
+    `…20260702_100621…` col sottotitolo che non è quello online). Gratis, non
+    passano da KDP
+14. **Un solo caricamento dell'interno corretto** — le sei `C`, le fonti degli
+    hadith, la pagina del lead magnet — più la copertina rifatta se cambia la
+    foliazione. **Ultimo, non primo:** vedi `03 Scheda/scheda-viva.md` §2
+15. Le fasi 3, 5, 6 messe per iscritto, perché la fase 14 le userà
 
 ## 5. Da non dimenticare
 
@@ -170,6 +187,22 @@ La regola che ne resta: **su un progetto che entra dalla fine, la prima domanda
 è "è online?", e si fa all'autore prima di leggere qualunque file.** Non si
 deduce dalla cartella.
 
+**07/09, la sera — avevo scritto un debito che non esisteva.** Al checkpoint 2
+avevo previsto che il sottotitolo scelto dall'autore costasse le parole di
+ricerca «30» e «Muslim kids», da recuperare nelle parole chiave di backend.
+Letta la scheda viva, quelle parole **erano già online**: il sottotitolo
+pubblicato è quello del frontespizio, che le contiene tutte.
+
+Stessa radice dell'errore precedente: avevo ragionato sull'artefatto che avevo
+sotto gli occhi — i file su Drive — dando per scontato che fosse quello
+pubblicato. Non lo era. Correzione in `02 Copertina/cp2-sottotitolo.md` §4, e
+la raccomandazione si inverte: **il sottotitolo non si tocca.**
+
+La regola che ne resta, gemella della precedente: **su un libro online,
+l'artefatto vero è la scheda, non il file da cui è stata fatta.** Regia §10 lo
+dice già — quando il piano e l'artefatto non concordano ha ragione
+l'artefatto — e qui l'artefatto era Amazon, non Drive.
+
 ## 7. Perché la ricerca si fa lo stesso, a libro pubblicato
 
 Le fasi 1, 1b e 2 non sono state fatte, e il libro non solo esiste: è in
@@ -188,7 +221,9 @@ la materia prima dei passi 5, 6, 7 e 10 della §4:
 - **le parole dei lettori**, dalle recensioni dei concorrenti: sono la materia
   prima della descrizione, dei contenuti A+ e della fase 14
 
-E c'è una domanda in più che ieri non c'era: **il libro sta vendendo?** Se sì,
-i difetti dell'interno diventano urgenti, perché ogni copia venduta è una copia
-con le sei `C` dentro. Se no, la scheda e la fase 14 vengono prima di
-tutto — perché un libro che nessuno trova non ha un problema di interni.
+La domanda che ieri era aperta — «il libro sta vendendo?» — ha risposta, ed è
+**no: zero in trenta giorni, zero recensioni, nessuna posizione in classifica,
+dopo settanta giorni online.** Questo chiude il dubbio nel modo più utile
+possibile: **il problema di questo libro non sono gli interni.** Nessuno li ha
+visti. È un problema di distribuzione, e si risolve con la scheda e con la
+fase 14, non con una revisione del PDF.
