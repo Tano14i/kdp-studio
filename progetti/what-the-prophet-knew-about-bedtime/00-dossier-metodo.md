@@ -53,12 +53,17 @@ pubblicazione invece che dopo.
 
 ## 2. Aperto adesso
 
-**Il cancello del giorno 0 sul piano social, ed è l'unica cosa che blocca la
-partenza.** Gli account esistono già: venti minuti per guardare se il pubblico
-che c'è è quello giusto, perché un pubblico fuori nicchia peggiora la
-distribuzione invece di aiutarla. La decisione e le tre uscite possibili
-stanno in `05 Social/piano-mese-01.md` §4. Servono anche gli **handle**, che
-qui non sono noti.
+**Venti minuti di riparazione del profilo Instagram, e poi sette giorni di
+farming.** Il cancello del giorno 0 è passato il 07/09 con verdetto **caso 2**:
+l'account `@karacleim` non è compromesso — dieci post tutti in nicchia, due
+oltre le 1.500 visualizzazioni con 45 follower — ma **segue tre account**,
+cioè il farming non è mai stato fatto. Non si parte prima.
+
+Prima del farming, sei riparazioni gratuite del profilo, e la prima è la più
+grave: **l'handle è `@karacleim`, il libro è firmato `Kara Clem`.** Chi legge
+il nome in copertina e lo cerca non trova il profilo. Con 45 follower cambiarlo
+non rompe niente: è il momento più economico che ci sarà mai. Elenco completo
+in `05 Social/giorno-0-cancello.md` §5.
 
 **E poi la mezz'ora a più alto rendimento del progetto: le recensioni negative
 dei quattro concorrenti più vicini.** Tutti gli hook del mese 1 sono scritti
@@ -150,24 +155,27 @@ prima.
    `03 Scheda/scheda-viva.md` §4
 9. ~~Fase 14, identità · materia prima · format · piano del mese 1~~ — scritti
    il 07/09: `_profili/kara-clem/identita.md`, `05 Social/materia-prima.md`,
-   `05 Social/piano-mese-01.md`. **Restano da fare, in quest'ordine:** il
-   cancello del giorno 0 (§2), gli handle, la risposta alla domanda
-   sull'identità del pen name (`identita.md` §7), la verifica dei riferimenti
-   degli hadith su sunnah.com (`materia-prima.md` §4), poi si pubblica
-10. **Fase 1 all'indietro** — §7. Ora ha un punto di partenza vero: i nove
+   `05 Social/piano-mese-01.md`
+10. ~~Cancello del giorno 0~~ — passato il 07/09, caso 2:
+    `05 Social/giorno-0-cancello.md`. **Restano da fare, in quest'ordine:** le
+    sei riparazioni del profilo (§5), sette giorni di farming, la risposta alla
+    domanda sull'identità del pen name (`identita.md` §7), la verifica dei
+    riferimenti degli hadith su sunnah.com (`materia-prima.md` §4), poi il
+    giorno 1
+11. **Fase 1 all'indietro** — §7. Ora ha un punto di partenza vero: i nove
     concorrenti con i prezzi in `03 Scheda/scheda-viva.md` §3
-11. **Le prime recensioni.** Zero recensioni su un libro devozionale per
+12. **Le prime recensioni.** Zero recensioni su un libro devozionale per
     bambini è un cancello: nessuno compra il primo. Fa parte del piano della
     fase 14
-12. **L'edizione Kindle**, che non esiste: seconda scheda, secondo prezzo
+13. **L'edizione Kindle**, che non esiste: seconda scheda, secondo prezzo
     d'ingresso, nessun costo di stampa
-13. **Rifare le due grafiche promo** (`…20260702_101201…` col testo sfasciato,
+14. **Rifare le due grafiche promo** (`…20260702_101201…` col testo sfasciato,
     `…20260702_100621…` col sottotitolo che non è quello online). Gratis, non
     passano da KDP
-14. **Un solo caricamento dell'interno corretto** — le sei `C`, le fonti degli
+15. **Un solo caricamento dell'interno corretto** — le sei `C`, le fonti degli
     hadith, la pagina del lead magnet — più la copertina rifatta se cambia la
     foliazione. **Ultimo, non primo:** vedi `03 Scheda/scheda-viva.md` §2
-15. Le fasi 3, 5, 6 messe per iscritto, perché la fase 14 le userà
+16. Le fasi 3, 5, 6 messe per iscritto, perché la fase 14 le userà
 
 ## 5. Da non dimenticare
 
@@ -189,6 +197,13 @@ prima.
 - **Il generatore di immagini scrive lettere finte.** Provato due volte qui:
   `10 Bedfor` sulla promo, sei `C` dentro gli interni. Ogni immagine nuova va
   riletta cercando testo prima di metterla in pagina.
+
+- **La grafica col testo inventato era già online.** Il post «Every night has
+  a secret…» su Instagram è l'immagine `…20260702_101201…`, quella con
+  `10 Bedfor` impresso sopra, ed è il peggiore della griglia di oltre dieci
+  volte: 150 visualizzazioni contro 1.544 e 2.257. Non è una prova di
+  causalità, ma è la conferma che i difetti trovati leggendo gli artefatti
+  arrivano davvero fino al pubblico.
 
 - **Le recensioni che arriveranno sono un dato, non un giudizio.** Su un libro
   devozionale, le prime critiche diranno con precisione se il problema è
