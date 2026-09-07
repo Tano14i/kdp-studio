@@ -131,6 +131,43 @@ lavoro è a metà:
    10 KB: si rigenera in cinque minuti e **non passa da KDP**, quindi non
    costa nessun ciclo di revisione.
 
+## 4-bis. La lista, letta il 07/09 — due iscritti, e cosa dicono
+
+MailerLite mostra **2 iscritti attivi**. Uno dei due è **l'indirizzo
+dell'autore**: è un'iscrizione di prova. Quindi l'iscritto vero è **uno**, in
+settanta giorni.
+
+*(Gli indirizzi non si scrivono qui: sono dati di persone, e un file di
+progetto finisce su git. Bastano il conteggio e la natura.)*
+
+**La cosa buona, e non è poco: il modulo funziona.** Fino a stamattina non
+sapevamo se la catena raccogliesse davvero. Adesso sì: il pezzo che c'è, c'è.
+
+**La cosa sobria: uno solo, e probabilmente non è il pubblico del libro.**
+L'indirizzo dell'unico iscritto reale è nella forma `<nome>writesfiction@` —
+sembra un'altra autrice, non un genitore. È un'inferenza da un indirizzo
+email, non un fatto, ma la differenza conta: un collega che si iscrive fa
+ricerca o cortesia, non compra un albo illustrato per il figlio.
+
+Un iscritto in settanta giorni, con duemiladuecento visualizzazioni, è la
+misura di quanto perde il percorso. È esattamente ciò che la §5 ripara.
+
+### Due cose da fare subito, e nascono da qui
+
+1. **L'autore è già sulla lista.** Quindi la mail di consegna gli è già
+   arrivata — o non gli è arrivata. **Aprire quella casella adesso** risponde
+   gratis alla domanda della §4: il tracker viene consegnato? E quella mail
+   porta al libro? Trenta secondi, e chiude metà del collaudo prima ancora di
+   toccare la pagina.
+2. **Scrivere a quell'unica persona.** Con un iscritto solo, una mail
+   personale è possibile — e con la §2 di `materia-prima.md` vuota, **una
+   risposta vera vale più di tutti e quindici gli hook che abbiamo scritto
+   noi.** Una domanda sola, senza vendere niente:
+
+   > Hi — thank you for downloading the tracker. Can I ask you one thing?
+   > What made you sign up — is it for your own child, or something else?
+   > Whatever you say helps me write the next one better. 🌙
+
 ## 5. Cosa fare oggi, in ordine di minuti
 
 **Questa pagina viene prima delle riparazioni del profilo**

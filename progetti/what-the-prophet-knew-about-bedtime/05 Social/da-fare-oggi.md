@@ -9,7 +9,26 @@ portarcela.
 
 ---
 
-## BLOCCO 1 — La destinazione · 40 minuti · **si comincia da qui**
+## BLOCCO 0 — Trenta secondi, e si fa prima di tutto
+
+Scoperto il 07/09: sulla lista MailerLite ci sono **due iscritti, e uno sei
+tu**. Il che vuol dire che la mail di consegna a te è già arrivata — o non è
+arrivata.
+
+- [ ] **30 sec** — **Apri la tua casella e cerca la mail del tracker.** È
+      arrivata? Contiene il PDF? E porta al libro su Amazon?
+
+Risponde gratis alla domanda più importante del blocco 1, prima ancora di
+aprire MailerLite. Scrivi l'esito in `pagina-lead-magnet.md` §4.
+
+- [ ] **5 min** — **Scrivi all'unico iscritto reale.** Una domanda sola, senza
+      vendere niente: cosa l'ha fatto iscrivere. Il testo è in
+      `pagina-lead-magnet.md` §4-bis. Con la materia prima senza una sola
+      parola di lettore, una risposta vera vale più di quindici hook nostri
+
+---
+
+## BLOCCO 1 — La destinazione · 40 minuti
 
 MailerLite, `kara-clem-nmkdfb.subscribepage.io`.
 Testo pronto da incollare in `pagina-lead-magnet.md` §3.
