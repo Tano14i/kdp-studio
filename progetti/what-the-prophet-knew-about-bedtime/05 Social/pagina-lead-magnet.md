@@ -11,28 +11,27 @@ dominio)
 4. La catena completa, e i due punti che restano rotti
 5. Cosa fare oggi, in ordine di minuti
 
-## 1. Il difetto che spiega le vendite a zero
+## 1. Sulla pagina il libro non c'è — ma la catena non è spezzata
 
-**Su questa pagina il libro non c'è.**
+> **Correzione del 07/09, la sera.** Questa sezione diceva che il percorso
+> «non arriva da nessuna parte» e che quello spiegava le vendite a zero.
+> **Era sbagliato**, ed è stato scritto prima di aver letto la mail di
+> consegna. Vedi §4-ter: quella mail porta il link ad Amazon, per esteso.
+> Il difetto della pagina resta, ma è un difetto di conversione, non una
+> rottura.
 
-Non c'è il titolo. Non c'è la copertina. Non c'è un link ad Amazon. La parola
-*book* non compare nemmeno una volta.
+**Su questa pagina il libro non c'è.** Non c'è il titolo, non c'è la
+copertina, non c'è un link ad Amazon. La parola *book* non compare nemmeno
+una volta.
 
-Ed è l'unica destinazione del profilo Instagram. Quindi il percorso completo,
-oggi, è:
+Chi non lascia l'indirizzo — cioè la stragrande maggioranza di chi arriva —
+**non ha nessun posto dove andare**. Vede un modulo, non lo compila, e se ne
+va senza aver mai saputo che esiste un libro. Quello è il costo vero della
+pagina così com'è, e il blocco della §3 lo chiude.
 
-```
-contenuto → profilo → link in bio → pagina → indirizzo email → ⊘
-```
-
-Non c'è nessun passaggio in cui una persona che ha appena deciso di volere
-questo libro possa comprarlo. **Non è un percorso che converte poco: è un
-percorso che non arriva.** Duemiladuecento visualizzazioni in trenta giorni e
-zero vendite smettono di essere un mistero.
-
-Il tracker stesso, una volta consegnato, chiude con *«available on Amazon»* —
-**senza dire dove**. Anche l'ultimo anello dice al lettore di cercarselo da
-solo.
+Il tracker stesso, una volta consegnato, chiude con *«available on Amazon»*
+senza dire dove: lì l'indirizzo va aggiunto comunque, perché il PDF finisce
+appeso al muro e sopravvive alla mail.
 
 ## 2. Cosa c'è, riga per riga
 
@@ -122,14 +121,47 @@ contenuto → profilo → link → pagina → email → tracker → Amazon
 Restano due anelli che la pagina non copre, e vanno chiusi insieme a lei o il
 lavoro è a metà:
 
-1. **L'email di consegna del tracker.** È il messaggio più aperto che questa
-   lista riceverà mai — arriva quando la persona sta aspettando qualcosa. Deve
-   portare il tracker **e** il link al libro. Se oggi consegna solo il PDF,
-   metà del valore della lista è buttato.
+1. ~~**L'email di consegna del tracker.**~~ **Già a posto** — vedi §4-ter.
 2. **Il tracker stesso.** Chiude con *«available on Amazon»* e nessun
    indirizzo. Va aggiunto un link breve o un QR sotto quella riga. È un PDF da
    10 KB: si rigenera in cinque minuti e **non passa da KDP**, quindi non
    costa nessun ciclo di revisione.
+
+## 4-ter. La mail di consegna — letta il 07/09, e funziona
+
+Contro le mie aspettative, questa è **la cosa meglio riuscita del progetto**.
+Non va toccata.
+
+> Your free Sunnah Tracker is here 🌙
+>
+> Assalamu alaikum!
+> Your 30 Nights Sunnah Tracker is ready to print and hang near your child's bed.
+>
+> Each night, do one little Sunnah together — then let your child color that
+> night's star. Thirty stars later, bedtime has become something beautiful!
+>
+> **Download your tracker 🌙**
+>
+> Sweet dreams to your little one 🌙
+> Kara
+>
+> P.S. The full bedtime stories behind each Sunnah are in the book →
+> available on Amazon `https://www.amazon.com/dp/B0H6ZCL6QC`
+
+Cosa fa bene, e va imitato altrove:
+
+- **Consegna quello che ha promesso**, subito, senza far cercare niente
+- **Il P.S. porta il link per esteso.** Il P.S. è la seconda riga più letta di
+  qualunque email dopo l'oggetto, ed è esattamente il posto giusto per la sola
+  cosa che si chiede
+- **La voce è quella giusta**: *Assalamu alaikum*, *sweet dreams to your little
+  one*, firmato *Kara*. Calda, breve, senza vendere
+- **Dice cosa farne**: *print and hang near your child's bed*. Un lead magnet
+  che dice dove va a finire viene usato invece che archiviato
+
+**È il modello di voce per le didascalie social.** Chi ha scritto questa mail
+sapeva quello che faceva: `piano-mese-01.md` va letto con questo tono in
+testa, non con un altro.
 
 ## 4-bis. La lista, letta il 07/09 — due iscritti, e cosa dicono
 

@@ -15,11 +15,10 @@ Scoperto il 07/09: sulla lista MailerLite ci sono **due iscritti, e uno sei
 tu**. Il che vuol dire che la mail di consegna a te è già arrivata — o non è
 arrivata.
 
-- [ ] **30 sec** — **Apri la tua casella e cerca la mail del tracker.** È
-      arrivata? Contiene il PDF? E porta al libro su Amazon?
-
-Risponde gratis alla domanda più importante del blocco 1, prima ancora di
-aprire MailerLite. Scrivi l'esito in `pagina-lead-magnet.md` §4.
+- [x] **Aperta la casella: la mail di consegna funziona, ed è ottima.**
+      Consegna il tracker e porta il link ad Amazon per esteso nel P.S.
+      Non va toccata — è anzi il modello di voce per le didascalie social
+      (`pagina-lead-magnet.md` §4-ter). **Un punto in meno nel blocco 1.**
 
 - [ ] **5 min** — **Scrivi all'unico iscritto reale.** Una domanda sola, senza
       vendere niente: cosa l'ha fatto iscrivere. Il testo è in
@@ -28,7 +27,7 @@ aprire MailerLite. Scrivi l'esito in `pagina-lead-magnet.md` §4.
 
 ---
 
-## BLOCCO 1 — La destinazione · 40 minuti
+## BLOCCO 1 — La destinazione · 30 minuti
 
 MailerLite, `kara-clem-nmkdfb.subscribepage.io`.
 Testo pronto da incollare in `pagina-lead-magnet.md` §3.
@@ -42,9 +41,6 @@ Testo pronto da incollare in `pagina-lead-magnet.md` §3.
 - [ ] **15 min** — **Il blocco del libro sotto la piega**: copertina, titolo,
       sottotitolo, tre righe di descrizione, e il pulsante
       `See the book on Amazon →` verso `amazon.com/dp/B0H6ZCL6QC`
-- [ ] **10 min** — **L'email di consegna del tracker**: deve portare il PDF
-      **e** il link al libro. È il messaggio più aperto che questa lista
-      riceverà mai
 - [ ] **5 min** — **Il tracker stesso**: sotto *«available on Amazon»* ci va
       l'indirizzo. Oggi dice al lettore di cercarselo da solo
 - [ ] **1 min** — Lo slug `kara-clem-nmkdfb` → qualcosa di leggibile
@@ -65,9 +61,18 @@ di fidarsi che ci sia.
 
 ---
 
-## BLOCCO 2 — Il profilo · 20 minuti
+## BLOCCO 2 — Il profilo · 20 minuti · **e ora pesa più di prima**
 
-Instagram. Dettagli in `giorno-0-cancello.md` §5.
+Con la mail che funziona, la catena non è spezzata: chi lascia l'indirizzo ad
+Amazon ci arriva. Quindi la perdita grossa è **prima**, non dopo.
+
+I numeri, in fila: **2.200 visualizzazioni → 45 follower → 2 iscritti (1
+vero) → 0 vendite.** La caduta più ripida è la prima, ed è quella fra il
+vedere un contenuto e il cliccare il link. Quel clic lo chiede **la bio**, e
+la bio di oggi non lo chiede: *«Islamic children's books for peaceful nights»*
+non dà nessuna ragione per toccare il link.
+
+Dettagli in `giorno-0-cancello.md` §5.
 
 - [ ] **L'handle.** ⚠️ **Serve una decisione**, vedi sotto. È la riparazione
       più grave e la più economica: con 45 follower cambiarlo non rompe

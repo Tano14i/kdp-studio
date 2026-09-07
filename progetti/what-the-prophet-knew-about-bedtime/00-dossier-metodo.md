@@ -53,20 +53,28 @@ pubblicazione invece che dopo.
 
 ## 2. Aperto adesso
 
-**La pagina del link in bio, e viene prima di tutto il resto.** Letta il
-07/09: **su quella pagina il libro non c'è.** Niente titolo, niente copertina,
-nessun link ad Amazon — e quella pagina è l'unica destinazione del profilo.
-Il percorso è `contenuto → profilo → link → email → ⊘`: non c'è nessun
-passaggio in cui una persona che vuole il libro possa comprarlo.
+**Il profilo, e in particolare la bio.** Con i numeri in fila la caduta più
+ripida si vede a occhio:
 
-**È la risposta al «2.200 visualizzazioni e zero vendite», e smette di essere
-un mistero.** Quaranta minuti di riparazione, tutta gratis, tutta fuori da
-KDP: `05 Social/pagina-lead-magnet.md` §5. Sistemare il profilo perché più
-gente clicchi un link che finisce nel vuoto peggiora le cose, quindi la pagina
-va prima.
+```
+2.200 visualizzazioni → 45 follower → 2 iscritti (1 vero) → 0 vendite
+        ↑ qui si perde quasi tutto
+```
 
-**Poi venti minuti di riparazione del profilo Instagram, e sette giorni di
-farming.** Il cancello del giorno 0 è passato il 07/09 con verdetto **caso 2**:
+La catena a valle **non è spezzata**: la mail di consegna del tracker
+funziona e porta il link ad Amazon per esteso (`05 Social/pagina-lead-magnet.md`
+§4-ter). Chi lascia l'indirizzo al libro ci arriva. Il problema è che quasi
+nessuno clicca il link in bio — e quel clic lo chiede la bio, che oggi dice
+*«Islamic children's books for peaceful nights»*: una descrizione di
+catalogo, che non dà a nessuno una ragione per toccare niente.
+
+Venti minuti: bio, handle, nome visualizzato. `05 Social/giorno-0-cancello.md` §5.
+
+**Poi trenta minuti sulla pagina**, che resta da sistemare per chi l'indirizzo
+non lo lascia — cioè quasi tutti: oggi vedono un modulo e se ne vanno senza
+sapere che esiste un libro. `05 Social/pagina-lead-magnet.md` §5.
+
+**Poi sette giorni di farming.** Il cancello del giorno 0 è passato il 07/09 con verdetto **caso 2**:
 l'account `@karacleim` non è compromesso — dieci post tutti in nicchia, due
 oltre le 1.500 visualizzazioni con 45 follower — ma **segue tre account**,
 cioè il farming non è mai stato fatto. Non si parte prima.
@@ -232,6 +240,27 @@ prima.
   perché rifanno la descrizione e la materia prima della fase 14.
 
 ## 6. Errori commessi e come sono stati corretti
+
+**07/09, la sera — ho dichiarato spezzata una catena che funzionava.** Letta
+la pagina MailerLite e visto che non nominava il libro, avevo concluso che il
+percorso «non arriva da nessuna parte» e che quello spiegava le vendite a
+zero. Poi è arrivata la mail di consegna: porta il tracker **e** il link ad
+Amazon per esteso, nel P.S. La catena c'era.
+
+Radice: ho letto un anello e ho dedotto la catena. Terza volta in un giorno
+che lo stesso errore cambia vestito — prima l'ASIN dedotto da una cartella
+Drive, poi il sottotitolo dedotto da un file invece che dalla scheda, adesso
+la consegna dedotta dalla pagina invece che dalla mail.
+
+E la correzione, come le altre, non riguarda solo il dato: **sposta il
+lavoro.** Se la catena a valle regge, la perdita grossa è a monte — nel salto
+fra il vedere un contenuto e il cliccare il link. Il profilo passa davanti
+alla pagina.
+
+La regola, che a questo punto è la stessa tre volte: **un anello alla volta,
+percorso per intero, prima di concludere qualcosa sull'insieme.** È esattamente
+il collaudo che sta scritto in `05 Social/da-fare-oggi.md`, e che io non avevo
+fatto prima di scrivere la diagnosi.
 
 **07/09 — ho dato il libro per non pubblicato, e ci ho costruito sopra tutto
 il piano.** La cartella Drive contiene interni, copertina e immagini, e nessun
