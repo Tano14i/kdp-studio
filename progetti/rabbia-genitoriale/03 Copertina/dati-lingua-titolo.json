@@ -1,0 +1,109 @@
+{
+  "generato_il": "2026-09-07 05:35",
+  "mercato": "amazon.it",
+  "lingua_dell_angolo": {
+    "mio figlio non mi ascolta": {
+      "prefisso_che_risponde": "mio figlio non mi ascolta",
+      "suggerimenti": [
+        "mio figlio non mi ascolta"
+      ],
+      "esito": "intera"
+    },
+    "mio figlio non ascolta": {
+      "prefisso_che_risponde": "mio figlio no",
+      "suggerimenti": [
+        "mio figlio non riesce a stare senza smartphone"
+      ],
+      "esito": "risale"
+    },
+    "quando il bambino non ascolta": {
+      "prefisso_che_risponde": "quando il b",
+      "suggerimenti": [
+        "quando il black friday"
+      ],
+      "esito": "risale"
+    },
+    "perdere la calma": {
+      "prefisso_che_risponde": "perdere la",
+      "suggerimenti": [
+        "perdere la testa libro"
+      ],
+      "esito": "risale"
+    },
+    "genitori che urlano": {
+      "prefisso_che_risponde": "genitori che",
+      "suggerimenti": [
+        "genitori che stanchezza"
+      ],
+      "esito": "risale"
+    },
+    "crisi di rabbia bambini": {
+      "prefisso_che_risponde": "crisi di",
+      "suggerimenti": [
+        "crisi di mezza età kieran"
+      ],
+      "esito": "risale"
+    },
+    "gestire i capricci": {
+      "prefisso_che_risponde": "gestire i",
+      "suggerimenti": [
+        "gestire i comportamenti problema"
+      ],
+      "esito": "risale"
+    },
+    "bambini che non ubbidiscono": {
+      "prefisso_che_risponde": "bambini che non",
+      "suggerimenti": [
+        "bambini che non vogliono mangiare o mangiano troppo"
+      ],
+      "esito": "risale"
+    },
+    "farsi ascoltare dai figli": {
+      "prefisso_che_risponde": "farsi ascoltare dai figli",
+      "suggerimenti": [
+        "farsi ascoltare dai figli"
+      ],
+      "esito": "intera"
+    },
+    "ho perso la pazienza": {
+      "prefisso_che_risponde": "ho perso la pa",
+      "suggerimenti": [
+        "ho perso le parole"
+      ],
+      "esito": "risale"
+    },
+    "non funziona con mio figlio": {
+      "prefisso_che_risponde": "non funziona",
+      "suggerimenti": [
+        "non funziona alexa"
+      ],
+      "esito": "risale"
+    },
+    "educare senza urlare": {
+      "prefisso_che_risponde": "educare senza urlare",
+      "suggerimenti": [
+        "educare senza urlare moreno marchetti"
+      ],
+      "esito": "intera"
+    },
+    "disciplina positiva": {
+      "prefisso_che_risponde": "disciplina positiva",
+      "suggerimenti": [
+        "disciplina positiva"
+      ],
+      "esito": "intera"
+    },
+    "capricci bambini": {
+      "prefisso_che_risponde": "capricci bambini",
+      "suggerimenti": [
+        "capricci bambini"
+      ],
+      "esito": "intera"
+    }
+  },
+  "schede": [],
+  "limiti": [
+    "www.amazon.it/s risponde 503: nessun ASIN nuovo si scopre da qui",
+    "www.amazon.it/product-reviews risponde anti-robot: niente testo recensioni ne' BSR"
+  ]
+}

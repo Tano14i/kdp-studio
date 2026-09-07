@@ -26,7 +26,7 @@ decide il titolo vero, e questa cartella non si rinomina mai.
 | 1b | Angolo (`ricerca-inversa`) | fatto — **SI FA** sull'angolo | — | 06/09 |
 | 2 | Avatar cliente | fatto — **prima stesura**, campione magro | — | 06/09 |
 | 3 | Concept e positioning | fatto — **CP1 chiuso** | CP1 | 06-07/09 |
-| 4 | Titolo, sottotitolo, copertina | **in corso** | CP2 | |
+| 4 | Titolo, sottotitolo, copertina | **menu pronto — aspetta l'autore** | CP2 | |
 | 5 | Outline | da fare | CP3 | |
 | 6 | DNA stilistico | da fare | CP4 | |
 | 7 | Campione di scrittura | da fare | CP5 | |
@@ -76,21 +76,36 @@ E B1 cambia statuto: **regola di scrittura interna, non accusa pubblica.** Le
 scene vanno storte dentro il libro; il libro non dice che i concorrenti
 mostrano solo scene riuscite — trenta lettori di Petrucciani lo smentirebbero.
 
-**B5 e' deciso: forma a**, il 07/09. L'autorita' dell'esperienza, dichiarata
-per quello che e' — il libro non pretende un titolo, dice chi scrive e cosa ha
-provato. Regole complete in `02 Validazione/concept-scelto.md`; in due righe:
-vietata ogni qualifica inesistente e ogni frase che suoni come parere clinico
-detto in proprio, e **ogni affermazione non personale deve dire da dove viene**
-(B5-b viene dietro per necessita', non per scelta).
+**B5 = forma a**, e il 07/09 l'autore ha confermato il fatto da cui dipende:
+chi firma **e' un genitore** che ha attraversato quello che il libro racconta.
+La riga dell'autore puo' esistere ed essere vera.
 
-**La domanda aperta, ed e' di fatto, non di stile:** B5-a regge solo se e'
-vero. Un pen name che dice «sono un genitore che ha provato» senza esserlo e'
-la bugia di Merini in un vestito diverso, e peggiore, perche' promette
-un'esperienza personale. Prima di chiudere la copertina serve sapere chi firma
-e cosa ha davvero attraversato — o quale altra esperienza vera occupa quel
-posto. Titolo e sottotitolo si lavorano comunque; la riga dell'autore no.
+**CHECKPOINT 2. Il lavoro e' fermo e aspetta una scelta.**
 
-**Il passo 4 e' partito**: titolo, sottotitolo, copertina — checkpoint 2.
+Sul tavolo: `03 Copertina/menu-titolo.md` — quattro titoli con sottotitolo, il
+collaudo a 200 px, due forme per la riga dell'autore, e la copertina con le
+misure calcolate.
+
+```
+Titolo: T_    Riga autore: A o B    Pen name: ______
+```
+
+Tre cose da sapere prima di scegliere:
+
+- **due frasi perfette sono state scartate perche' sono titoli altrui.**
+  `mio figlio non mi ascolta` e' di Sabrina Salmaso, `farsi ascoltare dai
+  figli` e' il sottotitolo di Naumburg piu' altri quattro. Terza volta che
+  quella regola salva il progetto;
+- **e' comparso il vero gigante dello scaffale**: Faber e Mazlish, *Come
+  parlare perche' i bambini ti ascoltino*, Mondadori, **1.533 recensioni**.
+  Nessun nostro documento lo aveva — quarto conteggio per difetto di questa
+  nicchia. Non cambia il concept, cambia con chi la copertina deve reggere il
+  confronto;
+- **T4 e' fuori concept** e sta in lista solo per far vedere il campo: vende il
+  dopo-urlo, cioe' la formulazione superata del 06/09 pomeriggio.
+
+**Il pen name non e' deciso e non lo decido io**: con B5-a dev'essere un nome
+dietro cui c'e' davvero qualcuno.
 
 ## Cosa manca, in ordine
 

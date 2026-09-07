@@ -1,0 +1,50 @@
+{
+  "generato_il": "2026-09-07 05:38",
+  "mercato": "amazon.it",
+  "lingua_dell_angolo": {},
+  "schede": [
+    {
+      "asin": "B0876ZLBL9",
+      "errore": "HTTP 500 su 8 tentativi"
+    },
+    {
+      "asin": "8857308235",
+      "errore": "HTTP 500 su 8 tentativi"
+    },
+    {
+      "asin": "8804728728",
+      "titolo": "Come parlare perché i bambini ti ascoltino & come ascoltare perché ti parlino",
+      "valutazione": "4,6 su 5 stelle",
+      "recensioni": "1533",
+      "prezzo": null,
+      "tentativi": 1,
+      "letto_il": "2026-09-07"
+    },
+    {
+      "asin": "8868204894",
+      "errore": "HTTP 500 su 8 tentativi"
+    },
+    {
+      "asin": "B0CB4WYYFY",
+      "titolo": "Educare Senza Urlare: Tecniche Efficaci Per Farsi Ascoltare dai Bambini e Guidarli Nella Crescita Senza Alzare la Voce. Migliora la comunicazione con i bambini creando un ambiente di amore e rispetto",
+      "valutazione": "5,0 su 5 stelle",
+      "recensioni": "32",
+      "prezzo": null,
+      "tentativi": 2,
+      "letto_il": "2026-09-07"
+    },
+    {
+      "asin": "B0DM9NCJGV",
+      "titolo": "ORA BASTA!: Come smettere di urlare e far sì che i tuoi figli ti ascoltino davvero",
+      "valutazione": "4,4 su 5 stelle",
+      "recensioni": "9",
+      "prezzo": "13,45 €",
+      "tentativi": 3,
+      "letto_il": "2026-09-07"
+    }
+  ],
+  "limiti": [
+    "www.amazon.it/s risponde 503: nessun ASIN nuovo si scopre da qui",
+    "www.amazon.it/product-reviews risponde anti-robot: niente testo recensioni ne' BSR"
+  ]
+}
