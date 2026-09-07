@@ -102,17 +102,19 @@ compito: **far riconoscere chi legge.** Chi arriva decide in due secondi se il
 profilo è per lui, e lo decide da lì — e «Islamic children's books» non
 descrive nessuno, descrive un catalogo.
 
-La sostituzione è già scritta in `_profili/kara-clem/identita.md` §4:
+La sostituzione sta in `_profili/kara-clem/identita.md` §4, in tre opzioni
+tutte **dentro i 150 caratteri** di Instagram. La consigliata, 139:
 
 ```
-For Muslim parents who want bedtime to be more than "lights out"
-One little Sunnah a night — the Prophet's ﷺ own bedtime, in words a 5-year-old gets
-Author of "What the Prophet Knew About Bedtime"
-↓ the book
+Muslim parents: bedtime can be more than "lights out"
+One little Sunnah a night, in words a 5-year-old gets
+Free 30 Nights Sunnah Tracker ↓
 ```
 
-Nota che la bio attuale non nomina mai il libro. Il titolo è la prova, ed è
-anche l'unica cosa che qualcuno può poi cercare su Amazon.
+Tre cose cambiano rispetto a oggi: la prima riga descrive **chi legge** invece
+del catalogo; la seconda toglie l'obiezione *è troppo grande per lui?*; e la
+terza dà una ragione per toccare il link — **gratis**, e coincidente con
+quello che c'è davvero dall'altra parte.
 
 ### 3.4 Il link non porta ad Amazon
 

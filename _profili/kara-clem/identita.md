@@ -68,46 +68,89 @@ quando c'è qualcuno che lo cerca.
 
 Mai numeri, mai underscore multipli, mai «official».
 
-## 4. La bio
+## 4. La bio — dentro i 150 caratteri
 
-Quattro righe. La prima è l'unica che conta davvero.
+**Instagram dà 150 caratteri alla bio, a capo compresi.** È il vincolo che
+decide tutto il resto: non ci stanno quattro righe, ce ne stanno tre corte.
 
+E c'è un secondo campo che quasi nessuno usa: **il nome visualizzato, 30
+caratteri, che entra nella ricerca di Instagram.** Il libro e l'autrice
+stanno lì, così la bio non deve spenderci sopra niente.
+
+### Le tre opzioni, contate
+
+**Opzione 1 — il lettore per primo · 139 caratteri · consigliata**
 ```
-For Muslim parents who want bedtime to be more than "lights out"
-One little Sunnah a night — the Prophet's ﷺ own bedtime, in words a 5-year-old gets
+Muslim parents: bedtime can be more than "lights out"
+One little Sunnah a night, in words a 5-year-old gets
+Free 30 Nights Sunnah Tracker ↓
+```
+
+**Opzione 2 — con il libro come prova · 132 caratteri**
+```
+Muslim parents: bedtime can be more than "lights out"
 Author of "What the Prophet Knew About Bedtime"
-↓ the book
+Free 30-night Sunnah tracker ↓
 ```
 
-| Riga | Funzione | Perché così |
+**Opzione 3 — la più corta e la più pescabile · 119 caratteri**
+```
+Bedtime Sunnah for Muslim kids, ages 4-8
+One little Sunnah a night — the way the Prophet did it
+Free 30-night tracker ↓
+```
+
+### Perché l'ultima riga offre il tracker e non il libro
+
+È il cambio che conta più della lunghezza.
+
+**Gratis batte a pagamento nel far toccare un link**, sempre. E soprattutto:
+**il link porta alla pagina del tracker**, non alla scheda Amazon. Se la bio
+promette «il libro» e la pagina offre un PDF, la promessa e la destinazione
+non coincidono, e chi arriva si sente spostato.
+
+Oggi la bio non promette **niente** — *«Islamic children's books for peaceful
+nights»* è la descrizione di un catalogo — e la pagina offre un tracker.
+Allineare le due cose è gratis, ed è il punto dove si perde quasi tutto
+(`05 Social/giorno-0-cancello.md` §3).
+
+Il libro non sparisce: sta nel nome visualizzato, nell'evidenza *The Book*,
+in tutta la griglia, e nel P.S. della mail di consegna. Non gli serve anche la
+bio.
+
+### Il nome visualizzato, 30 caratteri
+
+Dipende da come finisce l'handle — i due campi non devono ripetersi:
+
+| Se l'handle è | Nome visualizzato | Car. |
 |---|---|---|
-| 1 | il lettore si riconosce | descrive lui e la sua sera, non me |
-| 2 | cosa trova qui | «in words a 5-year-old gets» toglie l'obiezione: *è troppo grande per lui?* |
-| 3 | la prova | il titolo, non la qualifica |
-| 4 | la CTA | tre parole |
+| `@bedtimesunnah` | `Kara Clem · Muslim Kids Books` | 29 |
+| `@karaclem` | `Kara Clem · Bedtime Sunnah` | 26 |
 
-**La riga 2 è quella che distingue.** Gli altri account della nicchia
-insegnano l'Islam ai bambini in generale. Questo dice: *una cosa sola, stasera,
-alla sua altezza*. È la stessa promessa del libro, ed è il vuoto della §2.
+### Cosa fare quando le incolli
 
-> **Da verificare prima di salvarla:** il carattere **ﷺ** dentro una riga
-> latina può ribaltare l'ordine del testo (succede già nel titolo della pagina
-> Amazon, dove ISBN e nome autore escono capovolti — vedi
-> `02 Copertina/cp2-sottotitolo.md`). Incolla la bio, guardala, e se la riga 2
-> si scompone scrivi `the Prophet ﷺ` come `the Prophet (peace be upon him)`.
-> Non lasciare una riga rotta: in questa nicchia sembra sciatteria sul nome
-> che conta di più.
+- **Guarda il contatore nell'app.** Alcuni emoji contano più di un carattere,
+  e i conteggi qui sopra sono sul testo nudo: tieni un margine.
+- **Il carattere ﷺ è fuori da tutte e tre le opzioni, di proposito.** Dentro
+  una riga latina ribalta l'ordine del testo — succede già nel titolo della
+  pagina Amazon, dove ISBN e nome autrice escono capovolti
+  (`02 Copertina/cp2-sottotitolo.md`). In una bio di tre righe una riga rotta
+  si vede subito, e sul nome che conta di più sembra sciatteria. Nei post,
+  dove c'è spazio e si può rileggere, si usa normalmente.
 
 ## 5. Link in bio, evidenze, immagine profilo
 
-**Link in bio: uno solo, alla scheda Amazon.**
-`amazon.com/dp/B0H6ZCL6QC`
+**Link in bio: uno solo, alla pagina del tracker.**
+`kara-clem-nmkdfb.subscribepage.io`
 
-L'aggregatore diventa sensato **appena il lead magnet è raggiungibile** — il
-*30 Nights Sunnah Tracker* esiste già come PDF e oggi non ha una strada
-(`01 Prodotto/spec-dal-pdf.md` §4.5). Quando ce l'avrà, il link in bio diventa
-due voci: *the free tracker* e *the book*. E l'ordine giusto è quello: prima
-si dà, poi si chiede.
+Resta uno solo, e resta quello: la catena a valle funziona già — la mail di
+consegna porta al libro su Amazon per esteso
+(`05 Social/pagina-lead-magnet.md` §4-ter). Prima si dà, poi si chiede, e qui
+il dare è la prima cosa che si incontra.
+
+Perché quella pagina regga il traffico, però, va sistemata: oggi chi non
+lascia l'indirizzo non scopre nemmeno che esiste un libro
+(`05 Social/pagina-lead-magnet.md` §5).
 
 **Storie in evidenza: tre, e vanno riempite prima del primo post.**
 

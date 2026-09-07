@@ -79,9 +79,11 @@ Dettagli in `giorno-0-cancello.md` §5.
       niente, fra seimila sì
 - [ ] **Nome visualizzato** `Kara` → `Kara Clem · Bedtime Sunnah`. Quel campo
       entra nella ricerca ed è il secondo più pescabile del profilo
-- [ ] **Bio** → le quattro righe di `_profili/kara-clem/identita.md` §4.
-      Incollale e **guardale**: se il carattere ﷺ ribalta la riga 2, scrivi
-      *(peace be upon him)*
+- [ ] **Bio** → tre righe, **dentro i 150 caratteri** che Instagram concede.
+      Tre opzioni contate in `_profili/kara-clem/identita.md` §4; la
+      consigliata sta a 139. L'ultima riga offre **il tracker gratis**, non il
+      libro: è quello che c'è dall'altra parte del link, ed è gratis, quindi
+      lo tocca più gente
 - [ ] **Cancella il post** *«Every night has a secret…»* — è la grafica con
       `10 Bedfor` impresso sopra, ed è il peggiore della griglia di dieci volte
 - [ ] **Guarda da vicino** il post *«The Prophet ﷺ had a bedtime routi…»*: se
