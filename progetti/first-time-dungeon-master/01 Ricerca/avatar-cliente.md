@@ -46,7 +46,17 @@ l'enciclopedia, ma il coach della prima sessione.
 - Vuole un risultato rapido prima di una data: acquisto d'impulso ad alto intento.
 
 ## 7. Stato di validazione
-⚠️ Avatar **presunto**, costruito sulla conoscenza della nicchia, NON su recensioni
-reali dei competitor. Da validare con la fase 1 (ricerca-nicchia) + lettura
-recensioni ASIN concorrenti prima di scalare la spesa in ads. Sufficiente per
-impostare i contenuti social organici.
+✅ **Validato in parte** (07/09) sulle recensioni reali di 3 concorrenti beginner
+(vedi `report-nicchia.md §2`). Conferme e correzioni:
+- CONFERMATO: esiste in volume il compratore "principiante D&D" (un concorrente
+  ~300 vendite/mese). La domanda paga.
+- CORREZIONE: le recensioni dei best-seller sono dominate da **nuovi GIOCATORI**
+  e **acquisti-regalo** ("great for beginners", "excellent gift for a young
+  learner"), NON dal DM aspirante. Il nostro avatar (Marco DM-0) è una **fetta
+  distinta e più stretta** di quel bacino: chi deve *condurre*, non solo giocare.
+- IMPLICAZIONE: il posizionamento deve gridare "DM-first", altrimenti veniamo
+  scambiati per l'ennesimo intro-giocatore e persi nel confronto sulle recensioni.
+- Gripe sfruttabile: un intro concorrente è "a bit repetitive" → il nostro taglio
+  template/checklist, asciutto, è un vantaggio reale.
+Da completare: lettura recensioni di concorrenti **DM-specifici** (Eric Heim,
+Sly Flourish) per rifinire dolori/linguaggio del DM prima di scalare in ads.

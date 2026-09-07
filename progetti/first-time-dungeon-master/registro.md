@@ -12,8 +12,8 @@ Cedric Darkstone (pen name) · inglese · mercato Amazon US · avviato il 06/09/
 ## 1. Stato
 | # | Fase | Stato | Checkpoint | Chiuso il |
 |---|------|-------|-----------|-----------|
-| 1 | Nicchia e concorrenti | verdetto: DA VERIFICARE | verdetto | 06/09 |
-| 2 | Avatar cliente | fatto (minimo, da validare) | — | 06/09 |
+| 1 | Nicchia e concorrenti | verdetto: SI FA (posiz. stretto) | verdetto ✓ | 07/09 |
+| 2 | Avatar cliente | validato in parte su recensioni reali | — | 07/09 |
 | 3 | Concept e positioning | da fare | CP1 | |
 | 4 | Titolo, sottotitolo, copertina | in corso | CP2 | |
 | 5 | Outline | da fare | CP3 | |
@@ -31,12 +31,16 @@ Cedric Darkstone (pen name) · inglese · mercato Amazon US · avviato il 06/09/
 > dorsale. Il piano social (fase 12) parte quindi su basi incomplete: vedi §5.
 
 ## 2. Aperto adesso
-**Fase 1 (nicchia): verdetto DA VERIFICARE** (`01 Ricerca/report-nicchia.md`).
-Domanda misurata e forte; varco plausibile ma non dimostrato coi numeri live dei
-concorrenti (Amazon e Goodreads bloccati dal proxy in questa sessione). Per chiudere
-il cancello serve raccogliere: tabella concorrenti live (voti/recensioni/date/prezzi),
-curva del voto, suggerimenti di ricerca US. → decisione autore: come prendere quei
-numeri (browser proprio, oppure `kdp_server.py` di questo repo).
+**Fase 1 (nicchia): verdetto SI FA — posizionamento stretto** (`report-nicchia.md`).
+Dati misurati da catture Amazon dell'autore: domanda pagante (un concorrente
+~300 vendite/mese), voti alti/stabili (4.4-4.6), ma i best-seller sono intro
+**per giocatore** — la fetta "DM alle prime armi + template" è scoperta. È la
+nostra. Condizioni: posizionarsi DM-first (non "how to play"), template veri,
+prezzo $7.99-11.99 (il piano €13,90 è alto), recensioni presto.
+**Prossimo passo (regia):** fase 3 — Concept e positioning (CP1), che trasforma
+questo varco nella promessa in una riga e nel menu di opzioni. Input pronti:
+report-nicchia + avatar. Nota: copertina (CP2) già fatta va riletta contro il
+concept, e va deciso il prezzo.
 
 **CP7 chiuso** (`decisioni/07-marketing.md`): handle `@CedricDkstn`, lead magnet
 "1-Hour Session Prep Checklist", 3 Reel in produzione. Prossimo: creare la checklist
