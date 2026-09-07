@@ -61,7 +61,7 @@ di fidarsi che ci sia.
 
 ---
 
-## BLOCCO 2 — Il profilo · 20 minuti · **e ora pesa più di prima**
+## BLOCCO 2 — Il profilo · ✅ FATTO il 07/09
 
 Con la mail che funziona, la catena non è spezzata: chi lascia l'indirizzo ad
 Amazon ci arriva. Quindi la perdita grossa è **prima**, non dopo.
@@ -103,10 +103,21 @@ qualcuno che lo cerca, e oggi non c'è.
 
 ---
 
-## BLOCCO 3 — Farming · 7 giorni × 20 minuti
+## BLOCCO 3 — Farming · 7 giorni × 20 minuti · **← siamo qui**
 
 Non saltabile: l'account **segue tre profili**, quindi l'algoritmo non sa a
-chi mostrarti. Ogni giorno, dall'account, e nient'altro:
+chi mostrarti.
+
+**E non si pubblica dentro la settimana.** I trenta contenuti del piano sono
+il miglior materiale che questo progetto abbia; i primi sette sono i più
+forti di tutti. Spenderli su un pubblico mal puntato è l'errore che il
+farming esiste per evitare — e i primi dieci post sono già stati spesi così.
+
+L'unica cosa che si pubblica sono **le storie**, per riempire le tre
+evidenze: vanno riempite prima del giorno 1 comunque, e non passano dalla
+scoperta.
+
+Ogni giorno, dall'account, e nient'altro:
 
 - cerca `islamic parenting` · `muslim kids` · `bedtime routine`, e guarda i
   video **fino in fondo** — lo scorrimento via non conta
@@ -117,6 +128,21 @@ chi mostrarti. Ogni giorno, dall'account, e nient'altro:
 
 **Il test del settimo giorno:** apri il «Per te». Se non è quasi solo nicchia,
 altri tre giorni. È l'unica parte del lavoro che dopo non si recupera.
+
+### La settimana non è ferma: è quando si fa tutto il resto
+
+Il farming costa venti minuti al giorno. Le altre venti ore di quella
+settimana sono esattamente il tempo per la lista qui sotto — e due voci di
+quella lista **devono** essere chiuse prima del giorno 1:
+
+- **le recensioni dei concorrenti**, o il mese 1 parte con hook inventati da
+  noi (`materia-prima.md` §2)
+- **le fonti degli hadith**, o il carosello C16 non può uscire
+  (`materia-prima.md` §4)
+
+Più le tre evidenze, la pagina del tracker, e la risposta sull'identità del
+pen name. Alla fine dei sette giorni non hai aspettato: hai tolto ogni
+blocco che c'era fra te e il giorno 1.
 
 ---
 
