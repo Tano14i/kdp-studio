@@ -78,7 +78,7 @@ BISAC (2):
 - GAM005050 — GAMES & ACTIVITIES / Role Playing & Fantasy
 - GAM000000 — GAMES & ACTIVITIES / General
 
-## 5. Contenuti A+ (4 moduli, misure esatte, immagini dal PRODOTTO)
+## 5. Contenuti A+ (PRODOTTI — `04 Mercato/contenuti-a-plus/`)
 Immagini prese dal PDF reale (`pdftoppm`/pymupdf) e dalla copertina, mai mockup.
 - **Testata 970×600**: copertina + tagline "Run your first game with confidence."
 - **Fascia testo 970×300**: la promessa "Prep a session in under an hour" con 3 punti
