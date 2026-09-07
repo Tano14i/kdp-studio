@@ -98,6 +98,11 @@ Vietato: prezzo, promesse di consegna, contatti, link esterni, marchi altrui.
   (KDP lo aggiunge in stampa).
 - Front e quarta 4K già pronte; va montata la wraparound su tela a queste misure
   (texture dal generatore, testo/dorso/aree in PIL — mai stimati).
+- **Template generato**: `02 Validazione/copertina-bozze/wraparound-template.png`
+  (3725×2775 px, dorso 0,1666", aree sicure + zona barcode marcate) via
+  `build_cover_template.py`. Le immagini 4K vanno inserite nei due riquadri: il
+  compositing finale non è stato fatto qui perché il proxy blocca cloudfront (le
+  4K non erano scaricabili). Da completare dove cloudfront è raggiungibile.
 
 ## 7. Campagne (accendere DOPO scheda+copertina+A+ vivi)
 Nicchia stretta → il motore è il **targeting per ASIN** dei concorrenti.
@@ -109,7 +114,9 @@ Soglia offerte = royalty ÷ costo-click. Negativi dal giorno 1 (termini fuori te
 ## 8. Prima di caricare
 - [ ] Copia prova FISICA (l'unica che dice se la pagina respira).
 - [ ] **Dichiarazione IA** nei metadati: Text = AI-assisted, Images = AI-generated.
-- [ ] QR del lead magnet → pagina di destinazione PUBBLICA e stabile (indirizzo in
-  un punto solo). Oggi è un placeholder (`yourbookdomain.example/dm-pack`): va reso reale.
+- [x] Lead magnet PDF pronto: `04 Mercato/lead-magnet-1-hour-session-prep-checklist.pdf`.
+  Distribuzione: via **email** (gestita dall'autore). Il QR nel libro deve quindi
+  puntare a un modulo di iscrizione email (o va rimosso): oggi è placeholder
+  (`yourbookdomain.example/dm-pack`) → sostituire con l'URL del form reale.
 - [ ] Keyword validate sui suggerimenti Amazon reali (§2).
 - [ ] Prezzo confermato (§1).

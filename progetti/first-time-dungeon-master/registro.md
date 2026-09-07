@@ -41,10 +41,14 @@ concept (`decisioni/01-concept.md`), copertina + prezzo $13.99
 verificato pagina-per-pagina (`03 Produzione/interni/`, foliazione generata).
 **CP6 chiuso (07/09):** scheda KDP pronta (`04 Mercato/report-pubblicazione.md`,
 `decisioni/06-scheda-kdp.md`), **prezzo $10.99** (eBook $5.99).
-**Aperto adesso:** fase 11 — montare la **wraparound** cartacea (dorso 0,1666";
-3725×2775 px @300dpi; niente testo sul dorso sotto 100 pag). Poi azioni fuori
-sessione: validare keyword su Amazon reale, lead magnet PDF + pagina pubblica per il
-QR, copia prova fisica, dichiarazione IA (Text: AI-assisted, Images: AI-generated).
+**Fatto (07/09):** template wraparound alle misure esatte
+(`02 Validazione/copertina-bozze/wraparound-template.png`, dorso 0,1666") e lead
+magnet PDF (`04 Mercato/lead-magnet-1-hour-session-prep-checklist.pdf`, distribuito
+via email dall'autore). Il compositing finale della copertina con le 4K non è stato
+possibile qui (proxy blocca cloudfront).
+**Restano azioni fuori sessione:** inserire le 4K nel template dove cloudfront è
+raggiungibile; QR → form email reale; validare keyword su Amazon; copia prova
+fisica; dichiarazione IA; pubblicare. Il libro è di fatto pronto.
 
 ## 3. Cosa manca, in ordine
 - [x] Nicchia (fase 1) · avatar (2) · concept CP1 (3)
