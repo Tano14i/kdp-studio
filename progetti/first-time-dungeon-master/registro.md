@@ -21,7 +21,7 @@ Cedric Darkstone (pen name) · inglese · mercato Amazon US · avviato il 06/09/
 | 7 | Campione di scrittura | fatto (approvato) | CP5 chiuso ✓ | 07/09 |
 | 8 | Manoscritto | bozza espansa ~19,5k parole (~110-125 pag stimate) | — | 07/09 |
 | 9 | Revisione | fatto (script + AI-writing + verbale) | — | 07/09 |
-| 10 | Interni impaginati | da fare | — | |
+| 10 | Interni impaginati | PDF 6x9 fatto: 75 pag REALI | — | 07/09 |
 | 11 | Immagini, copertina finita | in corso | — | |
 | 12 | Scheda, A+, social/campagne | CP7 chiuso (social); CP6 A+ da fare | CP6 · CP7 | 06/09 |
 | 13 | Traduzione e mercati | da fare | — | |
@@ -81,12 +81,13 @@ scheda + A+ (CP6).
 - (06/09) La produzione è partita dalla copertina senza spina dorsale (nicchia →
   avatar → concept). Non è un blocco, ma va sanato prima del marketing, altrimenti
   ogni contenuto social nasce senza un "per chi" e un "contro chi".
-- (07/09) Discrepanza piano/artefatto (regia §10): outline stimava ~151 pagine;
-  la bozza scritta densa "no rambling" è ~10k parole ≈ ~70-90 pagine stampate 6×9.
-  Troppo corta vs concorrenti (146-169 pag.) per un prezzo $13.99. Decisione autore
-  richiesta: espandere (esempi giocati per capitolo + avventura starter pronta in
-  appendice) oppure correggere il piano (libro più corto + prezzo più basso). NON
-  lasciare piano e artefatto diversi.
+- (07/09) Discrepanza piano/artefatto (regia §10), RISOLTA dai numeri reali:
+  l'impaginazione dà **75 pagine reali** 6×9 (~19,5k parole, 2 avventure, bestiario,
+  tabelle, 13 capitoli). Le mie stime intermedie (~110-140) erano troppo ottimiste;
+  ha ragione l'artefatto. Ancora sotto i concorrenti (146-169). Decisione autore
+  aperta: raddoppiare i contenuti per ~140 (altre 2 avventure + capitoli + tabelle
+  d100) oppure accettare ~75-90 pag e riprezzare ($9.99). Le mie stime a parole non
+  vanno più usate: si conta sul PDF.
 - (07/09) Correzione di merito: il 06/09 avevo concluso "fetta DM alle prime armi
   scoperta" da sola ricerca web. I dati diretti (Heim 4.6★/505 rec., Shea 4.7★/
   3.766 rec., forniti dall'autore) mostrano concorrenti diretti forti. Il varco
