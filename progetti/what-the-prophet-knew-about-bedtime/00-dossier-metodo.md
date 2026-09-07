@@ -53,7 +53,19 @@ pubblicazione invece che dopo.
 
 ## 2. Aperto adesso
 
-**Venti minuti di riparazione del profilo Instagram, e poi sette giorni di
+**La pagina del link in bio, e viene prima di tutto il resto.** Letta il
+07/09: **su quella pagina il libro non c'è.** Niente titolo, niente copertina,
+nessun link ad Amazon — e quella pagina è l'unica destinazione del profilo.
+Il percorso è `contenuto → profilo → link → email → ⊘`: non c'è nessun
+passaggio in cui una persona che vuole il libro possa comprarlo.
+
+**È la risposta al «2.200 visualizzazioni e zero vendite», e smette di essere
+un mistero.** Quaranta minuti di riparazione, tutta gratis, tutta fuori da
+KDP: `05 Social/pagina-lead-magnet.md` §5. Sistemare il profilo perché più
+gente clicchi un link che finisce nel vuoto peggiora le cose, quindi la pagina
+va prima.
+
+**Poi venti minuti di riparazione del profilo Instagram, e sette giorni di
 farming.** Il cancello del giorno 0 è passato il 07/09 con verdetto **caso 2**:
 l'account `@karacleim` non è compromesso — dieci post tutti in nicchia, due
 oltre le 1.500 visualizzazioni con 45 follower — ma **segue tre account**,
@@ -157,25 +169,29 @@ prima.
    il 07/09: `_profili/kara-clem/identita.md`, `05 Social/materia-prima.md`,
    `05 Social/piano-mese-01.md`
 10. ~~Cancello del giorno 0~~ — passato il 07/09, caso 2:
-    `05 Social/giorno-0-cancello.md`. **Restano da fare, in quest'ordine:** le
-    sei riparazioni del profilo (§5), sette giorni di farming, la risposta alla
-    domanda sull'identità del pen name (`identita.md` §7), la verifica dei
-    riferimenti degli hadith su sunnah.com (`materia-prima.md` §4), poi il
+    `05 Social/giorno-0-cancello.md`
+11. ~~Letta la pagina del link in bio~~ — 07/09,
+    `05 Social/pagina-lead-magnet.md`. **Restano da fare, in quest'ordine:**
+    la riparazione della pagina (§5) — **prima di tutto**, perché è la
+    destinazione rotta; poi le sei riparazioni del profilo
+    (`giorno-0-cancello.md` §5); poi sette giorni di farming; poi la risposta
+    alla domanda sull'identità del pen name (`identita.md` §7) e la verifica
+    dei riferimenti degli hadith su sunnah.com (`materia-prima.md` §4); poi il
     giorno 1
-11. **Fase 1 all'indietro** — §7. Ora ha un punto di partenza vero: i nove
+12. **Fase 1 all'indietro** — §7. Ora ha un punto di partenza vero: i nove
     concorrenti con i prezzi in `03 Scheda/scheda-viva.md` §3
-12. **Le prime recensioni.** Zero recensioni su un libro devozionale per
+13. **Le prime recensioni.** Zero recensioni su un libro devozionale per
     bambini è un cancello: nessuno compra il primo. Fa parte del piano della
     fase 14
-13. **L'edizione Kindle**, che non esiste: seconda scheda, secondo prezzo
+14. **L'edizione Kindle**, che non esiste: seconda scheda, secondo prezzo
     d'ingresso, nessun costo di stampa
-14. **Rifare le due grafiche promo** (`…20260702_101201…` col testo sfasciato,
+15. **Rifare le due grafiche promo** (`…20260702_101201…` col testo sfasciato,
     `…20260702_100621…` col sottotitolo che non è quello online). Gratis, non
     passano da KDP
-15. **Un solo caricamento dell'interno corretto** — le sei `C`, le fonti degli
+16. **Un solo caricamento dell'interno corretto** — le sei `C`, le fonti degli
     hadith, la pagina del lead magnet — più la copertina rifatta se cambia la
     foliazione. **Ultimo, non primo:** vedi `03 Scheda/scheda-viva.md` §2
-16. Le fasi 3, 5, 6 messe per iscritto, perché la fase 14 le userà
+17. Le fasi 3, 5, 6 messe per iscritto, perché la fase 14 le userà
 
 ## 5. Da non dimenticare
 
@@ -197,6 +213,11 @@ prima.
 - **Il generatore di immagini scrive lettere finte.** Provato due volte qui:
   `10 Bedfor` sulla promo, sei `C` dentro gli interni. Ogni immagine nuova va
   riletta cercando testo prima di metterla in pagina.
+
+- **Il percorso conta più del contenuto.** Il difetto peggiore trovato su
+  questo progetto non è in nessun contenuto: è che il percorso dal contenuto
+  al libro **non arrivava da nessuna parte**. Prima di produrre altro, si
+  cammina il percorso intero fino ad Amazon, un anello alla volta.
 
 - **La grafica col testo inventato era già online.** Il post «Every night has
   a secret…» su Instagram è l'immagine `…20260702_101201…`, quella con
