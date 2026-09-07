@@ -1,11 +1,10 @@
 # Dossier di metodo — what-the-prophet-knew-about-bedtime
 
 pen name **Kara Clem** · inglese (Amazon.com) · aperto il 07/09/2026
+**Libro già pubblicato** — corretto il 07/09, vedi §6
 
-Secondo progetto del repo che entra **dalla fine**, come
-`smetti-di-chiedere-il-permesso`: il libro è già scritto, illustrato e
-impaginato. Ma a differenza di quello, qui non è ancora pubblicato — e questo
-cambia tutto, perché c'è ancora tempo per aggiustare.
+Terzo progetto del repo che entra dalla fine, e il secondo che entra a libro
+già online, come `smetti-di-chiedere-il-permesso`.
 
 Il prodotto sta su Drive, cartella «Kara Clem»
 `1u6FtDEZg4JiS8mcEPyDo8CjrnVriWY70`. Non è nel repo: qui c'è il registro, non
@@ -14,11 +13,13 @@ i file.
 ## Indice
 1. Stato
 2. Aperto adesso
-3. Cosa manca, in ordine
-4. Da non dimenticare
-5. Perché la ricerca si fa lo stesso, anche se il libro è scritto
+3. Cosa si può ancora cambiare, e a che prezzo
+4. Cosa manca, in ordine
+5. Da non dimenticare
+6. Errori commessi e come sono stati corretti
+7. Perché la ricerca si fa lo stesso, a libro pubblicato
 
-## Stato
+## 1. Stato
 
 | # | Fase | Stato | Checkpoint | Chiuso il |
 |---|------|-------|-----------|-----------|
@@ -27,103 +28,167 @@ i file.
 | 1b | Angolo | **mai fatta** | — | |
 | 2 | Avatar cliente | **mai fatta** | — | |
 | 3 | Concept e positioning | **eseguito ma non scritto** | CP1 | |
-| 4 | Titolo, sottotitolo, copertina | **in corso — testo deciso, copertina no** | CP2 | |
+| 4 | Titolo, sottotitolo, copertina | **testo deciso — ma vedi §2** | CP2 | 07/09 |
 | 5 | Outline | **eseguito ma non scritto** | CP3 | |
 | 6 | DNA stilistico | **eseguito ma non scritto** | CP4 | |
 | 7 | Campione di scrittura | saltato | CP5 | |
 | 8 | Manoscritto | **fatto fuori dal metodo** | — | |
 | 9 | Revisione | **mai fatta** | — | |
-| 10 | Interni impaginati | **fatto, con tre difetti aperti** | — | |
-| 11 | Immagini, copertina finita | **quasi — vedi §2** | — | |
-| 12 | Scheda, A+, campagne | da fare | CP7 | |
+| 10 | Interni impaginati | **pubblicati, con quattro difetti aperti** | — | |
+| 11 | Immagini, copertina finita | **pubblicata** | — | |
+| 12 | Scheda, A+, campagne | **pubblicata — contenuto da verificare** | CP7 | |
 | 13 | Traduzione e mercati | da fare | CP6 | |
-| 14 | Promozione social | da fare | — | |
+| 14 | Promozione social | **da fare, ed è l'unica leva vera** | — | |
 
-Le fasi 3, 5 e 6 sono **eseguite ma non scritte**, che è lo stato che regia §9
-chiama il più pericoloso: il libro ha evidentemente un concept, un indice e
-una voce — sono lì, si leggono nelle pagine — ma non esistono in nessun file,
-quindi non si possono usare per la scheda Amazon né per il piano social, e
-alla prossima decisione verranno reinventati diversi.
+Le fasi 3, 5 e 6 sono **eseguite ma non scritte**, lo stato che regia §9 chiama
+il più pericoloso: il libro ha evidentemente un concept, un indice e una voce
+— si leggono nelle pagine — ma non esistono in nessun file, quindi non si
+possono usare per la descrizione né per il piano social, e alla prossima
+decisione verranno reinventati diversi.
 
-La 9 non è «da fare più tardi»: è **mai fatta**, e i difetti della §2 sono
-esattamente quello che una revisione avrebbe raccolto.
+La 9 non è «da fare più tardi»: è **mai fatta**, e i quattro difetti della §4
+sono esattamente quello che una revisione avrebbe raccolto **prima** della
+pubblicazione invece che dopo.
 
-## Aperto adesso
+## 2. Aperto adesso
 
-**Un dato solo, e blocca la copertina: il numero di pagine dell'interno.**
-Decide lo spessore del dorso, quindi finché non c'è, la copertina non si monta
-e la fase 11 non chiude. Da Drive non si legge — serve il PDF a portata di
-mano, o il numero.
+**Non so cosa c'è davvero sulla scheda viva, e senza saperlo non si tocca
+niente.** Amazon non è raggiungibile da questo contenitore (verificato il
+07/09: `000` su `amazon.com` e `amazon.it`), quindi la scheda la può leggere
+solo l'autore.
 
-Il testo del checkpoint 2 è invece **chiuso il 07/09**: vince il sottotitolo
-di copertina, *The Forgotten Sunnah Sleep Rituals That Protect, Calm, and
-Connect Your Child to Allah — Night by Night*. Scelta e scartate stanno in
-`02 Copertina/cp2-sottotitolo.md`, con il prezzo da pagare a valle: quel
-sottotitolo non contiene «30» né «Muslim kids», e vanno recuperate nelle
-parole chiave di backend e nella prima riga della descrizione.
+Servono cinque cose, e sono tutte guardabili in dieci minuti:
 
-## Cosa manca, in ordine
+1. **ASIN e link.** È la destinazione di ogni cosa che verrà dopo, e la chiave
+   per il targeting delle campagne.
+2. **Quali formati sono online** — ebook, paperback, hardcover, o più d'uno.
+   Cambia cosa si può correggere e come: il paperback ha il dorso, l'ebook no.
+3. **Quale sottotitolo è andato online.** Se è già *The Forgotten Sunnah…*
+   allora il checkpoint 2 è chiuso e non c'è niente da fare. Se è uno degli
+   altri due, non è una modifica: è un ticket all'assistenza (§3).
+4. **Quale copertina è andata online**, fra quelle su Drive.
+5. **La foliazione** dell'interno pubblicato.
+
+Finché non ci sono, ogni correzione è a occhi chiusi.
+
+## 3. Cosa si può ancora cambiare, e a che prezzo
+
+Questa è la tabella che riordina tutto il resto. A libro pubblicato le
+correzioni non costano più uguale, e il piano va costruito sui costi, non sulla
+gravità.
+
+| Cosa | Come | Costo |
+|---|---|---|
+| Descrizione, 7 parole chiave, categorie, prezzo | da sé, subito | **zero.** Reversibile, nessuna revisione |
+| Contenuti A+ | da sé, si aggiungono quando si vuole | **zero** |
+| Copertina | nuova revisione | ciclo di revisione |
+| Interno — le sei `C`, le fonti degli hadith, la pagina del lead magnet, il frontespizio | nuova revisione | ciclo di revisione; e se cambia la foliazione cambia il dorso, quindi **serve anche una copertina nuova** |
+| **Titolo e sottotitolo** | **non modificabili da sé a libro pubblicato** | ticket all'assistenza KDP, esito non garantito |
+
+Due conseguenze, e sono l'inversione rispetto a com'era ieri il piano:
+
+**La scheda va per prima, non l'interno.** Descrizione, parole chiave e
+categorie costano zero, si cambiano oggi, e sono ciò che decide se il libro
+viene trovato. L'interno perfetto di un libro che nessuno trova non serve a
+niente.
+
+**L'interno si tocca una volta sola.** Ogni revisione costa un ciclo, e se
+cambia la foliazione trascina la copertina. Quindi i quattro difetti si
+correggono **in un unico caricamento**, non in quattro. Aggiungere le pagine
+delle fonti cambia il conteggio: va fatto insieme alla copertina nuova, non
+prima.
+
+## 4. Cosa manca, in ordine
 
 1. ~~Cartella e dossier~~ — fatti il 07/09
-2. ~~Specifiche estratte dal prodotto~~ — fatte il 07/09,
-   `01 Prodotto/spec-dal-pdf.md`
-3. ~~CP2: scegliere il sottotitolo~~ — chiuso il 07/09, vince quello di
-   copertina. `02 Copertina/cp2-sottotitolo.md`
-4. **La foliazione dell'interno**, dal PDF vero. È l'unica cosa che blocca.
-5. **Riallineare il frontespizio** del PDF al sottotitolo scelto.
-6. **Le sei pagine con la `C`** (notti 7, 13, 15, 23, 24, 25): guardarle,
-   confermare il difetto, rigenerare o ritoccare le illustrazioni.
-7. **La pagina del lead magnet**: verificare che esista e che porti un QR o un
-   indirizzo. Se non c'è, il tracker non arriva a nessuno.
-8. **Due pagine di fonti degli hadith** in fondo al libro. Prima della stampa,
-   perché dopo non si aggiungono.
-9. **Rifare le due grafiche promo**: quella con il testo sfasciato
-   (`…20260702_101201…`, `10 Bedfor`) e quella che porta il sottotitolo
-   scartato (`…20260702_100621…`).
-10. **Fase 1 all'indietro** — vedi §5. Non decide più se fare il libro: serve
-    a prezzo, categorie e parole chiave della scheda. E ora ha un compito in
-    più: recuperare «30» e «Muslim kids», che il sottotitolo scelto non porta.
-11. Poi: fase 12, `pubblicazione-kdp`.
-12. Poi: fase 14, `promozione-social`. Non è facoltativa.
+2. ~~Specifiche estratte dal prodotto~~ — `01 Prodotto/spec-dal-pdf.md`
+3. ~~CP2, il testo del sottotitolo~~ — `02 Copertina/cp2-sottotitolo.md`.
+   **Da riaprire solo se online è finito un sottotitolo diverso** (§2.3)
+4. **I cinque dati della §2.** Bloccano tutto il resto.
+5. **La scheda, subito e a costo zero**: descrizione, 7 parole chiave,
+   categorie, prezzo. È il passo 12 e va fatto adesso perché è gratis e
+   istantaneo. Qui rientra il debito del sottotitolo: «30» e «Muslim kids»
+   non stanno nel titolo scelto e vanno recuperate qui
+   (`02 Copertina/cp2-sottotitolo.md` §3)
+6. **Contenuti A+.** Costo zero, si aggiungono a scheda viva
+7. **Fase 14, `promozione-social`.** A libro pubblicato è l'unica leva che
+   porta lettori davvero. Non è l'ultimo passo: è quello che manca
+8. **Un solo caricamento dell'interno corretto**, con tutti e quattro i
+   difetti chiusi insieme, più la copertina rifatta sulla foliazione nuova
+9. **Rifare le due grafiche promo**: quella col testo sfasciato
+   (`…20260702_101201…`) e quella col sottotitolo scartato
+   (`…20260702_100621…`)
+10. **Fase 1 all'indietro** — §7. Serve a prezzo, categorie, parole chiave e
+    targeting, non più a decidere se fare il libro
+11. Le fasi 3, 5, 6 messe per iscritto, perché la fase 14 le userà
 
-## Da non dimenticare
+## 5. Da non dimenticare
 
-- **Questo libro non è sul mercato degli altri quattro progetti.** È in
-  inglese, quindi Amazon.com. `_profili/note-mercato.md` misura la saggistica
-  pratica su Amazon.it: **non vale qui, nemmeno un numero.** Riusarlo sarebbe
-  l'errore di regia §13 — lo strumento puntato sul mercato sbagliato.
+- **Amazon non è raggiungibile da questo contenitore.** Verificato il 07/09:
+  `000` su `amazon.com` e su `amazon.it`. Ogni dato della scheda arriva
+  dall'autore o non arriva. Vale anche per le recensioni dei concorrenti della
+  fase 1.
 
-- **Il Profeta ﷺ non è mai raffigurato**, e il colophon lo dichiara. È la
-  regola che governa ogni immagine del libro e ogni futura grafica social:
-  vale anche per il video promo e per i contenuti della fase 14. Chi genera
-  un'illustrazione nuova deve saperlo prima di generarla, non dopo.
+- **Questo libro non è sul mercato degli altri progetti.** È in inglese, quindi
+  Amazon.com. `_profili/note-mercato.md` misura la saggistica pratica su
+  Amazon.it: **non vale qui, nemmeno un numero.** Riusarlo sarebbe l'errore di
+  regia §13, lo strumento puntato sul mercato sbagliato.
 
-- **Il generatore di immagini scrive lettere finte.** Provato due volte in
-  questo progetto: `10 Bedfor` sulla promo, e sei `C` sparse negli interni.
-  Ogni immagine nuova va riletta cercando testo, prima di metterla in pagina.
+- **Il Profeta ﷺ non è mai raffigurato**, e il colophon lo dichiara. Governa
+  ogni immagine del libro e ogni grafica futura: vale per il video promo e per
+  tutti i contenuti della fase 14. Chi genera un'illustrazione nuova deve
+  saperlo prima, non dopo.
 
-- **Il pen name e la materia non si somigliano.** «Kara Clem» su un libro
-  devozionale islamico per bambini è una scelta che il lettore di quella
-  categoria nota. Non blocca la pubblicazione; decide se il libro raccoglie
-  recensioni o resta fermo. Va deciso con gli occhi aperti, prima della
-  scheda, non dopo la prima stella.
+- **Il generatore di immagini scrive lettere finte.** Provato due volte qui:
+  `10 Bedfor` sulla promo, sei `C` dentro gli interni. Ogni immagine nuova va
+  riletta cercando testo prima di metterla in pagina.
 
-## Perché la ricerca si fa lo stesso, anche se il libro è scritto
+- **Le recensioni che arriveranno sono un dato, non un giudizio.** Su un libro
+  devozionale, le prime critiche diranno con precisione se il problema è
+  l'assenza di fonti (§4.4 della spec) o il pen name. Vanno raccolte e rilette,
+  perché rifanno la descrizione e la materia prima della fase 14.
 
-Le fasi 1, 1b e 2 non sono state fatte, e il libro esiste comunque. La
-tentazione è archiviarle come acqua passata.
+## 6. Errori commessi e come sono stati corretti
 
-Non lo sono, ma **cambiano mestiere**. Il verdetto SI FA / NON SI FA serviva a
-decidere se scrivere, e quella decisione è già stata presa e non si annulla:
-il cancello di regia §3 qui è speso. Quello che la ricerca dà ancora, tutto
-intero, è:
+**07/09 — ho dato il libro per non pubblicato, e ci ho costruito sopra tutto
+il piano.** La cartella Drive contiene interni, copertina e immagini, e nessun
+ASIN, nessun link, nessuno screenshot di scheda. Da quell'assenza ho dedotto
+«non ancora online», e ho ordinato le priorità di conseguenza: prima
+l'interno, poi la scheda.
 
-- **il prezzo** — che si legge dai concorrenti, non si indovina
-- **le categorie e le parole chiave** della scheda, che sono il 90% di quanto
-  un libro nuovo viene trovato
+È esattamente la trappola di regia §13: **prima di credere a uno zero, verifica
+di aver interrogato la cosa giusta.** La cartella Drive è il posto dove stanno
+i file di produzione, non è il posto dove starebbe la prova della
+pubblicazione. Non avevo interrogato niente: avevo letto un silenzio.
+
+Correzione, oltre al dato: l'ordine dei passi era **invertito**. A libro
+pubblicato la scheda costa zero e si cambia oggi, l'interno costa un ciclo di
+revisione e trascina la copertina. Il piano di ieri metteva per prima la cosa
+cara e per ultima quella gratis.
+
+La regola che ne resta: **su un progetto che entra dalla fine, la prima domanda
+è "è online?", e si fa all'autore prima di leggere qualunque file.** Non si
+deduce dalla cartella.
+
+## 7. Perché la ricerca si fa lo stesso, a libro pubblicato
+
+Le fasi 1, 1b e 2 non sono state fatte, e il libro non solo esiste: è in
+vendita. La tentazione di archiviarle è ancora più forte di ieri.
+
+Ma **cambiano mestiere, non diventano inutili**. Il verdetto SI FA / NON SI FA
+serviva a decidere se scrivere: quella decisione è presa, il cancello di regia
+§3 è speso, e non si riapre. Quello che la ricerca dà ancora, tutto intero, è
+la materia prima dei passi 5, 6, 7 e 10 della §4:
+
+- **il prezzo**, che si legge dai concorrenti e non si indovina
+- **le categorie e le 7 parole chiave**, che su un libro nuovo sono quasi tutto
+  quello che decide se viene trovato — e qui pesano il doppio, perché il
+  sottotitolo scelto non porta le parole di ricerca
 - **il targeting delle campagne**, che parte dalla tabella degli ASIN
 - **le parole dei lettori**, dalle recensioni dei concorrenti: sono la materia
-  prima della descrizione e dei contenuti social della fase 14
+  prima della descrizione, dei contenuti A+ e della fase 14
 
-Quindi la fase 1 si fa, ma dopo il checkpoint 2 e i difetti degli interni,
-perché quelli hanno una scadenza fisica — la stampa — e questa no.
+E c'è una domanda in più che ieri non c'era: **il libro sta vendendo?** Se sì,
+i difetti dell'interno diventano urgenti, perché ogni copia venduta è una copia
+con le sei `C` dentro. Se no, la scheda e la fase 14 vengono prima di
+tutto — perché un libro che nessuno trova non ha un problema di interni.

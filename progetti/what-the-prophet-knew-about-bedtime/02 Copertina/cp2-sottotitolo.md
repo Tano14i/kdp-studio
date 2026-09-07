@@ -52,14 +52,29 @@ Vanno recuperate qui, e questa è la nota da rileggere alla fase 12:
 
 ## 4. Cosa resta aperto del checkpoint 2
 
-La scelta chiude il **testo**. Il checkpoint 2 completo comprende anche come
-il libro si presenta, e due pezzi mancano ancora:
+**Nota del 07/09, dopo la scelta: il libro è già pubblicato.** Questo cambia
+cosa vale la decisione qui sopra, e va letto prima di agire.
 
-- **Il frontespizio del PDF va riallineato** al sottotitolo scelto. Oggi ne
-  porta un altro.
-- **La copertina non si può montare** finché non si conosce la foliazione
-  dell'interno: è quella che decide lo spessore del dorso. È il dato aperto
-  del dossier §2.
+**Se online c'è già questo sottotitolo, il checkpoint è chiuso e non c'è
+niente da fare.** La copertina che lo porta esiste (`…20260628_220222…`) ed è
+plausibilmente quella andata in stampa: è l'unica delle tre a essere una
+copertina vera e non una grafica promo.
 
-La grafica promo `…20260702_100621…` porta il sottotitolo scartato: va rifatta
-anche lei, insieme a quella con il testo sfasciato.
+**Se online c'è uno degli altri due, non è una modifica: è un ticket.** A libro
+pubblicato titolo e sottotitolo non sono campi editabili da sé su KDP — vanno
+chiesti all'assistenza, e l'esito non è garantito. Prima di aprirlo, vale la
+pena chiedersi se ne vale la pena: un sottotitolo diverso da quello preferito
+costa molto meno di una scheda senza parole chiave, e quelle si aggiustano
+gratis oggi.
+
+In entrambi i casi, quello che resta da fare non cambia:
+
+- **Il frontespizio del PDF va riallineato** al sottotitolo davvero online.
+  Entra nell'**unico** caricamento dell'interno corretto, insieme agli altri
+  tre difetti — non da solo (dossier §3).
+- **La grafica promo `…20260702_100621…`** porta il sottotitolo scartato: va
+  rifatta, insieme a quella col testo sfasciato. Costano zero, non passano da
+  KDP.
+- **Il debito della §3 va pagato adesso.** Le parole chiave e la descrizione
+  si cambiano da soli, subito, senza revisione: è il primo posto dove il libro
+  guadagna qualcosa oggi.
