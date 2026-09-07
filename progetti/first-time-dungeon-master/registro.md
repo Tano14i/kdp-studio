@@ -20,7 +20,7 @@ Cedric Darkstone (pen name) · inglese · mercato Amazon US · avviato il 06/09/
 | 6 | DNA stilistico | fatto | CP4 chiuso ✓ | 07/09 |
 | 7 | Campione di scrittura | fatto (approvato) | CP5 chiuso ✓ | 07/09 |
 | 8 | Manoscritto | bozza espansa ~19,5k parole (~110-125 pag stimate) | — | 07/09 |
-| 9 | Revisione | da fare | — | |
+| 9 | Revisione | fatto (script + AI-writing + verbale) | — | 07/09 |
 | 10 | Interni impaginati | da fare | — | |
 | 11 | Immagini, copertina finita | in corso | — | |
 | 12 | Scheda, A+, social/campagne | CP7 chiuso (social); CP6 A+ da fare | CP6 · CP7 | 06/09 |
@@ -39,8 +39,12 @@ concept (`decisioni/01-concept.md`), copertina + prezzo $13.99
 **Aperto adesso:** fase 8 — **Manoscritto**, in scrittura in
 `03 Produzione/manoscritto/`, un file per capitolo, sotto outline + DNA. Cap. 2
 già scritto e approvato come campione. Regole DNA §10 attive.
-Prossimo dopo il manoscritto: revisione (fase 9), interni impaginati (10),
-copertina finita/wraparound (11), scheda+A+ (CP6).
+**Revisione (fase 9) fatta (07/09):** controlli automatici su tutto (PASS),
+pass avoid-ai-writing, verbale in `03 Produzione/note-revisione.md`, 3 regole nuove
+nel DNA §10. Manoscritto pronto per l'impaginazione.
+Prossimo: interni impaginati / PDF stampa (fase 10) — è lì che esce il numero pagine
+reale (target 140; se corto, terza avventura). Poi copertina finita/wraparound (11),
+scheda + A+ (CP6).
 
 ## 3. Cosa manca, in ordine
 - [ ] Verdetto di nicchia con numeri (fase 1) — *saltato*

@@ -63,6 +63,13 @@ Proposte, in inglese, con motivo:
 - "master" come verbo se ripetuto (nel titolo è ok; nel corpo non abusarne)
 → L'autore conferma, toglie o aggiunge.
 
+Nota d'uso (rev. 07/09): "simply", "just", "actually", "very" sono vietati come
+**intensificatori vuoti / minimizzatori** ("just choose", "actually simpler",
+"very easy"). Restano ammessi gli usi che portano informazione: "just" TEMPORALE
+("has just been dragged", "just walked in") e "actually" CONTRASTIVO che marca un
+divario reale ("what they say vs what they actually want"). Il linter li segnala:
+vanno controllati a mano, non tagliati alla cieca.
+
 ## 7. Parole/dispositivi firma
 - Frasi ricorrenti: "at the table", "session one", "when in doubt, make a ruling".
 - **Box ricorrente "At the table:"** — un consiglio pratico da usare durante il
