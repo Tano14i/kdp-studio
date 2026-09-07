@@ -82,6 +82,13 @@ lead magnet e i contenuti A+ (CP6), oppure tornare alla spina dorsale mancante
 - (06/09) La produzione è partita dalla copertina senza spina dorsale (nicchia →
   avatar → concept). Non è un blocco, ma va sanato prima del marketing, altrimenti
   ogni contenuto social nasce senza un "per chi" e un "contro chi".
+- (07/09) Correzione di merito: il 06/09 avevo concluso "fetta DM alle prime armi
+  scoperta" da sola ricerca web. I dati diretti (Heim 4.6★/505 rec., Shea 4.7★/
+  3.766 rec., forniti dall'autore) mostrano concorrenti diretti forti. Il varco
+  resta ma è di **formato/promessa** (template/checklist, prima sessione, tempo di
+  prep), non di assenza. Lezione: non scrivere un varco come fatto da una fonte sola.
+- (07/09) Correzione prezzo: €13,90 non è alto — lo è solo vs intro-giocatore
+  ($7.99-11.99); vs i DM-book veri (Heim $14.99, Shea $29.99) è in linea/prudente.
 - (06/09) Limite d'ambiente: il proxy di questa sessione **nega Amazon per policy**
   (403). Né WebFetch né `kdp_server.py` possono raccogliere numeri live Amazon da
   qui. I dati di nicchia vanno raccolti dove Amazon è raggiungibile (Railway/PC).

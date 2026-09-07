@@ -58,5 +58,12 @@ l'enciclopedia, ma il coach della prima sessione.
   scambiati per l'ennesimo intro-giocatore e persi nel confronto sulle recensioni.
 - Gripe sfruttabile: un intro concorrente è "a bit repetitive" → il nostro taglio
   template/checklist, asciutto, è un vantaggio reale.
-Da completare: lettura recensioni di concorrenti **DM-specifici** (Eric Heim,
-Sly Flourish) per rifinire dolori/linguaggio del DM prima di scalare in ads.
+Aggiornamento 07/09 — concorrenti DM-specifici confermano l'avatar:
+- **Heim** vende proprio a "Marco DM-0": *"Only ever been a player? Want to
+  experience the mystery behind the DM's screen?"* → 4.6★, 505 rec. L'avatar è
+  reale e paga (il transito giocatore→primo DM è un mercato, non un'ipotesi).
+- **Shea** (3.766 rec.) mostra che il tema "prep / condurre meglio" ha un bacino
+  enorme, ma parla anche a DM esperti: sopra il nostro avatar.
+- Linguaggio dei compratori DM: "practical advice", "plan sessions", "prep time",
+  "easy quick read". Da riusare nel copy. Il nostro affondo: **template/checklist
+  + prima sessione + tempo di prep dichiarato**, che loro non mettono al centro.
