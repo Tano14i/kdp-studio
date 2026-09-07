@@ -17,8 +17,8 @@ Cedric Darkstone (pen name) · inglese · mercato Amazon US · avviato il 06/09/
 | 3 | Concept e positioning | fatto | CP1 chiuso ✓ | 07/09 |
 | 4 | Titolo, sottotitolo, copertina | fatto ($13.99, badge sì) | CP2 chiuso ✓ | 07/09 |
 | 5 | Outline | fatto | CP3 chiuso ✓ | 07/09 |
-| 6 | DNA stilistico | in corso | CP4 | |
-| 7 | Campione di scrittura | in corso | CP5 | |
+| 6 | DNA stilistico | CP4 aperto (bozza pronta) | CP4 | |
+| 7 | Campione di scrittura | CP5 aperto (Cap.2 scritto) | CP5 | |
 | 8 | Manoscritto | da fare | — | |
 | 9 | Revisione | da fare | — | |
 | 10 | Interni impaginati | da fare | — | |
