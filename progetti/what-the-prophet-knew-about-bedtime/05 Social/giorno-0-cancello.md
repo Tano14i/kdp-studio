@@ -90,8 +90,10 @@ Dice `Kara`. Ma su Instagram **il nome visualizzato è un campo che entra nella
 ricerca**, ed è il secondo più pescabile dopo l'handle. Una parola generica lì
 è il posto più caro del profilo lasciato vuoto.
 
-Va scritto: **`Kara Clem · Bedtime Sunnah`** — o la variante che regge se
-l'handle diventa di nicchia.
+Va scritto **`Kara Clem · Muslim Kids Books`** (29 caratteri) se l'handle
+diventa `@bedtimesunnah`, oppure **`Kara Clem · Bedtime Sunnah`** (26) se
+l'handle resta sul pen name. Il limite è 30, e i due campi non devono
+ripetere la stessa parola: insieme coprono più ricerche.
 
 ### 3.3 La bio parla di lei, non del lettore
 
@@ -153,9 +155,12 @@ visualizzazioni, e toglierlo costa dieci secondi.
 
 1. **Cambiare l'handle.** `@karaclem` o `@bedtimesunnah` — la scelta è §3.1.
    Adesso costa niente.
-2. **Nome visualizzato** → `Kara Clem · Bedtime Sunnah`.
-3. **Bio** → le quattro righe di `identita.md` §4. Incollala e **guardala**:
-   se il carattere ﷺ ribalta la riga 2, scrivi *(peace be upon him)*.
+2. **Nome visualizzato** → `Kara Clem · Muslim Kids Books` (29 car.) se
+   l'handle diventa `@bedtimesunnah`, `Kara Clem · Bedtime Sunnah` (26) se
+   resta sul pen name. I due campi non devono ripetersi.
+3. **Bio** → tre righe, **dentro i 150 caratteri** di Instagram. Le tre
+   opzioni contate stanno in `identita.md` §4; la consigliata è a 139.
+   Guarda il contatore nell'app mentre incolli.
 4. **Togliere il post** *«Every night has a secret…»*.
 5. **Rinominare lo slug** della pagina di raccolta.
 6. **Riempire le tre evidenze** — *The Book* · *Bedtime Sunnah* · *Free
