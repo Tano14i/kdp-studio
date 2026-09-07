@@ -23,7 +23,7 @@ Cedric Darkstone (pen name) · inglese · mercato Amazon US · avviato il 06/09/
 | 9 | Revisione | fatto (script + AI-writing + verbale) | — | 07/09 |
 | 10 | Interni impaginati | DEFINITIVO: PDF 6x9, 74 pag | — | 07/09 |
 | 11 | Immagini, copertina finita | in corso | — | |
-| 12 | Scheda, A+, social/campagne | CP6 proposto (scheda pronta); CP7 chiuso | CP6 · CP7 | 06/09 |
+| 12 | Scheda, A+, social/campagne | CP6 chiuso ($10.99); CP7 chiuso | CP6 · CP7 | 06/09 |
 | 13 | Traduzione e mercati | da fare | — | |
 
 > Nota onesta: le fasi 1-3, 5-10 non sono state eseguite come artefatti in questo

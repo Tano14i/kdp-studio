@@ -11,7 +11,7 @@ Fase 12 · Checkpoint 6 (proposto) · 07/09/2026 · Amazon US, inglese
 7. Campagne (dopo il lancio)
 8. Prima di caricare
 
-## 1. Prezzo — DECISIONE APERTA
+## 1. Prezzo — CONFERMATO: $10.99 (eBook $5.99)
 CP2 aveva fissato $13.99 stimando ~150 pagine. Il libro reale è **74 pagine**.
 - Concorrenti diretti: Heim $14.99 (146+ pag), Shea $29.99. Intro-giocatore $7.99-11.99.
 - A 74 pagine, $13.99 è **alto** e rischia recensioni "sottile".
