@@ -19,7 +19,7 @@ Cedric Darkstone (pen name) · inglese · mercato Amazon US · avviato il 06/09/
 | 5 | Outline | fatto | CP3 chiuso ✓ | 07/09 |
 | 6 | DNA stilistico | fatto | CP4 chiuso ✓ | 07/09 |
 | 7 | Campione di scrittura | fatto (approvato) | CP5 chiuso ✓ | 07/09 |
-| 8 | Manoscritto | in corso | — | |
+| 8 | Manoscritto | bozza completa (corta vs piano) | — | 07/09 |
 | 9 | Revisione | da fare | — | |
 | 10 | Interni impaginati | da fare | — | |
 | 11 | Immagini, copertina finita | in corso | — | |
@@ -77,6 +77,12 @@ copertina finita/wraparound (11), scheda+A+ (CP6).
 - (06/09) La produzione è partita dalla copertina senza spina dorsale (nicchia →
   avatar → concept). Non è un blocco, ma va sanato prima del marketing, altrimenti
   ogni contenuto social nasce senza un "per chi" e un "contro chi".
+- (07/09) Discrepanza piano/artefatto (regia §10): outline stimava ~151 pagine;
+  la bozza scritta densa "no rambling" è ~10k parole ≈ ~70-90 pagine stampate 6×9.
+  Troppo corta vs concorrenti (146-169 pag.) per un prezzo $13.99. Decisione autore
+  richiesta: espandere (esempi giocati per capitolo + avventura starter pronta in
+  appendice) oppure correggere il piano (libro più corto + prezzo più basso). NON
+  lasciare piano e artefatto diversi.
 - (07/09) Correzione di merito: il 06/09 avevo concluso "fetta DM alle prime armi
   scoperta" da sola ricerca web. I dati diretti (Heim 4.6★/505 rec., Shea 4.7★/
   3.766 rec., forniti dall'autore) mostrano concorrenti diretti forti. Il varco
