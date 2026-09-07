@@ -53,7 +53,15 @@ pubblicazione invece che dopo.
 
 ## 2. Aperto adesso
 
-**Il *printing cost* su KDP, e adesso ha i numeri accanto.** Misurati tre
+**La categoria «Children's Books on Sleep», ed è gratis.** Il concorrente che
+vende di più fra i quattro misurati — *Biscuit Learns to Stay in Bed*, 29
+pagine, $13,99, cinque mesi di vita, **96-144 vendite al mese** — sta al #745
+di quello scaffale. Questo libro sta in *Religious Fiction › Muslim*, dove non
+si arriva per un problema: ci si arriva per un'appartenenza. **Il genitore
+delle undici di sera cerca fra i libri sul sonno.** Usi 1 categoria su 3, e
+adesso le altre due hanno un nome.
+
+**Poi il *printing cost* su KDP, e adesso ha i numeri accanto.** Misurati tre
 concorrenti il 07/09 (`01 Ricerca/report-concorrenti.md`):
 
 | Libro | Pagine | Prezzo | Esito |

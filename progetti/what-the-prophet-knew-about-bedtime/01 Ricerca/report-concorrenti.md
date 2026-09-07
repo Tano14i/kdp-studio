@@ -7,12 +7,15 @@ grandezza.
 
 ## Indice
 1. I tre libri, in tabella
-2. Il reperto: il bundle vende, il singolo no
+2. ~~Il bundle vende, il singolo no~~ — **conclusione corretta, vedi §8**
 3. Il gemello: 67 pagine, $19,99, diciotto mesi, una recensione
 4. Il prezzo, adesso con i numeri accanto
 5. Kindle e Kindle Unlimited: un canale intero che manca
 6. Le parole dei lettori, e quali sono credibili
-7. Cosa cambia, in ordine
+7. ~~Cosa cambia~~ — **sostituito dalla §10**
+8. **Il quarto libro rovescia la conclusione: non sono le pagine**
+9. **La recensione che vale tutto il resto**
+10. **Cosa cambia davvero, in ordine**
 
 ## 1. I tre libri, in tabella
 
@@ -44,6 +47,12 @@ E per confronto, il libro di questo progetto:
 | Recensioni | **0** |
 
 ## 2. Il reperto: il bundle vende, il singolo no
+
+> **Corretto la sera del 07/09, dopo il quarto libro.** Da qui avevo dedotto
+> che il formato che vende su questo scaffale sia l'antologia, e che 67 pagine
+> siano poche. **Il quarto libro lo smentisce: 29 pagine, e vende più di
+> tutti.** Il confronto qui sotto resta vero come fatto; la conclusione che ne
+> avevo tratto no. Vedi §8.
 
 **Stesso autore. Stessa serie. Pubblicati a quattro giorni di distanza.**
 
@@ -197,3 +206,141 @@ comprato il libro e ci era rimasto male.
 6. **Il bundle è la strategia del pen name**, non di questo libro. Si scrive
    qui perché quando ci sarà il secondo titolo, questa riga vale più di
    qualunque altra: **il formato che vende, su questo scaffale, è l'antologia.**
+
+
+## 8. Il quarto libro rovescia la conclusione: non sono le pagine
+
+**Biscuit Learns to Stay in Bed** · Mary Haze · `B0GXB5QQ73`
+
+| | |
+|---|---|
+| Pubblicato | **14 aprile 2026** — meno di cinque mesi fa |
+| Pagine | **29** |
+| Formato | **8,5 × 8,5 pollici** — quadrato |
+| Prezzo | **$13,99** |
+| Categorie | **#745 in Children's Books on Sleep** · #1.038 in Children's Books on Health |
+| **Vendite 30 gg (stima)** | **96-144** · royalty **$399-599** |
+| Recensioni | 2 · 5,0 |
+
+Ventinove pagine. Cinque mesi di vita. **Vende più dell'antologia da 252
+pagine**, e più di ogni altro libro misurato oggi.
+
+Quindi la mia §2 era una lettura affrettata: le pagine non sono la variabile.
+Rimessi in fila tutti e cinque:
+
+| Libro | Pagine | Prezzo | Categoria dove sta | Vendite/mese |
+|---|---:|---:|---|---:|
+| Biscuit | **29** | $13,99 | **Children's Books on Sleep** | **96-144** |
+| Antologia 25 profeti | 252 | $14,99 | Children's Islam Books | 72-108 |
+| Prophet Stories, libro 4 di 5 | 68 | $11,99 | Children's Islam Books | 0-1 |
+| 30 Goodnight Tales, libro 1 di 5 | 67 | $19,99 | Children's Islam Books | ~0 |
+| **questo libro** | 67 | $19,99 | **Religious Fiction › Muslim** | **0** |
+
+Guardati così, il confine non passa fra corto e lungo. Passa qui:
+
+**I due che vendono sono risposte complete a una domanda che qualcuno si sta
+facendo. I tre che non vendono sono episodi di una serie.**
+
+- Biscuit → *«mio figlio non resta nel letto»*. Risposta completa.
+- Antologia → *«voglio che mio figlio conosca i profeti»*. **Tutti e
+  venticinque.** Risposta completa.
+- Libro 4 di 5, libro 1 di 5 → nessuna domanda intera. Metà risposta.
+
+**E questa è una buona notizia per questo progetto**, perché *trenta notti di
+Sunnah della buonanotte* **è** una risposta completa. Non è l'episodio di
+niente. Strutturalmente sta con i vincitori.
+
+Quello che non sta con i vincitori è come è confezionato:
+
+| | Biscuit | Questo libro |
+|---|---|---|
+| Categoria | **Children's Books on Sleep** | Religious **Fiction** › Muslim |
+| Prezzo | $13,99 | **$19,99** |
+| Formato | 8,5 × 8,5, quadrato | **6 × 9** |
+| Apertura della descrizione | *«Does bedtime feel like a battle at your house?»* | *«What if bedtime could become the most peaceful…»* |
+| Promette | *«a real calming tool inside»* | trenta storie |
+| Kindle | — | **assente** |
+
+**La categoria è la differenza più grossa e la più economica.** Biscuit sta al
+#745 fra i *Children's Books on Sleep*: è lo scaffale dove va a cercare un
+genitore che ha quel problema stasera. Questo libro sta in *Religious
+Fiction › Muslim*, dove nessuno arriva per un problema — ci si arriva per
+un'appartenenza.
+
+**Il formato non si ripara a costo zero** (6×9 è la forma di un romanzo, non
+di un albo illustrato: da lontano non sembra un libro per bambini). Va scritto
+qui e tenuto per la prossima edizione, non inseguito adesso.
+
+## 9. La recensione che vale tutto il resto
+
+Su Biscuit, verificata, dalla Germania, aprile 2026. È lunga, sgrammaticata e
+onesta — cioè vera. **È l'avatar cliente, scritto da lui.**
+
+> *«Bedtime has been a nightmare for months. She's 4 and the absolute queen of
+> "I need water" "I hear something" "my leg itches" "I'm NOT tired"… you know
+> the drill. I've tried routines, charts, melatonin (briefly, don't judge me),
+> lavender spray, everything. Nothing really stuck.*
+>
+> *I found this book honestly because I was **doom-scrolling Amazon at 11pm**
+> looking for anything that might help. […]*
+>
+> *We read it for the first time two nights ago and she was immediately into
+> it — **there's a puppy who literally does all the same things she does at
+> bedtime** and she thought that was hilarious.*
+>
+> *The thing I wasn't expecting is that **there's actually a little technique
+> in the story**. […] I'm a therapist so I actually geeked out a little because
+> this is a real thing.*
+>
+> *So we tried it that night. **And the next night she asked for it.** And
+> tonight she literally told ME the five…»*
+
+Cosa ci sta dentro, e ognuna è azionabile:
+
+1. **Il momento d'acquisto è le undici di sera, disperati.** Non è «sto
+   cercando risorse di genitorialità islamica»: è *doom-scrolling looking for
+   anything that might help*. Cambia il tono di ogni contenuto e di ogni prima
+   riga di descrizione.
+2. **Le parole esatte del dolore**, che nessuno di noi avrebbe scritto:
+   *«I need water» «I hear something» «my leg itches» «I'm NOT tired»* ·
+   *«you know the drill»*. Questa è la slide 1 di F2, pronta.
+3. **Cosa ha già provato e non ha funzionato:** routine, **charts**,
+   melatonina, spray alla lavanda. ⚠️ **«Charts» è nella lista dei fallimenti,
+   e il nostro lead magnet è un chart.** Il tracker non va mai presentato come
+   una tabella: va presentato come *la cosa che fate insieme*, con la storia
+   sopra. Da solo, è già stato provato e ha deluso.
+4. **Cosa ha funzionato — e questo libro le ha entrambe:**
+   - **il bambino si riconosce nel personaggio** → qui c'è Yusuf, che fa
+     esattamente quello che fa il bambino
+   - **c'è una tecnica dentro la storia** → qui è «Tonight's Little Sunnah»,
+     trenta volte invece di una
+   - **con dietro un'autorità che regge** → là erano cinque piume che
+     rimescolano il grounding 5-4-3-2-1; qui è la Sunnah, che per questo
+     pubblico pesa molto di più
+5. **La prova che ha funzionato è che il bambino l'ha richiesto.**
+   *«The next night she asked for it»*. È la frase che una descrizione
+   dovrebbe promettere, e nessuna delle nostre lo fa.
+
+**Il prodotto è giusto. È il confezionamento a essere sbagliato.** È una
+conclusione molto più incoraggiante di quella di stamattina, e non è un
+addolcimento: viene dalla stessa tabella.
+
+## 10. Cosa cambia davvero, in ordine
+
+1. **La categoria «Children's Books on Sleep».** Gratis, oggi, e adesso ha un
+   nome invece di essere «due slot vuoti». È lo scaffale dove il genitore
+   delle undici di sera va a cercare. **È l'azione a più alto rendimento
+   disponibile su questo progetto.**
+2. **Il prezzo verso $13,99-14,99**, che è dove stanno entrambi i vincitori.
+   Dipende dal *printing cost* — trenta secondi su KDP.
+3. **Riscrivere l'apertura della descrizione** partendo dal dolore, con le
+   parole della §9: oggi apre con una promessa aspirazionale, e i due libri
+   che vendono aprono con la battaglia delle otto di sera.
+4. **Dire che dentro c'è uno strumento**, non trenta storie. *«A real bedtime
+   ritual inside — one for every night.»*
+5. **Il tracker non è un chart**, e non va mai chiamato così: è quello che
+   avete già provato senza risultato.
+6. **L'edizione Kindle.**
+7. **Il formato 6×9** — scritto per la prossima edizione, non inseguito ora.
+8. **Il bundle resta valido come strategia del pen name**, ma per la ragione
+   corretta: non perché sia lungo, perché è una **risposta completa**.

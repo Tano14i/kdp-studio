@@ -94,16 +94,47 @@ social-worker-style review of…»*. Sembrano sollecitate.
 resta: *la recensione brutta di una riga vale più di quella eloquente da
 cinque stelle.*
 
-### Cosa manca ancora
+### E poi è arrivato Biscuit — **F2 si accende**
 
-Un solo lettore vero non basta per accendere F2 con sicurezza: la slide 1
-regge, ma è **una** frase, e serve un campione. Restano da raccogliere le
-recensioni critiche di **Biscuit Learns to Stay in Bed** (il dolore della
-buonanotte senza cornice religiosa) e di **My Feelings, My Duas** — le altre
-due della scheda in `05 Social/raccolta-recensioni.md` §2.
+*Biscuit Learns to Stay in Bed*, la scheda non islamica, ha una recensione
+verificata che è **l'avatar cliente scritto da lui**
+(`01 Ricerca/report-concorrenti.md` §9). Le parole esatte:
 
-**F2 si può accendere adesso, con una sola slide 1 vera**, oppure aspettare le
-altre due schede. Consiglio: aspettare, ma non oltre il giorno 7 del farming.
+> *«Bedtime has been a nightmare for months. She's 4 and the absolute queen of
+> **"I need water" "I hear something" "my leg itches" "I'm NOT tired"**… you
+> know the drill. I've tried routines, **charts**, melatonin (briefly, don't
+> judge me), lavender spray, everything. **Nothing really stuck.**»*
+>
+> *«I found this book honestly because I was **doom-scrolling Amazon at 11pm**
+> looking for anything that might help.»*
+>
+> *«…**there's a puppy who literally does all the same things she does at
+> bedtime** and she thought that was hilarious.»*
+>
+> *«**And the next night she asked for it.**»*
+
+**Con questa, F2 si accende.** Le slide 1 non vanno più inventate: si copiano.
+
+| Slide 1, testuale | Va con |
+|---|---|
+| *"I need water." "I hear something." "My leg itches." "I'm NOT tired."* | filone B — i gesti che chiudono la sera |
+| *You've tried routines, charts, melatonin, lavender spray. Nothing really stuck.* | filone E — le piccole cose fatte sempre |
+| *It's 11pm and you're scrolling, looking for anything that might help.* | filone D — la paura del buio |
+| *And the next night, she asked for it again.* | chiusura, non apertura: è la promessa |
+
+**Tre avvertenze, e sono importanti:**
+
+1. ⚠️ **«charts» è nella lista di quello che non ha funzionato**, e il nostro
+   lead magnet è un chart. Il tracker non va mai presentato come una tabella:
+   è *la cosa che fate insieme* dopo la storia. Da solo, questa lettrice
+   l'ha già provato e l'ha deluso.
+2. **Il momento d'acquisto sono le undici di sera, disperati.** Non è
+   «cercare risorse di genitorialità islamica». Ogni prima riga va scritta
+   per quel momento.
+3. **Quello che ha funzionato, questo libro ce l'ha entrambe:** il bambino si
+   riconosce nel personaggio (Yusuf), e c'è una tecnica dentro la storia
+   («Tonight's Little Sunnah»), trenta volte invece di una. Vanno dette,
+   perché oggi non le dice nessuno.
 
 ## 3. I cinque filoni
 
