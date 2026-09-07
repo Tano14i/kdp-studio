@@ -36,27 +36,24 @@ concept (`decisioni/01-concept.md`), copertina + prezzo $13.99
 (`decisioni/02-copertina.md`), outline (`decisioni/03-outline.md`), DNA + campione
 (`decisioni/04-dna-campione.md`). CP7 marketing già chiuso (social + 3 Reel).
 
-**Aperto adesso:** fase 8 — **Manoscritto**, in scrittura in
-`03 Produzione/manoscritto/`, un file per capitolo, sotto outline + DNA. Cap. 2
-già scritto e approvato come campione. Regole DNA §10 attive.
 **Manoscritto + interni DEFINITIVI (07/09):** l'autore ha scelto "lascia così" →
-75 pagine, niente espansione (`decisioni/05-lunghezza-finale.md`). PDF interni in
-`03 Produzione/interni/`.
-**Aperto adesso:** fase 11 — copertina finita/wraparound (ora ho il conteggio pagine:
+**74 pagine**, niente espansione (`decisioni/05-lunghezza-finale.md`). PDF interni
+verificato pagina-per-pagina (`03 Produzione/interni/`, foliazione generata).
+**Aperto adesso:** fase 11 — copertina finita/wraparound (conteggio pagine noto:
 dorso ~0.17", niente testo sul dorso sotto 100 pag) e CP6 — scheda KDP (keyword,
-descrizione, A+). Flag prezzo: $13.99 è alto per 75 pag → valutare $9.99-10.99.
+descrizione, A+, categorie). Flag prezzo: $13.99 è alto per 74 pag → valutare $9.99-10.99.
 
 ## 3. Cosa manca, in ordine
-- [ ] Verdetto di nicchia con numeri (fase 1) — *saltato*
-- [ ] Avatar cliente dalle recensioni dei competitor (fase 2) — *saltato*
-- [ ] Concept e positioning, promessa in una riga (fase 3, CP1) — *saltato*
-- [x] Copertina front 4K
-- [x] Quarta di copertina 4K (senza barcode)
-- [ ] Outline (fase 5, CP3)
-- [ ] Manoscritto + revisione (fasi 8-9)
-- [ ] Interni impaginati / PDF stampa (fase 10)
-- [ ] Scheda KDP: keyword, descrizione, A+ (fase 12, CP6)
-- [ ] **Piano social (fase 12, CP7)** ← richiesto adesso
+- [x] Nicchia (fase 1) · avatar (2) · concept CP1 (3)
+- [x] Copertina front + quarta 4K · CP2 (prezzo $13.99, badge sì)
+- [x] Outline CP3 (5) · DNA+campione CP4/CP5 (6-7)
+- [x] Manoscritto (8) · revisione + AI-writing (9) · interni PDF 74 pag (10)
+- [x] Piano social CP7 (3 Reel prodotti)
+- [ ] **Copertina finita / wraparound cartaceo (fase 11)** ← dorso ~0.17"
+- [ ] **Scheda KDP: keyword, descrizione, A+, categorie (CP6)**
+- [ ] Decisione prezzo finale ($13.99 vs $9.99-10.99)
+- [ ] Lead magnet "1-Hour Session Prep Checklist" (PDF)
+- [ ] Pubblicazione + dichiarazione AI (text + images)
 
 ## 4. Artefatti già prodotti
 - Copertina front, 4K 2751×4096, d20 obsidiana su sfondo dungeon, palette nero/oro.
