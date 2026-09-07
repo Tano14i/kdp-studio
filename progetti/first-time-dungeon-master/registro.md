@@ -17,9 +17,9 @@ Cedric Darkstone (pen name) · inglese · mercato Amazon US · avviato il 06/09/
 | 3 | Concept e positioning | fatto | CP1 chiuso ✓ | 07/09 |
 | 4 | Titolo, sottotitolo, copertina | fatto ($13.99, badge sì) | CP2 chiuso ✓ | 07/09 |
 | 5 | Outline | fatto | CP3 chiuso ✓ | 07/09 |
-| 6 | DNA stilistico | CP4 aperto (bozza pronta) | CP4 | |
-| 7 | Campione di scrittura | CP5 aperto (Cap.2 scritto) | CP5 | |
-| 8 | Manoscritto | da fare | — | |
+| 6 | DNA stilistico | fatto | CP4 chiuso ✓ | 07/09 |
+| 7 | Campione di scrittura | fatto (approvato) | CP5 chiuso ✓ | 07/09 |
+| 8 | Manoscritto | in corso | — | |
 | 9 | Revisione | da fare | — | |
 | 10 | Interni impaginati | da fare | — | |
 | 11 | Immagini, copertina finita | in corso | — | |
@@ -31,24 +31,16 @@ Cedric Darkstone (pen name) · inglese · mercato Amazon US · avviato il 06/09/
 > dorsale. Il piano social (fase 12) parte quindi su basi incomplete: vedi §5.
 
 ## 2. Aperto adesso
-**Fase 1 (nicchia): verdetto SI FA — posizionamento stretto** (`report-nicchia.md`).
-Dati misurati da catture Amazon dell'autore: domanda pagante (un concorrente
-~300 vendite/mese), voti alti/stabili (4.4-4.6), ma i best-seller sono intro
-**per giocatore** — la fetta "DM alle prime armi + template" è scoperta. È la
-nostra. Condizioni: posizionarsi DM-first (non "how to play"), template veri,
-prezzo $7.99-11.99 (il piano €13,90 è alto), recensioni presto.
-**CP1 + CP2 chiusi (07/09):** concept = sistema guida + template; copertina
-confermata, prezzo $13.99, badge template sì (`decisioni/01-concept.md`,
-`decisioni/02-copertina.md`).
-**CP3 chiuso (07/09):** outline approvato (`decisioni/03-outline.md`).
-**Aperto adesso:** fasi 6-7 — **DNA stilistico (CP4)** e **capitolo campione (CP5)**.
-Voce attesa: seconda persona, imperativo, densa, "no rambling", orientata all'azione;
-il campione naturale è il Cap. 1 (mette il lettore nella prima sessione).
+**Checkpoint 1-5 tutti chiusi (07/09):** nicchia SI FA (`report-nicchia.md`),
+concept (`decisioni/01-concept.md`), copertina + prezzo $13.99
+(`decisioni/02-copertina.md`), outline (`decisioni/03-outline.md`), DNA + campione
+(`decisioni/04-dna-campione.md`). CP7 marketing già chiuso (social + 3 Reel).
 
-**CP7 chiuso** (`decisioni/07-marketing.md`): handle `@CedricDkstn`, lead magnet
-"1-Hour Session Prep Checklist", 3 Reel in produzione. Prossimo: creare la checklist
-lead magnet e i contenuti A+ (CP6), oppure tornare alla spina dorsale mancante
-(nicchia → concept) se si vuole scalare in ads.
+**Aperto adesso:** fase 8 — **Manoscritto**, in scrittura in
+`03 Produzione/manoscritto/`, un file per capitolo, sotto outline + DNA. Cap. 2
+già scritto e approvato come campione. Regole DNA §10 attive.
+Prossimo dopo il manoscritto: revisione (fase 9), interni impaginati (10),
+copertina finita/wraparound (11), scheda+A+ (CP6).
 
 ## 3. Cosa manca, in ordine
 - [ ] Verdetto di nicchia con numeri (fase 1) — *saltato*

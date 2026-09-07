@@ -1,6 +1,6 @@
 # Capitolo campione (DA APPROVARE) — First-Time Dungeon Master
 Cap. 2 · "The One-Hour Prep System" · scritto sul DNA del 07/09/2026
-STATO: in attesa di approvazione autore (CP5)
+STATO: APPROVATO dall'autore il 07/09/2026 (CP5)
 
 ---
 
