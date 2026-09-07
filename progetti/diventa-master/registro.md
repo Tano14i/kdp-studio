@@ -46,9 +46,9 @@ stanno sulla scheda Amazon e nel manoscritto, e senza di loro non si parte:
 un hook scritto senza sapere di cosa parla il libro e' testo che sembra giusto
 e non lo e'. Elenco in `04 Mercato/dati-scheda.md`.
 
-Servono anche i due interruttori di configurazione — **volto** e **voce** —
-che decidono quali format sono ammessi. Per il pen name Martina Riva erano
-`volto = no`, `voce = nessuna`; per Cedric Darkstone non sono mai stati fissati.
+Gli interruttori sono chiusi: **`volto = no`, `voce = mia`**, fissati il
+07/09/2026. Il format col voice-over e' quello principale, e serve una regola
+di registrazione stabile dal primo video. Dettagli in `04 Mercato/dati-scheda.md` §3.
 
 ## 3. Da non dimenticare
 

@@ -70,10 +70,30 @@ Decidono quali format sono ammessi, e vanno fissati **prima** di generare, non
 dopo. Per il pen name Martina Riva erano `volto = no`, `voce = nessuna`, e
 quella configurazione ha escluso un intero format.
 
-| Interruttore | Valori | Per Cedric Darkstone |
+| Interruttore | Valore | Fissato il |
 |---|---|---|
-| volto | si / no | **da decidere** |
-| voce | mia / sintetica / nessuna | **da decidere** |
+| volto | **no** | 07/09/2026 |
+| voce | **mia** | 07/09/2026 |
+
+Configurazione completa: nessuna decisione aperta su questo fronte.
+
+**Cosa comporta.** La voce vera fuori campo con mani e tavolo in inquadratura
+e' la combinazione piu' forte per il gioco di ruolo, perche' in questa nicchia
+**il tono da master e' meta' del prodotto**: chi ascolta sta valutando se
+vorrebbe questa persona dietro lo schermo del DM. E' un vantaggio che i profili
+a solo testo non possono avere.
+
+Cosa cambia in pratica rispetto alla configurazione di Martina Riva:
+
+- **il format col voice-over e' ammesso, ed e' quello principale**, non un
+  ripiego. Il testo a schermo diventa il supporto, non il canale
+- **i contenuti possono durare di piu'** — quindici-venti secondi invece dei
+  sette-dieci imposti dal solo testo — perche' e' la voce a dare il ritmo
+- **serve una regola di registrazione fin dal primo video** e non si cambia
+  piu': stesso microfono, stessa stanza, stesso livello. Una voce che cambia
+  timbro fra un video e l'altro suona come un altro account
+- **niente volto resta un vincolo vero**: mani, dadi, schede, mappe, il tavolo.
+  L'immagine profilo non puo' essere una foto stock, come per Martina Riva
 
 C'e' una quarta decisione che riguarda solo questo pen name e che il metodo
 non prevede: **il profilo social parla di questo libro o del catalogo?**
