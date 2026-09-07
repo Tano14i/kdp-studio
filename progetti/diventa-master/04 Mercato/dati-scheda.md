@@ -2,7 +2,18 @@
 04 Mercato · aggiornato il 07/09/2026
 
 `promozione-social` non genera un solo contenuto prima di avere questi sette
-dati. Tre ci sono, quattro no. **Il lavoro e' fermo qui.**
+dati. **Cinque ci sono, due no** — la cartella Drive del 07/09 ne ha sbloccati
+due, fra cui il piu' importante.
+
+| # | Dato | Stato |
+|---|---|---|
+| 1 | ASIN e link | **c'e'** |
+| 2 | Titolo e sottotitolo | **c'e'** |
+| 3 | Descrizione della scheda | **manca** |
+| 4 | Indice dei capitoli | **c'e'** → `03 Produzione/outline.md` |
+| 5 | Copertina | **manca** |
+| 6 | Recensioni | c'e' la risposta: non trovate, si procede di seconda mano |
+| 7 | Stato di vendita | **c'e'** |
 
 ## Indice
 1. Quello che c'e'
@@ -45,9 +56,15 @@ e' un libro che sta gia' salendo e che nessuno ha mai spinto.
 | # | Dato | Dove si prende |
 |---|---|---|
 | 3 | Descrizione della scheda | pagina Amazon del libro, testo intero |
-| 4 | Indice dei capitoli | dal manoscritto o dall'anteprima Amazon |
-| 5 | Copertina, immagine | file originale, o dalla scheda |
-| 6 | Recensioni ricevute, testo intero | scheda Amazon.it — **forse zero** |
+| 5 | Copertina, immagine | non trovata su Drive: nella cartella ci sono copertine di altri progetti, nessuna di questo libro |
+
+**Sbloccati il 07/09 dalla cartella Drive.** Il **4** era il piu' importante
+ed e' arrivato per intero: l'indice sta in `03 Produzione/outline.md`, ricavato
+dal PDF degli interni del libro pubblicato, con i dieci capitoli, i loro temi e
+i tre che reggono da soli come contenuto social. Il **6** ha una risposta
+invece di un dato: nessuna recensione trovata, quindi gli hook si ricavano
+dall'indice — che ora c'e' — e vanno segnati come di prima mano sul contenuto
+e di seconda mano sul lettore.
 
 **Tentato il 07/09/2026, non riuscito.** La scheda risponde e conferma titolo e
 ASIN, ma Amazon serve agli agenti solo l'intestazione della pagina: descrizione,

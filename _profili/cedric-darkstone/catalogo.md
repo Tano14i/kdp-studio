@@ -12,6 +12,7 @@ qui e' diverso da li', ha ragione il file generato.
 
 ## Indice
 1. La conclusione che conta
+1-bis. **Quello che e' finito e non e' pubblicato** — trovato il 07/09
 2. Il catalogo, SKU per SKU
 3. Dove nasce il fatturato
 4. I quattro guasti trovati dai controlli
@@ -46,6 +47,43 @@ NON SI FA** (`_profili/note-mercato.md` §1). Intanto, in una nicchia che nessun
 documento di questo repo nomina mai, un pen name gia' vivo vendeva. **Il
 mercato dove Cedric Darkstone guadagna non e' mai stato misurato**, e le uniche
 misure che abbiamo sono di un mercato dove non abbiamo ancora pubblicato niente.
+
+## 1-bis. Quello che e' finito e non e' pubblicato
+
+Il 07/09 la cartella Drive del laboratorio D&D ha mostrato una cosa che i
+numeri KDP non potevano dire: **il catalogo pubblicato e' quattro titoli, ma
+la pila di roba finita e' sette.** Tre prodotti completi, tutti datati la
+prima settimana di settembre 2026, nessuno dei quali compare nel report
+vendite.
+
+| Prodotto | Cosa c'e' gia' | Data |
+|---|---|---|
+| **Diventa Master Vol. 2 — Il Manuale della Preparazione** | interni impaginati, colophon, indice numerato, appendice di 30 schede | 05/09 |
+| **200 Incontri Foresta vol. 1** (IT) | manoscritto DOCX, interno KDP 6x9, EPUB Kindle, sorgente impaginazione | 03-04/09 |
+| **Non solo mappe — le sessanta mappe** | PDF delle 60 mappe, manoscritto completo, note di impaginazione | 04/09 |
+
+Due di questi non sono libri qualsiasi:
+
+- **Il Vol. 2 e' il seguito del libro che fa il 58% del fatturato**, e si
+  dichiara «Volume 2 della serie Diventa Master» nel colophon. Rimanda al primo
+  volume due volte dentro il proprio indice, per nome. E' una serie costruita
+  come serie.
+- **200 Incontri Foresta e' il gemello italiano di *500 Random Encounter
+  Tables***, che in inglese e' gia' pubblicato e ha venduto. Non e' un'ipotesi
+  di mercato: e' lo stesso prodotto in una lingua dove lo stesso autore vende
+  gia' due volte tanto.
+
+**Questo cambia la domanda del checkpoint.** Il §7 e' stato deciso credendo
+che ci fosse un libro solo da spingere. Portare traffico social su un volume
+singolo, mentre il seguito e' impaginato e fermo in una cartella, manda ogni
+lettore conquistato su una scheda che non ha un secondo titolo da vendergli —
+e la pagina serie di Amazon, con i suoi «acquistati insieme», e' esattamente
+il traffico interno che nei numeri e' l'unica cosa che gia' funziona.
+
+Il Vol. 2 porta anche la cosa che al ponte social manca: **un lead magnet**.
+«Il PDF stampabile delle trenta schede si scarica dal codice all'ultima
+pagina». Senza, il link in bio puo' solo essere la scheda Amazon; con, la
+promozione ha qualcosa da regalare prima di chiedere un acquisto.
 
 ## 2. Il catalogo, SKU per SKU
 

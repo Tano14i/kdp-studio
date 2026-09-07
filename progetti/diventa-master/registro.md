@@ -23,7 +23,7 @@ decisione che al prossimo titolo verra' presa di nuovo, diversa.
 | 2 | Avatar cliente | fatto | **no** | — | ignoto |
 | 3 | Concept e positioning | fatto | **no** | CP1 | ignoto |
 | 4 | Titolo e copertina | fatto | **no** | CP2 | ignoto |
-| 5 | Outline | fatto | **no** | CP3 | ignoto |
+| 5 | Outline | fatto | **si', dal 07/09** | CP3 | ignoto |
 | 6 | DNA stilistico | fatto | **no** | CP4 | ignoto |
 | 7 | Campione di scrittura | fatto | **no** | CP5 | ignoto |
 | 8 | Manoscritto | fatto | **no** | — | ~lug 2026 |
@@ -40,11 +40,15 @@ Prova che le fasi 8-12 sono fatte: il libro e' in vendita e ha incassato
 
 ## 2. Aperto adesso
 
-**Il cancello d'ingresso di `promozione-social`.** Dei sette dati che quella
-skill esige prima di scrivere un solo contenuto, ne ho tre. Gli altri quattro
-stanno sulla scheda Amazon e nel manoscritto, e senza di loro non si parte:
-un hook scritto senza sapere di cosa parla il libro e' testo che sembra giusto
-e non lo e'. Elenco in `04 Mercato/dati-scheda.md`.
+**Il checkpoint 7 va riaperto prima del cancello.** Il 07/09 la cartella Drive
+ha mostrato che **il Volume 2 e' finito e impaginato**, e non pubblicato. La
+strada B era stata scelta credendo che ci fosse un libro solo da spingere.
+Dettagli in `_profili/cedric-darkstone/catalogo.md` §1-bis.
+
+**Il cancello d'ingresso di `promozione-social`** e' passato da 3/7 a 5/7. Il
+dato piu' importante — l'indice dei capitoli — c'e' per intero e sta in
+`03 Produzione/outline.md`, ricavato dal PDF del libro pubblicato. Mancano la
+descrizione della scheda e la copertina. Elenco in `04 Mercato/dati-scheda.md`.
 
 Gli interruttori sono chiusi: **`volto = no`, `voce = mia`**, fissati il
 07/09/2026. Il format col voice-over e' quello principale, e serve una regola
