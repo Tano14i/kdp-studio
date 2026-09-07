@@ -46,38 +46,64 @@ Le più forti, e il motivo:
 - **La 8** e la **7** parlano al genitore per bocca del bambino. Sono le due
   che fanno salvare il post.
 
-## 2. Le lamentele dei lettori — il buco, e come si chiude
+## 2. Le lamentele dei lettori — raccolte il 07/09, e sono poche
 
-**Questa sezione è vuota, e va detto invece di riempirla.**
+**Prima raccolta fatta**, tre concorrenti misurati:
+`01 Ricerca/report-concorrenti.md`. Il buco si è ristretto, non chiuso.
 
-Il libro ha **zero recensioni** dopo settanta giorni. E le recensioni dei
-concorrenti non sono state raccolte: la fase 1 non è mai stata fatta su questo
-progetto, e Amazon non è raggiungibile da questo contenitore (`000` su
-`amazon.com`, verificato il 07/09).
+### L'unica frase di un lettore vero, e vale il viaggio
 
-Conseguenza da tenere in mente per tutto il mese, senza girarci intorno:
-**tutti gli hook del piano 1 sono scritti dall'autore, non presi dai lettori.**
-Sono di terza mano, non di seconda. La skill dice che è la causa numero uno di
-un mese piatto, e infatti la regola di taglio al giorno 14 lo prevede: se
-tutti e tre i format vanno piatti, il problema non sono i format, è questo
-file.
+*Islamic Stories For Kids — 30 Engaging Goodnight Tales*, 67 pagine, $19,99,
+in vendita da diciotto mesi. Ha **una** recensione, verificata:
 
-**Come si chiude, ed è la mezz'ora più redditizia del progetto.** I nove
-concorrenti stanno già in `03 Scheda/scheda-viva.md` §3. Per i quattro più
-vicini — *Eid with Ellie*, *My First Guide to Shahada*, *Allah Loves You No
-Matter What*, *My Feelings My Duas* — si aprono le recensioni **a 1, 2 e 3
-stelle** e si incolla qui il testo intero, non parafrasato. Cerca in
-particolare:
+> **«Age >6»**
+> **«It is verbose with less illustrations»**
 
-- «too young / too old for my child» → dice a chi il libro non parla
-- «not enough / no sources» → è la stessa lacuna che ha questo libro
-- «my kid won't sit through it» → è il vero concorrente: non un altro libro,
-  la distrazione
-- «beautiful but nothing to *do*» → è esattamente il vuoto che questo libro
-  riempie con «Tonight's Little Sunnah»
+Undici parole, e ci sono dentro tre hook:
 
-Quelle frasi, testuali, diventano la slide 1 di ogni F2 e la prima riga di
-ogni F3. **Finché non ci sono, F2 resta spento** (vedi il piano, §Format).
+| Dice | Diventa |
+|---|---|
+| *verbose* | *«Your 5-year-old stops listening after the second page. That's not him — that's the book.»* |
+| *less illustrations* | **il differenziatore**: trenta tavole a piena pagina, una per notte |
+| *Age >6* | l'età dichiarata che non tiene — da sorvegliare nelle prime recensioni vere |
+
+### Il vocabolario delle lodi
+
+Dalle cinque stelle dell'altro autore — parole utili, **non** dolore vero
+(vedi l'avvertenza sotto):
+
+- *«my child stayed engaged the whole time and asked so many thoughtful questions»*
+- *«activities, quizzes and a reflection section»*
+- *«perfect bedtime or family reading book»*
+- *«especially if you are a parent that chooses to homeschool your children»*
+
+Due cose che ne escono e che il piano non aveva:
+
+- **l'ansia della nicchia è l'attenzione**, non la dottrina. *Engaged* e
+  *verbose* sono la stessa preoccupazione vista dai due lati
+- **i genitori che fanno homeschooling si nominano da soli.** Sono un pubblico
+  e una parola chiave
+
+### L'avvertenza, e cambia come si usano
+
+Le diciotto recensioni del terzo libro sono tutte dello stesso mese, tutte in
+formato Kindle, tutte lunghe e formali — una si apre con *«Here's a concise
+social-worker-style review of…»*. Sembrano sollecitate.
+
+**Valgono per il vocabolario, non come prova di dolore.** La regola che ne
+resta: *la recensione brutta di una riga vale più di quella eloquente da
+cinque stelle.*
+
+### Cosa manca ancora
+
+Un solo lettore vero non basta per accendere F2 con sicurezza: la slide 1
+regge, ma è **una** frase, e serve un campione. Restano da raccogliere le
+recensioni critiche di **Biscuit Learns to Stay in Bed** (il dolore della
+buonanotte senza cornice religiosa) e di **My Feelings, My Duas** — le altre
+due della scheda in `05 Social/raccolta-recensioni.md` §2.
+
+**F2 si può accendere adesso, con una sola slide 1 vera**, oppure aspettare le
+altre due schede. Consiglio: aspettare, ma non oltre il giorno 7 del farming.
 
 ## 3. I cinque filoni
 

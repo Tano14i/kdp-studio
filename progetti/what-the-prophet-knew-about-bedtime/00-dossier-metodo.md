@@ -25,7 +25,7 @@ i file.
 | # | Fase | Stato | Checkpoint | Chiuso il |
 |---|------|-------|-----------|-----------|
 | 0 | Cartella e convenzioni | fatto | — | 07/09 |
-| 1 | Nicchia e concorrenti | **mai fatta** | — | |
+| 1 | Nicchia e concorrenti | **prima misura fatta** — `01 Ricerca/report-concorrenti.md` | — | 07/09 |
 | 1b | Angolo | **mai fatta** | — | |
 | 2 | Avatar cliente | **mai fatta** | — | |
 | 3 | Concept e positioning | **eseguito ma non scritto** | CP1 | |
@@ -53,7 +53,25 @@ pubblicazione invece che dopo.
 
 ## 2. Aperto adesso
 
-**Il profilo, e in particolare la bio.** Con i numeri in fila la caduta più
+**Il *printing cost* su KDP, e adesso ha i numeri accanto.** Misurati tre
+concorrenti il 07/09 (`01 Ricerca/report-concorrenti.md`):
+
+| Libro | Pagine | Prezzo | Esito |
+|---|---:|---:|---|
+| antologia 4-in-1 | 252 | **$14,99** | #25 di categoria, 72-108 vendite/mese |
+| volume singolo, **stesso autore** | 68 | $11,99 | **0-1 vendite/mese** |
+| gemello: *30 Goodnight Tales* | **67** | **$19,99** | 1 recensione in 18 mesi |
+| **questo libro** | **67** | **$19,99** | 0 in 70 giorni |
+
+Il prezzo coincide **al centesimo** con quello dell'unico libro misurato che è
+fermo, e sta **cinque dollari sopra** l'unico che vende — che dà quattro volte
+le pagine. Trenta secondi su KDP decidono se si può correggere oggi (colore
+standard) o se è un vincolo di stampa (premium).
+
+**E manca l'edizione Kindle**, che tutti e tre i concorrenti hanno e i due che
+vendono offrono su Kindle Unlimited. Costo di stampa: zero.
+
+**Poi il profilo, e in particolare la bio.** Con i numeri in fila la caduta più
 ripida si vede a occhio:
 
 ```
