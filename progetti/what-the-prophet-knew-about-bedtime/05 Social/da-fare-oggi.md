@@ -154,10 +154,11 @@ blocco che c'era fra te e il giorno 1.
       Scrivilo in `03 Scheda/scheda-viva.md` §3
 - [ ] **10 min** — **Le due categorie mancanti** (ne usi 1 su 3, ed è
       *Religious Fiction* su un libro che insegna Sunnah reali)
-- [ ] **30 min** — **Le recensioni a 1-3 stelle dei quattro concorrenti**
-      più vicini. Protocollo in `materia-prima.md` §2. È la mezz'ora a più
-      alto rendimento del progetto: accende il format F2 e riscrive il mese 2
-      con parole vere invece che nostre
+- [ ] **30 min** — **Le recensioni dei quattro concorrenti.** Scheda completa
+      in `raccolta-recensioni.md`: quali libri, l'indirizzo che salta dritto
+      alle recensioni critiche, cosa copiare e le cinque cose da cercare.
+      È la mezz'ora a più alto rendimento del progetto: accende F2 e riscrive
+      gli hook con parole vere invece che nostre
 - [ ] **Le fonti degli hadith**, su sunnah.com — `materia-prima.md` §4.
       Servono prima del carosello C16, e sono **le stesse due pagine che
       mancano in fondo al libro**
