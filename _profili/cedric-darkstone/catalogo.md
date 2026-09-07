@@ -191,10 +191,28 @@ arrivato da fuori.
    e in questo catalogo non ha compagni
 6. che fare del *Diario*: rilanciarlo o lasciarlo morire
 
-## 7. Checkpoint — le tre strade
+## 7. Checkpoint — chiuso il 07/09/2026: **strada B**
 
-Questa e' una decisione dell'autore, e la regia si ferma qui (§5 del metodo:
-si presentano piu' opzioni, non una, e restano scritte anche le scartate).
+**Scelto: portare fuori da Amazon il titolo che gia' cresce** — `promozione-social`
+su *Diventa Master - La Tua Prima Campagna*.
+
+Le riparazioni della strada A restano da fare comunque: costano giorni, non
+settimane, e non tolgono niente alla B.
+
+Le scartate, col motivo, perche' fra tre mesi servira' sapere perche' no:
+
+- **C, misurare la nicchia e scrivere il quinto libro** — non scartata, rimandata.
+  Aumenta il numero di libri che vendono invece del rendimento di quelli che
+  ci sono, ma sono due-tre mesi prima di vedere un euro, e c'e' gia' un titolo
+  che cresce da solo e che nessuno sta spingendo. Si riapre quando la B ha
+  prodotto i suoi primi dati di pubblico, che alla ricerca servono.
+- **B e C insieme** — scartata per la finestra di contesto (§7 del metodo) e
+  perche' la B parte da un pen name social che non esiste ancora: farla a meta'
+  attenzione e' il modo di non farla.
+- **Solo le riparazioni** — scartata perche' non risolve il problema vero. Il
+  catalogo resta invisibile fuori da Amazon anche riparato alla perfezione.
+
+Le tre strade, come erano state presentate:
 
 ### A — Riparare quello che c'e' *(giorni, non settimane)*
 
